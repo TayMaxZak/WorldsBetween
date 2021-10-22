@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
+	public Vector3Int position; // Coordinates of chunk
+
 	[SerializeField]
 	private int chunkSize = 2;
 
@@ -13,6 +15,8 @@ public class Chunk : MonoBehaviour
 
 	private void Awake()
 	{
+		UpdatePosition();
+
 		// Create blocks
 		CreateChunk();
 
@@ -22,6 +26,14 @@ public class Chunk : MonoBehaviour
 
 		// Initial light pass
 		UpdateLight();
+	}
+
+	private void UpdatePosition()
+	{
+		Vector3 pos = transform.position;
+		position.x = Mathf.RoundToInt(pos.x);
+		position.y = Mathf.RoundToInt(pos.y);
+		position.z = Mathf.RoundToInt(pos.z);
 	}
 
 	public void CreateChunk()
@@ -42,11 +54,17 @@ public class Chunk : MonoBehaviour
 
 	public void UpdateLight()
 	{
+		UpdatePosition();
+
 		// Set brightness
 		foreach (Block b in blocks)
 		{
 			b.lastBrightness = b.brightness;
-			b.brightness = (byte)(Random.value * 256);
+
+			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
+			float newBrightness = 1f / Mathf.Max(1, World.DistanceSqr(0, 0, 0, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
+
+			b.brightness = (byte)(newBrightness * 255f);
 		}
 	}
 
@@ -59,6 +77,16 @@ public class Chunk : MonoBehaviour
 	public int CoordToIndex(int x, int y, int z)
 	{
 		return x * chunkSize * chunkSize + y * chunkSize + z;
+	}
+
+	public bool ValidIndex(int index)
+	{
+		return index >= 0 && blocks.Length > index;
+	}
+
+	public Block GetBlock(int index)
+	{
+		return blocks[index];
 	}
 
 	private void OnDrawGizmos()

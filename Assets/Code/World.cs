@@ -5,12 +5,22 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
 	[SerializeField]
-	private Timer lightUpdateTimer = new Timer(1);
+	private Timer lightUpdateTimer = null;
 
 	private List<Chunk> chunks;
 
-	private void Start()
+	private static World Instance;
+
+	private void Awake()
 	{
+		if (Instance)
+		{
+			Destroy(gameObject);
+			return;
+		}
+		else
+			Instance = this;
+
 		chunks = new List<Chunk>(GetComponentsInChildren<Chunk>());
 	}
 
@@ -35,5 +45,27 @@ public class World : MonoBehaviour
 
 			chunk.InterpLight(partialTime);
 		}
+	}
+
+	public static Block GetBlockFor(Vector3Int pos)
+	{
+		Vector3Int dummy;
+
+		foreach (Chunk chunk in Instance.chunks)
+		{
+			dummy = pos - chunk.position;
+
+			int coord = chunk.CoordToIndex(dummy.x, dummy.y, dummy.z);
+			if (chunk.ValidIndex(coord))
+				return chunk.GetBlock(coord);
+		}
+
+		return null;
+	}
+
+	public static int DistanceSqr(int xa, int ya, int za, int xb, int yb, int zb)
+	{
+		//return (int)Vector3.SqrMagnitude(new Vector3(xa - xb, ya - yb, za - zb));
+		return (xa - xb) * (xa - xb) + (ya - yb) * (ya - yb) + (za - zb) * (za - zb);
 	}
 }
