@@ -7,6 +7,10 @@ public class World : MonoBehaviour
 	[SerializeField]
 	private Timer lightUpdateTimer = null;
 
+	[SerializeField]
+	private Transform lights = null;
+	private List<LightSource> lightSources;
+
 	private List<Chunk> chunks;
 
 	private static World Instance;
@@ -22,6 +26,8 @@ public class World : MonoBehaviour
 			Instance = this;
 
 		chunks = new List<Chunk>(GetComponentsInChildren<Chunk>());
+
+		lightSources = new List<LightSource>(lights.GetComponentsInChildren<LightSource>());
 	}
 
 	private void Update()
@@ -41,7 +47,12 @@ public class World : MonoBehaviour
 		foreach (Chunk chunk in chunks)
 		{
 			if (doLightUpdate)
-				chunk.UpdateLight();
+			{
+				for (int i = 0; i < lightSources.Count; i++)
+				{
+					chunk.AddLight(lightSources[i], i == 0);
+				}
+			}
 
 			chunk.InterpLight(partialTime);
 		}

@@ -15,7 +15,7 @@ public class Chunk : MonoBehaviour
 
 	private void Awake()
 	{
-		UpdatePosition();
+		UpdatePos();
 
 		// Create blocks
 		CreateChunk();
@@ -23,12 +23,9 @@ public class Chunk : MonoBehaviour
 		// Init chunk mesh
 		chunkMesh = GetComponent<ChunkMesh>();
 		chunkMesh.Init(this);
-
-		// Initial light pass
-		UpdateLight();
 	}
 
-	private void UpdatePosition()
+	private void UpdatePos()
 	{
 		Vector3 pos = transform.position;
 		position.x = Mathf.RoundToInt(pos.x);
@@ -52,9 +49,10 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	public void UpdateLight()
+	public void AddLight(LightSource light, bool firstPass)
 	{
-		UpdatePosition();
+		UpdatePos();
+		light.UpdatePos();
 
 		// Set brightness
 		foreach (Block b in blocks)
@@ -62,7 +60,11 @@ public class Chunk : MonoBehaviour
 			b.lastBrightness = b.brightness;
 
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
-			float newBrightness = 1f / Mathf.Max(1, World.DistanceSqr(0, 0, 0, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
+			float addBrightness = 1f / Mathf.Max(1, World.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
+
+			// Add to existing brightness (if not first pass). Affect less if already bright
+			float newBrightness = firstPass ? 0 : (b.brightness / 255f);
+			newBrightness += (1 - newBrightness) * addBrightness;
 
 			b.brightness = (byte)(newBrightness * 255f);
 		}
@@ -76,7 +78,7 @@ public class Chunk : MonoBehaviour
 
 	public int CoordToIndex(int x, int y, int z)
 	{
-		return x * chunkSize * chunkSize + y * chunkSize + z;
+		return z * chunkSize * chunkSize + y * chunkSize + x;
 	}
 
 	public bool ValidIndex(int index)

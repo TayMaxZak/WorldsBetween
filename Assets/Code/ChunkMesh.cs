@@ -8,7 +8,7 @@ public class ChunkMesh : MonoBehaviour
 
 	private List<MeshFilter> meshes;
 
-	private float vertexOffset = -0.5f;
+	private float vertexOffset = 0f;
 	private List<Color> allColors = new List<Color>();
 
 	public void Init(Chunk chunk)
@@ -36,9 +36,9 @@ public class ChunkMesh : MonoBehaviour
 
 			for (int i = 0; i < filter.sharedMesh.vertices.Length; i++)
 			{
-				float jitter = 0.001f;
+				float jitter = 0.01f;
 
-				dummy1 = filter.transform.localPosition + filter.sharedMesh.vertices[i];
+				dummy1 = filter.transform.localPosition + Vector3.one * 0.5f;
 				dummy2.x = Mathf.RoundToInt(dummy1.x + vertexOffset + RandomJitter(jitter));
 				dummy2.y = Mathf.RoundToInt(dummy1.y + vertexOffset + RandomJitter(jitter));
 				dummy2.z = Mathf.RoundToInt(dummy1.z + vertexOffset + RandomJitter(jitter));
