@@ -11,6 +11,19 @@ public class Chunk : MonoBehaviour
 
 	private ChunkMesh chunkMesh;
 
+	private void Awake()
+	{
+		// Create blocks
+		CreateChunk();
+
+		// Init chunk mesh
+		chunkMesh = GetComponent<ChunkMesh>();
+		chunkMesh.Init(this);
+
+		// Initial light pass
+		UpdateLight();
+	}
+
 	public void CreateChunk()
 	{
 		blocks = new Block[chunkSize * chunkSize * chunkSize];
@@ -27,20 +40,7 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	void Awake()
-	{
-		// Create blocks
-		CreateChunk();
-
-		// Init chunk mesh
-		chunkMesh = GetComponent<ChunkMesh>();
-		chunkMesh.Init(this);
-
-		// Initial light pass
-		UpdateLight();
-	}
-
-	void UpdateLight()
+	public void UpdateLight()
 	{
 		// Set brightness
 		foreach (Block b in blocks)
