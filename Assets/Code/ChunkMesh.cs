@@ -74,13 +74,17 @@ public class ChunkMesh : MonoBehaviour
 					}
 				}
 
-				// Convert brightness value to float, interpolating between light updates
+				// Convert brightness value to float
 				float lastBright = block.lastBrightness / 255f;
 				float newBright = block.brightness / 255f;
 
-				// Assign lighting data: new brightness, last brightness, new color, last color
-				// TODO: Color defined by  (0.5 * hue + 0.5 * saturation)?
-				colors[i] = new Color(lastBright, newBright, 0, 0);
+				// Convert hue value to float
+				float lastHue = block.lastColorTemp / 255f;
+				float newHue = block.colorTemp / 255f;
+
+				// Assign lighting data: new brightness, last brightness, new hue, last hue
+				// Saturation is affected by high brightness; very bright = not saturated
+				colors[i] = new Color(lastBright, newBright, lastHue, newHue);
 			}
 
 			// Apply vertex colors

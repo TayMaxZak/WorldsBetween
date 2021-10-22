@@ -76,17 +76,28 @@ public class Chunk : MonoBehaviour
 		foreach (Block b in blocks)
 		{
 			if (firstPass)
+			{
 				b.lastBrightness = b.brightness;
+				b.lastColorTemp = b.colorTemp;
+			}
 
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
 			float addBrightness = light.brightness / Mathf.Max(1, World.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
 
 			// Add to existing brightness (if not first pass). Affect less if already bright
-			float newBrightness = firstPass ? 0 : (b.brightness / 255f);
-			newBrightness += (1 - newBrightness) * addBrightness;
+			float oldBrightness = firstPass ? 0 : (b.brightness / 255f);
+			float newBrightness = oldBrightness + (1 - oldBrightness) * addBrightness;
 			newBrightness = Mathf.Clamp01(newBrightness);
 
 			b.brightness = (byte)(newBrightness * 255f);
+
+			// Affect color temp of blocks
+			float oldColorTemp = firstPass ? 0 : (-1 + 2 * b.colorTemp / 255f);
+
+			float newColorTemp = oldColorTemp + addBrightness * light.colorTemp;
+			newColorTemp = Mathf.Clamp(newColorTemp, -1, 1);
+
+			b.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 		}
 	}
 

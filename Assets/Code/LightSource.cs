@@ -8,7 +8,8 @@ public class LightSource : MonoBehaviour
 	[HideInInspector]
 	public int worldX, worldY, worldZ; // Coordinates in world space
 
-	public float brightness = 1;
+	public float brightness = 1; // From 0 to 1
+	public float colorTemp = 0; // From -1 to 1
 
 	public void UpdatePos()
 	{
