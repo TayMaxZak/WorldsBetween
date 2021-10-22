@@ -52,9 +52,9 @@ public class World : MonoBehaviour
 				{
 					chunk.AddLight(lightSources[i], i == 0);
 				}
-			}
 
-			chunk.InterpLight(partialTime);
+				chunk.InterpLight(partialTime);
+			}
 		}
 	}
 

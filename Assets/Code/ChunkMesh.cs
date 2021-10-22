@@ -41,12 +41,12 @@ public class ChunkMesh : MonoBehaviour
 			// Reset colors
 			allColors.Clear();
 
-			for (int i = 0; i < filter.sharedMesh.vertices.Length; i++)
+			for (int i = 0; i < filter.sharedMesh.vertexCount; i++)
 			{
-				float jitter = 0.01f;
+				float jitter = 0.0f;
 
 				// Find block to sample for brightness
-				dummy1 = filter.transform.localPosition;
+				dummy1 = filter.transform.localPosition + filter.sharedMesh.vertices[i];
 				dummy2.x = Mathf.RoundToInt(dummy1.x + vertexOffset + RandomJitter(jitter));
 				dummy2.y = Mathf.RoundToInt(dummy1.y + vertexOffset + RandomJitter(jitter));
 				dummy2.z = Mathf.RoundToInt(dummy1.z + vertexOffset + RandomJitter(jitter));
@@ -65,7 +65,7 @@ public class ChunkMesh : MonoBehaviour
 					if (dummy3 == null)
 					{
 						// Assign vertex color for block
-						allColors.Add(new Color(0, 0, 1));
+						allColors.Add(Color.blue);
 
 						continue;
 					}
