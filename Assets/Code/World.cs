@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
+	[Header("Lighting")]
 	[SerializeField]
 	private Timer lightUpdateTimer = null;
 
 	[SerializeField]
-	private Transform lights = null;
+	private Transform lightRoot = null;
 	private List<LightSource> lightSources;
 
+	[Header("Generators")]
+	[SerializeField]
+	private Transform carverRoot = null;
+	private List<Carver> carvers;
+
+	// Chunks
 	private List<Chunk> chunks;
 
 	private static World Instance;
@@ -27,7 +34,29 @@ public class World : MonoBehaviour
 
 		chunks = new List<Chunk>(GetComponentsInChildren<Chunk>());
 
-		lightSources = new List<LightSource>(lights.GetComponentsInChildren<LightSource>());
+		lightSources = new List<LightSource>(lightRoot.GetComponentsInChildren<LightSource>());
+
+		carvers = new List<Carver>(carverRoot.GetComponentsInChildren<Carver>());
+	}
+
+	private void Start()
+	{
+		Generate();
+	}
+
+	private void Generate()
+	{
+		foreach (Chunk chunk in chunks)
+		{
+			for (int i = 0; i < carvers.Count; i++)
+			{
+				carvers[i].UpdatePos();
+
+				chunk.ApplyCarver(carvers[i], i == 0);
+			}
+
+			chunk.UpdateOpacityVisuals();
+		}
 	}
 
 	private void Update()

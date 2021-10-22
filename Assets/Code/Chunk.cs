@@ -43,7 +43,7 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					blocks[x, y, z] = new Block(x, y, z, 0, 1);
+					blocks[x, y, z] = new Block(x, y, z, 127, 255);
 				}
 			}
 		}
@@ -107,6 +107,30 @@ public class Chunk : MonoBehaviour
 		chunkMesh.SetVertexColors(blocks);
 	}
 
+	public void ApplyCarver(Carver carver, bool firstPass)
+	{
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					float carve = carver.strength / World.DistanceSqr(carver.worldX, carver.worldY, carver.worldZ, position.x + x, position.y + y, position.z + z);
+
+					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f) - carve;
+
+					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
+				}
+			}
+		}
+	}
+
+	public void UpdateOpacityVisuals()
+	{
+		chunkMesh.SetOpacity(blocks);
+	}
+
+	// Utility
 	public bool ContainsPos(int x, int y, int z)
 	{
 		return x >= 0 && chunkSize > x && y >= 0 && chunkSize > y && z >= 0 && chunkSize > z;

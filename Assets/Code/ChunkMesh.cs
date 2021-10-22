@@ -9,8 +9,6 @@ public class ChunkMesh : MonoBehaviour
 	public MeshFilter dummyMesh;
 	private List<MeshFilter> meshes;
 
-	private float vertexOffset = -0f;
-
 	public void Init(Chunk chunk)
 	{
 		this.chunk = chunk;
@@ -31,6 +29,8 @@ public class ChunkMesh : MonoBehaviour
 
 	public void SetVertexColors(Block[,,] blocks)
 	{
+		float vertexOffset = -0f;
+
 		Vector3[] vertices;
 		Color[] colors;
 
@@ -90,6 +90,47 @@ public class ChunkMesh : MonoBehaviour
 			// Apply vertex colors
 			Mesh mesh = filter.sharedMesh;
 			mesh.colors = colors;
+		}
+	}
+
+	public void SetOpacity(Block[,,] blocks)
+	{
+		float vertexOffset = -0.5f;
+
+		Vector3 meshPos;
+		Vector3Int blockPos = new Vector3Int();
+
+		Block block;
+
+		foreach (MeshFilter filter in meshes)
+		{
+			// Find block to sample for opacity
+			meshPos = filter.transform.localPosition;
+			blockPos.x = Mathf.RoundToInt(meshPos.x + vertexOffset);
+			blockPos.y = Mathf.RoundToInt(meshPos.y + vertexOffset);
+			blockPos.z = Mathf.RoundToInt(meshPos.z + vertexOffset);
+
+			// Block is in this chunk?
+			if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
+			{
+				block = blocks[blockPos.x, blockPos.y, blockPos.z];
+			}
+			// Block is outside this chunk?
+			else
+			{
+				block = World.GetBlockFor(blockPos + chunk.position);
+
+				// Block is outside this world
+				if (block == null)
+				{
+					continue;
+				}
+			}
+
+			if (block.opacity / 255f < 0.5f)
+				filter.gameObject.SetActive(false);
+			else
+				filter.gameObject.SetActive(true);
 		}
 	}
 

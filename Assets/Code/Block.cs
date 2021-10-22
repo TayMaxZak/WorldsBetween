@@ -21,6 +21,11 @@ public class Block
 		this.localZ = localZ;
 
 		this.brightness = brightness;
+		lastBrightness = brightness;
+
+		colorTemp = 127;
+		lastColorTemp = colorTemp;
+
 		this.opacity = opacity;
 	}
 }
