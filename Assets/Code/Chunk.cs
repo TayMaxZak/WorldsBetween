@@ -82,18 +82,18 @@ public class Chunk : MonoBehaviour
 			float addBrightness = light.brightness / Mathf.Max(1, World.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
 
 			// Add to existing brightness (if not first pass). Affect less if already bright
-			float newBrightness = firstPass ? 0 : (b.brightness / 256f);
+			float newBrightness = firstPass ? 0 : (b.brightness / 255f);
 			newBrightness += (1 - newBrightness) * addBrightness;
 			newBrightness = Mathf.Clamp01(newBrightness);
 
-			b.brightness = (byte)(newBrightness * 256f);
+			b.brightness = (byte)(newBrightness * 255f);
 		}
 	}
 
-	public void InterpLight(float partialTime)
+	public void UpdateLightVisuals()
 	{
 		// Apply vertex colors, interpolating between previous brightness and new brightness by partial time
-		chunkMesh.SetVertexColors(blocks, partialTime);
+		chunkMesh.SetVertexColors(blocks);
 	}
 
 	public bool ContainsPos(int x, int y, int z)

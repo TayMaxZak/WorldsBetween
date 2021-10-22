@@ -43,17 +43,19 @@ public class World : MonoBehaviour
 
 		// Find partial time for blending light
 		float partialTime = Mathf.Clamp01(1 - lightUpdateTimer.currentTime / lightUpdateTimer.maxTime);
+		Shader.SetGlobalFloat("PartialTime", partialTime);
 
-		foreach (Chunk chunk in chunks)
+		if (!doLightUpdate)
+			return;
+
+		// Apply lights
+		for (int i = 0; i < lightSources.Count; i++)
 		{
-			if (doLightUpdate)
+			foreach (Chunk chunk in chunks)
 			{
-				for (int i = 0; i < lightSources.Count; i++)
-				{
-					chunk.AddLight(lightSources[i], i == 0);
-				}
+				chunk.AddLight(lightSources[i], i == 0);
 
-				chunk.InterpLight(partialTime);
+				chunk.UpdateLightVisuals();
 			}
 		}
 	}

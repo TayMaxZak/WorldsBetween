@@ -10,7 +10,6 @@ public class ChunkMesh : MonoBehaviour
 	private List<MeshFilter> meshes;
 
 	private float vertexOffset = -0.5f;
-	private List<Color> allColors = new List<Color>();
 
 	public void Init(Chunk chunk)
 	{
@@ -30,59 +29,63 @@ public class ChunkMesh : MonoBehaviour
 			filter.sharedMesh = filter.mesh;
 	}
 
-	public void SetVertexColors(Block[,,] blocks, float partialTime)
+	public void SetVertexColors(Block[,,] blocks)
 	{
-		Vector3 dummy1;
-		Vector3Int dummy2 = new Vector3Int();
-		Block dummy3;
+		Vector3[] vertices;
+		Color[] colors;
+
+		Vector3 meshPos;
+		Vector3Int blockPos = new Vector3Int();
+
+		Block block;
 
 		foreach (MeshFilter filter in meshes)
 		{
-			// Reset colors
-			allColors.Clear();
+			vertices = filter.sharedMesh.vertices;
+			colors = new Color[vertices.Length];
 
-			for (int i = 0; i < filter.sharedMesh.vertexCount; i++)
+			for (int i = 0; i < vertices.Length; i++)
 			{
 				float jitter = 0.0f;
 
 				// Find block to sample for brightness
-				dummy1 = filter.transform.localPosition + filter.sharedMesh.vertices[i];
-				dummy2.x = Mathf.RoundToInt(dummy1.x + vertexOffset + RandomJitter(jitter));
-				dummy2.y = Mathf.RoundToInt(dummy1.y + vertexOffset + RandomJitter(jitter));
-				dummy2.z = Mathf.RoundToInt(dummy1.z + vertexOffset + RandomJitter(jitter));
+				meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
+				blockPos.x = Mathf.RoundToInt(meshPos.x + vertexOffset + RandomJitter(jitter));
+				blockPos.y = Mathf.RoundToInt(meshPos.y + vertexOffset + RandomJitter(jitter));
+				blockPos.z = Mathf.RoundToInt(meshPos.z + vertexOffset + RandomJitter(jitter));
 
 				// Block is in this chunk?
-				if (chunk.ContainsPos(dummy2.x, dummy2.y, dummy2.z))
+				if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
 				{
-					dummy3 = blocks[dummy2.x, dummy2.y, dummy2.z];
+					block = blocks[blockPos.x, blockPos.y, blockPos.z];
 				}
 				// Block is outside this chunk?
 				else
 				{
-					dummy3 = World.GetBlockFor(dummy2 + chunk.position);
+					block = World.GetBlockFor(blockPos + chunk.position);
 
 					// Block is outside this world
-					if (dummy3 == null)
+					if (block == null)
 					{
 						// Assign vertex color for block
-						allColors.Add(Color.blue);
+						colors[i] = Color.blue;
 
 						continue;
 					}
 				}
 
 				// Convert brightness value to float, interpolating between light updates
-				float a = dummy3.lastBrightness / 256f;
-				float b = dummy3.brightness / 256f;
+				float lastBright = block.lastBrightness / 255f;
+				float newBright = block.brightness / 255f;
 
-				float bright = Mathf.Lerp(a, b, partialTime);
-
-				// Assign vertex color for block
-				allColors.Add(new Color(bright, bright, bright)); // TODO: Cache colors?
+				// Assign lighting data: new brightness, last brightness, new color, last color
+				// TODO: Color defined by  (0.5 * hue + 0.5 * saturation)?
+				colors[i] = new Color(lastBright, newBright, 0, 0);
 			}
 
 			// Apply vertex colors
-			filter.sharedMesh.colors = allColors.ToArray();
+			Mesh mesh = filter.sharedMesh;
+			mesh.colors = colors;
 		}
 	}
 
