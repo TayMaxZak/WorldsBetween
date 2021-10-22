@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ChunkMesh : MonoBehaviour
 {
-	private static Color borderColor = new Color(1, 1, 0.5f, 0.5f);
+	private static Color borderColor = new Color(0, 0, 0.5f, 0.5f);
 
 	private Chunk chunk;
 
@@ -91,6 +91,7 @@ public class ChunkMesh : MonoBehaviour
 
 			// Apply vertex colors
 			Mesh mesh = filter.sharedMesh;
+			if (Random.value > 0.1f) // TODO: See what happens if it doesn't set the colors. Blending gone wrong?
 			mesh.colors = colors;
 		}
 	}
