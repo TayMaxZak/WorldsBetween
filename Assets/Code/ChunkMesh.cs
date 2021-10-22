@@ -48,7 +48,7 @@ public class ChunkMesh : MonoBehaviour
 
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				float jitter = 0.0f;
+				float jitter = 0.1f;
 
 				// Find block to sample for brightness
 				meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
@@ -90,8 +90,8 @@ public class ChunkMesh : MonoBehaviour
 			}
 
 			// Apply vertex colors
+			// TODO: See what happens if it doesn't set the colors. Blending gone wrong?
 			Mesh mesh = filter.sharedMesh;
-			if (Random.value > 0.1f) // TODO: See what happens if it doesn't set the colors. Blending gone wrong?
 			mesh.colors = colors;
 		}
 	}

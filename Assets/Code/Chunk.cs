@@ -20,6 +20,8 @@ public class Chunk : MonoBehaviour
 		// Create blocks
 		CreateBlocks();
 
+		CreateDummyMesh();
+
 		// Init chunk mesh
 		chunkMesh = GetComponent<ChunkMesh>();
 		chunkMesh.Init(this);
