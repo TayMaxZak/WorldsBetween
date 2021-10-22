@@ -62,7 +62,7 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					dummy2 = Instantiate(dummy1, new Vector3(position.x + x + 0.5f, position.y + y + 0.5f, position.z + z + 0.5f), Quaternion.identity, transform);
+					dummy2 = Instantiate(dummy1, new Vector3(position.x + x, position.y + y, position.z + z), Quaternion.identity, transform);
 					dummy2.name = x + ", " + y + ", " + z;
 				}
 			}

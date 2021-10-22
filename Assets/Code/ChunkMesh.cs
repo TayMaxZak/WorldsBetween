@@ -31,7 +31,7 @@ public class ChunkMesh : MonoBehaviour
 
 	public void SetVertexColors(Block[,,] blocks)
 	{
-		float vertexOffset = -0f;
+		float vertexOffset = 0;
 
 		Vector3[] vertices;
 		Color[] colors;
@@ -98,7 +98,7 @@ public class ChunkMesh : MonoBehaviour
 
 	public void SetOpacity(Block[,,] blocks)
 	{
-		float vertexOffset = -0.5f;
+		float vertexOffset = 0;
 
 		Vector3 meshPos;
 		Vector3Int blockPos = new Vector3Int();
