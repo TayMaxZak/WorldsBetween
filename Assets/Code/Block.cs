@@ -9,8 +9,13 @@ public class Block
 	public byte brightness; // How bright is this block (0 is complete darkness, 15 is fully bright) // TODO: 255 for R, G, and B
 	public byte opacity; // How full is this block (0 is empty air, 15 is completely solid)
 
-	public static float GetFloatBrightness(byte brightness)
+	public Block(byte localX, byte localY, byte localZ, byte brightness, byte opacity)
 	{
-		return brightness / 256f;
+		this.localX = localX;
+		this.localY = localY;
+		this.localZ = localZ;
+
+		this.brightness = brightness;
+		this.opacity = opacity;
 	}
 }

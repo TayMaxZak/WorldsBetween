@@ -15,6 +15,11 @@ public class ChunkMesh : MonoBehaviour
 		this.chunk = chunk;
 
 		meshes = new List<MeshFilter>(GetComponentsInChildren<MeshFilter>());
+
+		foreach (MeshFilter filter in meshes)
+		{
+			filter.sharedMesh = filter.mesh;
+		}
 	}
 
 	public void SetVertexColors(Block[] blocks)
@@ -29,16 +34,19 @@ public class ChunkMesh : MonoBehaviour
 
 			for (int i = 0; i < filter.sharedMesh.vertices.Length; i++)
 			{
-				dummy1 = filter.transform.position;
+				dummy1 = filter.transform.localPosition;
 				dummy2.x = Mathf.FloorToInt(dummy1.x);
 				dummy2.y = Mathf.FloorToInt(dummy1.y);
 				dummy2.z = Mathf.FloorToInt(dummy1.z);
 
-				float bright = Block.GetFloatBrightness(blocks[chunk.CoordToIndex(dummy2.x, dummy2.y, dummy2.z)].brightness);
+				// Convert brightness value to float
+				float bright = blocks[chunk.CoordToIndex(dummy2.x, dummy2.y, dummy2.z)].brightness / 256f;
+
+				// Assign vertex color for block
 				allColors.Add(new Color(bright, bright, bright));
 			}
 
-			filter.sharedMesh = filter.mesh;
+			// Apply vertex colors
 			filter.sharedMesh.colors = allColors.ToArray();
 		}
 	}

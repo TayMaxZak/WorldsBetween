@@ -21,13 +21,7 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					Block b = new Block();
-					b.localX = x;
-					b.localY = y;
-					b.localZ = z;
-					b.brightness = (byte)(Random.value * 256);
-
-					blocks[CoordToIndex(x, y, z)] = b;
+					blocks[CoordToIndex(x, y, z)] = new Block(x, y, z, 0, 1);
 				}
 			}
 		}
@@ -48,11 +42,21 @@ public class Chunk : MonoBehaviour
 
 	void UpdateLight()
 	{
+		// Set brightness
+		foreach (Block b in blocks)
+			b.brightness = (byte)(Random.value * 256);
+
+		// Apply vertex colors based on brightness
 		chunkMesh.SetVertexColors(blocks);
 	}
 
 	public int CoordToIndex(int x, int y, int z)
 	{
 		return x * chunkSize * chunkSize + y * chunkSize + z;
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.DrawWireCube(transform.position + chunkSize / 2 * Vector3.one, chunkSize * Vector3.one);
 	}
 }
