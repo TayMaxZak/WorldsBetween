@@ -9,7 +9,7 @@ public class ChunkMesh : MonoBehaviour
 	public MeshFilter dummyMesh;
 	private List<MeshFilter> meshes;
 
-	private float vertexOffset = -0.5f;
+	private float vertexOffset = -0f;
 
 	public void Init(Chunk chunk)
 	{
