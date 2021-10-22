@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ChunkMesh : MonoBehaviour
 {
+	private static Color borderColor = new Color(1, 1, 0.5f, 0.5f);
+
 	private Chunk chunk;
 
 	public MeshFilter dummyMesh;
@@ -62,13 +64,13 @@ public class ChunkMesh : MonoBehaviour
 				// Block is outside this chunk?
 				else
 				{
-					block = World.GetBlockFor(blockPos + chunk.position);
+					block = World.GetBlockFor(blockPos + chunk.position + Vector3Int.one);
 
 					// Block is outside this world
 					if (block == null)
 					{
 						// Assign vertex color for block
-						colors[i] = Color.blue;
+						colors[i] = borderColor;
 
 						continue;
 					}
