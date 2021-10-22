@@ -66,9 +66,8 @@ public class World : MonoBehaviour
 		{
 			dummy = pos - chunk.position;
 
-			int coord = chunk.CoordToIndex(dummy.x, dummy.y, dummy.z);
-			if (chunk.ValidIndex(coord))
-				return chunk.GetBlock(coord);
+			if (chunk.ContainsPos(dummy.x, dummy.y, dummy.z))
+				return chunk.GetBlock(dummy.x, dummy.y, dummy.z);
 		}
 
 		return null;

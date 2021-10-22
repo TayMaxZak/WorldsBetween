@@ -6,24 +6,31 @@ public class ChunkMesh : MonoBehaviour
 {
 	private Chunk chunk;
 
+	public MeshFilter dummyMesh;
 	private List<MeshFilter> meshes;
 
-	private float vertexOffset = 0f;
+	private float vertexOffset = -0.5f;
 	private List<Color> allColors = new List<Color>();
 
 	public void Init(Chunk chunk)
 	{
 		this.chunk = chunk;
 
-		meshes = new List<MeshFilter>(GetComponentsInChildren<MeshFilter>());
-
-		foreach (MeshFilter filter in meshes)
+		// Add meshes in fixed order
+		meshes = new List<MeshFilter>();
+		foreach (Transform t in transform)
 		{
-			filter.sharedMesh = filter.mesh;
+			MeshFilter mesh = t.GetComponent<MeshFilter>();
+			if (mesh)
+				meshes.Add(mesh);
 		}
+
+		// Duplicate original meshes to avoid permanent changes
+		foreach (MeshFilter filter in meshes)
+			filter.sharedMesh = filter.mesh;
 	}
 
-	public void SetVertexColors(Block[] blocks, float partialTime)
+	public void SetVertexColors(Block[,,] blocks, float partialTime)
 	{
 		Vector3 dummy1;
 		Vector3Int dummy2 = new Vector3Int();
@@ -38,20 +45,18 @@ public class ChunkMesh : MonoBehaviour
 			{
 				float jitter = 0.01f;
 
-				dummy1 = filter.transform.localPosition + Vector3.one * 0.5f;
+				// Find block to sample for brightness
+				dummy1 = filter.transform.localPosition;
 				dummy2.x = Mathf.RoundToInt(dummy1.x + vertexOffset + RandomJitter(jitter));
 				dummy2.y = Mathf.RoundToInt(dummy1.y + vertexOffset + RandomJitter(jitter));
 				dummy2.z = Mathf.RoundToInt(dummy1.z + vertexOffset + RandomJitter(jitter));
 
-				// Convert brightness value to float, interpolating between light updates
-				int coord = chunk.CoordToIndex(dummy2.x, dummy2.y, dummy2.z);
-
-				// Block is in this chunk
-				if (chunk.ValidIndex(coord))
+				// Block is in this chunk?
+				if (chunk.ContainsPos(dummy2.x, dummy2.y, dummy2.z))
 				{
-					dummy3 = blocks[coord];
+					dummy3 = blocks[dummy2.x, dummy2.y, dummy2.z];
 				}
-				// Block is outside this chunk
+				// Block is outside this chunk?
 				else
 				{
 					dummy3 = World.GetBlockFor(dummy2 + chunk.position);
@@ -66,6 +71,7 @@ public class ChunkMesh : MonoBehaviour
 					}
 				}
 
+				// Convert brightness value to float, interpolating between light updates
 				float a = dummy3.lastBrightness / 256f;
 				float b = dummy3.brightness / 256f;
 

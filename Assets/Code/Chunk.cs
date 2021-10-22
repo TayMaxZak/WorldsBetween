@@ -9,7 +9,7 @@ public class Chunk : MonoBehaviour
 	[SerializeField]
 	private int chunkSize = 2;
 
-	private Block[] blocks;
+	private Block[,,] blocks;
 
 	private ChunkMesh chunkMesh;
 
@@ -18,7 +18,7 @@ public class Chunk : MonoBehaviour
 		UpdatePos();
 
 		// Create blocks
-		CreateChunk();
+		CreateBlocks();
 
 		// Init chunk mesh
 		chunkMesh = GetComponent<ChunkMesh>();
@@ -33,9 +33,9 @@ public class Chunk : MonoBehaviour
 		position.z = Mathf.RoundToInt(pos.z);
 	}
 
-	public void CreateChunk()
+	public void CreateBlocks()
 	{
-		blocks = new Block[chunkSize * chunkSize * chunkSize];
+		blocks = new Block[chunkSize, chunkSize, chunkSize];
 
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -43,7 +43,25 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					blocks[CoordToIndex(x, y, z)] = new Block(x, y, z, 0, 1);
+					blocks[x, y, z] = new Block(x, y, z, 0, 1);
+				}
+			}
+		}
+	}
+
+	public void CreateDummyMesh()
+	{
+		MeshFilter dummy1 = GetComponent<ChunkMesh>().dummyMesh;
+		MeshFilter dummy2;
+
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					dummy2 = Instantiate(dummy1, new Vector3(position.x + x + 0.5f, position.y + y + 0.5f, position.z + z + 0.5f), Quaternion.identity, transform);
+					dummy2.name = x + ", " + y + ", " + z;
 				}
 			}
 		}
@@ -57,7 +75,8 @@ public class Chunk : MonoBehaviour
 		// Set brightness
 		foreach (Block b in blocks)
 		{
-			b.lastBrightness = b.brightness;
+			if (firstPass)
+				b.lastBrightness = b.brightness;
 
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
 			float addBrightness = 1f / Mathf.Max(1, World.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
@@ -76,19 +95,14 @@ public class Chunk : MonoBehaviour
 		chunkMesh.SetVertexColors(blocks, partialTime);
 	}
 
-	public int CoordToIndex(int x, int y, int z)
+	public bool ContainsPos(int x, int y, int z)
 	{
-		return z * chunkSize * chunkSize + y * chunkSize + x;
+		return x >= 0 && chunkSize > x && y >= 0 && chunkSize > y && z >= 0 && chunkSize > z;
 	}
 
-	public bool ValidIndex(int index)
+	public Block GetBlock(int x, int y, int z)
 	{
-		return index >= 0 && blocks.Length > index;
-	}
-
-	public Block GetBlock(int index)
-	{
-		return blocks[index];
+		return blocks[x, y, z];
 	}
 
 	private void OnDrawGizmos()
