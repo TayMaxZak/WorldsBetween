@@ -44,10 +44,16 @@ public class Chunk : MonoBehaviour
 	{
 		// Set brightness
 		foreach (Block b in blocks)
+		{
+			b.lastBrightness = b.brightness;
 			b.brightness = (byte)(Random.value * 256);
+		}
+	}
 
-		// Apply vertex colors based on brightness
-		chunkMesh.SetVertexColors(blocks);
+	public void InterpLight(float partialTime)
+	{
+		// Apply vertex colors, interpolating between previous brightness and new brightness by partial time
+		chunkMesh.SetVertexColors(blocks, partialTime);
 	}
 
 	public int CoordToIndex(int x, int y, int z)

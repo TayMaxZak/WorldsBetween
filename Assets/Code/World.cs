@@ -18,12 +18,22 @@ public class World : MonoBehaviour
 	{
 		lightUpdateTimer.Increment(Time.deltaTime);
 
-		if (lightUpdateTimer.Expired())
+		// Is this a major light update?
+		bool doLightUpdate = lightUpdateTimer.Expired();
+
+		// Reset timer for next update
+		if (doLightUpdate)
+			lightUpdateTimer.Reset();
+
+		// Find partial time for blending light
+		float partialTime = Mathf.Clamp01(1 - lightUpdateTimer.currentTime / lightUpdateTimer.maxTime);
+
+		foreach (Chunk chunk in chunks)
 		{
-			foreach (Chunk chunk in chunks)
+			if (doLightUpdate)
 				chunk.UpdateLight();
 
-			lightUpdateTimer.Reset();
+			chunk.InterpLight(partialTime);
 		}
 	}
 }

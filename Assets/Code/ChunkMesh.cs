@@ -22,10 +22,11 @@ public class ChunkMesh : MonoBehaviour
 		}
 	}
 
-	public void SetVertexColors(Block[] blocks)
+	public void SetVertexColors(Block[] blocks, float partialTime)
 	{
 		Vector3 dummy1;
 		Vector3Int dummy2 = new Vector3Int();
+		Block dummy3;
 
 		foreach (MeshFilter filter in meshes)
 		{
@@ -39,8 +40,13 @@ public class ChunkMesh : MonoBehaviour
 				dummy2.y = Mathf.FloorToInt(dummy1.y);
 				dummy2.z = Mathf.FloorToInt(dummy1.z);
 
-				// Convert brightness value to float
-				float bright = blocks[chunk.CoordToIndex(dummy2.x, dummy2.y, dummy2.z)].brightness / 256f;
+				// Convert brightness value to float, interpolating between light updates
+				dummy3 = blocks[chunk.CoordToIndex(dummy2.x, dummy2.y, dummy2.z)];
+
+				float a = dummy3.lastBrightness / 256f;
+				float b = dummy3.brightness / 256f;
+
+				float bright = Mathf.Lerp(a, b, partialTime);
 
 				// Assign vertex color for block
 				allColors.Add(new Color(bright, bright, bright));
