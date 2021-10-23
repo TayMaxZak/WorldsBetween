@@ -14,6 +14,11 @@ public class Block
 	public byte colorTemp; // Lighting color temp of this block (0 is red-orange, 127 is white, 255 is blue-gray)
 	public byte lastColorTemp; // Lighting color temp of this block at the last light update
 
+	public byte needsUpdate; // 0 = no updating needed, nonzero = light changed and should be updated. greater number = higher priority
+	public byte updatePending; // 0 = no updating needed, nonzero = light changed and should be updated. greater number = higher priority
+
+	public int startIndex, endIndex; // Which vertices to search?
+
 	public Block(byte localX, byte localY, byte localZ, byte opacity)
 	{
 		this.localX = localX;
@@ -25,6 +30,9 @@ public class Block
 
 		colorTemp = 255;
 		lastColorTemp = colorTemp;
+
+		needsUpdate = 0;
+		updatePending = 0;
 
 		this.opacity = opacity;
 	}

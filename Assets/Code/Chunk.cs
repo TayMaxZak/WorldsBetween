@@ -13,7 +13,7 @@ public class Chunk : MonoBehaviour
 
 	private ChunkMesh chunkMesh;
 
-	private Queue toLightUpdate;
+	private Queue<Block> toLightUpdate = new Queue<Block>();
 
 	private void Awake()
 	{
@@ -46,6 +46,8 @@ public class Chunk : MonoBehaviour
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					blocks[x, y, z] = new Block(x, y, z, 255);
+
+					blocks[x, y, z].needsUpdate = 255;
 				}
 			}
 		}
@@ -57,37 +59,45 @@ public class Chunk : MonoBehaviour
 		light.UpdatePos();
 
 		// Set brightness
-		foreach (Block b in blocks)
+		foreach (Block block in blocks)
 		{
 			if (firstPass)
 			{
-				b.lastBrightness = b.brightness;
-				b.lastColorTemp = b.colorTemp;
+				block.lastBrightness = block.brightness;
+				block.lastColorTemp = block.colorTemp;
 			}
 
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
-			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
+			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + block.localX, position.y + block.localY, position.z + block.localZ));
 
 			// Add to existing brightness (if not first pass). Affect less if already bright
-			float oldBrightness = firstPass ? 0 : (b.brightness / 255f);
+			float oldBrightness = firstPass ? 0 : (block.brightness / 255f);
 			float newBrightness = oldBrightness + (1 - oldBrightness) * addBrightness;
 			newBrightness = Mathf.Clamp01(newBrightness);
 
-			b.brightness = (byte)(newBrightness * 255f);
+			block.brightness = (byte)(newBrightness * 255f);
 
 			// Affect color temp of blocks
-			float oldColorTemp = firstPass ? 0 : (-1 + 2 * b.colorTemp / 255f);
+			float oldColorTemp = firstPass ? 0 : (-1 + 2 * block.colorTemp / 255f);
 
 			float newColorTemp = oldColorTemp + addBrightness * light.colorTemp;
 			newColorTemp = Mathf.Clamp(newColorTemp, -1, 1);
 
-			b.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
+			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
+
+			// Add block to update queue / set dirty
+			if (block.updatePending == 0 && block.needsUpdate > 0)
+			{
+				block.updatePending = 255;
+
+				toLightUpdate.Enqueue(block);
+			}
 		}
 	}
 
 	public void FirstLight()
 	{
-		// Set brightness
+		// No blending
 		foreach (Block b in blocks)
 		{
 			b.lastBrightness = b.brightness;
@@ -97,8 +107,17 @@ public class Chunk : MonoBehaviour
 
 	public void UpdateLightVisuals()
 	{
-		// Apply vertex colors, interpolating between previous brightness and new brightness by partial time
-		chunkMesh.SetVertexColors(blocks, false);
+		Block update;
+
+		// Apply vertex colors to most important blocks to update
+		int count = toLightUpdate.Count;
+		for (int i = 0; i < Mathf.Min(count, 64); i++)
+		{
+			update = toLightUpdate.Dequeue();
+			chunkMesh.SetVertexColors(update);
+
+			update.needsUpdate = 0;
+		}		
 	}
 
 	public void ApplyCarver(Carver carver, bool firstPass)

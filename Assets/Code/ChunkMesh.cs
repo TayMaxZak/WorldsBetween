@@ -25,12 +25,85 @@ public class ChunkMesh : MonoBehaviour
 		filter.sharedMesh = filter.mesh;
 	}
 
-	public void SetVertexColors(Block[,,] blocks, bool doAll)
+	//public void SetVertexColors(Block[,,] blocks, bool doAll)
+	//{
+	//	Vector3 meshPos;
+	//	Vector3Int blockPos = new Vector3Int();
+
+	//	Block block;
+
+	//	// Remember mesh data
+	//	vertices = filter.sharedMesh.vertices;
+
+	//	Color[] colors = filter.sharedMesh.colors;
+	//	if (colors.Length == 0)
+	//		colors = new Color[vertices.Length];
+
+	//	// Loop through all vertices needed
+	//	int loopCounter = 0;
+	//	for (int o = 0; o < (doAll ? vertices.Length : Mathf.Min(4, vertices.Length)); o++)
+	//	{
+	//		loopCounter++;
+
+	//		int i = doAll ? o : Random.Range(0, vertices.Length);
+
+	//		// Randomly offset vertices for fun
+	//		vertices[i] += Random.insideUnitSphere * 0.01f;
+
+	//		// Find block to sample for brightness
+	//		meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
+	//		blockPos.x = Mathf.RoundToInt(meshPos.x);
+	//		blockPos.y = Mathf.RoundToInt(meshPos.y);
+	//		blockPos.z = Mathf.RoundToInt(meshPos.z);
+
+	//		// Block is in this chunk?
+	//		if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
+	//		{
+	//			block = blocks[blockPos.x, blockPos.y, blockPos.z];
+	//		}
+	//		// Block is outside this chunk?
+	//		else
+	//		{
+	//			block = World.GetBlockFor(blockPos + chunk.position + Vector3Int.one);
+
+	//			// Block is outside this world
+	//			if (block == null)
+	//			{
+	//				// Assign vertex color for block
+	//				colors[i] = borderColor;
+
+	//				continue;
+	//			}
+	//		}
+
+	//		// Convert brightness value to float
+	//		float lastBright = block.lastBrightness / 255f;
+	//		float newBright = block.brightness / 255f;
+
+	//		// Convert hue value to float
+	//		float lastHue = block.lastColorTemp / 255f;
+	//		float newHue = block.colorTemp / 255f;
+
+	//		// Assign lighting data: new brightness, last brightness, new hue, last hue
+	//		colors[i] = new Color(lastBright, newBright, lastHue, newHue);
+
+	//		//// Placeholder
+	//		//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) +  0.5f, RandomJitter(0.25f) + 0.5f);
+	//	}
+
+	//	// Apply vertex colors
+	//	// TODO: See what happens if it doesn't set the colors. Blending gone wrong?
+	//	Mesh mesh = filter.sharedMesh;
+	//	mesh.colors = colors;
+	//	mesh.vertices = vertices;
+
+	//	//Debug.Log(name + ": " + loopCounter);
+	//}
+
+	public void SetVertexColors(Block block)
 	{
 		Vector3 meshPos;
 		Vector3Int blockPos = new Vector3Int();
-
-		Block block;
 
 		// Remember mesh data
 		vertices = filter.sharedMesh.vertices;
@@ -41,14 +114,9 @@ public class ChunkMesh : MonoBehaviour
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
-		for (int o = 0; o < (doAll ? vertices.Length : Mathf.Min(4, vertices.Length)); o++)
+		for (int i = block.startIndex; i < block.endIndex; i++)
 		{
 			loopCounter++;
-
-			int i = doAll ? o : Random.Range(0, vertices.Length);
-
-			// Randomly offset vertices for fun
-			vertices[i] += Random.insideUnitSphere * 0.01f;
 
 			// Find block to sample for brightness
 			meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
@@ -56,26 +124,9 @@ public class ChunkMesh : MonoBehaviour
 			blockPos.y = Mathf.RoundToInt(meshPos.y);
 			blockPos.z = Mathf.RoundToInt(meshPos.z);
 
-			// Block is in this chunk?
-			if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
-			{
-				block = blocks[blockPos.x, blockPos.y, blockPos.z];
-			}
-			// Block is outside this chunk?
-			else
-			{
-				//block = World.GetBlockFor(blockPos + chunk.position + Vector3Int.one);
-				block = null;
-
-				// Block is outside this world
-				if (block == null)
-				{
-					// Assign vertex color for block
-					colors[i] = borderColor;
-
-					continue;
-				}
-			}
+			// Block matches?
+			if (!chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z)/* || chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z) != block*/)
+				continue;
 
 			// Convert brightness value to float
 			float lastBright = block.lastBrightness / 255f;
@@ -87,9 +138,6 @@ public class ChunkMesh : MonoBehaviour
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			colors[i] = new Color(lastBright, newBright, lastHue, newHue);
-
-			//// Placeholder
-			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) +  0.5f, RandomJitter(0.25f) + 0.5f);
 		}
 
 		// Apply vertex colors
@@ -133,6 +181,8 @@ public class ChunkMesh : MonoBehaviour
 					// Remember which vertex index this block starts at
 					int indexOffset = vertices.Count;
 
+					block.startIndex = indexOffset;
+
 					// Local position offset for this block
 					blockMeshOffset.x = x;
 					blockMeshOffset.y = y;
@@ -145,6 +195,8 @@ public class ChunkMesh : MonoBehaviour
 					{
 						vertices.Add(blockVert[i] + blockMeshOffset);
 					}
+
+					block.endIndex = vertices.Count;
 
 					// Add normals
 					blockNormals = blockMesh.normals;
