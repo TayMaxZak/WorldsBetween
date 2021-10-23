@@ -102,10 +102,12 @@ public class World : MonoBehaviour
 				if (lightSources[i].dirty)
 					lightSources[i].affectedChunks[j].MarkAllAsDirty();
 
-				lightSources[i].affectedChunks[j].AddLight(lightSources[i], i == 0);
+				bool lastPass = i == lightSources.Count - 1 || j == lightSources[i].affectedChunks.Count - 1;
+
+				lightSources[i].affectedChunks[j].AddLight(lightSources[i], i == 0, lastPass);
 
 				// Update after last light is added
-				if (i == lightSources.Count - 1 || j == lightSources[i].affectedChunks.Count - 1)
+				if (lastPass)
 				{
 					lightSources[i].affectedChunks[j].UpdateLightVisuals();
 				}

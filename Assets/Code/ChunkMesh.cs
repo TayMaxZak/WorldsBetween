@@ -119,14 +119,14 @@ public class ChunkMesh : MonoBehaviour
 			loopCounter++;
 
 			// Find block to sample for brightness
-			meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
+			meshPos = vertices[i];
 			blockPos.x = Mathf.RoundToInt(meshPos.x);
 			blockPos.y = Mathf.RoundToInt(meshPos.y);
 			blockPos.z = Mathf.RoundToInt(meshPos.z);
 
-			// Block matches?
-			if (!chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z)/* || chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z) != block*/)
-				continue;
+			//// Block matches?
+			//if (!chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z)/* || chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z) != block*/)
+			//	continue;
 
 			// Convert brightness value to float
 			float lastBright = block.brightness / 255f; // TODO: Fix
@@ -138,6 +138,9 @@ public class ChunkMesh : MonoBehaviour
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			colors[i] = new Color(lastBright, newBright, lastHue, newHue);
+
+			//// Placeholder
+			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) + 0.5f, RandomJitter(0.25f) + 0.5f);
 		}
 
 		// Apply vertex colors

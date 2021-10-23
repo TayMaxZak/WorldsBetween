@@ -60,7 +60,7 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	public void AddLight(LightSource light, bool firstPass)
+	public void AddLight(LightSource light, bool firstPass, bool lastPass)
 	{
 		// Set brightness
 		foreach (Block block in blocks)
@@ -93,7 +93,7 @@ public class Chunk : MonoBehaviour
 			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 
 			// Add block to update queue / set dirty
-			if (block.needsUpdate > 0)
+			if (lastPass && block.needsUpdate > 0)
 			{
 				block.updatePending = 255;
 
