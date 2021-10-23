@@ -22,8 +22,19 @@ public class LightSource : MonoBehaviour
 		worldZ = Mathf.RoundToInt(transform.position.z);
 
 		affectedChunks.Clear();
-		Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
-		if (chunk)
-			affectedChunks.Add(chunk);
+
+		int mult = 8;
+		for (int x = -1; x < 3; x++)
+		{
+			for (int y = -1; y < 3; y++)
+			{
+				for (int z = -1; z < 3; z++)
+				{
+					Chunk chunk = World.GetChunkFor(worldX + x * mult, worldY + y * mult, worldZ + z * mult);
+					if (chunk && !affectedChunks.Contains(chunk))
+						affectedChunks.Add(chunk);
+				}
+			}
+		}
 	}
 }

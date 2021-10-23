@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 public class Chunk : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class Chunk : MonoBehaviour
 
 	private ChunkMesh chunkMesh;
 
-	private Queue<Block> toLightUpdate = new Queue<Block>();
+	private SimplePriorityQueue<Block> toLightUpdate = new SimplePriorityQueue<Block>();
 
 	private void Awake()
 	{
@@ -70,6 +71,9 @@ public class Chunk : MonoBehaviour
 				block.lastColorTemp = block.colorTemp;
 			}
 
+			if (block.updatePending > 0)
+				continue;
+
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
 			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + block.localX, position.y + block.localY, position.z + block.localZ));
 
@@ -89,11 +93,11 @@ public class Chunk : MonoBehaviour
 			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 
 			// Add block to update queue / set dirty
-			if (block.updatePending == 0 && block.needsUpdate > 0)
+			if (block.needsUpdate > 0)
 			{
 				block.updatePending = 255;
 
-				toLightUpdate.Enqueue(block);
+				toLightUpdate.Enqueue(block, 1 - newBrightness);
 			}
 		}
 	}

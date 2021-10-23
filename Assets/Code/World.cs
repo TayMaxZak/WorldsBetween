@@ -93,15 +93,14 @@ public class World : MonoBehaviour
 		// Apply lights
 		for (int i = 0; i < lightSources.Count; i++)
 		{
-			lightSources[i].UpdatePos();
+			if (lightSources[i].dirty)
+				lightSources[i].UpdatePos();
 
 			for (int j = 0; j < lightSources[i].affectedChunks.Count; j++)
 			{
 				// Mark chunks as dirty
 				if (lightSources[i].dirty)
-				{
 					lightSources[i].affectedChunks[j].MarkAllAsDirty();
-				}
 
 				lightSources[i].affectedChunks[j].AddLight(lightSources[i], i == 0);
 
@@ -111,6 +110,9 @@ public class World : MonoBehaviour
 					lightSources[i].affectedChunks[j].UpdateLightVisuals();
 				}
 			}
+
+			if (lightSources[i].dirty)
+				lightSources[i].dirty = false;
 		}
 	}
 
