@@ -20,8 +20,6 @@ public class Chunk : MonoBehaviour
 		// Create blocks
 		CreateBlocks();
 
-		CreateDummyMesh();
-
 		// Init chunk mesh
 		chunkMesh = GetComponent<ChunkMesh>();
 		chunkMesh.Init(this);
@@ -49,14 +47,6 @@ public class Chunk : MonoBehaviour
 				}
 			}
 		}
-	}
-
-	public void CreateDummyMesh()
-	{
-		MeshFilter dummy1 = GetComponent<ChunkMesh>().chunkMeshPrefab;
-		MeshFilter dummy2;
-
-		dummy2 = Instantiate(dummy1, new Vector3(position.x, position.y, position.z), Quaternion.identity, transform);
 	}
 
 	public void AddLight(LightSource light, bool firstPass)
@@ -133,8 +123,13 @@ public class Chunk : MonoBehaviour
 		return blocks[x, y, z];
 	}
 
-	private void OnDrawGizmos()
+	public int GetChunkSize()
 	{
-		Gizmos.DrawWireCube(transform.position + chunkSize / 2 * Vector3.one, chunkSize * Vector3.one);
+		return chunkSize;
+	}
+
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
 	}
 }

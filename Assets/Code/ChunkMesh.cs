@@ -8,10 +8,9 @@ public class ChunkMesh : MonoBehaviour
 
 	private Chunk chunk;
 
-	public MeshFilter chunkMeshPrefab;
-	public MeshFilter filter;
+	private MeshFilter filter;
 
-	public List<Mesh> blockMeshes;
+	public Mesh blockMesh;
 
 	public void Init(Chunk chunk)
 	{
@@ -31,7 +30,7 @@ public class ChunkMesh : MonoBehaviour
 		Vector3 meshPos;
 		Vector3Int blockPos = new Vector3Int();
 
-		Block block;	
+		Block block;
 		
 		// Go through chunk mesh
 		vertices = filter.sharedMesh.vertices;
@@ -88,44 +87,62 @@ public class ChunkMesh : MonoBehaviour
 
 	public void SetOpacity(Block[,,] blocks)
 	{
-		float vertexOffset = 0;
-
-		Vector3 meshPos;
-		Vector3Int blockPos = new Vector3Int();
-
 		Block block;
 
 		Mesh newMesh = new Mesh();
 
-		// Find block to sample for opacity
-		meshPos = filter.transform.localPosition;
-		blockPos.x = Mathf.RoundToInt(meshPos.x + vertexOffset);
-		blockPos.y = Mathf.RoundToInt(meshPos.y + vertexOffset);
-		blockPos.z = Mathf.RoundToInt(meshPos.z + vertexOffset);
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
 
-		// Block is in this chunk?
-		if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
-		{
-			block = blocks[blockPos.x, blockPos.y, blockPos.z];
-		}
-		// Block is outside this chunk?
-		else
-		{
-			block = World.GetBlockFor(blockPos + chunk.position);
+		Vector3[] blockVert;
+		int[] blockTri;
 
-			// Block is outside this world
-			if (block == null)
+		Vector3 blockMeshOffset;
+
+		int chunkSize = chunk.GetChunkSize();
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
 			{
-				filter.mesh = newMesh;
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					block = blocks[x, y, z];
 
-				return;
+					// Empty block
+					if (block.opacity / 255f < 0.5f)
+						continue;
+
+					// Remember which vertex index this block starts at
+					int indexOffset = vertices.Count;
+
+					// Local position offset for this block
+					blockMeshOffset.x = x;
+					blockMeshOffset.y = y;
+					blockMeshOffset.z = z;
+
+					// Add vertices
+					blockVert = blockMesh.vertices;
+
+					for (int i = 0; i < blockVert.Length; i++)
+					{
+						vertices.Add(blockVert[i] + blockMeshOffset);
+					}
+
+					// Add triangles
+					blockTri = blockMesh.triangles;
+
+					for (int i = 0; i < blockTri.Length; i++)
+					{
+						triangles.Add(blockTri[i] + indexOffset);
+					}
+				}
 			}
 		}
 
-		if (block.opacity / 255f < 0.5f)
-			filter.mesh = newMesh;
-		else
-			filter.gameObject.SetActive(true);
+		newMesh.vertices = vertices.ToArray();
+		newMesh.triangles = triangles.ToArray();
+
+		filter.mesh = newMesh;
 	}
 
 	private static float RandomJitter(float mult)
