@@ -53,20 +53,10 @@ public class Chunk : MonoBehaviour
 
 	public void CreateDummyMesh()
 	{
-		MeshFilter dummy1 = GetComponent<ChunkMesh>().dummyMesh;
+		MeshFilter dummy1 = GetComponent<ChunkMesh>().chunkMeshPrefab;
 		MeshFilter dummy2;
 
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					dummy2 = Instantiate(dummy1, new Vector3(position.x + x, position.y + y, position.z + z), Quaternion.identity, transform);
-					dummy2.name = x + ", " + y + ", " + z;
-				}
-			}
-		}
+		dummy2 = Instantiate(dummy1, new Vector3(position.x, position.y, position.z), Quaternion.identity, transform);
 	}
 
 	public void AddLight(LightSource light, bool firstPass)

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0, z: 0}
-  chunkSize: 8
+  chunkSize: 1
 --- !u!114 &6042555085825754432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,4 +58,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db42d2bd62c5d894baefedcbc096f2e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dummyMesh: {fileID: 3928676796001349809, guid: d443da7b029299648af1e5d22218b6cd, type: 3}
+  chunkMeshPrefab: {fileID: 3928676796001349809, guid: 0690157deb7de724ca921858ccc42350, type: 3}
+  filter: {fileID: 0}
+  blockMeshes: []
