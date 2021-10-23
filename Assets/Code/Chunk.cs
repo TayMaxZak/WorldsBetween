@@ -15,6 +15,7 @@ public class Chunk : MonoBehaviour
 	private ChunkMesh chunkMesh;
 
 	private SimplePriorityQueue<Block> toLightUpdate = new SimplePriorityQueue<Block>();
+	private Queue<Block> afterLightUpdate = new Queue<Block>();
 
 	public int lightsToHandle = 0;
 
@@ -61,8 +62,6 @@ public class Chunk : MonoBehaviour
 			block.needsUpdate = 255;
 			block.updatePending = 0;
 		}
-
-		//toLightUpdate.Clear();
 	}
 
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
@@ -70,12 +69,6 @@ public class Chunk : MonoBehaviour
 		// Set brightness
 		foreach (Block block in blocks)
 		{
-			//if (firstPass)
-			//{
-			//	block.lastBrightness = block.brightness;
-			//	block.lastColorTemp = block.colorTemp;
-			//}
-
 			if (block.updatePending > 0)
 				continue;
 
@@ -97,7 +90,7 @@ public class Chunk : MonoBehaviour
 
 			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 
-			// Add block to update queue / set dirty
+			// Add block to update queue
 			if (lastPass && block.needsUpdate > 0)
 			{
 				block.updatePending = 255;
@@ -109,17 +102,33 @@ public class Chunk : MonoBehaviour
 
 	public void UpdateLightVisuals()
 	{
-		Block update;
+		// Handle previously dequeued blocks
+		while (afterLightUpdate.Count > 0)
+		{
+			Block block = afterLightUpdate.Dequeue();
+
+			block.lastBrightness = block.brightness;
+			block.lastColorTemp = block.colorTemp;
+
+			chunkMesh.SetVertexColors(block);
+		}
+
+		Block toUpdate;
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 16); i++)
+		for (int i = 0; i < Mathf.Min(count, 2); i++)
 		{
-			update = toLightUpdate.Dequeue();
-			chunkMesh.SetVertexColors(update);
+			toUpdate = toLightUpdate.Dequeue();
+			chunkMesh.SetVertexColors(toUpdate);
 
-			update.needsUpdate = 0;
+			toUpdate.needsUpdate = 0;
+			toUpdate.updatePending = 0;
+
+			afterLightUpdate.Enqueue(toUpdate);
 		}
+
+		chunkMesh.ApplyVertexColors();
 	}
 
 	public void ApplyCarver(Carver carver, bool firstPass)

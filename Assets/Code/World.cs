@@ -110,23 +110,25 @@ public class World : MonoBehaviour
 
 				// Mark chunks as dirty
 				if (lightSources[i].dirty)
+				{
 					lightSources[i].affectedChunks[j].MarkAllAsDirty();
 
-				// Consider this chunk handled
-				lightSources[i].affectedChunks[j].lightsToHandle--;
+					// Consider this chunk handled
+					lightSources[i].affectedChunks[j].lightsToHandle--;
 
-				// Last pass on this chunk. Begin applying vertex colors
-				bool lastPass = lightSources[i].affectedChunks[j].lightsToHandle == 0;
+					// Last pass on this chunk. Begin applying vertex colors
+					bool lastPass = lightSources[i].affectedChunks[j].lightsToHandle == 0;
 
-				lightSources[i].affectedChunks[j].AddLight(lightSources[i], firstPass, lastPass);	
+					lightSources[i].affectedChunks[j].AddLight(lightSources[i], firstPass, lastPass);
+				}
 			}
-
-			foreach (Chunk chunk in chunksToLightUpdate)
-				chunk.UpdateLightVisuals();
 
 			if (lightSources[i].dirty)
 				lightSources[i].dirty = false;
 		}
+
+		foreach (Chunk chunk in chunksToLightUpdate)
+			chunk.UpdateLightVisuals();
 	}
 
 	public static Chunk GetChunkFor(int x, int y, int z)
