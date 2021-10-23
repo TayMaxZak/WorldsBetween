@@ -109,7 +109,7 @@ public class Chunk : MonoBehaviour
 
 	public void UpdateOpacityVisuals()
 	{
-		chunkMesh.SetOpacity(blocks);
+		chunkMesh.GenerateMesh(blocks);
 	}
 
 	// Utility
