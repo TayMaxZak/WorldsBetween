@@ -87,10 +87,12 @@ public class ChunkMesh : MonoBehaviour
 		List<Vector3> vertices = new List<Vector3>();
 		List<int> triangles = new List<int>();
 		List<Vector3> normals = new List<Vector3>();
+		List<Vector2> uv = new List<Vector2>();
 
 		Vector3[] blockVert;
 		Vector3[] blockNormals;
 		int[] blockTri;
+		Vector2[] blockUv;
 
 		Vector3 blockMeshOffset;
 
@@ -142,6 +144,14 @@ public class ChunkMesh : MonoBehaviour
 					{
 						triangles.Add(blockTri[i] + indexOffset);
 					}
+
+					// Add UVs
+					blockUv = blockMesh.uv;
+
+					for (int i = 0; i < blockUv.Length; i++)
+					{
+						uv.Add(blockUv[i]);
+					}
 				}
 			}
 		}
@@ -149,6 +159,7 @@ public class ChunkMesh : MonoBehaviour
 		newMesh.vertices = vertices.ToArray();
 		newMesh.triangles = triangles.ToArray();
 		newMesh.normals = normals.ToArray();
+		newMesh.uv = uv.ToArray();
 
 		filter.mesh = newMesh;
 

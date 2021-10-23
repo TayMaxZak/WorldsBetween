@@ -117,7 +117,7 @@ public class Chunk : MonoBehaviour
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 2); i++)
+		for (int i = 0; i < Mathf.Min(count, 256); i++)
 		{
 			toUpdate = toLightUpdate.Dequeue();
 			chunkMesh.SetVertexColors(toUpdate);
