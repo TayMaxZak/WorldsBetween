@@ -64,7 +64,7 @@ public class Chunk : MonoBehaviour
 			}
 
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
-			float addBrightness = light.brightness / Mathf.Max(1, World.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
+			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + b.localX, position.y + b.localY, position.z + b.localZ));
 
 			// Add to existing brightness (if not first pass). Affect less if already bright
 			float oldBrightness = firstPass ? 0 : (b.brightness / 255f);
@@ -83,10 +83,22 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
+	public void FirstLight()
+	{
+		// Set brightness
+		foreach (Block b in blocks)
+		{
+			b.lastBrightness = b.brightness;
+			b.lastColorTemp = b.colorTemp;
+		}
+
+		chunkMesh.SetVertexColors(blocks, true);
+	}
+
 	public void UpdateLightVisuals()
 	{
 		// Apply vertex colors, interpolating between previous brightness and new brightness by partial time
-		chunkMesh.SetVertexColors(blocks);
+		chunkMesh.SetVertexColors(blocks, false);
 	}
 
 	public void ApplyCarver(Carver carver, bool firstPass)
@@ -97,7 +109,7 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					float carve = carver.strength / World.DistanceSqr(carver.worldX, carver.worldY, carver.worldZ, position.x + x, position.y + y, position.z + z);
+					float carve = carver.strength / Utils.DistanceSqr(carver.worldX, carver.worldY, carver.worldZ, position.x + x, position.y + y, position.z + z);
 
 					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f) - carve;
 
@@ -130,6 +142,16 @@ public class Chunk : MonoBehaviour
 
 	private void OnDrawGizmosSelected()
 	{
+		Gizmos.color = Utils.colorOrange;
+
 		Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Utils.colorBlue;
+
+		if (!Application.isPlaying)
+			Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
 	}
 }

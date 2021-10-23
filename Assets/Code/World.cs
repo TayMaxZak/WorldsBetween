@@ -12,6 +12,8 @@ public class World : MonoBehaviour
 	private Transform lightRoot = null;
 	private List<LightSource> lightSources;
 
+	private bool doFirstLight = true;
+
 	[Header("Generators")]
 	[SerializeField]
 	private Transform carverRoot = null;
@@ -42,6 +44,8 @@ public class World : MonoBehaviour
 	private void Start()
 	{
 		Generate();
+
+		StartCoroutine(FirstLight());
 	}
 
 	private void Generate()
@@ -61,6 +65,30 @@ public class World : MonoBehaviour
 
 	private void Update()
 	{
+		if (!doFirstLight)
+			CalculateLighting(false);
+	}
+
+	private IEnumerator FirstLight()
+	{
+		int startTime = System.DateTime.Now.Millisecond;
+		Debug.Log("[WORLD] Started calculating light...");
+
+		yield return new WaitForSeconds(1);
+
+		CalculateLighting(true);
+
+		int endTime = System.DateTime.Now.Millisecond;
+		Debug.Log("[WORLD] Finished calculating in " + ((-1 + endTime - startTime) / 1000f) + "s");
+
+		doFirstLight = false;
+	}
+
+	private void CalculateLighting(bool firstLight)
+	{
+		if (doFirstLight && !firstLight)
+			return;
+
 		lightUpdateTimer.Increment(Time.deltaTime);
 
 		// Is this a major light update?
@@ -84,7 +112,18 @@ public class World : MonoBehaviour
 			{
 				chunk.AddLight(lightSources[i], i == 0);
 
-				chunk.UpdateLightVisuals();
+				// Update after last light is added
+				if (i == lightSources.Count - 1)
+				{
+					if (!firstLight)
+					{
+						chunk.UpdateLightVisuals();
+					}
+					else
+					{
+						chunk.FirstLight();
+					}
+				}
 			}
 		}
 	}
@@ -102,11 +141,5 @@ public class World : MonoBehaviour
 		}
 
 		return null;
-	}
-
-	public static int DistanceSqr(int xa, int ya, int za, int xb, int yb, int zb)
-	{
-		//return (int)Vector3.SqrMagnitude(new Vector3(xa - xb, ya - yb, za - zb));
-		return (xa - xb) * (xa - xb) + (ya - yb) * (ya - yb) + (za - zb) * (za - zb);
 	}
 }

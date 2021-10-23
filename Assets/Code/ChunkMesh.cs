@@ -12,6 +12,9 @@ public class ChunkMesh : MonoBehaviour
 
 	public Mesh blockMesh;
 
+	// Remember
+	Vector3[] vertices;
+
 	public void Init(Chunk chunk)
 	{
 		this.chunk = chunk;
@@ -22,67 +25,71 @@ public class ChunkMesh : MonoBehaviour
 		filter.sharedMesh = filter.mesh;
 	}
 
-	public void SetVertexColors(Block[,,] blocks)
+	public void SetVertexColors(Block[,,] blocks, bool firstLight)
 	{
-		Vector3[] vertices;
-		Color[] colors;
-
 		Vector3 meshPos;
 		Vector3Int blockPos = new Vector3Int();
 
 		Block block;
-		
-		// Go through chunk mesh
-		vertices = filter.sharedMesh.vertices;
-		colors = new Color[vertices.Length];
 
-		for (int i = 0; i < vertices.Length; i++)
+		// Remember mesh data
+		vertices = filter.sharedMesh.vertices;
+
+		Color[] colors = filter.sharedMesh.colors;
+		if (colors.Length == 0)
+			colors = new Color[vertices.Length];
+
+		// Loop through all vertices needed
+		int loopCounter = 0;
+		for (int o = 0; o < (firstLight ? vertices.Length : 4); o++)
 		{
+			loopCounter++;
+
+			int i = firstLight ? o : Random.Range(0, vertices.Length);
+
 			// Randomly offset vertices for fun
 			vertices[i] += Random.insideUnitSphere * 0.01f;
 
-			//float jitter = 0.0f;
+			// Find block to sample for brightness
+			meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
+			blockPos.x = Mathf.RoundToInt(meshPos.x);
+			blockPos.y = Mathf.RoundToInt(meshPos.y);
+			blockPos.z = Mathf.RoundToInt(meshPos.z);
 
-			//// Find block to sample for brightness
-			//meshPos = filter.transform.localPosition + filter.sharedMesh.vertices[i];
-			//blockPos.x = Mathf.RoundToInt(meshPos.x + RandomJitter(jitter));
-			//blockPos.y = Mathf.RoundToInt(meshPos.y + RandomJitter(jitter));
-			//blockPos.z = Mathf.RoundToInt(meshPos.z + RandomJitter(jitter));
+			// Block is in this chunk?
+			if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
+			{
+				block = blocks[blockPos.x, blockPos.y, blockPos.z];
+			}
+			// Block is outside this chunk?
+			else
+			{
+				//block = World.GetBlockFor(blockPos + chunk.position + Vector3Int.one);
+				block = null;
 
-			//// Block is in this chunk?
-			//if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
-			//{
-			//	block = blocks[blockPos.x, blockPos.y, blockPos.z];
-			//}
-			//// Block is outside this chunk?
-			//else
-			//{
-			//	//block = World.GetBlockFor(blockPos + chunk.position + Vector3Int.one);
-			//	block = null;
+				// Block is outside this world
+				if (block == null)
+				{
+					// Assign vertex color for block
+					colors[i] = borderColor;
 
-			//	// Block is outside this world
-			//	if (block == null)
-			//	{
-			//		// Assign vertex color for block
-			//		colors[i] = borderColor;
+					continue;
+				}
+			}
 
-			//		continue;
-			//	}
-			//}
+			// Convert brightness value to float
+			float lastBright = block.lastBrightness / 255f;
+			float newBright = block.brightness / 255f;
 
-			//// Convert brightness value to float
-			//float lastBright = block.lastBrightness / 255f;
-			//float newBright = block.brightness / 255f;
-
-			//// Convert hue value to float
-			//float lastHue = block.lastColorTemp / 255f;
-			//float newHue = block.colorTemp / 255f;
+			// Convert hue value to float
+			float lastHue = block.lastColorTemp / 255f;
+			float newHue = block.colorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
-			// Saturation is affected by high brightness; very bright = not saturated
-			//colors[i] = new Color(lastBright, newBright, lastHue, newHue);
+			colors[i] = new Color(lastBright, newBright, lastHue, newHue);
 
-			colors[i] = new Color(RandomJitter(0.0f) + 0.0f, RandomJitter(0.0f) + 0.0f, RandomJitter(0.25f) +  0.5f, RandomJitter(0.25f) + 0.5f);
+			//// Placeholder
+			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) +  0.5f, RandomJitter(0.25f) + 0.5f);
 		}
 
 		// Apply vertex colors
@@ -91,7 +98,7 @@ public class ChunkMesh : MonoBehaviour
 		mesh.colors = colors;
 		mesh.vertices = vertices;
 
-		Debug.Log(name + ": " + vertices.Length);
+		//Debug.Log(name + ": " + loopCounter);
 	}
 
 	public void GenerateMesh(Block[,,] blocks)
