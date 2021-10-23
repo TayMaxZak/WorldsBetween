@@ -160,9 +160,9 @@ public class World : MonoBehaviour
 		int scale = 8;
 
 		Instance.chunks.TryGetValue(new Vector3Int(
-			(x / scale) * scale,
-			(y / scale) * scale,
-			(z / scale) * scale),
+			((x - scale / 2) / scale) * scale,
+			((y - scale / 2) / scale) * scale,
+			((z - scale / 2) / scale) * scale),
 		out Chunk chunk);
 
 		return chunk;
@@ -170,13 +170,7 @@ public class World : MonoBehaviour
 
 	public static Block GetBlockFor(Vector3Int pos)
 	{
-		int scale = 8;
-
-		Instance.chunks.TryGetValue(new Vector3Int(
-			(pos.x / scale) * scale,
-			(pos.y / scale) * scale,
-			(pos.z / scale) * scale),
-		out Chunk chunk);
+		Chunk chunk = GetChunkFor(pos.x, pos.y, pos.z);
 
 		if (chunk == null)
 			return null;

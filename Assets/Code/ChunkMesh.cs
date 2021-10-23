@@ -170,7 +170,7 @@ public class ChunkMesh : MonoBehaviour
 		for (int i = 0; i < colors.Length; i++)
 			colors[i] = baseColor;
 
-		ApplyVertexColors();
+		//ApplyVertexColors();
 	}
 
 	private static float RandomJitter(float mult)
