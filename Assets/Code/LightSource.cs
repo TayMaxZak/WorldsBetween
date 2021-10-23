@@ -32,7 +32,11 @@ public class LightSource : MonoBehaviour
 				{
 					Chunk chunk = World.GetChunkFor(worldX + x * mult, worldY + y * mult, worldZ + z * mult);
 					if (chunk && !affectedChunks.Contains(chunk))
+					{
 						affectedChunks.Add(chunk);
+
+						chunk.lightsToHandle++;
+					}
 				}
 			}
 		}

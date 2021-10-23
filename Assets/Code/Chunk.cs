@@ -16,6 +16,8 @@ public class Chunk : MonoBehaviour
 
 	private SimplePriorityQueue<Block> toLightUpdate = new SimplePriorityQueue<Block>();
 
+	public int lightsToHandle = 0;
+
 	private void Awake()
 	{
 		UpdatePos();
@@ -57,7 +59,10 @@ public class Chunk : MonoBehaviour
 		foreach (Block block in blocks)
 		{
 			block.needsUpdate = 255;
+			block.updatePending = 0;
 		}
+
+		//toLightUpdate.Clear();
 	}
 
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
@@ -65,11 +70,11 @@ public class Chunk : MonoBehaviour
 		// Set brightness
 		foreach (Block block in blocks)
 		{
-			if (firstPass)
-			{
-				block.lastBrightness = block.brightness;
-				block.lastColorTemp = block.colorTemp;
-			}
+			//if (firstPass)
+			//{
+			//	block.lastBrightness = block.brightness;
+			//	block.lastColorTemp = block.colorTemp;
+			//}
 
 			if (block.updatePending > 0)
 				continue;
@@ -102,23 +107,13 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	public void FirstLight()
-	{
-		// No blending
-		foreach (Block b in blocks)
-		{
-			b.lastBrightness = b.brightness;
-			b.lastColorTemp = b.colorTemp;
-		}
-	}
-
 	public void UpdateLightVisuals()
 	{
 		Block update;
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 4); i++)
+		for (int i = 0; i < Mathf.Min(count, 16); i++)
 		{
 			update = toLightUpdate.Dequeue();
 			chunkMesh.SetVertexColors(update);

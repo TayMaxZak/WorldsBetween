@@ -160,11 +160,11 @@ public class ChunkMesh : MonoBehaviour
 				adj = chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z);
 
 			// Convert brightness value to float
-			float lastBright = adj.brightness / 255f; // TODO: Fix
+			float lastBright = adj.lastBrightness / 255f; // TODO: Fix
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.colorTemp / 255f; // TODO: Fix
+			float lastHue = adj.lastColorTemp / 255f; // TODO: Fix
 			float newHue = adj.colorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue

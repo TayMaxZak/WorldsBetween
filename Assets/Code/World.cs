@@ -24,6 +24,8 @@ public class World : MonoBehaviour
 
 	private static World Instance;
 
+	public List<Chunk> chunksToLightUpdate = new List<Chunk>();
+
 	private void Awake()
 	{
 		if (Instance)
@@ -90,6 +92,8 @@ public class World : MonoBehaviour
 		if (!doLightUpdate)
 			return;
 
+		chunksToLightUpdate.Clear();
+
 		// Apply lights
 		for (int i = 0; i < lightSources.Count; i++)
 		{
@@ -98,18 +102,27 @@ public class World : MonoBehaviour
 
 			for (int j = 0; j < lightSources[i].affectedChunks.Count; j++)
 			{
+				// First pass on this chunk. Reset "canvas" and apply light from scratch
+				bool firstPass = !chunksToLightUpdate.Contains(lightSources[i].affectedChunks[j]);
+
+				if (firstPass)
+					chunksToLightUpdate.Add(lightSources[i].affectedChunks[j]);
+
 				// Mark chunks as dirty
 				if (lightSources[i].dirty)
 					lightSources[i].affectedChunks[j].MarkAllAsDirty();
 
-				bool lastPass = i == lightSources.Count - 1 || j == lightSources[i].affectedChunks.Count - 1;
+				// Consider this chunk handled
+				lightSources[i].affectedChunks[j].lightsToHandle--;
 
-				lightSources[i].affectedChunks[j].AddLight(lightSources[i], i == 0, lastPass);
+				// Last pass on this chunk. Begin applying vertex colors
+				bool lastPass = lightSources[i].affectedChunks[j].lightsToHandle == 0;
 
-				// Update after last light is added
-				if (lastPass)
-					lightSources[i].affectedChunks[j].UpdateLightVisuals();
+				lightSources[i].affectedChunks[j].AddLight(lightSources[i], firstPass, lastPass);	
 			}
+
+			foreach (Chunk chunk in chunksToLightUpdate)
+				chunk.UpdateLightVisuals();
 
 			if (lightSources[i].dirty)
 				lightSources[i].dirty = false;

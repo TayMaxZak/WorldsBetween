@@ -478,15 +478,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 23.77
+      value: 31.92
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -20.99
+      value: -10.9
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 22.35
+      value: 29.12
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2621,9 +2621,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightUpdateTimer:
-    maxTime: 0.1
+    maxTime: 1
   lightRoot: {fileID: 295908289}
   carverRoot: {fileID: 1065077658}
+  chunksToLightUpdate: []
 --- !u!4 &1026022012
 Transform:
   m_ObjectHideFlags: 0
@@ -3927,7 +3928,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 415612272315696616, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_RootOrder
@@ -3983,7 +3984,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: brightness
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
@@ -5666,7 +5667,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 415612272315696616, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_RootOrder
