@@ -14,16 +14,16 @@ public class Block
 	public byte colorTemp; // Lighting color temp of this block (0 is red-orange, 127 is white, 255 is blue-gray)
 	public byte lastColorTemp; // Lighting color temp of this block at the last light update
 
-	public Block(byte localX, byte localY, byte localZ, byte brightness, byte opacity)
+	public Block(byte localX, byte localY, byte localZ, byte opacity)
 	{
 		this.localX = localX;
 		this.localY = localY;
 		this.localZ = localZ;
 
-		this.brightness = brightness;
+		brightness = 0;
 		lastBrightness = brightness;
 
-		colorTemp = 127;
+		colorTemp = 255;
 		lastColorTemp = colorTemp;
 
 		this.opacity = opacity;

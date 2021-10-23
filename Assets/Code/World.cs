@@ -12,7 +12,7 @@ public class World : MonoBehaviour
 	private Transform lightRoot = null;
 	private List<LightSource> lightSources;
 
-	private bool doFirstLight = true;
+	private bool firstLightPass = true;
 
 	[Header("Generators")]
 	[SerializeField]
@@ -45,7 +45,8 @@ public class World : MonoBehaviour
 	{
 		Generate();
 
-		StartCoroutine(FirstLight());
+		CalculateLighting();
+		firstLightPass = false;
 	}
 
 	private void Generate()
@@ -65,30 +66,14 @@ public class World : MonoBehaviour
 
 	private void Update()
 	{
-		if (!doFirstLight)
-			CalculateLighting(false);
-	}
-
-	private IEnumerator FirstLight()
-	{
-		int startTime = System.DateTime.Now.Millisecond;
-		Debug.Log("[WORLD] Started calculating light...");
-
-		yield return new WaitForSeconds(1);
-
-		CalculateLighting(true);
-
-		int endTime = System.DateTime.Now.Millisecond;
-		Debug.Log("[WORLD] Finished calculating in " + ((-1 + endTime - startTime) / 1000f) + "s");
-
-		doFirstLight = false;
-	}
-
-	private void CalculateLighting(bool firstLight)
-	{
-		if (doFirstLight && !firstLight)
+		if (firstLightPass)
 			return;
 
+		CalculateLighting();
+	}
+
+	private void CalculateLighting()
+	{
 		lightUpdateTimer.Increment(Time.deltaTime);
 
 		// Is this a major light update?
@@ -115,14 +100,7 @@ public class World : MonoBehaviour
 				// Update after last light is added
 				if (i == lightSources.Count - 1)
 				{
-					if (!firstLight)
-					{
-						chunk.UpdateLightVisuals();
-					}
-					else
-					{
-						chunk.FirstLight();
-					}
+					chunk.UpdateLightVisuals();
 				}
 			}
 		}

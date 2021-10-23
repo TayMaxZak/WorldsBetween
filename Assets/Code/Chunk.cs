@@ -13,6 +13,8 @@ public class Chunk : MonoBehaviour
 
 	private ChunkMesh chunkMesh;
 
+	private Queue toLightUpdate;
+
 	private void Awake()
 	{
 		UpdatePos();
@@ -43,7 +45,7 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					blocks[x, y, z] = new Block(x, y, z, 127, 255);
+					blocks[x, y, z] = new Block(x, y, z, 255);
 				}
 			}
 		}
@@ -91,8 +93,6 @@ public class Chunk : MonoBehaviour
 			b.lastBrightness = b.brightness;
 			b.lastColorTemp = b.colorTemp;
 		}
-
-		chunkMesh.SetVertexColors(blocks, true);
 	}
 
 	public void UpdateLightVisuals()

@@ -25,7 +25,7 @@ public class ChunkMesh : MonoBehaviour
 		filter.sharedMesh = filter.mesh;
 	}
 
-	public void SetVertexColors(Block[,,] blocks, bool firstLight)
+	public void SetVertexColors(Block[,,] blocks, bool doAll)
 	{
 		Vector3 meshPos;
 		Vector3Int blockPos = new Vector3Int();
@@ -41,11 +41,11 @@ public class ChunkMesh : MonoBehaviour
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
-		for (int o = 0; o < (firstLight ? vertices.Length : 4); o++)
+		for (int o = 0; o < (doAll ? vertices.Length : Mathf.Min(4, vertices.Length)); o++)
 		{
 			loopCounter++;
 
-			int i = firstLight ? o : Random.Range(0, vertices.Length);
+			int i = doAll ? o : Random.Range(0, vertices.Length);
 
 			// Randomly offset vertices for fun
 			vertices[i] += Random.insideUnitSphere * 0.01f;
