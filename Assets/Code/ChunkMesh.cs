@@ -102,6 +102,10 @@ public class ChunkMesh : MonoBehaviour
 
 	public void SetVertexColors(Block block)
 	{
+		float offset = 0.5f;
+
+		Block adj;
+
 		Vector3 meshPos;
 		Vector3Int blockPos = new Vector3Int();
 
@@ -118,23 +122,50 @@ public class ChunkMesh : MonoBehaviour
 		{
 			loopCounter++;
 
-			// Find block to sample for brightness
-			meshPos = vertices[i];
-			blockPos.x = Mathf.RoundToInt(meshPos.x);
-			blockPos.y = Mathf.RoundToInt(meshPos.y);
-			blockPos.z = Mathf.RoundToInt(meshPos.z);
+			//float finalBrightness = block.brightness;
+			//float finalHue = block.colorTemp;
 
-			//// Block matches?
-			//if (!chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z)/* || chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z) != block*/)
-			//	continue;
+			//float weight = 0.2f;
+
+			//for (int j = -1; j < 3; j++)
+			//{
+			//	for (int k = -1; k < 3; k++)
+			//	{
+			//		// Find adjacent blocks
+			//		meshPos = vertices[i];
+			//		blockPos.x = Mathf.RoundToInt(meshPos.x + offset);
+			//		blockPos.y = Mathf.RoundToInt(meshPos.y + offset);
+			//		blockPos.z = Mathf.RoundToInt(meshPos.z + offset);
+
+			//		adj = block;
+
+			//		// Block matches?
+			//		if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
+			//		{
+			//			adj = chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z);
+			//		}
+			//	}
+			//}
+
+			// Find actual block to sample for brightness
+			meshPos = vertices[i];
+			blockPos.x = (int)(meshPos.x + offset);
+			blockPos.y = (int)(meshPos.y + offset);
+			blockPos.z = (int)(meshPos.z + offset);
+
+			adj = block;
+
+			// Block matches?
+			if (chunk.ContainsPos(blockPos.x, blockPos.y, blockPos.z))
+				adj = chunk.GetBlock(blockPos.x, blockPos.y, blockPos.z);
 
 			// Convert brightness value to float
-			float lastBright = block.brightness / 255f; // TODO: Fix
-			float newBright = block.brightness / 255f;
+			float lastBright = adj.brightness / 255f; // TODO: Fix
+			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = block.colorTemp / 255f; // TODO: Fix
-			float newHue = block.colorTemp / 255f;
+			float lastHue = adj.colorTemp / 255f; // TODO: Fix
+			float newHue = adj.colorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			colors[i] = new Color(lastBright, newBright, lastHue, newHue);

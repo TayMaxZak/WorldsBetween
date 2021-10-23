@@ -108,9 +108,7 @@ public class World : MonoBehaviour
 
 				// Update after last light is added
 				if (lastPass)
-				{
 					lightSources[i].affectedChunks[j].UpdateLightVisuals();
-				}
 			}
 
 			if (lightSources[i].dirty)
