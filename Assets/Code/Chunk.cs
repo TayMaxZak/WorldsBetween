@@ -46,18 +46,21 @@ public class Chunk : MonoBehaviour
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					blocks[x, y, z] = new Block(x, y, z, 255);
-
-					blocks[x, y, z].needsUpdate = 255;
 				}
 			}
 		}
 	}
 
+	public void MarkAllAsDirty()
+	{
+		foreach (Block block in blocks)
+		{
+			block.needsUpdate = 255;
+		}
+	}
+
 	public void AddLight(LightSource light, bool firstPass)
 	{
-		UpdatePos();
-		light.UpdatePos();
-
 		// Set brightness
 		foreach (Block block in blocks)
 		{
@@ -111,13 +114,13 @@ public class Chunk : MonoBehaviour
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 64); i++)
+		for (int i = 0; i < Mathf.Min(count, 8); i++)
 		{
 			update = toLightUpdate.Dequeue();
 			chunkMesh.SetVertexColors(update);
 
 			update.needsUpdate = 0;
-		}		
+		}
 	}
 
 	public void ApplyCarver(Carver carver, bool firstPass)

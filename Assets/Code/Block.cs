@@ -28,7 +28,7 @@ public class Block
 		brightness = 0;
 		lastBrightness = brightness;
 
-		colorTemp = 255;
+		colorTemp = 127;
 		lastColorTemp = colorTemp;
 
 		needsUpdate = 0;

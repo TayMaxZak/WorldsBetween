@@ -129,11 +129,11 @@ public class ChunkMesh : MonoBehaviour
 				continue;
 
 			// Convert brightness value to float
-			float lastBright = block.lastBrightness / 255f;
+			float lastBright = block.brightness / 255f; // TODO: Fix
 			float newBright = block.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = block.lastColorTemp / 255f;
+			float lastHue = block.colorTemp / 255f; // TODO: Fix
 			float newHue = block.colorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue

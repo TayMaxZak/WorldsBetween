@@ -93,17 +93,41 @@ public class World : MonoBehaviour
 		// Apply lights
 		for (int i = 0; i < lightSources.Count; i++)
 		{
-			foreach (Chunk chunk in chunks)
+			lightSources[i].UpdatePos();
+
+			for (int j = 0; j < lightSources[i].affectedChunks.Count; j++)
 			{
-				chunk.AddLight(lightSources[i], i == 0);
+				// Mark chunks as dirty
+				if (lightSources[i].dirty)
+				{
+					lightSources[i].affectedChunks[j].MarkAllAsDirty();
+				}
+
+				lightSources[i].affectedChunks[j].AddLight(lightSources[i], i == 0);
 
 				// Update after last light is added
-				if (i == lightSources.Count - 1)
+				if (i == lightSources.Count - 1 || j == lightSources[i].affectedChunks.Count - 1)
 				{
-					chunk.UpdateLightVisuals();
+					lightSources[i].affectedChunks[j].UpdateLightVisuals();
 				}
 			}
 		}
+	}
+
+	public static Chunk GetChunkFor(int x, int y, int z)
+	{
+		Vector3Int pos = new Vector3Int(x, y, z);
+		Vector3Int dummy;
+
+		foreach (Chunk chunk in Instance.chunks)
+		{
+			dummy = pos - chunk.position;
+
+			if (chunk.ContainsPos(dummy.x, dummy.y, dummy.z))
+				return chunk;
+		}
+
+		return null;
 	}
 
 	public static Block GetBlockFor(Vector3Int pos)
