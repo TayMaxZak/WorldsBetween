@@ -21,8 +21,6 @@ public class Chunk : MonoBehaviour
 
 	private void Awake()
 	{
-		UpdatePos();
-
 		// Create blocks
 		CreateBlocks();
 
@@ -31,7 +29,7 @@ public class Chunk : MonoBehaviour
 		chunkMesh.Init(this);
 	}
 
-	private void UpdatePos()
+	public void UpdatePos()
 	{
 		Vector3 pos = transform.position;
 		position.x = Mathf.RoundToInt(pos.x);

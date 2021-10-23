@@ -20,7 +20,9 @@ public class World : MonoBehaviour
 	private List<Carver> carvers;
 
 	// Chunks
-	private List<Chunk> chunks;
+	[SerializeField]
+	private Chunk chunkPrefab;
+	private Dictionary<Vector3Int,Chunk> chunks;
 
 	private static World Instance;
 
@@ -36,7 +38,7 @@ public class World : MonoBehaviour
 		else
 			Instance = this;
 
-		chunks = new List<Chunk>(GetComponentsInChildren<Chunk>());
+		chunks = new Dictionary<Vector3Int, Chunk>();
 
 		lightSources = new List<LightSource>(lightRoot.GetComponentsInChildren<LightSource>());
 
@@ -45,24 +47,46 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
+		CreateChunks();
+
 		Generate();
 
 		CalculateLighting();
 		firstLightPass = false;
 	}
 
+	private void CreateChunks()
+	{
+		int extent = 4;
+		int size = 8;
+
+		for (int x = -extent; x <= extent; x++)
+		{
+			for (int y = -extent; y <= extent; y++)
+			{
+				for (int z = -extent; z <= extent; z++)
+				{
+					Chunk chunk = Instantiate(chunkPrefab, new Vector3(x * size, y * size, z * size), Quaternion.identity, transform);
+
+					chunk.UpdatePos();
+					chunks.Add(chunk.position, chunk);
+				}
+			}
+		}
+	}
+
 	private void Generate()
 	{
-		foreach (Chunk chunk in chunks)
+		foreach (KeyValuePair<Vector3Int,Chunk> entry in chunks)
 		{
 			for (int i = 0; i < carvers.Count; i++)
 			{
 				carvers[i].UpdatePos();
 
-				chunk.ApplyCarver(carvers[i], i == 0);
+				entry.Value.ApplyCarver(carvers[i], i == 0);
 			}
 
-			chunk.UpdateOpacityVisuals();
+			entry.Value.UpdateOpacityVisuals();
 		}
 	}
 
@@ -133,32 +157,37 @@ public class World : MonoBehaviour
 
 	public static Chunk GetChunkFor(int x, int y, int z)
 	{
-		Vector3Int pos = new Vector3Int(x, y, z);
-		Vector3Int dummy;
+		int scale = 8;
 
-		foreach (Chunk chunk in Instance.chunks)
-		{
-			dummy = pos - chunk.position;
+		Instance.chunks.TryGetValue(new Vector3Int(
+			(x / scale) * scale,
+			(y / scale) * scale,
+			(z / scale) * scale),
+		out Chunk chunk);
 
-			if (chunk.ContainsPos(dummy.x, dummy.y, dummy.z))
-				return chunk;
-		}
-
-		return null;
+		return chunk;
 	}
 
 	public static Block GetBlockFor(Vector3Int pos)
 	{
+		int scale = 8;
+
+		Instance.chunks.TryGetValue(new Vector3Int(
+			(pos.x / scale) * scale,
+			(pos.y / scale) * scale,
+			(pos.z / scale) * scale),
+		out Chunk chunk);
+
+		if (chunk == null)
+			return null;
+
 		Vector3Int dummy;
 
-		foreach (Chunk chunk in Instance.chunks)
-		{
-			dummy = pos - chunk.position;
+		dummy = pos - chunk.position;
 
-			if (chunk.ContainsPos(dummy.x, dummy.y, dummy.z))
-				return chunk.GetBlock(dummy.x, dummy.y, dummy.z);
-		}
-
-		return null;
+		if (chunk.ContainsPos(dummy.x, dummy.y, dummy.z))
+			return chunk.GetBlock(dummy.x, dummy.y, dummy.z);
+		else
+			return null;
 	}
 }

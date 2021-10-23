@@ -24,11 +24,11 @@ public class LightSource : MonoBehaviour
 		affectedChunks.Clear();
 
 		int mult = 8;
-		for (int x = -1; x < 3; x++)
+		for (int x = -1; x < 2; x++)
 		{
-			for (int y = -1; y < 3; y++)
+			for (int y = -1; y < 2; y++)
 			{
-				for (int z = -1; z < 3; z++)
+				for (int z = -1; z < 2; z++)
 				{
 					Chunk chunk = World.GetChunkFor(worldX + x * mult, worldY + y * mult, worldZ + z * mult);
 					if (chunk && !affectedChunks.Contains(chunk))

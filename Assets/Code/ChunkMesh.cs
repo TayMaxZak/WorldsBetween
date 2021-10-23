@@ -164,7 +164,13 @@ public class ChunkMesh : MonoBehaviour
 		filter.mesh = newMesh;
 
 		sharedVertices = filter.sharedMesh.vertices;
+
+		Color baseColor = new Color(0, 0, 0.5f, 0.5f);
 		colors = new Color[sharedVertices.Length];
+		for (int i = 0; i < colors.Length; i++)
+			colors[i] = baseColor;
+
+		ApplyVertexColors();
 	}
 
 	private static float RandomJitter(float mult)
