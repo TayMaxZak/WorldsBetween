@@ -61,45 +61,14 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					//// Empty block
-					//// TODO: Change
-					//if (blocks[x, y, z].opacity > 127)
-					//	continue;
-
-					//bool air = false;
-
-					//// Check chunk border
-					//if (x == 0 || x == chunkSize - 1)
-					//	air = true;
-					//else if (y == 0 || y == chunkSize - 1)
-					//	air = true;
-					//else if (z == 0 || z == chunkSize - 1)
-					//	air = true;
-					//// Check adjacent blocks
-					//else if (blocks[x - 1, y, z].opacity > 127)
-					//	air = true;
-					//else if (blocks[x + 1, y, z].opacity > 127)
-					//	air = true;
-					//else if (blocks[x, y - 1, z].opacity > 127)
-					//	air = true;
-					//else if (blocks[x, y + 1, z].opacity > 127)
-					//	air = true;
-					//else if (blocks[x, y, z - 1].opacity > 127)
-					//	air = true;
-					//else if (blocks[x, y, z + 1].opacity > 127)
-					//	air = true;
-
-					//if (!air)
-					//	return;
-
 					blocks[x, y, z].needsUpdate = 255;
-					//blocks[x, y, z].updatePending = 0;
 				}
 			}
 		}
 
-		toLightUpdate.Clear();
-		afterLightUpdate.Clear();
+		// Clear existing queues
+		//toLightUpdate.Clear();
+		//afterLightUpdate.Clear();
 	}
 
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
