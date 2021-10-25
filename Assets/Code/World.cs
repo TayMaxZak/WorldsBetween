@@ -145,7 +145,8 @@ public class World : MonoBehaviour
 				// Mark chunk as dirty
 				if (lightSources[i].dirty)
 				{
-					chunk.MarkAsDirtyForLight();
+					if (firstPass)
+						chunk.MarkAsDirtyForLight();
 
 					// This chunk can consider this light handled
 					chunk.lightsToHandle--;

@@ -103,9 +103,6 @@ public class Chunk : MonoBehaviour
 		// Set brightness
 		foreach (Block block in blocks)
 		{
-			if (block.updatePending > 0 || block.postUpdate > 0)
-				continue;
-
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
 			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + block.localX, position.y + block.localY, position.z + block.localZ));
 
@@ -125,6 +122,9 @@ public class Chunk : MonoBehaviour
 			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 
 			// Add block to update queue
+			if (block.updatePending > 0 || block.postUpdate > 0)
+				continue;
+
 			if (lastPass && block.needsUpdate > 0 && block.postUpdate == 0)
 			{
 				block.updatePending = 255;
