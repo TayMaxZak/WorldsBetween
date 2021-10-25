@@ -67,8 +67,8 @@ public class ChunkMesh : MonoBehaviour
 			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) + 0.5f, RandomJitter(0.25f) + 0.5f);
 		}
 
-		if (filter.sharedMesh.colors.Length == 0)
-			ApplyVertexColors();
+		//if (filter.sharedMesh.colors.Length == 0)
+		//	ApplyVertexColors();
 	}
 
 	public void ApplyVertexColors()

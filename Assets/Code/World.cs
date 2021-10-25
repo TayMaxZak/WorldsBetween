@@ -27,6 +27,7 @@ public class World : MonoBehaviour
 	private static World Instance;
 
 	public List<Chunk> chunksToLightUpdate = new List<Chunk>();
+	public List<Chunk> chunksToLightCleanup = new List<Chunk>();
 
 	private void Awake()
 	{
@@ -121,29 +122,38 @@ public class World : MonoBehaviour
 		// Apply lights
 		for (int i = 0; i < lightSources.Count; i++)
 		{
-			if (lightSources[i].dirty)
-				lightSources[i].UpdatePos();
+			lightSources[i].UpdatePosition();
 
-			for (int j = 0; j < lightSources[i].affectedChunks.Count; j++)
+			// Update affected chunks and clean up old ones
+			if (lightSources[i].dirty)
+			{
+				chunksToLightCleanup = lightSources[i].FindAffectedChunks();
+
+				foreach (Chunk chunk in chunksToLightCleanup)
+					chunk.CleanupLight();
+			}
+
+			// Go through each affected chunk
+			foreach (Chunk chunk in lightSources[i].affectedChunks)
 			{
 				// First pass on this chunk. Reset "canvas" and apply light from scratch
-				bool firstPass = !chunksToLightUpdate.Contains(lightSources[i].affectedChunks[j]);
+				bool firstPass = !chunksToLightUpdate.Contains(chunk);
 
 				if (firstPass)
-					chunksToLightUpdate.Add(lightSources[i].affectedChunks[j]);
+					chunksToLightUpdate.Add(chunk);
 
-				// Mark chunks as dirty
+				// Mark chunk as dirty
 				if (lightSources[i].dirty)
 				{
-					lightSources[i].affectedChunks[j].MarkAllAsDirty();
+					chunk.MarkAllAsDirty();
 
-					// Consider this chunk handled
-					lightSources[i].affectedChunks[j].lightsToHandle--;
+					// This chunk can consider this light handled
+					chunk.lightsToHandle--;
 
-					// Last pass on this chunk. Begin applying vertex colors
-					bool lastPass = lightSources[i].affectedChunks[j].lightsToHandle == 0;
+					// Last pass on this chunk? If so, begin applying vertex colors
+					bool lastPass = chunk.lightsToHandle == 0;
 
-					lightSources[i].affectedChunks[j].AddLight(lightSources[i], firstPass, lastPass);
+					chunk.AddLight(lightSources[i], firstPass, lastPass);
 				}
 			}
 
@@ -152,7 +162,9 @@ public class World : MonoBehaviour
 		}
 
 		foreach (Chunk chunk in chunksToLightUpdate)
+		{
 			chunk.UpdateLightVisuals();
+		}
 	}
 
 	public static Chunk GetChunkFor(int x, int y, int z)

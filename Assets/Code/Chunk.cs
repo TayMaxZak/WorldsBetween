@@ -55,10 +55,46 @@ public class Chunk : MonoBehaviour
 
 	public void MarkAllAsDirty()
 	{
+		Block inQueue;
+
+		// Mark all as dirty
 		foreach (Block block in blocks)
 		{
 			block.needsUpdate = 255;
 			block.updatePending = 0;
+		}
+
+		//// Clear all queues
+		//while (afterLightUpdate.Count > 0)
+		//{
+		//	inQueue = afterLightUpdate.Dequeue();
+		//}
+
+		//while (toLightUpdate.Count > 0)
+		//{
+		//	inQueue = toLightUpdate.Dequeue();
+
+		//	inQueue.needsUpdate = 0;
+		//	inQueue.updatePending = 0;
+		//}
+	}
+
+	public void CleanupLight()
+	{
+		Block inQueue;
+
+		// Clear all queues
+		while (afterLightUpdate.Count > 0)
+		{
+			afterLightUpdate.Dequeue();
+		}
+
+		while (toLightUpdate.Count > 0)
+		{
+			inQueue = toLightUpdate.Dequeue();
+
+			inQueue.needsUpdate = 255;
+			inQueue.updatePending = 0;
 		}
 	}
 
@@ -100,30 +136,30 @@ public class Chunk : MonoBehaviour
 
 	public void UpdateLightVisuals()
 	{
+		Block inQueue;
+
 		// Handle previously dequeued blocks
 		while (afterLightUpdate.Count > 0)
 		{
-			Block block = afterLightUpdate.Dequeue();
+			inQueue = afterLightUpdate.Dequeue();
 
-			block.lastBrightness = block.brightness;
-			block.lastColorTemp = block.colorTemp;
+			inQueue.lastBrightness = inQueue.brightness;
+			inQueue.lastColorTemp = inQueue.colorTemp;
 
-			chunkMesh.SetVertexColors(block);
+			chunkMesh.SetVertexColors(inQueue);
 		}
-
-		Block toUpdate;
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 256); i++)
+		for (int i = 0; i < Mathf.Min(count, 32); i++)
 		{
-			toUpdate = toLightUpdate.Dequeue();
-			chunkMesh.SetVertexColors(toUpdate);
+			inQueue = toLightUpdate.Dequeue();
+			chunkMesh.SetVertexColors(inQueue);
 
-			toUpdate.needsUpdate = 0;
-			toUpdate.updatePending = 0;
+			inQueue.needsUpdate = 0;
+			inQueue.updatePending = 0;
 
-			afterLightUpdate.Enqueue(toUpdate);
+			afterLightUpdate.Enqueue(inQueue);
 		}
 
 		chunkMesh.ApplyVertexColors();
