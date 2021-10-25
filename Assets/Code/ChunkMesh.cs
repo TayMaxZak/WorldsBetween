@@ -124,7 +124,7 @@ public class ChunkMesh : MonoBehaviour
 
 					for (int i = 0; i < blockVert.Length; i++)
 					{
-						vertices.Add(blockVert[i] + blockMeshOffset);
+						vertices.Add(blockVert[i] + Random.onUnitSphere * (0.5f - block.opacity / 255f) + blockMeshOffset);
 					}
 
 					block.endIndex = vertices.Count;
@@ -170,7 +170,7 @@ public class ChunkMesh : MonoBehaviour
 		for (int i = 0; i < colors.Length; i++)
 			colors[i] = baseColor;
 
-		//ApplyVertexColors();
+		ApplyVertexColors();
 	}
 
 	private static float RandomJitter(float mult)
