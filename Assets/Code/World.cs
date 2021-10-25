@@ -91,6 +91,11 @@ public class World : MonoBehaviour
 
 			entry.Value.UpdateOpacityVisuals();
 		}
+
+		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
+		{
+			entry.Value.CacheNearAir();
+		}
 	}
 
 	private void Update()
@@ -184,21 +189,23 @@ public class World : MonoBehaviour
 		return chunk;
 	}
 
-	public static Block GetBlockFor(Vector3Int pos)
+	public static Block GetBlockFor(int x, int y, int z)
 	{
-		Chunk chunk = GetChunkFor(pos.x, pos.y, pos.z);
+		Chunk chunk = GetChunkFor(x, y, z);
 
 		if (chunk == null)
 			return null;
 
-		Vector3Int dummy;
+		return chunk.GetBlock(
+			x - chunk.position.x,
+			y - chunk.position.y,
+			z - chunk.position.z
+		);
+	}
 
-		dummy = pos - chunk.position;
-
-		if (chunk.ContainsPos(dummy.x, dummy.y, dummy.z))
-			return chunk.GetBlock(dummy.x, dummy.y, dummy.z);
-		else
-			return null;
+	public static Block GetBlockFor(Vector3Int pos)
+	{
+		return GetBlockFor(pos.x, pos.y, pos.z);
 	}
 
 	public static int GetUpdateSize()

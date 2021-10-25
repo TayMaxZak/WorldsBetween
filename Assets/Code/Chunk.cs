@@ -129,11 +129,9 @@ public class Chunk : MonoBehaviour
 		{
 			inQueue = postUpdate.Dequeue();
 
-			// Was this not actually post update?
-			if (inQueue.postUpdate == 0)
-				continue;
-
 			inQueue.postUpdate = 0;
+
+			inQueue.needsUpdate = 0;
 
 			bool diff = false;
 			if (inQueue.lastBrightness != inQueue.brightness)
@@ -156,10 +154,9 @@ public class Chunk : MonoBehaviour
 		for (int i = 0; i < Mathf.Min(count, World.GetUpdateSize()); i++)
 		{
 			inQueue = toLightUpdate.Dequeue();
-			chunkMesh.SetVertexColors(inQueue);
-
-			inQueue.needsUpdate = 0;
 			inQueue.updatePending = 0;
+
+			chunkMesh.SetVertexColors(inQueue);
 
 			inQueue.postUpdate = 255;
 			postUpdate.Enqueue(inQueue);
@@ -184,51 +181,65 @@ public class Chunk : MonoBehaviour
 				}
 			}
 		}
+	}
 
-		if (lastPass)
+	public void CacheNearAir()
+	{
+		for (byte x = 0; x < chunkSize; x++)
 		{
-			for (byte x = 0; x < chunkSize; x++)
+			for (byte y = 0; y < chunkSize; y++)
 			{
-				for (byte y = 0; y < chunkSize; y++)
+				for (byte z = 0; z < chunkSize; z++)
 				{
-					for (byte z = 0; z < chunkSize; z++)
+					// Remember if this block is bordering air
+					//if (blocks[x, y, z].opacity <= 127)
+					//	continue;
+
+					bool nearAir = false;
+					bool chunkBorder = false;
+
+					// Check chunk border
+					if (x == 0 || x == chunkSize - 1)
+						chunkBorder = true;
+					else if (y == 0 || y == chunkSize - 1)
+						chunkBorder = true;
+					else if (z == 0 || z == chunkSize - 1)
+						chunkBorder = true;
+
+					if (!chunkBorder)
 					{
-						// Remember if this block is bordering air
-						if (blocks[x, y, z].opacity <= 127)
-							continue;
-
-						bool nearAir = false;
-						bool chunkBorder = false;
-
-						// Check chunk border
-						if (x == 0 || x == chunkSize - 1)
-							chunkBorder = true;
-						else if (y == 0 || y == chunkSize - 1)
-							chunkBorder = true;
-						else if (z == 0 || z == chunkSize - 1)
-							chunkBorder = true;
-
-						if (!chunkBorder)
-						{
-							// Check adjacent blocks
-							if (blocks[x - 1, y, z].opacity <= 127)
-								nearAir = true;
-							else if (blocks[x + 1, y, z].opacity <= 127)
-								nearAir = true;
-							else if (blocks[x, y - 1, z].opacity <= 127)
-								nearAir = true;
-							else if (blocks[x, y + 1, z].opacity <= 127)
-								nearAir = true;
-							else if (blocks[x, y, z - 1].opacity <= 127)
-								nearAir = true;
-							else if (blocks[x, y, z + 1].opacity <= 127)
-								nearAir = true;
-						}
-						else
+						// Check adjacent blocks
+						if (blocks[x - 1, y, z].opacity <= 127)
 							nearAir = true;
-
-						blocks[x, y, z].nearAir = (byte)(nearAir ? 255 : 0);
+						else if (blocks[x + 1, y, z].opacity <= 127)
+							nearAir = true;
+						else if (blocks[x, y - 1, z].opacity <= 127)
+							nearAir = true;
+						else if (blocks[x, y + 1, z].opacity <= 127)
+							nearAir = true;
+						else if (blocks[x, y, z - 1].opacity <= 127)
+							nearAir = true;
+						else if (blocks[x, y, z + 1].opacity <= 127)
+							nearAir = true;
 					}
+					else
+					{
+						// Check adjacent blocks
+						if (World.GetBlockFor(x - 1, y, z).opacity <= 127)
+							nearAir = true;
+						else if (World.GetBlockFor(x + 1, y, z).opacity <= 127)
+							nearAir = true;
+						else if (World.GetBlockFor(x, y - 1, z).opacity <= 127)
+							nearAir = true;
+						else if (World.GetBlockFor(x, y + 1, z).opacity <= 127)
+							nearAir = true;
+						else if (World.GetBlockFor(x, y, z - 1).opacity <= 127)
+							nearAir = true;
+						else if (World.GetBlockFor(x, y, z + 1).opacity <= 127)
+							nearAir = true;
+					}
+
+					blocks[x, y, z].nearAir = (byte)(nearAir ? 255 : 0);
 				}
 			}
 		}

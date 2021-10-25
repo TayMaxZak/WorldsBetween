@@ -6,6 +6,8 @@ public class ChunkMesh : MonoBehaviour
 {
 	private static Color borderColor = new Color(0, 0, 0.5f, 0.5f);
 
+
+
 	private Chunk chunk;
 
 	private MeshFilter filter;
@@ -41,23 +43,40 @@ public class ChunkMesh : MonoBehaviour
 		{
 			loopCounter++;
 
-			// Find actual block to sample for brightness
-			//meshPos = sharedVertices[i];
-			//blockPos.x = (int)(meshPos.x + offset);
-			//blockPos.y = (int)(meshPos.y + offset);
-			//blockPos.z = (int)(meshPos.z + offset);
+			// Inside wall
+			if (block.nearAir == 0)
+			{
+				colors[i] = borderColor;
+				continue;
+			}
+			//else
+			//{
+			//	colors[i] = borderColor;
+			//	continue;
+			//}
 
-			//// Block that's closest to this actual vertex
-			//adj = World.GetBlockFor(chunk.position + blockPos);
-			//if (adj == null)
+			// Find actual block to sample for brightness
+			meshPos = sharedVertices[i];
+			blockPos.x = (int)(meshPos.x + offset);
+			blockPos.y = (int)(meshPos.y + offset);
+			blockPos.z = (int)(meshPos.z + offset);
+
+			// Block that's closest to this actual vertex
+			adj = World.GetBlockFor(chunk.position + blockPos);
+			if (adj == null || adj.nearAir == 0)
+				adj = block;
+
+			if (!(adj.needsUpdate == 0 || adj.updatePending > 0 || adj.postUpdate > 0))
 				adj = block;
 
 			// Convert brightness value to float
 			float lastBright = adj.lastBrightness / 255f;
+
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
 			float lastHue = adj.lastColorTemp / 255f;
+
 			float newHue = adj.colorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
