@@ -26,18 +26,22 @@ public class LightSource : MonoBehaviour
 		foreach (Chunk chunk in affectedChunks)
 			oldAffectedChunks.Add(chunk);
 
-		// Find new chunks in range
 		affectedChunks.Clear();
 
-		int mult = 8;
-		int range = 1;
+		// Find new chunks in range
+		float maxDistance = Mathf.Sqrt(brightness * 250); // i.e., brightness / distance^2 = 0.004
+
+		int chunkSize = 8;
+
+		int range = Mathf.CeilToInt((maxDistance * 0.5f) / chunkSize);
+
 		for (int x = -range; x <= range; x++)
 		{
 			for (int y = -range; y <= range; y++)
 			{
 				for (int z = -range; z <= range; z++)
 				{
-					Chunk chunk = World.GetChunkFor(worldX + x * mult, worldY + y * mult, worldZ + z * mult);
+					Chunk chunk = World.GetChunkFor(worldX + x * chunkSize, worldY + y * chunkSize, worldZ + z * chunkSize);
 					if (chunk && !affectedChunks.Contains(chunk))
 					{
 						affectedChunks.Add(chunk);
@@ -67,10 +71,19 @@ public class LightSource : MonoBehaviour
 
 	private void OnDrawGizmosSelected()
 	{
-		int mult = 8;
-		int range = 1;
+		float maxDistance = Mathf.Sqrt(brightness * 250); // i.e., brightness / distance^2 = 0.004
+
+		Gizmos.color = Utils.colorYellow;
+		Gizmos.DrawWireSphere(transform.position, maxDistance);
+
+		Gizmos.color = Utils.colorOrange;
+		Gizmos.DrawWireSphere(transform.position, maxDistance* 0.5f);
+
+		int chunkSize = 8;
+
+		int range = Mathf.CeilToInt((maxDistance * 0.5f) / chunkSize);
 
 		Gizmos.color = Utils.colorDarkGrayBlue;
-		Gizmos.DrawWireCube(transform.position, Vector3.one * mult * range * 2);
+		Gizmos.DrawWireCube(transform.position, Vector3.one * chunkSize * range * 2);
 	}
 }
