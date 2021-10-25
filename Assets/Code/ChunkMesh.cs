@@ -52,20 +52,20 @@ public class ChunkMesh : MonoBehaviour
 
 			// Block that's closest to this actual vertex
 			adj = World.GetBlockFor(chunk.position + blockPos);
-			if (adj == null || adj.nearAir == 0)
+			//if (adj == null || adj.nearAir == 0)
 				adj = block;
 
 			// Convert brightness value to float
-			float lastBright = adj.brightness / 255f;
-			if (adj.postUpdate > 0)
-				lastBright = adj.brightness / 255f;
+			float lastBright = adj.lastBrightness / 255f;
+			//if (adj.postUpdate > 0)
+			//	lastBright = adj.brightness / 255f;
 
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.colorTemp / 255f;
-			if (adj.postUpdate > 0)
-				lastHue = adj.colorTemp / 255f;
+			float lastHue = adj.lastColorTemp / 255f;
+			//if (adj.postUpdate > 0)
+			//	lastHue = adj.colorTemp / 255f;
 
 			float newHue = adj.colorTemp / 255f;
 
@@ -153,35 +153,35 @@ public class ChunkMesh : MonoBehaviour
 
 						if (!chunkBorder)
 						{
-							bool bottom = false;
-							bool top = false;
+							bool left = false;
+							bool right = false;
 
 							// Check adjacent blocks in this chunk
-							if (blocks[x, y - 1, z].opacity > 127)
+							if (blocks[x - 1, y, z].opacity > 127)
 							{
-								modelOffset.y = 0;
-
-								modelScale.y = fill;
-
-								bottom = true;
-							}
-							if (blocks[x, y + 1, z].opacity > 127)
-							{
-								modelOffset.y = 1 - fill;
-
-								modelScale.y = fill;
-
-								top = true;
-							}
-
-							if (top && bottom)
-							{
-								modelOffset.x = 0.5f - fill / 2;
-								modelOffset.y = 0;
-								modelOffset.z = 0.5f - fill / 2;
+								modelOffset.x = 0;
 
 								modelScale.x = fill;
-								modelScale.y = 1;
+
+								left = true;
+							}
+							if (blocks[x + 1, y, z].opacity > 127)
+							{
+								modelOffset.x = 1 - fill;
+
+								modelScale.x = fill;
+
+								right = true;
+							}
+
+							if (left && right)
+							{
+								modelOffset.y = 0.5f - fill / 2;
+								modelOffset.x = 0;
+								modelOffset.z = 0.5f - fill / 2;
+
+								modelScale.y = fill;
+								modelScale.x = 1;
 								modelScale.z = fill;
 							}
 						}
