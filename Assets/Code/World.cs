@@ -7,6 +7,8 @@ public class World : MonoBehaviour
 	[Header("Lighting")]
 	[SerializeField]
 	private Timer lightUpdateTimer = null;
+	[SerializeField]
+	private int lightUpdateSize = 32;
 
 	[SerializeField]
 	private Transform lightRoot = null;
@@ -84,7 +86,7 @@ public class World : MonoBehaviour
 			{
 				carvers[i].UpdatePos();
 
-				entry.Value.ApplyCarver(carvers[i], i == 0);
+				entry.Value.ApplyCarver(carvers[i], i == 0, i == carvers.Count - 1);
 			}
 
 			entry.Value.UpdateOpacityVisuals();
@@ -197,5 +199,10 @@ public class World : MonoBehaviour
 			return chunk.GetBlock(dummy.x, dummy.y, dummy.z);
 		else
 			return null;
+	}
+
+	public static int GetUpdateSize()
+	{
+		return Instance.lightUpdateSize;
 	}
 }

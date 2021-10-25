@@ -15,7 +15,7 @@ public class Chunk : MonoBehaviour
 	private ChunkMesh chunkMesh;
 
 	private SimplePriorityQueue<Block> toLightUpdate = new SimplePriorityQueue<Block>();
-	private Queue<Block> afterLightUpdate = new Queue<Block>();
+	private Queue<Block> postUpdate = new Queue<Block>();
 
 	public int lightsToHandle = 0;
 
@@ -61,35 +61,7 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					// Empty block
-					// TODO: Change
-					if (blocks[x, y, z].opacity <= 127)
-						continue;
-
-					bool nearAir = false;
-
-					// Check chunk border
-					if (x == 0 || x == chunkSize - 1)
-						nearAir = true;
-					else if (y == 0 || y == chunkSize - 1)
-						nearAir = true;
-					else if (z == 0 || z == chunkSize - 1)
-						nearAir = true;
-					// Check adjacent blocks
-					else if (blocks[x - 1, y, z].opacity <= 127)
-						nearAir = true;
-					else if (blocks[x + 1, y, z].opacity <= 127)
-						nearAir = true;
-					else if (blocks[x, y - 1, z].opacity <= 127)
-						nearAir = true;
-					else if (blocks[x, y + 1, z].opacity <= 127)
-						nearAir = true;
-					else if (blocks[x, y, z - 1].opacity <= 127)
-						nearAir = true;
-					else if (blocks[x, y, z + 1].opacity <= 127)
-						nearAir = true;
-
-					if (!nearAir)
+					if (blocks[x, y, z].nearAir == 0)
 						continue;
 
 					blocks[x, y, z].needsUpdate = 255;
@@ -100,9 +72,21 @@ public class Chunk : MonoBehaviour
 
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
 	{
+		int counter = 0;
+
 		// Set brightness
 		foreach (Block block in blocks)
 		{
+			// Block is already correct light
+			if (block.needsUpdate == 0)
+				continue;
+
+			// Is block currently processing?
+			if (block.updatePending > 0 || block.postUpdate > 0)
+				continue;
+
+			counter++;
+
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
 			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + block.localX, position.y + block.localY, position.z + block.localZ));
 
@@ -121,38 +105,55 @@ public class Chunk : MonoBehaviour
 
 			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 
-			// Add block to update queue
-			if (block.updatePending > 0 || block.postUpdate > 0)
-				continue;
-
-			if (lastPass && block.needsUpdate > 0 && block.postUpdate == 0)
+			if (lastPass && block.updatePending == 0 && block.postUpdate == 0)
 			{
 				block.updatePending = 255;
 
-				toLightUpdate.Enqueue(block, 1 - newBrightness);
+				// 1.0 priority never reached???
+				if (newBrightness > 0)
+					toLightUpdate.Enqueue(block, 1 - newBrightness);
 			}
 		}
+
+		//Debug.Log(name + " blocks to add light = " + counter);
 	}
 
 	public void UpdateLightVisuals()
 	{
+		//Debug.Log(name + " toUpdate size = " + toLightUpdate.Count + " postUpdate size = " + postUpdate.Count);
+
 		Block inQueue;
 
 		// Handle previously dequeued blocks first
-		while (afterLightUpdate.Count > 0)
+		while (postUpdate.Count > 0)
 		{
-			inQueue = afterLightUpdate.Dequeue();
+			inQueue = postUpdate.Dequeue();
+
+			// Was this not actually post update?
+			if (inQueue.postUpdate == 0)
+				continue;
+
 			inQueue.postUpdate = 0;
 
-			inQueue.lastBrightness = inQueue.brightness;
-			inQueue.lastColorTemp = inQueue.colorTemp;
+			bool diff = false;
+			if (inQueue.lastBrightness != inQueue.brightness)
+			{
+				inQueue.lastBrightness = inQueue.brightness;
+				diff = true;
+			}
+			if (inQueue.lastColorTemp != inQueue.colorTemp)
+			{
+				inQueue.lastColorTemp = inQueue.colorTemp;
+				diff = true;
+			}
 
-			chunkMesh.SetVertexColors(inQueue);
+			if (diff)
+				chunkMesh.SetVertexColors(inQueue);
 		}
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 128); i++)
+		for (int i = 0; i < Mathf.Min(count, World.GetUpdateSize()); i++)
 		{
 			inQueue = toLightUpdate.Dequeue();
 			chunkMesh.SetVertexColors(inQueue);
@@ -161,13 +162,13 @@ public class Chunk : MonoBehaviour
 			inQueue.updatePending = 0;
 
 			inQueue.postUpdate = 255;
-			afterLightUpdate.Enqueue(inQueue);
+			postUpdate.Enqueue(inQueue);
 		}
 
 		chunkMesh.ApplyVertexColors();
 	}
 
-	public void ApplyCarver(Carver carver, bool firstPass)
+	public void ApplyCarver(Carver carver, bool firstPass, bool lastPass)
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -180,6 +181,54 @@ public class Chunk : MonoBehaviour
 					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f) - carve;
 
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
+				}
+			}
+		}
+
+		if (lastPass)
+		{
+			for (byte x = 0; x < chunkSize; x++)
+			{
+				for (byte y = 0; y < chunkSize; y++)
+				{
+					for (byte z = 0; z < chunkSize; z++)
+					{
+						// Remember if this block is bordering air
+						if (blocks[x, y, z].opacity <= 127)
+							continue;
+
+						bool nearAir = false;
+						bool chunkBorder = false;
+
+						// Check chunk border
+						if (x == 0 || x == chunkSize - 1)
+							chunkBorder = true;
+						else if (y == 0 || y == chunkSize - 1)
+							chunkBorder = true;
+						else if (z == 0 || z == chunkSize - 1)
+							chunkBorder = true;
+
+						if (!chunkBorder)
+						{
+							// Check adjacent blocks
+							if (blocks[x - 1, y, z].opacity <= 127)
+								nearAir = true;
+							else if (blocks[x + 1, y, z].opacity <= 127)
+								nearAir = true;
+							else if (blocks[x, y - 1, z].opacity <= 127)
+								nearAir = true;
+							else if (blocks[x, y + 1, z].opacity <= 127)
+								nearAir = true;
+							else if (blocks[x, y, z - 1].opacity <= 127)
+								nearAir = true;
+							else if (blocks[x, y, z + 1].opacity <= 127)
+								nearAir = true;
+						}
+						else
+							nearAir = true;
+
+						blocks[x, y, z].nearAir = (byte)(nearAir ? 255 : 0);
+					}
 				}
 			}
 		}
