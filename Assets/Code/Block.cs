@@ -14,8 +14,9 @@ public class Block
 	public byte colorTemp; // Lighting color temp of this block (0 is red-orange, 127 is white, 255 is blue-gray)
 	public byte lastColorTemp; // Lighting color temp of this block at the last light update
 
-	public byte needsUpdate; // 0 = no updating needed, nonzero = light changed and should be updated. greater number = higher priority
-	public byte updatePending; // 0 = no updating needed, nonzero = light changed and should be updated. greater number = higher priority
+	public byte needsUpdate; // nonzero = light changed and should be updated
+	public byte updatePending; // nonzero = update in progress, do not touch
+	public byte postUpdate; // nonzero = needs to finalize update
 
 	public int startIndex, endIndex; // Which vertices to search?
 

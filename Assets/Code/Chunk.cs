@@ -61,14 +61,41 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
+					// Empty block
+					// TODO: Change
+					if (blocks[x, y, z].opacity <= 127)
+						continue;
+
+					bool nearAir = false;
+
+					// Check chunk border
+					if (x == 0 || x == chunkSize - 1)
+						nearAir = true;
+					else if (y == 0 || y == chunkSize - 1)
+						nearAir = true;
+					else if (z == 0 || z == chunkSize - 1)
+						nearAir = true;
+					// Check adjacent blocks
+					else if (blocks[x - 1, y, z].opacity <= 127)
+						nearAir = true;
+					else if (blocks[x + 1, y, z].opacity <= 127)
+						nearAir = true;
+					else if (blocks[x, y - 1, z].opacity <= 127)
+						nearAir = true;
+					else if (blocks[x, y + 1, z].opacity <= 127)
+						nearAir = true;
+					else if (blocks[x, y, z - 1].opacity <= 127)
+						nearAir = true;
+					else if (blocks[x, y, z + 1].opacity <= 127)
+						nearAir = true;
+
+					if (!nearAir)
+						continue;
+
 					blocks[x, y, z].needsUpdate = 255;
 				}
 			}
 		}
-
-		// Clear existing queues
-		//toLightUpdate.Clear();
-		//afterLightUpdate.Clear();
 	}
 
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
@@ -76,7 +103,7 @@ public class Chunk : MonoBehaviour
 		// Set brightness
 		foreach (Block block in blocks)
 		{
-			if (block.updatePending > 0)
+			if (block.updatePending > 0 || block.postUpdate > 0)
 				continue;
 
 			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
@@ -98,7 +125,7 @@ public class Chunk : MonoBehaviour
 			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
 
 			// Add block to update queue
-			if (lastPass && block.needsUpdate > 0)
+			if (lastPass && block.needsUpdate > 0 && block.postUpdate == 0)
 			{
 				block.updatePending = 255;
 
@@ -115,6 +142,7 @@ public class Chunk : MonoBehaviour
 		while (afterLightUpdate.Count > 0)
 		{
 			inQueue = afterLightUpdate.Dequeue();
+			inQueue.postUpdate = 0;
 
 			inQueue.lastBrightness = inQueue.brightness;
 			inQueue.lastColorTemp = inQueue.colorTemp;
@@ -124,7 +152,7 @@ public class Chunk : MonoBehaviour
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 16); i++)
+		for (int i = 0; i < Mathf.Min(count, 128); i++)
 		{
 			inQueue = toLightUpdate.Dequeue();
 			chunkMesh.SetVertexColors(inQueue);
@@ -132,6 +160,7 @@ public class Chunk : MonoBehaviour
 			inQueue.needsUpdate = 0;
 			inQueue.updatePending = 0;
 
+			inQueue.postUpdate = 255;
 			afterLightUpdate.Enqueue(inQueue);
 		}
 
