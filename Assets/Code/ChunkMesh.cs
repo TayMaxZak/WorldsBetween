@@ -106,7 +106,8 @@ public class ChunkMesh : MonoBehaviour
 					block = blocks[x, y, z];
 
 					// Empty block
-					if (block.opacity / 255f < 0.5f)
+					// TODO: Change
+					if (block.opacity <= 127)
 						continue;
 
 					// Remember which vertex index this block starts at

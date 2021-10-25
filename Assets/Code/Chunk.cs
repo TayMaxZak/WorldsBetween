@@ -53,49 +53,53 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	public void MarkAllAsDirty()
+	public void MarkAsDirtyForLight()
 	{
-		Block inQueue;
-
-		// Mark all as dirty
-		foreach (Block block in blocks)
+		for (byte x = 0; x < chunkSize; x++)
 		{
-			block.needsUpdate = 255;
-			block.updatePending = 0;
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					//// Empty block
+					//// TODO: Change
+					//if (blocks[x, y, z].opacity > 127)
+					//	continue;
+
+					//bool air = false;
+
+					//// Check chunk border
+					//if (x == 0 || x == chunkSize - 1)
+					//	air = true;
+					//else if (y == 0 || y == chunkSize - 1)
+					//	air = true;
+					//else if (z == 0 || z == chunkSize - 1)
+					//	air = true;
+					//// Check adjacent blocks
+					//else if (blocks[x - 1, y, z].opacity > 127)
+					//	air = true;
+					//else if (blocks[x + 1, y, z].opacity > 127)
+					//	air = true;
+					//else if (blocks[x, y - 1, z].opacity > 127)
+					//	air = true;
+					//else if (blocks[x, y + 1, z].opacity > 127)
+					//	air = true;
+					//else if (blocks[x, y, z - 1].opacity > 127)
+					//	air = true;
+					//else if (blocks[x, y, z + 1].opacity > 127)
+					//	air = true;
+
+					//if (!air)
+					//	return;
+
+					blocks[x, y, z].needsUpdate = 255;
+					//blocks[x, y, z].updatePending = 0;
+				}
+			}
 		}
 
-		//// Clear all queues
-		//while (afterLightUpdate.Count > 0)
-		//{
-		//	inQueue = afterLightUpdate.Dequeue();
-		//}
-
-		//while (toLightUpdate.Count > 0)
-		//{
-		//	inQueue = toLightUpdate.Dequeue();
-
-		//	inQueue.needsUpdate = 0;
-		//	inQueue.updatePending = 0;
-		//}
-	}
-
-	public void CleanupLight()
-	{
-		Block inQueue;
-
-		// Clear all queues
-		while (afterLightUpdate.Count > 0)
-		{
-			afterLightUpdate.Dequeue();
-		}
-
-		while (toLightUpdate.Count > 0)
-		{
-			inQueue = toLightUpdate.Dequeue();
-
-			inQueue.needsUpdate = 255;
-			inQueue.updatePending = 0;
-		}
+		toLightUpdate.Clear();
+		afterLightUpdate.Clear();
 	}
 
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
@@ -138,7 +142,7 @@ public class Chunk : MonoBehaviour
 	{
 		Block inQueue;
 
-		// Handle previously dequeued blocks
+		// Handle previously dequeued blocks first
 		while (afterLightUpdate.Count > 0)
 		{
 			inQueue = afterLightUpdate.Dequeue();
@@ -151,7 +155,7 @@ public class Chunk : MonoBehaviour
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, 32); i++)
+		for (int i = 0; i < Mathf.Min(count, 16); i++)
 		{
 			inQueue = toLightUpdate.Dequeue();
 			chunkMesh.SetVertexColors(inQueue);

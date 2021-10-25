@@ -129,8 +129,8 @@ public class World : MonoBehaviour
 			{
 				chunksToLightCleanup = lightSources[i].FindAffectedChunks();
 
-				foreach (Chunk chunk in chunksToLightCleanup)
-					chunk.CleanupLight();
+				//foreach (Chunk chunk in chunksToLightCleanup)
+				//	chunk.CleanupLight();
 			}
 
 			// Go through each affected chunk
@@ -145,7 +145,7 @@ public class World : MonoBehaviour
 				// Mark chunk as dirty
 				if (lightSources[i].dirty)
 				{
-					chunk.MarkAllAsDirty();
+					chunk.MarkAsDirtyForLight();
 
 					// This chunk can consider this light handled
 					chunk.lightsToHandle--;
