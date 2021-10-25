@@ -8,7 +8,7 @@ public class Chunk : MonoBehaviour
 	public Vector3Int position; // Coordinates of chunk
 
 	[SerializeField]
-	private int chunkSize = 2;
+	private int chunkSize = 8;
 
 	private Block[,,] blocks;
 

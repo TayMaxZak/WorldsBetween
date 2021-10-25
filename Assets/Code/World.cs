@@ -22,7 +22,7 @@ public class World : MonoBehaviour
 	// Chunks
 	[SerializeField]
 	private Chunk chunkPrefab;
-	private Dictionary<Vector3Int,Chunk> chunks;
+	private Dictionary<Vector3Int, Chunk> chunks;
 
 	private static World Instance;
 
@@ -77,7 +77,7 @@ public class World : MonoBehaviour
 
 	private void Generate()
 	{
-		foreach (KeyValuePair<Vector3Int,Chunk> entry in chunks)
+		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
 		{
 			for (int i = 0; i < carvers.Count; i++)
 			{
@@ -157,12 +157,13 @@ public class World : MonoBehaviour
 
 	public static Chunk GetChunkFor(int x, int y, int z)
 	{
-		int scale = 8;
+		float chunkSize = 8;
 
 		Instance.chunks.TryGetValue(new Vector3Int(
-			((x - scale / 2) / scale) * scale,
-			((y - scale / 2) / scale) * scale,
-			((z - scale / 2) / scale) * scale),
+			Mathf.FloorToInt(x / chunkSize) * (int)chunkSize,
+			Mathf.FloorToInt(y / chunkSize) * (int)chunkSize,
+			Mathf.FloorToInt(z / chunkSize) * (int)chunkSize
+		),
 		out Chunk chunk);
 
 		return chunk;
