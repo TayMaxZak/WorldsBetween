@@ -185,6 +185,8 @@ public class Chunk : MonoBehaviour
 
 	public void CacheNearAir()
 	{
+		int cutoff = 135;
+
 		for (byte x = 0; x < chunkSize; x++)
 		{
 			for (byte y = 0; y < chunkSize; y++)
@@ -192,7 +194,7 @@ public class Chunk : MonoBehaviour
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					// Remember if this block is bordering air
-					if (blocks[x, y, z].opacity <= 127)
+					if (blocks[x, y, z].opacity <= cutoff)
 					{
 						blocks[x, y, z].nearAir = 255;
 						continue;
@@ -212,33 +214,33 @@ public class Chunk : MonoBehaviour
 					if (!chunkBorder)
 					{
 						// Check adjacent blocks in this chunk
-						if (blocks[x - 1, y, z].opacity <= 127)
+						if (blocks[x - 1, y, z].opacity <= cutoff)
 							nearAir = true;
-						else if (blocks[x + 1, y, z].opacity <= 127)
+						else if (blocks[x + 1, y, z].opacity <= cutoff)
 							nearAir = true;
-						else if (blocks[x, y - 1, z].opacity <= 127)
+						else if (blocks[x, y - 1, z].opacity <= cutoff)
 							nearAir = true;
-						else if (blocks[x, y + 1, z].opacity <= 127)
+						else if (blocks[x, y + 1, z].opacity <= cutoff)
 							nearAir = true;
-						else if (blocks[x, y, z - 1].opacity <= 127)
+						else if (blocks[x, y, z - 1].opacity <= cutoff)
 							nearAir = true;
-						else if (blocks[x, y, z + 1].opacity <= 127)
+						else if (blocks[x, y, z + 1].opacity <= cutoff)
 							nearAir = true;
 					}
 					else
 					{
 						// Check adjacent blocks (in world space this time)
-						if (World.GetBlockFor(position.x + x - 1,		position.y + y,		position.z + z).opacity <= 127)
+						if (World.GetBlockFor(position.x + x - 1,		position.y + y,		position.z + z).opacity <= cutoff)
 							nearAir = true;
-						else if (World.GetBlockFor(position.x + x + 1,	position.y + y,		position.z + z).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x + 1,	position.y + y,		position.z + z).opacity <= cutoff)
 							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y - 1, position.z + z).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y - 1, position.z + z).opacity <= cutoff)
 							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y + 1, position.z + z).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y + 1, position.z + z).opacity <= cutoff)
 							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z - 1).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z - 1).opacity <= cutoff)
 							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z + 1).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z + 1).opacity <= cutoff)
 							nearAir = true;
 					}
 

@@ -105,6 +105,9 @@ public class ChunkMesh : MonoBehaviour
 
 		Vector3 blockMeshOffset;
 
+		Vector3 modelScale;
+		Vector3 modelOffset;
+
 		int chunkSize = chunk.GetChunkSize();
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -132,9 +135,62 @@ public class ChunkMesh : MonoBehaviour
 					// Add vertices
 					blockVert = blockMesh.vertices;
 
+					// Mess with fill of model
+					modelOffset = Vector3.zero;
+					modelScale = Vector3.one;
+					{
+						float fill = block.opacity / 255f;
+
+						bool chunkBorder = false;
+
+						// Check chunk border
+						if (x == 0 || x == chunkSize - 1)
+							chunkBorder = true;
+						else if (y == 0 || y == chunkSize - 1)
+							chunkBorder = true;
+						else if (z == 0 || z == chunkSize - 1)
+							chunkBorder = true;
+
+						if (!chunkBorder)
+						{
+							bool bottom = false;
+							bool top = false;
+
+							// Check adjacent blocks in this chunk
+							if (blocks[x, y - 1, z].opacity > 127)
+							{
+								modelOffset.y = 0;
+
+								modelScale.y = fill;
+
+								bottom = true;
+							}
+							if (blocks[x, y + 1, z].opacity > 127)
+							{
+								modelOffset.y = 1 - fill;
+
+								modelScale.y = fill;
+
+								top = true;
+							}
+
+							if (top && bottom)
+							{
+								modelOffset.x = 0.5f - fill / 2;
+								modelOffset.y = 0;
+								modelOffset.z = 0.5f - fill / 2;
+
+								modelScale.x = fill;
+								modelScale.y = 1;
+								modelScale.z = fill;
+							}
+						}
+					}
+
 					for (int i = 0; i < blockVert.Length; i++)
 					{
-						vertices.Add(blockVert[i]/* + Random.onUnitSphere * (0.5f - block.opacity / 255f)*/ + blockMeshOffset);
+						blockVert[i].Scale(modelScale);
+						vertices.Add(blockVert[i] + modelOffset + Random.onUnitSphere * (0.5f - block.opacity / 255f) + blockMeshOffset);
 					}
 
 					block.endIndex = vertices.Count;
