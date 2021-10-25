@@ -194,7 +194,7 @@ public class World : MonoBehaviour
 		Chunk chunk = GetChunkFor(x, y, z);
 
 		if (chunk == null)
-			return null;
+			return Block.empty;
 
 		return chunk.GetBlock(
 			x - chunk.position.x,

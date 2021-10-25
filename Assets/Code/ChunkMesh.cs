@@ -6,7 +6,8 @@ public class ChunkMesh : MonoBehaviour
 {
 	private static Color borderColor = new Color(0, 0, 0.5f, 0.5f);
 
-
+	private static Color debugHidden = new Color(0.8f, 0.8f, 0.0f, 0.0f);
+	private static Color debugNearAir = new Color(0.8f, 0.8f, 1.0f, 1.0f);
 
 	private Chunk chunk;
 
@@ -43,18 +44,6 @@ public class ChunkMesh : MonoBehaviour
 		{
 			loopCounter++;
 
-			// Inside wall
-			if (block.nearAir == 0)
-			{
-				colors[i] = borderColor;
-				continue;
-			}
-			//else
-			//{
-			//	colors[i] = borderColor;
-			//	continue;
-			//}
-
 			// Find actual block to sample for brightness
 			meshPos = sharedVertices[i];
 			blockPos.x = (int)(meshPos.x + offset);
@@ -66,16 +55,17 @@ public class ChunkMesh : MonoBehaviour
 			if (adj == null || adj.nearAir == 0)
 				adj = block;
 
-			if (!(adj.needsUpdate == 0 || adj.updatePending > 0 || adj.postUpdate > 0))
-				adj = block;
-
 			// Convert brightness value to float
-			float lastBright = adj.lastBrightness / 255f;
+			float lastBright = adj.brightness / 255f;
+			if (adj.postUpdate > 0)
+				lastBright = adj.brightness / 255f;
 
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.lastColorTemp / 255f;
+			float lastHue = adj.colorTemp / 255f;
+			if (adj.postUpdate > 0)
+				lastHue = adj.colorTemp / 255f;
 
 			float newHue = adj.colorTemp / 255f;
 
@@ -144,7 +134,7 @@ public class ChunkMesh : MonoBehaviour
 
 					for (int i = 0; i < blockVert.Length; i++)
 					{
-						vertices.Add(blockVert[i] + Random.onUnitSphere * (0.5f - block.opacity / 255f) + blockMeshOffset);
+						vertices.Add(blockVert[i]/* + Random.onUnitSphere * (0.5f - block.opacity / 255f)*/ + blockMeshOffset);
 					}
 
 					block.endIndex = vertices.Count;
@@ -185,10 +175,9 @@ public class ChunkMesh : MonoBehaviour
 
 		sharedVertices = filter.sharedMesh.vertices;
 
-		Color baseColor = new Color(0, 0, 0.5f, 0.5f);
 		colors = new Color[sharedVertices.Length];
 		for (int i = 0; i < colors.Length; i++)
-			colors[i] = baseColor;
+			colors[i] = borderColor;
 
 		ApplyVertexColors();
 	}

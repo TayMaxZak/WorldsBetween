@@ -192,8 +192,11 @@ public class Chunk : MonoBehaviour
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					// Remember if this block is bordering air
-					//if (blocks[x, y, z].opacity <= 127)
-					//	continue;
+					if (blocks[x, y, z].opacity <= 127)
+					{
+						blocks[x, y, z].nearAir = 255;
+						continue;
+					}
 
 					bool nearAir = false;
 					bool chunkBorder = false;
@@ -208,7 +211,7 @@ public class Chunk : MonoBehaviour
 
 					if (!chunkBorder)
 					{
-						// Check adjacent blocks
+						// Check adjacent blocks in this chunk
 						if (blocks[x - 1, y, z].opacity <= 127)
 							nearAir = true;
 						else if (blocks[x + 1, y, z].opacity <= 127)
@@ -224,18 +227,18 @@ public class Chunk : MonoBehaviour
 					}
 					else
 					{
-						// Check adjacent blocks
-						if (World.GetBlockFor(x - 1, y, z).opacity <= 127)
+						// Check adjacent blocks (in world space this time)
+						if (World.GetBlockFor(position.x + x - 1,		position.y + y,		position.z + z).opacity <= 127)
 							nearAir = true;
-						else if (World.GetBlockFor(x + 1, y, z).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x + 1,	position.y + y,		position.z + z).opacity <= 127)
 							nearAir = true;
-						else if (World.GetBlockFor(x, y - 1, z).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y - 1, position.z + z).opacity <= 127)
 							nearAir = true;
-						else if (World.GetBlockFor(x, y + 1, z).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y + 1, position.z + z).opacity <= 127)
 							nearAir = true;
-						else if (World.GetBlockFor(x, y, z - 1).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z - 1).opacity <= 127)
 							nearAir = true;
-						else if (World.GetBlockFor(x, y, z + 1).opacity <= 127)
+						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z + 1).opacity <= 127)
 							nearAir = true;
 					}
 

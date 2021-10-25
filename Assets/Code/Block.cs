@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Block
 {
+	public static Block empty = new Block(0, 0, 0, 0);
+
 	public byte localX, localY, localZ; // Coordinates in chunk local space
 
 	public byte opacity; // How full is this block (0 is empty air, 15 is completely solid)

@@ -229,7 +229,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279668549}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb9f1f466acc65241a1a84fbada85415, type: 3}
   m_Name: 
@@ -285,7 +285,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 415612272315696616, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_RootOrder
@@ -694,7 +694,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightUpdateTimer:
     maxTime: 0.2
-  lightUpdateSize: 16
+  lightUpdateSize: 32
   lightRoot: {fileID: 295908289}
   carverRoot: {fileID: 1065077658}
   chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
@@ -783,7 +783,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 415612272315696616, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_RootOrder
@@ -876,7 +876,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 415612272315696616, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_RootOrder
@@ -949,7 +949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1462627217
 Light:
   m_ObjectHideFlags: 0
@@ -1117,7 +1117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 415612272315696616, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6703740883843947193, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: m_RootOrder
@@ -1258,11 +1258,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
       propertyPath: colorTemp
-      value: -3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
-      propertyPath: brightness
-      value: 1
+      value: -3.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
