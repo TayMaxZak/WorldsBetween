@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour
 {
+	public Camera cam;
+
 	// Position
 	[HideInInspector]
 	public int worldX, worldY, worldZ; // Coordinates in world space
 	private int lastWorldX, lastWorldY, lastWorldZ;
+
+	private Vector3 lastActualPos;
 
 	// Velocity
 	[SerializeField]
@@ -29,6 +33,8 @@ public class PlayerMover : MonoBehaviour
 	{
 		UpdatePosition();
 
+		cam.transform.parent = null;
+
 		didInit = true;
 	}
 
@@ -37,14 +43,17 @@ public class PlayerMover : MonoBehaviour
 		if (!didInit)
 			return;
 
+		cam.transform.position = Vector3.Lerp(lastActualPos, transform.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime) + Vector3.up;
+
 		moveTickTimer.Increment(Time.deltaTime);
 
 		if (moveTickTimer.Expired())
 		{
+			lastActualPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 			MoveTick(moveTickTimer.maxTime);
 
 			moveTickTimer.Reset();
-		}
+		}			
 	}
 
 	private void MoveTick(float deltaTime)
