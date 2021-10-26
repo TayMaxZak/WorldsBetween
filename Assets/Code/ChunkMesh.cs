@@ -139,52 +139,52 @@ public class ChunkMesh : MonoBehaviour
 					modelOffset = Vector3.zero;
 					modelScale = Vector3.one;
 					{
-						float fill = block.opacity / 255f;
+						//float fill = block.opacity / 255f;
 
-						bool chunkBorder = false;
+						//bool chunkBorder = false;
 
-						// Check chunk border
-						if (x == 0 || x == chunkSize - 1)
-							chunkBorder = true;
-						else if (y == 0 || y == chunkSize - 1)
-							chunkBorder = true;
-						else if (z == 0 || z == chunkSize - 1)
-							chunkBorder = true;
+						//// Check chunk border
+						//if (x == 0 || x == chunkSize - 1)
+						//	chunkBorder = true;
+						//else if (y == 0 || y == chunkSize - 1)
+						//	chunkBorder = true;
+						//else if (z == 0 || z == chunkSize - 1)
+						//	chunkBorder = true;
 
-						if (!chunkBorder)
-						{
-							bool left = false;
-							bool right = false;
+						//if (!chunkBorder)
+						//{
+						//	bool left = false;
+						//	bool right = false;
 
-							// Check adjacent blocks in this chunk
-							if (blocks[x - 1, y, z].opacity > 127)
-							{
-								modelOffset.x = 0;
+						//	// Check adjacent blocks in this chunk
+						//	if (blocks[x - 1, y, z].opacity > 127)
+						//	{
+						//		modelOffset.x = 0;
 
-								modelScale.x = fill;
+						//		modelScale.x = fill;
 
-								left = true;
-							}
-							if (blocks[x + 1, y, z].opacity > 127)
-							{
-								modelOffset.x = 1 - fill;
+						//		left = true;
+						//	}
+						//	if (blocks[x + 1, y, z].opacity > 127)
+						//	{
+						//		modelOffset.x = 1 - fill;
 
-								modelScale.x = fill;
+						//		modelScale.x = fill;
 
-								right = true;
-							}
+						//		right = true;
+						//	}
 
-							if (left && right)
-							{
-								modelOffset.y = 0.5f - fill / 2;
-								modelOffset.x = 0;
-								modelOffset.z = 0.5f - fill / 2;
+						//	if (left && right)
+						//	{
+						//		modelOffset.y = 0.5f - fill / 2;
+						//		modelOffset.x = 0;
+						//		modelOffset.z = 0.5f - fill / 2;
 
-								modelScale.y = fill;
-								modelScale.x = 1;
-								modelScale.z = fill;
-							}
-						}
+						//		modelScale.y = fill;
+						//		modelScale.x = 1;
+						//		modelScale.z = fill;
+						//	}
+						//}
 					}
 
 					for (int i = 0; i < blockVert.Length; i++)
