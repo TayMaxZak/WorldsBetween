@@ -70,6 +70,29 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
+	public void CleanupLight()
+	{
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					if (blocks[x, y, z].nearAir == 0)
+						continue;
+
+					blocks[x, y, z].brightness = 0;
+
+					if (blocks[x, y, z].updatePending == 0)
+					{
+						blocks[x, y, z].updatePending = 255;
+						toLightUpdate.Enqueue(blocks[x, y, z], Random.value * 0.5f);
+					}
+				}
+			}
+		}
+	}
+
 	public void AddLight(LightSource light, bool firstPass, bool lastPass)
 	{
 		int counter = 0;
@@ -108,10 +131,7 @@ public class Chunk : MonoBehaviour
 			if (lastPass && block.updatePending == 0 && block.postUpdate == 0)
 			{
 				block.updatePending = 255;
-
-				// 1.0 priority never reached???
-				if (newBrightness > 0)
-					toLightUpdate.Enqueue(block, 1 - newBrightness);
+				toLightUpdate.Enqueue(block, 1 - Mathf.Abs(oldBrightness - newBrightness));
 			}
 		}
 

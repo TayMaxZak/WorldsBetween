@@ -18,6 +18,11 @@ public class LightSource : MonoBehaviour
 
 	public bool dirty = true;
 
+	private void Awake()
+	{
+		World.RegisterLight(this);
+	}
+
 	public List<Chunk> FindAffectedChunks()
 	{
 		// Remember and return old chunks

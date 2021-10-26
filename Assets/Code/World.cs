@@ -10,9 +10,7 @@ public class World : MonoBehaviour
 	[SerializeField]
 	private int lightUpdateSize = 32;
 
-	[SerializeField]
-	private Transform lightRoot = null;
-	private List<LightSource> lightSources;
+	private List<LightSource> lightSources = new List<LightSource>();
 
 	private bool firstLightPass = true;
 
@@ -42,8 +40,6 @@ public class World : MonoBehaviour
 			Instance = this;
 
 		chunks = new Dictionary<Vector3Int, Chunk>();
-
-		lightSources = new List<LightSource>(lightRoot.GetComponentsInChildren<LightSource>());
 
 		carvers = new List<Carver>(carverRoot.GetComponentsInChildren<Carver>());
 	}
@@ -106,6 +102,16 @@ public class World : MonoBehaviour
 		CalculateLighting();
 	}
 
+	public static void RegisterLight(LightSource light)
+	{
+		Instance.lightSources.Add(light);
+	}
+
+	public static void RemoveLight(LightSource light)
+	{
+		Instance.lightSources.Remove(light);
+	}
+
 	private void CalculateLighting()
 	{
 		lightUpdateTimer.Increment(Time.deltaTime);
@@ -136,8 +142,11 @@ public class World : MonoBehaviour
 			{
 				chunksToLightCleanup = lightSources[i].FindAffectedChunks();
 
-				//foreach (Chunk chunk in chunksToLightCleanup)
-				//	chunk.CleanupLight();
+				foreach (Chunk chunk in chunksToLightCleanup)
+				{
+					if (!lightSources[i].affectedChunks.Contains(chunk))
+						chunk.CleanupLight();
+				}
 			}
 
 			// Go through each affected chunk
@@ -168,6 +177,11 @@ public class World : MonoBehaviour
 			if (lightSources[i].dirty)
 				lightSources[i].dirty = false;
 		}
+
+		//foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
+		//{
+		//	entry.Value.UpdateLightVisuals();
+		//}
 
 		foreach (Chunk chunk in chunksToLightUpdate)
 		{

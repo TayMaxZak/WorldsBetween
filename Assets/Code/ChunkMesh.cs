@@ -190,7 +190,7 @@ public class ChunkMesh : MonoBehaviour
 					for (int i = 0; i < blockVert.Length; i++)
 					{
 						blockVert[i].Scale(modelScale);
-						vertices.Add(blockVert[i] + modelOffset + Random.onUnitSphere * (0.5f - block.opacity / 255f) + blockMeshOffset);
+						vertices.Add(blockVert[i] + modelOffset + blockMeshOffset);
 					}
 
 					block.endIndex = vertices.Count;
