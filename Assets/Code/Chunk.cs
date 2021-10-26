@@ -185,7 +185,7 @@ public class Chunk : MonoBehaviour
 
 	public void CacheNearAir()
 	{
-		int cutoff = 135;
+		int cutoff = 127;
 
 		for (byte x = 0; x < chunkSize; x++)
 		{

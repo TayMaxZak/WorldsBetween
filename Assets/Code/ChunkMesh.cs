@@ -52,18 +52,18 @@ public class ChunkMesh : MonoBehaviour
 
 			// Block that's closest to this actual vertex
 			adj = World.GetBlockFor(chunk.position + blockPos);
-			//if (adj == null || adj.nearAir == 0)
+			if (adj == null || adj.nearAir == 0)
 				adj = block;
 
 			// Convert brightness value to float
-			float lastBright = adj.lastBrightness / 255f;
+			float lastBright = adj.brightness / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastBright = adj.brightness / 255f;
 
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.lastColorTemp / 255f;
+			float lastHue = adj.colorTemp / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastHue = adj.colorTemp / 255f;
 
