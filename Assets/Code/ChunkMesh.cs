@@ -19,6 +19,12 @@ public class ChunkMesh : MonoBehaviour
 	Vector3[] sharedVertices;
 	Color[] colors;
 
+	Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
+											new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
+
+	Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
+											new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
+
 	public void Init(Chunk chunk)
 	{
 		this.chunk = chunk;
@@ -46,24 +52,24 @@ public class ChunkMesh : MonoBehaviour
 
 			// Find actual block to sample for brightness
 			meshPos = sharedVertices[i];
-			//blockPos.x = (int)(meshPos.x + offset);
-			//blockPos.y = (int)(meshPos.y + offset) + 1;
-			//blockPos.z = (int)(meshPos.z + offset);
+			blockPos.x = (int)(meshPos.x + offset);
+			blockPos.y = (int)(meshPos.y + offset) + 1;
+			blockPos.z = (int)(meshPos.z + offset);
 
 			// Block that's closest to this actual vertex
-			//adj = World.GetBlockFor(chunk.position + blockPos);
-			//if (adj == null || adj.nearAir == 0)
-			adj = block;
+			adj = World.GetBlockFor(chunk.position + blockPos);
+			if (adj == null || adj.nearAir == 0)
+				adj = block;
 
 			// Convert brightness value to float
-			float lastBright = adj.lastBrightness / 255f;
+			float lastBright = adj.brightness / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastBright = adj.brightness / 255f;
 
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.lastColorTemp / 255f;
+			float lastHue = adj.colorTemp / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastHue = adj.colorTemp / 255f;
 
@@ -108,8 +114,9 @@ public class ChunkMesh : MonoBehaviour
 
 		Vector3 blockMeshOffset;
 
-		Vector3 modelScale;
-		Vector3 modelOffset;
+		Vector3Int faceOffset = new Vector3Int();
+
+		Vector3 vert;
 
 		int chunkSize = chunk.GetChunkSize();
 		for (byte x = 0; x < chunkSize; x++)
@@ -126,100 +133,59 @@ public class ChunkMesh : MonoBehaviour
 						continue;
 
 					// Remember which vertex index this block starts at
-					int indexOffset = vertices.Count;
+					block.startIndex = vertices.Count;
 
-					block.startIndex = indexOffset;
-
-					// Local position offset for this block
-					blockMeshOffset.x = x;
-					blockMeshOffset.y = y;
-					blockMeshOffset.z = z;
-
-					// Add vertices
-					blockVert = blockMesh.vertices;
-
-					// Mess with fill of model
-					modelOffset = Vector3.zero;
-					modelScale = Vector3.one;
+					for (int d = 0; d < directions.Length; d++)
 					{
-						//float fill = block.opacity / 255f;
+						faceOffset.x = chunk.position.x + x + directions[d].x;
+						faceOffset.y = chunk.position.y + y + directions[d].y;
+						faceOffset.z = chunk.position.z + z + directions[d].z;
 
-						//bool chunkBorder = false;
+						if (World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).opacity > 127)
+							continue;
 
-						//// Check chunk border
-						//if (x == 0 || x == chunkSize - 1)
-						//	chunkBorder = true;
-						//else if (y == 0 || y == chunkSize - 1)
-						//	chunkBorder = true;
-						//else if (z == 0 || z == chunkSize - 1)
-						//	chunkBorder = true;
+						int indexOffset = vertices.Count;
 
-						//if (!chunkBorder)
-						//{
-						//	bool left = false;
-						//	bool right = false;
+						// Local position offset for this block
+						blockMeshOffset.x = x;
+						blockMeshOffset.y = y;
+						blockMeshOffset.z = z;
 
-						//	// Check adjacent blocks in this chunk
-						//	if (blocks[x - 1, y, z].opacity > 127)
-						//	{
-						//		modelOffset.x = 0;
+						// Add vertices
+						blockVert = blockMesh.vertices;
 
-						//		modelScale.x = fill;
+						for (int i = 0; i < blockVert.Length; i++)
+						{
+							vert = Quaternion.Euler(rotations[d]) * (blockVert[i] + Vector3.forward * 0.5f);
 
-						//		left = true;
-						//	}
-						//	if (blocks[x + 1, y, z].opacity > 127)
-						//	{
-						//		modelOffset.x = 1 - fill;
+							vertices.Add(vert + Vector3.one * 0.5f + blockMeshOffset);
+						}
 
-						//		modelScale.x = fill;
+						block.endIndex = vertices.Count;
 
-						//		right = true;
-						//	}
+						// Add normals
+						blockNormals = blockMesh.normals;
 
-						//	if (left && right)
-						//	{
-						//		modelOffset.y = 0.5f - fill / 2;
-						//		modelOffset.x = 0;
-						//		modelOffset.z = 0.5f - fill / 2;
+						for (int i = 0; i < blockNormals.Length; i++)
+						{
+							normals.Add(Quaternion.Euler(rotations[d]) * blockNormals[i]);
+						}
 
-						//		modelScale.y = fill;
-						//		modelScale.x = 1;
-						//		modelScale.z = fill;
-						//	}
-						//}
-					}
+						// Add triangles
+						blockTri = blockMesh.triangles;
 
-					for (int i = 0; i < blockVert.Length; i++)
-					{
-						blockVert[i].Scale(modelScale);
-						vertices.Add(blockVert[i] + modelOffset + blockMeshOffset);
-					}
+						for (int i = 0; i < blockTri.Length; i++)
+						{
+							triangles.Add(blockTri[i] + indexOffset);
+						}
 
-					block.endIndex = vertices.Count;
+						// Add UVs
+						blockUv = blockMesh.uv;
 
-					// Add normals
-					blockNormals = blockMesh.normals;
-
-					for (int i = 0; i < blockNormals.Length; i++)
-					{
-						normals.Add(blockNormals[i]);
-					}
-
-					// Add triangles
-					blockTri = blockMesh.triangles;
-
-					for (int i = 0; i < blockTri.Length; i++)
-					{
-						triangles.Add(blockTri[i] + indexOffset);
-					}
-
-					// Add UVs
-					blockUv = blockMesh.uv;
-
-					for (int i = 0; i < blockUv.Length; i++)
-					{
-						uv.Add(blockUv[i]);
+						for (int i = 0; i < blockUv.Length; i++)
+						{
+							uv.Add(blockUv[i]);
+						}
 					}
 				}
 			}

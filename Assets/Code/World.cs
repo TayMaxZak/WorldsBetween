@@ -79,11 +79,13 @@ public class World : MonoBehaviour
 					chunk.UpdatePos();
 					chunks.Add(chunk.position, chunk);
 
-					Instantiate(prefabLight, new Vector3(
+					LightSource light = Instantiate(prefabLight, new Vector3(
 						x * size + Random.value * size,
 						y * size + Random.value * size,
 						z * size + Random.value * size),
 					Quaternion.identity, lightRoot);
+
+					light.colorTemp = Random.Range(-10, 10);
 				}
 			}
 		}
@@ -109,12 +111,11 @@ public class World : MonoBehaviour
 
 				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 			}
-
-			entry.Value.UpdateOpacityVisuals();
 		}
 
 		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
 		{
+			entry.Value.UpdateOpacityVisuals();
 			entry.Value.CacheNearAir();
 		}
 	}
