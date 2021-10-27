@@ -94,9 +94,9 @@ public class PlayerMover : MonoBehaviour
 
 	private void UpdatePosition()
 	{
-		worldX = Mathf.RoundToInt(transform.position.x);
-		worldY = Mathf.RoundToInt(transform.position.y);
-		worldZ = Mathf.RoundToInt(transform.position.z);
+		worldX = Mathf.FloorToInt(transform.position.x);
+		worldY = Mathf.FloorToInt(transform.position.y);
+		worldZ = Mathf.FloorToInt(transform.position.z);
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 			dirty = true;

@@ -16,14 +16,14 @@ public class Noise : Modifier
 	{
 		base.Init();
 
-		//randomOffset = new Vector3(Random.value, Random.value, Random.value) * offset;
+		randomOffset = new Vector3(Random.value, Random.value, Random.value) * offset;
 	}
 
 	public override float StrengthAt(float x, float y, float z)
 	{
-		x = x * scale + offset;
-		y = y * scale + offset;
-		z = z * scale + offset;
+		x = x * scale + offset + randomOffset.x;
+		y = y * scale + offset + randomOffset.y;
+		z = z * scale + offset + randomOffset.z;
 
 		float xPlane = Mathf.PerlinNoise(y, z);
 		float yPlane = Mathf.PerlinNoise(z, x);

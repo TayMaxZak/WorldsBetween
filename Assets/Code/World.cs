@@ -6,6 +6,8 @@ public class World : MonoBehaviour
 {
 	[Header("World Settings")]
 	[SerializeField]
+	private bool randomizeSeed = false;
+	[SerializeField]
 	private int seed = 0;
 	[SerializeField]
 	private int worldExtent = 4;
@@ -47,6 +49,8 @@ public class World : MonoBehaviour
 		else
 			Instance = this;
 
+		if (randomizeSeed)
+			seed = Random.Range(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
 		chunks = new Dictionary<Vector3Int, Chunk>();
@@ -103,14 +107,14 @@ public class World : MonoBehaviour
 
 	private void Generate()
 	{
-		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
+		for (int i = 0; i < modifiers.Count; i++)
 		{
-			for (int i = 0; i < modifiers.Count; i++)
-			{
-				modifiers[i].Init();
+			modifiers[i].Init();
 
+			foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
+			{
 				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
-			}
+			}		
 		}
 
 		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
