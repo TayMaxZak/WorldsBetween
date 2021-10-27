@@ -486,15 +486,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbc28df5073d7d47b394f4db71171fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1129277323}
   randomizeSeed: 0
   seed: 940786572
-  worldExtent: 2
+  nearPlayerGenRange: 4
   chunkSize: 8
   lightRoot: {fileID: 295908289}
   lightUpdateTimer:
     maxTime: 0.1
   lightUpdateSize: 256
   prefabLight: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
+  chunkGenTimer:
+    maxTime: 2
   chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
   chunksToLightUpdate: []
   chunksToLightCleanup: []
@@ -564,7 +567,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1129277323
 Transform:
   m_ObjectHideFlags: 0
@@ -573,7 +576,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1129277322}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -8.5, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2112247048}

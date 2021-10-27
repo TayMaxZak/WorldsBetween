@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
+	[SerializeField]
+	private Transform player;
+
 	[Header("World Settings")]
 	[SerializeField]
 	private bool randomizeSeed = false;
 	[SerializeField]
 	private int seed = 0;
 	[SerializeField]
-	private int worldExtent = 4;
+	private int nearPlayerGenRange = 4;
 	[SerializeField]
 	private int chunkSize = 8;
 
@@ -28,10 +31,13 @@ public class World : MonoBehaviour
 
 	private bool firstLightPass = true;
 
-	// Modifiers
+	[Header("Generation")]
 	private List<Modifier> modifiers;
 
 	// Chunks
+	[SerializeField]
+	private Timer chunkGenTimer = null;
+
 	[SerializeField]
 	private Chunk chunkPrefab;
 	private Dictionary<Vector3Int, Chunk> chunks;
@@ -58,36 +64,57 @@ public class World : MonoBehaviour
 		chunks = new Dictionary<Vector3Int, Chunk>();
 
 		modifiers = new List<Modifier>();
+
+		chunkGenTimer.Reset();
 	}
 
 	private void Start()
 	{
-		CreateChunks();
+		CreateChunksNearPlayer(nearPlayerGenRange, true);
 
-		Generate();
+		ApplyModifiers();
 
 		CalculateLighting();
 		firstLightPass = false;
 	}
 
-	private void CreateChunks()
+	private void CreateChunksNearPlayer(int range, bool dod)
 	{
-		for (int x = -worldExtent; x <= worldExtent; x++)
+		range *= chunkSize;
+
+		Vector3Int startPos = new Vector3Int(
+					Mathf.FloorToInt(player.position.x / chunkSize) * (int)chunkSize,
+					Mathf.FloorToInt(player.position.y / chunkSize) * (int)chunkSize,
+					Mathf.FloorToInt(player.position.z / chunkSize) * (int)chunkSize
+		);
+
+		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
 		{
-			for (int y = -worldExtent; y <= worldExtent; y++)
+			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize)
 			{
-				for (int z = -worldExtent; z <= worldExtent; z++)
+				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
 				{
-					Chunk chunk = Instantiate(chunkPrefab, new Vector3(x * chunkSize, y * chunkSize, z * chunkSize), Quaternion.identity, transform);
+					Vector3Int chunkPos = new Vector3Int(x, y, z);
+
+					if (chunks.ContainsKey(chunkPos))
+					{
+						Debug.LogWarning("Chunk already exists at " + chunkPos + "!");
+						continue;
+					}
+
+					if (!dod)
+						continue;
+
+					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
 					chunk.chunkSize = chunkSize;
 					chunk.Init();
 
 					chunks.Add(chunk.position, chunk);
 
 					LightSource light = Instantiate(prefabLight, new Vector3(
-						x * chunkSize + Random.value * chunkSize,
-						y * chunkSize + Random.value * chunkSize,
-						z * chunkSize + Random.value * chunkSize),
+						chunkPos.x + Random.value * chunkSize,
+						chunkPos.y + Random.value * chunkSize,
+						chunkPos.z + Random.value * chunkSize),
 					Quaternion.identity, lightRoot);
 
 					light.colorTemp = Random.Range(-10, 10);
@@ -106,7 +133,7 @@ public class World : MonoBehaviour
 		Instance.modifiers.Remove(modifier);
 	}
 
-	private void Generate()
+	private void ApplyModifiers()
 	{
 		for (int i = 0; i < modifiers.Count; i++)
 		{
@@ -130,6 +157,8 @@ public class World : MonoBehaviour
 		if (firstLightPass)
 			return;
 
+		GenChunks();
+
 		CalculateLighting();
 	}
 
@@ -141,6 +170,21 @@ public class World : MonoBehaviour
 	public static void RemoveLight(LightSource light)
 	{
 		Instance.lightSources.Remove(light);
+	}
+
+	private void GenChunks()
+	{
+		chunkGenTimer.Increment(Time.deltaTime);
+
+		bool doChunkGen = chunkGenTimer.Expired();
+
+		if (doChunkGen)
+			chunkGenTimer.Reset();
+
+		if (!doChunkGen)
+			return;
+
+		CreateChunksNearPlayer(nearPlayerGenRange, false);
 	}
 
 	private void CalculateLighting()
