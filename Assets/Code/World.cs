@@ -253,29 +253,16 @@ public class World : MonoBehaviour
 		{
 			lightSources[i].UpdatePosition();
 
-			Chunk c = GetChunkFor(lightSources[i].worldX, lightSources[i].worldY, lightSources[i].worldZ);
-
-			if (!c)
-				continue;
-
-			Chunk.GenStage genStage = c.genStage;
-			if (genStage != Chunk.GenStage.Meshed && genStage != Chunk.GenStage.Lit)
-				continue;
-
 			if (!lightSources[i].dirty)
 				continue;
 
-			// Update affected chunks and clean up old ones
-			if (lightSources[i].dirty)
-			{
-				chunksToLightCleanup = lightSources[i].FindAffectedChunks();
+			chunksToLightCleanup = lightSources[i].FindAffectedChunks();
 
-				//foreach (Chunk chunk in chunksToLightCleanup)
-				//{
-				//	if (!lightSources[i].affectedChunks.Contains(chunk))
-				//		chunk.CleanupLight();
-				//}
-			}
+			//foreach (Chunk chunk in chunksToLightCleanup)
+			//{
+			//	if (!lightSources[i].affectedChunks.Contains(chunk))
+			//		chunk.CleanupLight();
+			//}
 
 			// Should this light activate?
 			bool notReady = false;
@@ -295,6 +282,9 @@ public class World : MonoBehaviour
 			// Go through each affected chunk
 			foreach (Chunk chunk in lightSources[i].affectedChunks)
 			{
+				if (chunk.genStage != Chunk.GenStage.Meshed && chunk.genStage != Chunk.GenStage.Lit)
+					continue;
+
 				// First pass on this chunk. Reset "canvas" and apply light from scratch
 				bool firstPass = !chunksToLightUpdate.Contains(chunk);
 
@@ -320,8 +310,8 @@ public class World : MonoBehaviour
 				}
 			}
 
-			//if (lightSources[i].dirty)
-			//	lightSources[i].dirty = false;
+			if (lightSources[i].dirty && !notReady)
+				lightSources[i].dirty = false;
 		}
 
 		//foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)

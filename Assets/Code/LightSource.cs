@@ -51,7 +51,8 @@ public class LightSource : MonoBehaviour
 					{
 						affectedChunks.Add(chunk);
 
-						chunk.lightsToHandle++;
+						if (!oldAffectedChunks.Contains(chunk))
+							chunk.lightsToHandle++;
 					}
 				}
 			}

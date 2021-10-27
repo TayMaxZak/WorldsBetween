@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
 
+[SelectionBase]
 public class Chunk : MonoBehaviour
 {
 	public enum GenStage { Empty, Allocated, Generated, Meshed, Lit, Ready }
