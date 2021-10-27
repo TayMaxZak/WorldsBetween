@@ -34,6 +34,7 @@ public class World : MonoBehaviour
 	[Header("Generation")]
 	private List<Modifier> modifiers;
 
+	private float miniDelay = 0.05f;
 	private Coroutine chunkGenCoroutine = null;
 	private Coroutine chunkMeshCoroutine = null;
 
@@ -75,7 +76,7 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
-		chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
+		chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(1));
 
 		ApplyModifiers();
 
@@ -122,7 +123,7 @@ public class World : MonoBehaviour
 
 					light.colorTemp = Random.Range(-10, 10);
 
-					yield return new WaitForSeconds(0f);
+					yield return new WaitForSeconds(miniDelay);
 				}
 			}
 		}
@@ -218,7 +219,7 @@ public class World : MonoBehaviour
 
 			chunk.CacheNearAir();
 
-			yield return new WaitForSeconds(0f);
+			yield return new WaitForSeconds(miniDelay);
 
 			chunk.UpdateOpacityVisuals();
 

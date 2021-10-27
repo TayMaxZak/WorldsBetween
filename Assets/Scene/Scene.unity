@@ -16,10 +16,10 @@ RenderSettings:
   serializedVersion: 9
   m_Fog: 1
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
-  m_FogMode: 3
+  m_FogMode: 1
   m_FogDensity: 0.01
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_LinearFogStart: 32
+  m_LinearFogEnd: 128
   m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -292,11 +292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7094720244370263030, guid: fe9fa5a9ce4f8554a80a1855b16d2521, type: 3}
       propertyPath: range
-      value: 9
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7094720244370263030, guid: fe9fa5a9ce4f8554a80a1855b16d2521, type: 3}
       propertyPath: strength
-      value: -0.2
+      value: -0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe9fa5a9ce4f8554a80a1855b16d2521, type: 3}
@@ -491,17 +491,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1129277323}
-  randomizeSeed: 0
+  randomizeSeed: 1
   seed: 940786572
-  nearPlayerGenRange: 4
+  nearPlayerGenRange: 2
   chunkSize: 8
   lightRoot: {fileID: 295908289}
   lightUpdateTimer:
     maxTime: 0.1
-  lightUpdateSize: 256
+  lightUpdateSize: 1024
   prefabLight: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
   chunkGenTimer:
-    maxTime: 2
+    maxTime: 5
   chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
   chunksToLightUpdate: []
   chunksToLightCleanup: []
@@ -596,7 +596,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1129277322}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f27fa7b476663dd47806d74bf384754e, type: 3}
   m_Name: 
@@ -634,7 +634,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1462627217
 Light:
   m_ObjectHideFlags: 0
