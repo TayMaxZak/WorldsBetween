@@ -193,9 +193,12 @@ public class Chunk : MonoBehaviour
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					float carve = carver.strength / Utils.DistanceSqr(carver.worldX, carver.worldY, carver.worldZ, position.x + x, position.y + y, position.z + z);
+					bool inRange = carver.range * carver.range > Utils.DistanceSqr(carver.worldX, carver.worldY, carver.worldZ, position.x + x, position.y + y, position.z + z);
+					float carve = inRange ? carver.strength : 0;
 
 					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f) - carve;
+
+					newOpacity -= Noise.GetNoiseAt(x + position.x, y + position.y, z + position.z);
 
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
 				}

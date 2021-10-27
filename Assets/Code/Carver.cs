@@ -9,6 +9,7 @@ public class Carver : MonoBehaviour
 	public int worldX, worldY, worldZ; // Coordinates in world space
 
 	public float strength = 1;
+	public float range = 5;
 
 	public void UpdatePos()
 	{
