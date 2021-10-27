@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Noise : MonoBehaviour
+[SelectionBase]
+public class Noise : Modifier
 {
-	private static float scale = 0.0424f;
-	private static float offset = 244444.0424f;
+	public float scale = 0.0424f;
+	public float offset = 2444.0424f;
+	public float strength = 1;
+	public float cutoff = 0;
 
-	private static Noise Instance;
+	private Vector3 randomOffset = Vector3.zero;
 
-	private void Awake()
+	public override void Init()
 	{
-		if (Instance)
-		{
-			Destroy(gameObject);
-			return;
-		}
-		else
-			Instance = this;
+		base.Init();
+
+		//randomOffset = new Vector3(Random.value, Random.value, Random.value) * offset;
 	}
 
-	public static float GetNoiseAt(float x, float y, float z)
+	public override float StrengthAt(float x, float y, float z)
 	{
 		x = x * scale + offset;
 		y = y * scale + offset;
@@ -32,6 +31,8 @@ public class Noise : MonoBehaviour
 
 		float noise = Mathf.Clamp01((xPlane + yPlane + zPlane) / 3f);
 
-		return noise;
+		noise = Mathf.Clamp01(noise - cutoff) / (1 - cutoff);
+
+		return noise * strength;
 	}
 }

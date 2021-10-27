@@ -6,8 +6,8 @@ public class ChunkMesh : MonoBehaviour
 {
 	private static Color borderColor = new Color(0, 0, 0.5f, 0.5f);
 
-	private static Color debugHidden = new Color(0.8f, 0.8f, 0.0f, 0.0f);
-	private static Color debugNearAir = new Color(0.8f, 0.8f, 1.0f, 1.0f);
+	private static Color debugHidden = new Color(0.3f, 0.3f, 0.1f, 0.1f);
+	private static Color debugNearAir = new Color(0.5f, 0.5f, 0.9f, 0.9f);
 
 	private Chunk chunk;
 
@@ -45,32 +45,35 @@ public class ChunkMesh : MonoBehaviour
 			loopCounter++;
 
 			// Find actual block to sample for brightness
-			//meshPos = sharedVertices[i];
-			//blockPos.x = (int)(meshPos.x + offset);
-			//blockPos.y = (int)(meshPos.y + offset);
-			//blockPos.z = (int)(meshPos.z + offset);
+			meshPos = sharedVertices[i];
+			blockPos.x = (int)(meshPos.x + offset);
+			blockPos.y = (int)(meshPos.y + offset) + 1;
+			blockPos.z = (int)(meshPos.z + offset);
 
-			// Block that's closest to this actual vertex
-			//adj = World.GetBlockFor(chunk.position + blockPos);
-			//if (adj == null || adj.nearAir == 0)
-				adj = block;
+			//// Block that's closest to this actual vertex
+			////adj = World.GetBlockFor(chunk.position + blockPos);
+			////if (adj == null || adj.nearAir == 0)
+			//	adj = block;
 
-			// Convert brightness value to float
-			float lastBright = adj.lastBrightness / 255f;
-			//if (adj.postUpdate > 0)
-			//	lastBright = adj.brightness / 255f;
+			//// Convert brightness value to float
+			//float lastBright = adj.lastBrightness / 255f;
+			////if (adj.postUpdate > 0)
+			////	lastBright = adj.brightness / 255f;
 
-			float newBright = adj.brightness / 255f;
+			//float newBright = adj.brightness / 255f;
 
-			// Convert hue value to float
-			float lastHue = adj.lastColorTemp / 255f;
-			//if (adj.postUpdate > 0)
-			//	lastHue = adj.colorTemp / 255f;
+			//// Convert hue value to float
+			//float lastHue = adj.lastColorTemp / 255f;
+			////if (adj.postUpdate > 0)
+			////	lastHue = adj.colorTemp / 255f;
 
-			float newHue = adj.colorTemp / 255f;
+			//float newHue = adj.colorTemp / 255f;
 
-			// Assign lighting data: new brightness, last brightness, new hue, last hue
-			colors[i] = new Color(lastBright, newBright, lastHue, newHue);
+			//// Assign lighting data: new brightness, last brightness, new hue, last hue
+			//colors[i] = new Color(lastBright, newBright, lastHue, newHue);
+
+			//bool bright = World.GetBlockFor(chunk.position + blockPos).opacity <= 127;
+			//colors[i] = new Color(bright ? 0.8f : 0.2f, bright ? 0.8f : 0.2f, bright ? 0.2f : 0.8f, bright ? 0.2f : 0.8f);
 
 			//// Placeholder
 			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) + 0.5f, RandomJitter(0.25f) + 0.5f);
@@ -233,7 +236,7 @@ public class ChunkMesh : MonoBehaviour
 
 		colors = new Color[sharedVertices.Length];
 		for (int i = 0; i < colors.Length; i++)
-			colors[i] = borderColor;
+			colors[i] = debugNearAir;
 
 		ApplyVertexColors();
 	}

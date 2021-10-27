@@ -14,10 +14,13 @@ public class World : MonoBehaviour
 
 	private bool firstLightPass = true;
 
-	[Header("Generators")]
+	[Header("Generator")]
+	[SerializeField]
+	private int seed = 0;
+
 	[SerializeField]
 	private Transform carverRoot = null;
-	private List<Carver> carvers;
+	private List<Modifier> modifiers;
 
 	// Chunks
 	[SerializeField]
@@ -39,9 +42,11 @@ public class World : MonoBehaviour
 		else
 			Instance = this;
 
+		Random.InitState(seed);
+
 		chunks = new Dictionary<Vector3Int, Chunk>();
 
-		carvers = new List<Carver>(carverRoot.GetComponentsInChildren<Carver>());
+		modifiers = new List<Modifier>();
 	}
 
 	private void Start()
@@ -74,15 +79,25 @@ public class World : MonoBehaviour
 		}
 	}
 
+	public static void RegisterModifier(Modifier modifier)
+	{
+		Instance.modifiers.Add(modifier);
+	}
+
+	public static void RemoveModifier(Modifier modifier)
+	{
+		Instance.modifiers.Remove(modifier);
+	}
+
 	private void Generate()
 	{
 		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
 		{
-			for (int i = 0; i < carvers.Count; i++)
+			for (int i = 0; i < modifiers.Count; i++)
 			{
-				carvers[i].UpdatePos();
+				modifiers[i].Init();
 
-				entry.Value.ApplyCarver(carvers[i], i == 0, i == carvers.Count - 1);
+				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 			}
 
 			entry.Value.UpdateOpacityVisuals();

@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
-public class Carver : MonoBehaviour
+public class Carver : Modifier
 {
-	[HideInInspector]
-	public int worldX, worldY, worldZ; // Coordinates in world space
-
 	public float strength = 1;
 	public float range = 5;
 
-	public void UpdatePos()
+	public override float StrengthAt(float x, float y, float z)
 	{
-		worldX = Mathf.RoundToInt(transform.position.x);
-		worldY = Mathf.RoundToInt(transform.position.y);
-		worldZ = Mathf.RoundToInt(transform.position.z);
+		bool inside = range * range > Utils.DistanceSqr(worldX, worldY, worldZ, (int)x, (int)y, (int)z);
+
+		return inside ? strength : 0;
 	}
 }
