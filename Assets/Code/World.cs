@@ -35,6 +35,9 @@ public class World : MonoBehaviour
 	private List<Modifier> modifiers;
 
 	private Coroutine chunkGenCoroutine = null;
+	private Coroutine chunkMeshCoroutine = null;
+
+	private Queue<Chunk> chunkMeshQueue = new Queue<Chunk>();
 
 	// Chunks
 	[SerializeField]
@@ -72,10 +75,11 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
-		if (chunkGenCoroutine == null)
-			chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
+		chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
 
 		ApplyModifiers();
+
+		chunkMeshCoroutine = StartCoroutine(FinalizeChunks());
 
 		CalculateLighting();
 		firstLightPass = false;
@@ -153,17 +157,6 @@ public class World : MonoBehaviour
 					entry.Value.genStage = Chunk.GenStage.Generated;
 			}
 		}
-
-		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
-		{
-			if (entry.Value.genStage != Chunk.GenStage.Generated)
-				continue;
-
-			entry.Value.UpdateOpacityVisuals();
-			entry.Value.CacheNearAir();
-
-			entry.Value.genStage = Chunk.GenStage.Meshed;
-		}
 	}
 
 	private void Update()
@@ -202,6 +195,37 @@ public class World : MonoBehaviour
 			chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
 
 		ApplyModifiers();
+
+		if (chunkMeshCoroutine == null)
+			chunkMeshCoroutine = StartCoroutine(FinalizeChunks());
+	}
+
+	private IEnumerator FinalizeChunks()
+	{
+		chunkMeshQueue.Clear();
+
+		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
+		{
+			if (entry.Value.genStage != Chunk.GenStage.Generated)
+				continue;
+
+			chunkMeshQueue.Enqueue(entry.Value);
+		}
+
+		while (chunkMeshQueue.Count > 0)
+		{
+			Chunk chunk = chunkMeshQueue.Dequeue();
+
+			chunk.CacheNearAir();
+
+			yield return new WaitForSeconds(0f);
+
+			chunk.UpdateOpacityVisuals();
+
+			chunk.genStage = Chunk.GenStage.Meshed;
+		}
+
+		chunkMeshCoroutine = null;
 	}
 
 	private void CalculateLighting()
@@ -246,19 +270,31 @@ public class World : MonoBehaviour
 			{
 				chunksToLightCleanup = lightSources[i].FindAffectedChunks();
 
-				foreach (Chunk chunk in chunksToLightCleanup)
+				//foreach (Chunk chunk in chunksToLightCleanup)
+				//{
+				//	if (!lightSources[i].affectedChunks.Contains(chunk))
+				//		chunk.CleanupLight();
+				//}
+			}
+
+			// Should this light activate?
+			bool notReady = false;
+
+			foreach (Chunk chunk in lightSources[i].affectedChunks)
+			{
+				if (chunk.genStage != Chunk.GenStage.Meshed && chunk.genStage != Chunk.GenStage.Lit)
 				{
-					if (!lightSources[i].affectedChunks.Contains(chunk))
-						chunk.CleanupLight();
+					notReady = true;
+					break;
 				}
 			}
+
+			if (notReady)
+				continue;
 
 			// Go through each affected chunk
 			foreach (Chunk chunk in lightSources[i].affectedChunks)
 			{
-				if (chunk.genStage != Chunk.GenStage.Meshed && chunk.genStage != Chunk.GenStage.Meshed)
-					continue;
-
 				// First pass on this chunk. Reset "canvas" and apply light from scratch
 				bool firstPass = !chunksToLightUpdate.Contains(chunk);
 
@@ -284,8 +320,8 @@ public class World : MonoBehaviour
 				}
 			}
 
-			if (lightSources[i].dirty)
-				lightSources[i].dirty = false;
+			//if (lightSources[i].dirty)
+			//	lightSources[i].dirty = false;
 		}
 
 		//foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)

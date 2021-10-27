@@ -291,8 +291,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7094720244370263030, guid: fe9fa5a9ce4f8554a80a1855b16d2521, type: 3}
+      propertyPath: range
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094720244370263030, guid: fe9fa5a9ce4f8554a80a1855b16d2521, type: 3}
       propertyPath: strength
-      value: -0.1
+      value: -0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe9fa5a9ce4f8554a80a1855b16d2521, type: 3}
@@ -489,7 +493,7 @@ MonoBehaviour:
   player: {fileID: 1129277323}
   randomizeSeed: 0
   seed: 940786572
-  nearPlayerGenRange: 4
+  nearPlayerGenRange: 1
   chunkSize: 8
   lightRoot: {fileID: 295908289}
   lightUpdateTimer:
