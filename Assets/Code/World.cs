@@ -34,6 +34,8 @@ public class World : MonoBehaviour
 	[Header("Generation")]
 	private List<Modifier> modifiers;
 
+	private Coroutine chunkGenCoroutine = null;
+
 	// Chunks
 	[SerializeField]
 	private Timer chunkGenTimer = null;
@@ -70,7 +72,8 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
-		CreateChunksNearPlayer(nearPlayerGenRange, true);
+		if (chunkGenCoroutine == null)
+			chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
 
 		ApplyModifiers();
 
@@ -78,7 +81,7 @@ public class World : MonoBehaviour
 		firstLightPass = false;
 	}
 
-	private void CreateChunksNearPlayer(int range, bool dod)
+	private IEnumerator CreateChunksNearPlayer(int range)
 	{
 		range *= chunkSize;
 
@@ -98,12 +101,8 @@ public class World : MonoBehaviour
 
 					if (chunks.ContainsKey(chunkPos))
 					{
-						Debug.LogWarning("Chunk already exists at " + chunkPos + "!");
 						continue;
 					}
-
-					if (!dod)
-						continue;
 
 					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
 					chunk.chunkSize = chunkSize;
@@ -118,9 +117,13 @@ public class World : MonoBehaviour
 					Quaternion.identity, lightRoot);
 
 					light.colorTemp = Random.Range(-10, 10);
+
+					yield return new WaitForSeconds(0f);
 				}
 			}
 		}
+
+		chunkGenCoroutine = null;
 	}
 
 	public static void RegisterModifier(Modifier modifier)
@@ -141,14 +144,25 @@ public class World : MonoBehaviour
 
 			foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
 			{
+				if (entry.Value.genStage != Chunk.GenStage.Allocated)
+					continue;
+
 				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
+
+				if (i == modifiers.Count - 1)
+					entry.Value.genStage = Chunk.GenStage.Generated;
 			}
 		}
 
 		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
 		{
+			if (entry.Value.genStage != Chunk.GenStage.Generated)
+				continue;
+
 			entry.Value.UpdateOpacityVisuals();
 			entry.Value.CacheNearAir();
+
+			entry.Value.genStage = Chunk.GenStage.Meshed;
 		}
 	}
 
@@ -184,7 +198,10 @@ public class World : MonoBehaviour
 		if (!doChunkGen)
 			return;
 
-		CreateChunksNearPlayer(nearPlayerGenRange, false);
+		if (chunkGenCoroutine == null)
+			chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
+
+		ApplyModifiers();
 	}
 
 	private void CalculateLighting()
@@ -212,6 +229,15 @@ public class World : MonoBehaviour
 		{
 			lightSources[i].UpdatePosition();
 
+			Chunk c = GetChunkFor(lightSources[i].worldX, lightSources[i].worldY, lightSources[i].worldZ);
+
+			if (!c)
+				continue;
+
+			Chunk.GenStage genStage = c.genStage;
+			if (genStage != Chunk.GenStage.Meshed && genStage != Chunk.GenStage.Lit)
+				continue;
+
 			if (!lightSources[i].dirty)
 				continue;
 
@@ -230,6 +256,9 @@ public class World : MonoBehaviour
 			// Go through each affected chunk
 			foreach (Chunk chunk in lightSources[i].affectedChunks)
 			{
+				if (chunk.genStage != Chunk.GenStage.Meshed && chunk.genStage != Chunk.GenStage.Meshed)
+					continue;
+
 				// First pass on this chunk. Reset "canvas" and apply light from scratch
 				bool firstPass = !chunksToLightUpdate.Contains(chunk);
 
@@ -237,7 +266,7 @@ public class World : MonoBehaviour
 					chunksToLightUpdate.Add(chunk);
 
 				// Mark chunk as dirty
-				if (lightSources[i].dirty)
+				if (chunk.lightsToHandle > 0)
 				{
 					if (firstPass)
 						chunk.MarkAsDirtyForLight();
@@ -249,6 +278,9 @@ public class World : MonoBehaviour
 					bool lastPass = chunk.lightsToHandle == 0;
 
 					chunk.AddLight(lightSources[i], firstPass, lastPass);
+
+					if (lastPass)
+						chunk.genStage = Chunk.GenStage.Lit;
 				}
 			}
 

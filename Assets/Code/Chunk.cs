@@ -5,6 +5,9 @@ using Priority_Queue;
 
 public class Chunk : MonoBehaviour
 {
+	public enum GenStage { Empty, Allocated, Generated, Meshed, Lit, Ready }
+	public GenStage genStage = GenStage.Empty;
+
 	public Vector3Int position; // Coordinates of chunk
 
 	public int chunkSize = 8;
@@ -28,6 +31,8 @@ public class Chunk : MonoBehaviour
 		// Init chunk mesh
 		chunkMesh = GetComponent<ChunkMesh>();
 		chunkMesh.Init(this);
+
+		genStage = GenStage.Allocated;
 	}
 
 	private void UpdatePos()

@@ -12,11 +12,14 @@ public class Noise : Modifier
 
 	private Vector3 randomOffset = Vector3.zero;
 
-	public override void Init()
+	public override bool Init()
 	{
-		base.Init();
+		if (!base.Init())
+			return false;
 
 		randomOffset = new Vector3(Random.value, Random.value, Random.value) * offset;
+
+		return true;
 	}
 
 	public override float StrengthAt(float x, float y, float z)
