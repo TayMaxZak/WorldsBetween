@@ -45,25 +45,25 @@ public class ChunkMesh : MonoBehaviour
 			loopCounter++;
 
 			// Find actual block to sample for brightness
-			meshPos = sharedVertices[i];
-			blockPos.x = (int)(meshPos.x + offset);
-			blockPos.y = (int)(meshPos.y + offset);
-			blockPos.z = (int)(meshPos.z + offset);
+			//meshPos = sharedVertices[i];
+			//blockPos.x = (int)(meshPos.x + offset);
+			//blockPos.y = (int)(meshPos.y + offset);
+			//blockPos.z = (int)(meshPos.z + offset);
 
 			// Block that's closest to this actual vertex
-			adj = World.GetBlockFor(chunk.position + blockPos);
-			if (adj == null || adj.nearAir == 0)
+			//adj = World.GetBlockFor(chunk.position + blockPos);
+			//if (adj == null || adj.nearAir == 0)
 				adj = block;
 
 			// Convert brightness value to float
-			float lastBright = adj.brightness / 255f;
+			float lastBright = adj.lastBrightness / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastBright = adj.brightness / 255f;
 
 			float newBright = adj.brightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.colorTemp / 255f;
+			float lastHue = adj.lastColorTemp / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastHue = adj.colorTemp / 255f;
 

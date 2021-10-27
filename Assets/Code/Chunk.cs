@@ -104,9 +104,9 @@ public class Chunk : MonoBehaviour
 			if (block.needsUpdate == 0)
 				continue;
 
-			// Is block currently processing?
-			if (block.updatePending > 0 || block.postUpdate > 0)
-				continue;
+			//// Is block currently processing?
+			//if (block.updatePending > 0 || block.postUpdate > 0)
+			//	continue;
 
 			counter++;
 
