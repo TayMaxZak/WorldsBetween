@@ -143,6 +143,7 @@ public class Chunk : MonoBehaviour
 		//Debug.Log(name + " toUpdate size = " + toLightUpdate.Count + " postUpdate size = " + postUpdate.Count);
 
 		Block inQueue;
+		bool diff = false;
 
 		// Handle previously dequeued blocks first
 		while (postUpdate.Count > 0)
@@ -153,7 +154,6 @@ public class Chunk : MonoBehaviour
 
 			inQueue.needsUpdate = 0;
 
-			bool diff = false;
 			if (inQueue.lastBrightness != inQueue.brightness)
 			{
 				inQueue.lastBrightness = inQueue.brightness;
@@ -173,6 +173,8 @@ public class Chunk : MonoBehaviour
 		int count = toLightUpdate.Count;
 		for (int i = 0; i < Mathf.Min(count, World.GetUpdateSize()); i++)
 		{
+			diff = true;
+
 			inQueue = toLightUpdate.Dequeue();
 			inQueue.updatePending = 0;
 
@@ -182,7 +184,8 @@ public class Chunk : MonoBehaviour
 			postUpdate.Enqueue(inQueue);
 		}
 
-		chunkMesh.ApplyVertexColors();
+		if (diff)
+			chunkMesh.ApplyVertexColors();
 	}
 
 	public void ApplyModifier(Modifier modifier, bool firstPass, bool lastPass)

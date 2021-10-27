@@ -4,22 +4,27 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
+	[Header("World Settings")]
+	[SerializeField]
+	private int seed = 0;
+	[SerializeField]
+	private int worldExtent = 4;
+
 	[Header("Lighting")]
+	[SerializeField]
+	private Transform lightRoot;
 	[SerializeField]
 	private Timer lightUpdateTimer = null;
 	[SerializeField]
 	private int lightUpdateSize = 32;
 
+	[SerializeField]
+	private LightSource prefabLight;
 	private List<LightSource> lightSources = new List<LightSource>();
 
 	private bool firstLightPass = true;
 
-	[Header("Generator")]
-	[SerializeField]
-	private int seed = 0;
-
-	[SerializeField]
-	private Transform carverRoot = null;
+	// Modifiers
 	private List<Modifier> modifiers;
 
 	// Chunks
@@ -61,19 +66,24 @@ public class World : MonoBehaviour
 
 	private void CreateChunks()
 	{
-		int extent = 4;
 		int size = 8;
 
-		for (int x = -extent; x <= extent; x++)
+		for (int x = -worldExtent; x <= worldExtent; x++)
 		{
-			for (int y = -extent; y <= extent; y++)
+			for (int y = -worldExtent; y <= worldExtent; y++)
 			{
-				for (int z = -extent; z <= extent; z++)
+				for (int z = -worldExtent; z <= worldExtent; z++)
 				{
 					Chunk chunk = Instantiate(chunkPrefab, new Vector3(x * size, y * size, z * size), Quaternion.identity, transform);
 
 					chunk.UpdatePos();
 					chunks.Add(chunk.position, chunk);
+
+					Instantiate(prefabLight, new Vector3(
+						x * size + Random.value * size,
+						y * size + Random.value * size,
+						z * size + Random.value * size),
+					Quaternion.identity, lightRoot);
 				}
 			}
 		}
@@ -145,12 +155,15 @@ public class World : MonoBehaviour
 		if (!doLightUpdate)
 			return;
 
-		chunksToLightUpdate.Clear();
+		//chunksToLightUpdate.Clear();
 
 		// Apply lights
 		for (int i = 0; i < lightSources.Count; i++)
 		{
 			lightSources[i].UpdatePosition();
+
+			if (!lightSources[i].dirty)
+				continue;
 
 			// Update affected chunks and clean up old ones
 			if (lightSources[i].dirty)
