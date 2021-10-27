@@ -202,7 +202,7 @@ public class ChunkMesh : MonoBehaviour
 
 		colors = new Color[sharedVertices.Length];
 		for (int i = 0; i < colors.Length; i++)
-			colors[i] = debugNearAir;
+			colors[i] = borderColor;
 
 		ApplyVertexColors();
 	}

@@ -7,8 +7,7 @@ public class Chunk : MonoBehaviour
 {
 	public Vector3Int position; // Coordinates of chunk
 
-	[SerializeField]
-	private int chunkSize = 8;
+	public int chunkSize = 8;
 
 	private Block[,,] blocks;
 
@@ -19,8 +18,10 @@ public class Chunk : MonoBehaviour
 
 	public int lightsToHandle = 0;
 
-	private void Awake()
+	public void Init()
 	{
+		UpdatePos();
+
 		// Create blocks
 		CreateBlocks();
 
@@ -29,7 +30,7 @@ public class Chunk : MonoBehaviour
 		chunkMesh.Init(this);
 	}
 
-	public void UpdatePos()
+	private void UpdatePos()
 	{
 		Vector3 pos = transform.position;
 		position.x = Mathf.RoundToInt(pos.x);

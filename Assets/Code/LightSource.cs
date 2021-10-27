@@ -36,7 +36,7 @@ public class LightSource : MonoBehaviour
 		// Find new chunks in range
 		float maxDistance = Mathf.Sqrt(brightness * 250); // i.e., brightness / distance^2 = 0.004
 
-		int chunkSize = 8;
+		int chunkSize = World.GetChunkSize();
 
 		int range = Mathf.CeilToInt((maxDistance * 0.5f) / chunkSize);
 

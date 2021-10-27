@@ -11,6 +11,8 @@ public class World : MonoBehaviour
 	private int seed = 0;
 	[SerializeField]
 	private int worldExtent = 4;
+	[SerializeField]
+	private int chunkSize = 8;
 
 	[Header("Lighting")]
 	[SerializeField]
@@ -70,23 +72,22 @@ public class World : MonoBehaviour
 
 	private void CreateChunks()
 	{
-		int size = 8;
-
 		for (int x = -worldExtent; x <= worldExtent; x++)
 		{
 			for (int y = -worldExtent; y <= worldExtent; y++)
 			{
 				for (int z = -worldExtent; z <= worldExtent; z++)
 				{
-					Chunk chunk = Instantiate(chunkPrefab, new Vector3(x * size, y * size, z * size), Quaternion.identity, transform);
+					Chunk chunk = Instantiate(chunkPrefab, new Vector3(x * chunkSize, y * chunkSize, z * chunkSize), Quaternion.identity, transform);
+					chunk.chunkSize = chunkSize;
+					chunk.Init();
 
-					chunk.UpdatePos();
 					chunks.Add(chunk.position, chunk);
 
 					LightSource light = Instantiate(prefabLight, new Vector3(
-						x * size + Random.value * size,
-						y * size + Random.value * size,
-						z * size + Random.value * size),
+						x * chunkSize + Random.value * chunkSize,
+						y * chunkSize + Random.value * chunkSize,
+						z * chunkSize + Random.value * chunkSize),
 					Quaternion.identity, lightRoot);
 
 					light.colorTemp = Random.Range(-10, 10);
@@ -114,7 +115,7 @@ public class World : MonoBehaviour
 			foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
 			{
 				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
-			}		
+			}
 		}
 
 		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
@@ -224,7 +225,7 @@ public class World : MonoBehaviour
 
 	public static Chunk GetChunkFor(int x, int y, int z)
 	{
-		float chunkSize = 8;
+		float chunkSize = Instance.chunkSize;
 
 		Instance.chunks.TryGetValue(new Vector3Int(
 			Mathf.FloorToInt(x / chunkSize) * (int)chunkSize,
@@ -253,6 +254,11 @@ public class World : MonoBehaviour
 	public static Block GetBlockFor(Vector3Int pos)
 	{
 		return GetBlockFor(pos.x, pos.y, pos.z);
+	}
+
+	public static int GetChunkSize()
+	{
+		return Instance.chunkSize;
 	}
 
 	public static int GetUpdateSize()
