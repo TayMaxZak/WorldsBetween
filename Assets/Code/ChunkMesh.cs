@@ -129,7 +129,7 @@ public class ChunkMesh : MonoBehaviour
 
 					// Empty block
 					// TODO: Change
-					if (block.opacity <= 127)
+					if (block.opacity <= 127 || block.nearAir == 0)
 						continue;
 
 					// Remember which vertex index this block starts at

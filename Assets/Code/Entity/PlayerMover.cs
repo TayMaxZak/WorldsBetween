@@ -34,12 +34,16 @@ public class PlayerMover : MonoBehaviour
 		UpdatePosition();
 
 		cam.transform.parent = null;
-
-		didInit = true;
 	}
 
 	private void Update()
 	{
+		Chunk chunk;
+		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage == Chunk.GenStage.Lit)
+			didInit = true;
+		else
+			didInit = false;
+
 		if (!didInit)
 			return;
 

@@ -215,6 +215,8 @@ public class Chunk : MonoBehaviour
 
 	public void CacheNearAir()
 	{
+		Block block;
+
 		int cutoff = 127;
 
 		for (byte x = 0; x < chunkSize; x++)
@@ -224,57 +226,43 @@ public class Chunk : MonoBehaviour
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					// Remember if this block is bordering air
-					if (blocks[x, y, z].opacity <= cutoff)
+					if (blocks[x, y, z].opacity > cutoff)
 					{
-						blocks[x, y, z].nearAir = 255;
 						continue;
 					}
 
-					bool nearAir = false;
-					bool chunkBorder = false;
+					blocks[x, y, z].nearAir = 255;
 
-					// Check chunk border
-					if (x == 0 || x == chunkSize - 1)
-						chunkBorder = true;
-					else if (y == 0 || y == chunkSize - 1)
-						chunkBorder = true;
-					else if (z == 0 || z == chunkSize - 1)
-						chunkBorder = true;
+					// Assign adjacent blocks in this chunk
+					if (x > 0)
+						blocks[x - 1, y, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
+						block.nearAir = 255;
 
-					if (!chunkBorder)
-					{
-						// Check adjacent blocks in this chunk
-						if (blocks[x - 1, y, z].opacity <= cutoff)
-							nearAir = true;
-						else if (blocks[x + 1, y, z].opacity <= cutoff)
-							nearAir = true;
-						else if (blocks[x, y - 1, z].opacity <= cutoff)
-							nearAir = true;
-						else if (blocks[x, y + 1, z].opacity <= cutoff)
-							nearAir = true;
-						else if (blocks[x, y, z - 1].opacity <= cutoff)
-							nearAir = true;
-						else if (blocks[x, y, z + 1].opacity <= cutoff)
-							nearAir = true;
-					}
-					else
-					{
-						// Check adjacent blocks (in world space this time)
-						if (World.GetBlockFor(position.x + x - 1,		position.y + y,		position.z + z).opacity <= cutoff)
-							nearAir = true;
-						else if (World.GetBlockFor(position.x + x + 1,	position.y + y,		position.z + z).opacity <= cutoff)
-							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y - 1, position.z + z).opacity <= cutoff)
-							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y + 1, position.z + z).opacity <= cutoff)
-							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z - 1).opacity <= cutoff)
-							nearAir = true;
-						else if (World.GetBlockFor(position.x + x,		position.y + y,		position.z + z + 1).opacity <= cutoff)
-							nearAir = true;
-					}
+					if (x < chunkSize - 1)
+						blocks[x + 1, y, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
+						block.nearAir = 255;
 
-					blocks[x, y, z].nearAir = (byte)(nearAir ? 255 : 0);
+					if (y > 0)
+						blocks[x, y - 1, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
+						block.nearAir = 255;
+
+					if (y < chunkSize - 1)
+						blocks[x, y + 1, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
+						block.nearAir = 255;
+
+					if (z > 0)
+						blocks[x, y, z - 1].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
+						block.nearAir = 255;
+
+					if (z < chunkSize - 1)
+						blocks[x, y, z + 1].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
+						block.nearAir = 255;
 				}
 			}
 		}

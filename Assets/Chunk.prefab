@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4140628798878881198}
   - component: {fileID: 4140628798878881199}
   m_Layer: 10
-  m_Name: DummyChunk
+  m_Name: ChunkMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,7 +48,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4140628798878881201}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 2
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d88b6e4416012a94580fac76addb9258, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  genStage: 0
   position: {x: 0, y: 0, z: 0}
   chunkSize: 8
   lightsToHandle: 0

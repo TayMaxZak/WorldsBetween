@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Block
 {
-	public static Block empty = new Block(0, 0, 0, 0);
+	public static readonly Block empty = new Block(0, 0, 0, 255, 0);
 
 	public byte localX, localY, localZ; // Coordinates in chunk local space
 
@@ -24,7 +24,28 @@ public class Block
 
 	public int startIndex, endIndex; // Which vertices to search?
 
-	public Block(byte localX, byte localY, byte localZ, byte opacity)
+	public Block(byte localX, byte localY, byte localZ, byte opacity) : this(localX, localY, localZ, opacity, 0)
+	{
+		this.localX = localX;
+		this.localY = localY;
+		this.localZ = localZ;
+
+		brightness = 0;
+		lastBrightness = brightness;
+
+		colorTemp = 127;
+		lastColorTemp = colorTemp;
+
+		nearAir = 0;
+
+		needsUpdate = 0;
+		updatePending = 0;
+		postUpdate = 0;
+
+		this.opacity = opacity;
+	}
+
+	private Block(byte localX, byte localY, byte localZ, byte opacity, byte nearAir)
 	{
 		this.localX = localX;
 		this.localY = localY;
