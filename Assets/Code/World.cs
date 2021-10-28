@@ -34,7 +34,7 @@ public class World : MonoBehaviour
 	[Header("Generation")]
 	private List<Modifier> modifiers;
 
-	private float miniDelay = 0.05f;
+	private float miniDelay = 0.0f;
 	private Coroutine chunkGenCoroutine = null;
 	private Coroutine chunkMeshCoroutine = null;
 
