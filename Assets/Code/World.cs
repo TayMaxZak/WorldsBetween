@@ -29,7 +29,8 @@ public class World : MonoBehaviour
 	private LightSource prefabLight;
 	private List<LightSource> lightSources = new List<LightSource>();
 
-	private bool firstLightPass = true;
+	private bool initialWorldGen = true;
+	private bool initialChunks = true;
 
 	[Header("Generation")]
 	private List<Modifier> modifiers;
@@ -76,14 +77,15 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
-		chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(1));
+		chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(2));
 
 		ApplyModifiers();
 
 		chunkMeshCoroutine = StartCoroutine(FinalizeChunks());
 
 		CalculateLighting();
-		firstLightPass = false;
+
+		initialWorldGen = false;
 	}
 
 	private IEnumerator CreateChunksNearPlayer(int range)
@@ -91,14 +93,14 @@ public class World : MonoBehaviour
 		range *= chunkSize;
 
 		Vector3Int startPos = new Vector3Int(
-					Mathf.FloorToInt(player.position.x / chunkSize) * (int)chunkSize,
-					Mathf.FloorToInt(player.position.y / chunkSize) * (int)chunkSize,
-					Mathf.FloorToInt(player.position.z / chunkSize) * (int)chunkSize
+					Mathf.FloorToInt(player.position.x / chunkSize) * chunkSize,
+					Mathf.FloorToInt(player.position.y / chunkSize) * chunkSize,
+					Mathf.FloorToInt(player.position.z / chunkSize) * chunkSize
 		);
 
 		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
 		{
-			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize)
+			for (int y = startPos.y - range - (initialChunks ? 20 * chunkSize : 0); y <= startPos.y + range; y += chunkSize)
 			{
 				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
 				{
@@ -127,6 +129,9 @@ public class World : MonoBehaviour
 				}
 			}
 		}
+
+		if (initialChunks)
+			initialChunks = false;
 
 		chunkGenCoroutine = null;
 	}
@@ -162,7 +167,7 @@ public class World : MonoBehaviour
 
 	private void Update()
 	{
-		if (firstLightPass)
+		if (initialWorldGen)
 			return;
 
 		GenChunks();
