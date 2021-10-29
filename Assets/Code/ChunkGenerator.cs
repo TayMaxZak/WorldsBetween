@@ -8,6 +8,9 @@ public class ChunkGenerator
 	private int chunksToHandle = 3;
 	private Timer chunkGenTimer;
 
+	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
+													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
+
 	public ChunkGenerator(int toHandle, float interval)
 	{
 		chunksToHandle = toHandle;
@@ -43,7 +46,33 @@ public class ChunkGenerator
 		{
 			// TODO: Peek before dequeueing when meshing and lighting to prevent weird chunk borders
 
-			Chunk chunk = chunkQueue.Dequeue();
+			Chunk chunk = chunkQueue.First;
+
+			//// Check if neighboring chunks are ready yet
+			//if (chunk.genStage == Chunk.GenStage.Generated)
+			//{
+			//	bool adjGenerated = true;
+
+			//	for (int d = 0; d < directions.Length; d++)
+			//	{
+			//		// Try every orthagonal direction
+			//		Chunk adj = World.GetChunkFor(chunk.position + directions[d] * World.GetChunkSize());
+			//		if (adj == null || adj.genStage < Chunk.GenStage.Generated)
+			//		{
+			//			adjGenerated = false;
+			//			break;
+			//		}
+			//	}
+
+			//	if (!adjGenerated)
+			//	{
+			//		// Re add to queue, at a lower priority
+			//		World.QueueNextStage(chunk, chunk.genStage, 2);
+			//		continue;
+			//	}
+			//}
+
+			chunkQueue.Dequeue();
 
 			ProcessChunk(chunk);
 		}
@@ -68,14 +97,14 @@ public class ChunkGenerator
 					for (int i = 0; i < modifiers.Count; i++)
 						chunk.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 
+					chunk.CacheNearAir();
+
 					chunk.genStage = Chunk.GenStage.Generated;
 					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
 			case Chunk.GenStage.Generated: // Cache data and build mesh
 				{
-					chunk.CacheNearAir();
-
 					chunk.UpdateOpacityVisuals();
 
 					chunk.genStage = Chunk.GenStage.Meshed;

@@ -294,11 +294,6 @@ public class Chunk : MonoBehaviour
 		return blocks[x, y, z];
 	}
 
-	public int GetChunkSize()
-	{
-		return chunkSize;
-	}
-
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorOrange;

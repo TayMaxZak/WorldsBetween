@@ -12,7 +12,7 @@ public class Noise : Modifier
 
 	private Vector3 randomOffset = Vector3.zero;
 
-	public override bool Init()
+	protected override bool Init()
 	{
 		if (!base.Init())
 			return false;

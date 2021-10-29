@@ -13,9 +13,11 @@ public class Modifier : MonoBehaviour
 	private void Awake()
 	{
 		World.RegisterModifier(this);
+
+		Init();
 	}
 
-	public virtual bool Init()
+	protected virtual bool Init()
 	{
 		if (didInit)
 			return false;

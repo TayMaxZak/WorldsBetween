@@ -19,11 +19,11 @@ public class ChunkMesh : MonoBehaviour
 	Vector3[] sharedVertices;
 	Color[] colors;
 
-	Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
-											new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
+	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
+													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
 
-	Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
-											new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
+	private static readonly Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
+													new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
 
 	public void Init(Chunk chunk)
 	{
@@ -118,7 +118,7 @@ public class ChunkMesh : MonoBehaviour
 
 		Vector3 vert;
 
-		int chunkSize = chunk.GetChunkSize();
+		int chunkSize = World.GetChunkSize();
 		for (byte x = 0; x < chunkSize; x++)
 		{
 			for (byte y = 0; y < chunkSize; y++)

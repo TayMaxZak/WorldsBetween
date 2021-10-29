@@ -9,7 +9,6 @@ public class PlayerMover : MonoBehaviour
 	// Position
 	[HideInInspector]
 	public int worldX, worldY, worldZ; // Coordinates in world space
-	private int lastWorldX, lastWorldY, lastWorldZ;
 
 	private Vector3 lastActualPos;
 
@@ -21,9 +20,6 @@ public class PlayerMover : MonoBehaviour
 	[SerializeField]
 	private float walkSpeed = 3;
 	private Vector3 walkVelocity = new Vector3();
-
-	// Util
-	private bool dirty = false;
 
 	private Timer moveTickTimer = new Timer(0.05f);
 
@@ -101,12 +97,5 @@ public class PlayerMover : MonoBehaviour
 		worldX = Mathf.FloorToInt(transform.position.x);
 		worldY = Mathf.FloorToInt(transform.position.y);
 		worldZ = Mathf.FloorToInt(transform.position.z);
-
-		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
-			dirty = true;
-
-		lastWorldX = worldX;
-		lastWorldY = worldY;
-		lastWorldZ = worldZ;
 	}
 }

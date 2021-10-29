@@ -40,7 +40,6 @@ public class World : MonoBehaviour
 	private int lightUpdateSize = 32;
 
 	private bool initialWorldGen = true;
-	private bool initialChunks = true;
 
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
 
@@ -49,8 +48,8 @@ public class World : MonoBehaviour
 	private int nearPlayerGenRange = 4;
 
 	// Extras
-	public List<Chunk> chunksToLightUpdate = new List<Chunk>();
-	public List<Chunk> chunksToLightCleanup = new List<Chunk>();
+	private List<Chunk> chunksToLightUpdate = new List<Chunk>();
+	private List<Chunk> chunksToLightCleanup = new List<Chunk>();
 
 	private void Awake()
 	{
@@ -85,7 +84,7 @@ public class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		CreateChunksNearPlayer(2);
+		CreateChunksNearPlayer(8);
 
 		CalculateLighting();
 
@@ -104,9 +103,10 @@ public class World : MonoBehaviour
 			Mathf.FloorToInt(player.position.z / chunkSize) * chunkSize
 		);
 
+		// Go through all nearby chunk positions
 		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
 		{
-			for (int y = startPos.y - range - (initialChunks ? 20 * chunkSize : 0); y <= startPos.y + range; y += chunkSize)
+			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize) // TODO: Remove testing code
 			{
 				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
 				{
@@ -121,23 +121,23 @@ public class World : MonoBehaviour
 					chunk.name = "Chunk " + x + ", " + y + ", " + z;
 					chunks.Add(chunkPos, chunk);
 
-					//// Add a random light to this chunk
-					//LightSource light = Instantiate(prefabLight, new Vector3(
-					//	chunkPos.x + Random.value * chunkSize,
-					//	chunkPos.y + Random.value * chunkSize,
-					//	chunkPos.z + Random.value * chunkSize),
-					//Quaternion.identity, lightRoot);
+					// Add a random light to this chunk
+					if (Random.value > 0.75f)
+					{
+						LightSource light = Instantiate(prefabLight, new Vector3(
+							chunkPos.x + Random.value * chunkSize,
+							chunkPos.y + Random.value * chunkSize,
+							chunkPos.z + Random.value * chunkSize),
+						Quaternion.identity, lightRoot);
 
-					//light.colorTemp = Random.Range(-10, 10);
+						light.colorTemp = Random.Range(-10, 10);
+					}
 
 					// Add chunk to generator
 					QueueNextStage(chunk, Chunk.GenStage.Empty);
 				}
 			}
 		}
-
-		if (initialChunks)
-			initialChunks = false;
 	}
 
 	public static void RegisterModifier(Modifier modifier)
@@ -182,13 +182,18 @@ public class World : MonoBehaviour
 
 	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage)
 	{
+		QueueNextStage(chunk, stage, 1);
+	}
+
+	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage, float prioPenalty)
+	{
 		Instance.chunkGenerators.TryGetValue(stage, out ChunkGenerator generator);
 
 		if (generator == null)
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority
-		generator.Enqueue(chunk, Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
+		generator.Enqueue(chunk, prioPenalty * Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
 	}
 
 	public static void RegisterLight(LightSource light)
@@ -306,6 +311,11 @@ public class World : MonoBehaviour
 		out Chunk chunk);
 
 		return chunk;
+	}
+
+	public static Chunk GetChunkFor(Vector3Int pos)
+	{
+		return GetChunkFor(pos.x, pos.y, pos.z);
 	}
 
 	public static Block GetBlockFor(int x, int y, int z)
