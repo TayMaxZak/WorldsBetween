@@ -11,7 +11,7 @@ public class ChunkGenerator
 	public ChunkGenerator(int toHandle, float interval)
 	{
 		chunksToHandle = toHandle;
-		chunkGenTimer = new Timer(interval, 5);
+		chunkGenTimer = new Timer(interval, 1);
 	}
 
 	private SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
@@ -41,6 +41,8 @@ public class ChunkGenerator
 		int count = chunkQueue.Count;
 		for (int i = 0; i < Mathf.Min(count, chunksToHandle); i++)
 		{
+			// TODO: Peek before dequeueing when meshing and lighting to prevent weird chunk borders
+
 			Chunk chunk = chunkQueue.Dequeue();
 
 			ProcessChunk(chunk);
@@ -56,12 +58,18 @@ public class ChunkGenerator
 					chunk.Init(World.GetChunkSize());
 
 					chunk.genStage = Chunk.GenStage.Allocated;
-					World.QueueNextStage(chunk, Chunk.GenStage.Allocated);
+					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
 			case Chunk.GenStage.Allocated: // Generate terrain
 				{
-					// TODO
+					List<Modifier> modifiers = World.GetModifiers();
+
+					for (int i = 0; i < modifiers.Count; i++)
+						chunk.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
+
+					chunk.genStage = Chunk.GenStage.Generated;
+					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
 			case Chunk.GenStage.Generated: // Cache data and build mesh
@@ -71,16 +79,15 @@ public class ChunkGenerator
 					chunk.UpdateOpacityVisuals();
 
 					chunk.genStage = Chunk.GenStage.Meshed;
-					World.QueueNextStage(chunk, Chunk.GenStage.Meshed);
+					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights and apply vertex colors
 				{
-					Debug.Log(chunk.name + " done");
 					// TODO
 				}
 				break;
-			case Chunk.GenStage.Lit:
+			case Chunk.GenStage.Lit: // Spawn entities and other stuff
 				break;
 		}
 	}

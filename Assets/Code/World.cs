@@ -72,10 +72,10 @@ public class World : MonoBehaviour
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(64, 0.25f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(1, 0.02f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(4, 0.1f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(1, 1) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(1, 1) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(10, 1) },
 		};
 
 		// Init timers
@@ -86,8 +86,6 @@ public class World : MonoBehaviour
 	{
 		// First batch of chunks
 		CreateChunksNearPlayer(2);
-
-		ApplyModifiers();
 
 		CalculateLighting();
 
@@ -152,28 +150,9 @@ public class World : MonoBehaviour
 		Instance.modifiers.Remove(modifier);
 	}
 
-	// TODO: Overhaul!
-	private void ApplyModifiers()
+	public static List<Modifier> GetModifiers()
 	{
-		for (int i = 0; i < modifiers.Count; i++)
-		{
-			modifiers[i].Init();
-
-			foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
-			{
-				if (entry.Value.genStage != Chunk.GenStage.Allocated)
-					continue;
-
-				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
-
-				if (i == modifiers.Count - 1)
-				{
-					entry.Value.genStage = Chunk.GenStage.Generated;
-
-					QueueNextStage(entry.Value, Chunk.GenStage.Generated);
-				}
-			}
-		}
+		return Instance.modifiers;
 	}
 
 	private void Update()
@@ -199,9 +178,6 @@ public class World : MonoBehaviour
 			return;
 
 		CreateChunksNearPlayer(nearPlayerGenRange);
-
-		// TODO: Optimize
-		ApplyModifiers();
 	}
 
 	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage)
