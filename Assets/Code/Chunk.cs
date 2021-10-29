@@ -11,7 +11,7 @@ public class Chunk : MonoBehaviour
 
 	public Vector3Int position; // Coordinates of chunk
 
-	public int chunkSize = 8;
+	private int chunkSize = 8;
 
 	private Block[,,] blocks;
 
@@ -22,8 +22,10 @@ public class Chunk : MonoBehaviour
 
 	public int lightsToHandle = 0;
 
-	public void Init()
+	public void Init(int chunkSize)
 	{
+		this.chunkSize = chunkSize;
+
 		UpdatePos();
 
 		// Create blocks
@@ -32,8 +34,6 @@ public class Chunk : MonoBehaviour
 		// Init chunk mesh
 		chunkMesh = GetComponent<ChunkMesh>();
 		chunkMesh.Init(this);
-
-		genStage = GenStage.Allocated;
 	}
 
 	private void UpdatePos()
@@ -178,7 +178,7 @@ public class Chunk : MonoBehaviour
 
 		// Apply vertex colors to most important blocks to update
 		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, World.GetUpdateSize()); i++)
+		for (int i = 0; i < Mathf.Min(count, World.GetLightUpdateSize()); i++)
 		{
 			diff = true;
 

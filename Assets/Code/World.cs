@@ -1,11 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 public class World : MonoBehaviour
 {
+	private static World Instance;
+
+	[Header("References")]
 	[SerializeField]
 	private Transform player;
+
+	[SerializeField]
+	private Chunk chunkPrefab;
+	private Dictionary<Vector3Int, Chunk> chunks;
+
+	private List<Modifier> modifiers;
+
+	[SerializeField]
+	private Transform lightRoot;
+	[SerializeField]
+	private LightSource prefabLight;
+	private List<LightSource> lightSources = new List<LightSource>();
 
 	[Header("World Settings")]
 	[SerializeField]
@@ -13,44 +29,24 @@ public class World : MonoBehaviour
 	[SerializeField]
 	private int seed = 0;
 	[SerializeField]
-	private int nearPlayerGenRange = 4;
-	[SerializeField]
 	private int chunkSize = 8;
 
-	[Header("Lighting")]
+	[Header("Performance")]
 	[SerializeField]
-	private Transform lightRoot;
+	private Timer chunkGenTimer = null;
 	[SerializeField]
 	private Timer lightUpdateTimer = null;
 	[SerializeField]
 	private int lightUpdateSize = 32;
 
-	[SerializeField]
-	private LightSource prefabLight;
-	private List<LightSource> lightSources = new List<LightSource>();
-
 	private bool initialWorldGen = true;
 	private bool initialChunks = true;
 
 	[Header("Generation")]
-	private List<Modifier> modifiers;
-
-	private float miniDelay = 0.0f;
-	private Coroutine chunkGenCoroutine = null;
-	private Coroutine chunkMeshCoroutine = null;
-
-	private Queue<Chunk> chunkMeshQueue = new Queue<Chunk>();
-
-	// Chunks
 	[SerializeField]
-	private Timer chunkGenTimer = null;
+	private int nearPlayerGenRange = 4;
 
-	[SerializeField]
-	private Chunk chunkPrefab;
-	private Dictionary<Vector3Int, Chunk> chunks;
-
-	private static World Instance;
-
+	// Extras
 	public List<Chunk> chunksToLightUpdate = new List<Chunk>();
 	public List<Chunk> chunksToLightCleanup = new List<Chunk>();
 
@@ -77,25 +73,23 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
-		chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(2));
+		CreateChunksNearPlayer(2);
 
 		ApplyModifiers();
-
-		chunkMeshCoroutine = StartCoroutine(FinalizeChunks());
 
 		CalculateLighting();
 
 		initialWorldGen = false;
 	}
 
-	private IEnumerator CreateChunksNearPlayer(int range)
+	private void CreateChunksNearPlayer(int range)
 	{
 		range *= chunkSize;
 
 		Vector3Int startPos = new Vector3Int(
-					Mathf.FloorToInt(player.position.x / chunkSize) * chunkSize,
-					Mathf.FloorToInt(player.position.y / chunkSize) * chunkSize,
-					Mathf.FloorToInt(player.position.z / chunkSize) * chunkSize
+			Mathf.FloorToInt(player.position.x / chunkSize) * chunkSize,
+			Mathf.FloorToInt(player.position.y / chunkSize) * chunkSize,
+			Mathf.FloorToInt(player.position.z / chunkSize) * chunkSize
 		);
 
 		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
@@ -106,34 +100,29 @@ public class World : MonoBehaviour
 				{
 					Vector3Int chunkPos = new Vector3Int(x, y, z);
 
+					// Chunk already exists at this location
 					if (chunks.ContainsKey(chunkPos))
-					{
 						continue;
-					}
 
+					// Create and register chunk
 					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
-					chunk.chunkSize = chunkSize;
-					chunk.Init();
 
 					chunks.Add(chunk.position, chunk);
 
-					LightSource light = Instantiate(prefabLight, new Vector3(
-						chunkPos.x + Random.value * chunkSize,
-						chunkPos.y + Random.value * chunkSize,
-						chunkPos.z + Random.value * chunkSize),
-					Quaternion.identity, lightRoot);
+					//// Add a random light to this chunk
+					//LightSource light = Instantiate(prefabLight, new Vector3(
+					//	chunkPos.x + Random.value * chunkSize,
+					//	chunkPos.y + Random.value * chunkSize,
+					//	chunkPos.z + Random.value * chunkSize),
+					//Quaternion.identity, lightRoot);
 
-					light.colorTemp = Random.Range(-10, 10);
-
-					yield return new WaitForSeconds(miniDelay);
+					//light.colorTemp = Random.Range(-10, 10);
 				}
 			}
 		}
 
 		if (initialChunks)
 			initialChunks = false;
-
-		chunkGenCoroutine = null;
 	}
 
 	public static void RegisterModifier(Modifier modifier)
@@ -170,7 +159,7 @@ public class World : MonoBehaviour
 		if (initialWorldGen)
 			return;
 
-		GenChunks();
+		UpdateChunkCreation();
 
 		CalculateLighting();
 	}
@@ -185,53 +174,23 @@ public class World : MonoBehaviour
 		Instance.lightSources.Remove(light);
 	}
 
-	private void GenChunks()
+	private void UpdateChunkCreation()
 	{
 		chunkGenTimer.Increment(Time.deltaTime);
 
-		bool doChunkGen = chunkGenTimer.Expired();
-
-		if (doChunkGen)
+		if (chunkGenTimer.Expired())
 			chunkGenTimer.Reset();
-
-		if (!doChunkGen)
+		else
 			return;
 
-		if (chunkGenCoroutine == null)
-			chunkGenCoroutine = StartCoroutine(CreateChunksNearPlayer(nearPlayerGenRange));
+		CreateChunksNearPlayer(nearPlayerGenRange);
 
 		ApplyModifiers();
-
-		if (chunkMeshCoroutine == null)
-			chunkMeshCoroutine = StartCoroutine(FinalizeChunks());
 	}
 
-	private IEnumerator FinalizeChunks()
+	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage)
 	{
-		chunkMeshQueue.Clear();
 
-		foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
-		{
-			if (entry.Value.genStage != Chunk.GenStage.Generated)
-				continue;
-
-			chunkMeshQueue.Enqueue(entry.Value);
-		}
-
-		while (chunkMeshQueue.Count > 0)
-		{
-			Chunk chunk = chunkMeshQueue.Dequeue();
-
-			chunk.CacheNearAir();
-
-			yield return new WaitForSeconds(miniDelay);
-
-			chunk.UpdateOpacityVisuals();
-
-			chunk.genStage = Chunk.GenStage.Meshed;
-		}
-
-		chunkMeshCoroutine = null;
 	}
 
 	private void CalculateLighting()
@@ -369,7 +328,7 @@ public class World : MonoBehaviour
 		return Instance.chunkSize;
 	}
 
-	public static int GetUpdateSize()
+	public static int GetLightUpdateSize()
 	{
 		return Instance.lightUpdateSize;
 	}
