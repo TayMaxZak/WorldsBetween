@@ -13,22 +13,23 @@ public class LightSource : MonoBehaviour
 	public float brightness = 1; // From 0 to 1
 	public float colorTemp = 0; // From -1 to 1
 
-	public List<Chunk> affectedChunks = new List<Chunk>();
-	private List<Chunk> oldAffectedChunks = new List<Chunk>();
+	public List<Vector3Int> affectedChunks = new List<Vector3Int>();
+	private List<Vector3Int> oldAffectedChunks = new List<Vector3Int>();
 
 	public bool dirty = true;
 
 	private void Awake()
 	{
+		UpdatePosition();
 		World.RegisterLight(this);
 	}
 
-	public List<Chunk> FindAffectedChunks()
+	public List<Vector3Int> FindAffectedChunks()
 	{
 		// Remember and return old chunks
 		oldAffectedChunks.Clear();
 
-		foreach (Chunk chunk in affectedChunks)
+		foreach (Vector3Int chunk in affectedChunks)
 			oldAffectedChunks.Add(chunk);
 
 		affectedChunks.Clear();
@@ -46,14 +47,13 @@ public class LightSource : MonoBehaviour
 			{
 				for (int z = -range; z <= range; z++)
 				{
-					Chunk chunk = World.GetChunkFor(worldX + x * chunkSize, worldY + y * chunkSize, worldZ + z * chunkSize);
-					if (chunk && !affectedChunks.Contains(chunk))
-					{
-						affectedChunks.Add(chunk);
+					Vector3Int chunk = new Vector3Int(
+						Mathf.FloorToInt((x * chunkSize + worldX) / (float)chunkSize) * chunkSize,
+						Mathf.FloorToInt((y * chunkSize + worldY) / (float)chunkSize) * chunkSize,
+						Mathf.FloorToInt((z * chunkSize + worldZ) / (float)chunkSize) * chunkSize
+					);
 
-						if (!oldAffectedChunks.Contains(chunk))
-							chunk.lightsToHandle++;
-					}
+					affectedChunks.Add(chunk);
 				}
 			}
 		}
@@ -75,6 +75,11 @@ public class LightSource : MonoBehaviour
 		lastWorldZ = worldZ;
 	}
 
+	public float GetBrightnessAt(Vector3Int at)
+	{
+		return brightness / Mathf.Max(1, Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z));
+	}
+
 	private void OnDrawGizmosSelected()
 	{
 		float maxDistance = Mathf.Sqrt(brightness * 250); // i.e., brightness / distance^2 = 0.004
@@ -83,7 +88,7 @@ public class LightSource : MonoBehaviour
 		Gizmos.DrawWireSphere(transform.position, maxDistance);
 
 		Gizmos.color = Utils.colorOrange;
-		Gizmos.DrawWireSphere(transform.position, maxDistance* 0.5f);
+		Gizmos.DrawWireSphere(transform.position, maxDistance * 0.5f);
 
 		int chunkSize = 8;
 

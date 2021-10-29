@@ -21,7 +21,6 @@ public class World : MonoBehaviour
 	private Transform lightRoot;
 	[SerializeField]
 	private LightSource prefabLight;
-	private List<LightSource> lightSources = new List<LightSource>();
 
 	[Header("World Settings")]
 	[SerializeField]
@@ -34,24 +33,17 @@ public class World : MonoBehaviour
 	[Header("Performance")]
 	[SerializeField]
 	private Timer chunkGenTimer = null;
-	[SerializeField]
-	private Timer lightUpdateTimer = null;
-	[SerializeField]
-	private int lightUpdateSize = 32;
 
-	private bool initialWorldGen = true;
+	private bool firstChunks = true;
 
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
+	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
 	[Header("Generation")]
 	[SerializeField]
 	private int nearPlayerGenRange = 4;
 	[SerializeField]
 	private float initialGenTime = 10;
-
-	// Extras
-	private List<Chunk> chunksToLightUpdate = new List<Chunk>();
-	private List<Chunk> chunksToLightCleanup = new List<Chunk>();
 
 	private void Awake()
 	{
@@ -72,11 +64,11 @@ public class World : MonoBehaviour
 		// Init dictionaries
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(64, 0.25f) },
+			{ Chunk.GenStage.Empty, new ChunkGenerator(8, 0.05f) },
 			{ Chunk.GenStage.Allocated, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(7, 0.05f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(6, 0.05f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(10, 1) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(8, 0.05f) },
 		};
 
 		// Init timers
@@ -88,7 +80,7 @@ public class World : MonoBehaviour
 		// First batch of chunks
 		CreateChunksNearPlayer(3);
 
-		initialWorldGen = false;
+		firstChunks = false;
 	}
 
 	private void CreateChunksNearPlayer(int range)
@@ -122,7 +114,7 @@ public class World : MonoBehaviour
 					chunks.Add(chunkPos, chunk);
 
 					// Add a random light to this chunk
-					if (Random.value > 0.75f)
+					if (Random.value > 0.15f)
 					{
 						LightSource light = Instantiate(prefabLight, new Vector3(
 							chunkPos.x + Random.value * chunkSize,
@@ -157,7 +149,7 @@ public class World : MonoBehaviour
 
 	private void Update()
 	{
-		if (initialWorldGen)
+		if (firstChunks)
 			return;
 
 		UpdateChunkCreation();
@@ -180,10 +172,10 @@ public class World : MonoBehaviour
 
 	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage)
 	{
-		QueueNextStage(chunk, stage, 1);
+		QueueNextStage(chunk, stage, false);
 	}
 
-	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage, float prioPenalty)
+	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage, bool prioPenalty)
 	{
 		Instance.chunkGenerators.TryGetValue(stage, out ChunkGenerator generator);
 
@@ -191,17 +183,40 @@ public class World : MonoBehaviour
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority
-		generator.Enqueue(chunk, prioPenalty + Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
+		generator.Enqueue(chunk, Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
 	}
 
 	public static void RegisterLight(LightSource light)
 	{
-		Instance.lightSources.Add(light);
+		light.FindAffectedChunks();
+
+		foreach (Vector3Int chunk in light.affectedChunks)
+		{
+			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+
+			if (ls == null)
+				Instance.lightSources.Add(chunk, ls = new LinkedList<LightSource>());
+			
+			ls.AddLast(light);
+		}
 	}
 
 	public static void RemoveLight(LightSource light)
 	{
-		Instance.lightSources.Remove(light);
+		foreach (Vector3Int chunk in light.affectedChunks)
+		{
+			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+
+			if (ls != null)
+				ls.Remove(light);
+		}
+	}
+
+	public static LinkedList<LightSource> GetLightsFor(Chunk chunk)
+	{
+		Instance.lightSources.TryGetValue(chunk.position, out LinkedList<LightSource> ls);
+
+		return ls;
 	}
 
 	public static Chunk GetChunkFor(int x, int y, int z)
@@ -245,11 +260,6 @@ public class World : MonoBehaviour
 	public static int GetChunkSize()
 	{
 		return Instance.chunkSize;
-	}
-
-	public static int GetLightUpdateSize()
-	{
-		return Instance.lightUpdateSize;
 	}
 
 	public static bool AccelerateGen()

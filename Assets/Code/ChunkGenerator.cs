@@ -9,9 +9,10 @@ public class ChunkGenerator
 	private Timer chunkGenTimer;
 
 	private static readonly List<Chunk.GenStage> requireAdjacents = new List<Chunk.GenStage> {
-		Chunk.GenStage.Allocated,
-		Chunk.GenStage.Generated,
-		Chunk.GenStage.Meshed
+		//Chunk.GenStage.Allocated,
+		//Chunk.GenStage.Generated,
+		//Chunk.GenStage.Meshed,
+		//Chunk.GenStage.Lit
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -74,7 +75,6 @@ public class ChunkGenerator
 					Chunk adj = World.GetChunkFor(adjPos);
 					if (adj == null || adj.genStage < chunk.genStage)
 					{
-						//Debug.Log("[Chunk " + adjPos.x + ", " + adjPos.y + ", " + adjPos.z + "] is " + (adj == null ? "NULL" : (adj.genStage).ToString()));
 						adjGenerated = false;
 						break;
 					}
@@ -83,7 +83,7 @@ public class ChunkGenerator
 				if (!adjGenerated)
 				{
 					// Re add to queue, at a lower priority
-					World.QueueNextStage(chunk, chunk.genStage, 10f);
+					World.QueueNextStage(chunk, chunk.genStage, true);
 					continue;
 				}
 			}
@@ -125,13 +125,21 @@ public class ChunkGenerator
 					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
-			case Chunk.GenStage.Meshed: // Calculate lights and apply vertex colors
+			case Chunk.GenStage.Meshed: // Calculate lights
 				{
+					chunk.CalculateLight();
+
 					chunk.genStage = Chunk.GenStage.Lit;
 					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
-			case Chunk.GenStage.Lit: // Spawn entities and other stuff
+			case Chunk.GenStage.Lit: // Light visuals, spawn entities, and other stuff
+				{
+					chunk.UpdateLightVisuals();
+
+					chunk.genStage = Chunk.GenStage.Ready;
+					World.QueueNextStage(chunk, chunk.genStage);
+				}
 				break;
 		}
 	}

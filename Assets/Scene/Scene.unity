@@ -711,12 +711,9 @@ MonoBehaviour:
   seed: -1590237372
   chunkSize: 8
   chunkGenTimer:
-    maxTime: 0.2
-  lightUpdateTimer:
-    maxTime: 0.1
-  lightUpdateSize: 1024
-  nearPlayerGenRange: 16
-  initialGenTime: 8
+    maxTime: 5
+  nearPlayerGenRange: 5
+  initialGenTime: 1
 --- !u!4 &1026022012
 Transform:
   m_ObjectHideFlags: 0

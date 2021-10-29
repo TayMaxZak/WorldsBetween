@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
+using System.Linq;
 
 [SelectionBase]
 public class Chunk : MonoBehaviour
@@ -13,6 +14,7 @@ public class Chunk : MonoBehaviour
 		Generated,
 		Meshed,
 		Lit,
+		Ready
 	}
 	public GenStage genStage = GenStage.Empty;
 
@@ -23,11 +25,6 @@ public class Chunk : MonoBehaviour
 	private Block[,,] blocks;
 
 	private ChunkMesh chunkMesh;
-
-	private SimplePriorityQueue<Block> toLightUpdate = new SimplePriorityQueue<Block>();
-	private Queue<Block> postUpdate = new Queue<Block>();
-
-	public int lightsToHandle = 0;
 
 	private void Awake()
 	{
@@ -70,138 +67,87 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	public void MarkAsDirtyForLight()
+	public int CalculateLight()
 	{
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					if (blocks[x, y, z].nearAir == 0)
-						continue;
+		LinkedList<LightSource> lights = World.GetLightsFor(this);
+		if (lights == null)
+			return 0;
 
-					blocks[x, y, z].needsUpdate = 255;
-				}
-			}
-		}
-	}
-
-	public void CleanupLight()
-	{
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					if (blocks[x, y, z].nearAir == 0)
-						continue;
-
-					blocks[x, y, z].brightness = 0;
-
-					if (blocks[x, y, z].updatePending == 0)
-					{
-						blocks[x, y, z].updatePending = 255;
-						toLightUpdate.Enqueue(blocks[x, y, z], Random.value * 0.5f);
-					}
-				}
-			}
-		}
-	}
-
-	public void AddLight(LightSource light, bool firstPass, bool lastPass)
-	{
 		int counter = 0;
 
 		// Set brightness
 		foreach (Block block in blocks)
 		{
-			// Block is already correct light
-			if (block.needsUpdate == 0)
-				continue;
+			// Use floats to preserve precision
+			float newBrightness = 0;
+			float newColorTemp = 0;
 
-			//// Is block currently processing?
-			//if (block.updatePending > 0 || block.postUpdate > 0)
-			//	continue;
-
-			counter++;
-
-			// 1.0 up to 1 block away, then divide by distance sqr. Rapid decay of brightness
-			float addBrightness = light.brightness / Mathf.Max(1, Utils.DistanceSqr(light.worldX, light.worldY, light.worldZ, position.x + block.localX, position.y + block.localY, position.z + block.localZ));
-
-			// Add to existing brightness (if not first pass). Affect less if already bright
-			float oldBrightness = firstPass ? 0 : (block.brightness / 255f);
-			float newBrightness = oldBrightness + (1 - oldBrightness) * addBrightness;
-			newBrightness = Mathf.Clamp01(newBrightness);
-
-			block.brightness = (byte)(newBrightness * 255f);
-
-			// Affect color temp of blocks
-			float oldColorTemp = firstPass ? 0 : (-1 + 2 * block.colorTemp / 255f);
-
-			float newColorTemp = oldColorTemp + addBrightness * light.colorTemp;
-			newColorTemp = Mathf.Clamp(newColorTemp, -1, 1);
-
-			block.colorTemp = (byte)(255f * ((newColorTemp + 1) / 2));
-
-			if (lastPass && block.updatePending == 0 && block.postUpdate == 0)
+			bool changed = false;
+			for (int i = 0; i < lights.Count; i++)
 			{
-				block.updatePending = 255;
-				toLightUpdate.Enqueue(block, 1 - Mathf.Abs(oldBrightness - newBrightness));
+				counter++;
+
+				// First pass. Reset lighting
+				if (i == 0)
+				{
+					changed = true;
+
+					block.lastBrightness = block.brightness;
+					block.brightness = 0;
+					block.lastColorTemp = block.colorTemp;
+					block.colorTemp = 127;
+
+					newBrightness = (block.brightness) / 255f;
+					newColorTemp = -1 + (2 * block.colorTemp) / 255f;
+				}
+
+				LightSource light = lights.ElementAt(i);
+
+				Vector3Int pos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
+
+				// However bright should this position be relative to the light, added and blended into existing lights
+				float bright = light.GetBrightnessAt(pos);
+				newBrightness = 1 - (1 - newBrightness) * (1 - bright);
+
+				// Like opacity for a color layer
+				float colorTempOpac = bright;
+				float colorTemp = light.colorTemp;
+				newColorTemp += colorTempOpac * colorTemp;
+			}
+
+			if (changed)
+			{
+				block.brightness = (byte)(newBrightness * 255f);
+				float a = Mathf.Clamp(newColorTemp, -1, 1);
+				float b = a + 1;
+				float c = b / 2;
+				block.colorTemp = (byte)(255f * c);
 			}
 		}
 
-		//Debug.Log(name + " blocks to add light = " + counter);
+		return counter;
+	}
+
+	private static float overlay(float b, float a)
+	{
+		if (a < 0.5f)
+			return 2 * a * b;
+		else
+			return 1 - 2 * (1 - a) * (1 - b);
 	}
 
 	public void UpdateLightVisuals()
 	{
-		//Debug.Log(name + " toUpdate size = " + toLightUpdate.Count + " postUpdate size = " + postUpdate.Count);
+		int counter = 0;
 
-		Block inQueue;
-		bool diff = false;
-
-		// Handle previously dequeued blocks first
-		while (postUpdate.Count > 0)
+		foreach (Block block in blocks)
 		{
-			inQueue = postUpdate.Dequeue();
+			counter++;
 
-			inQueue.postUpdate = 0;
-
-			inQueue.needsUpdate = 0;
-
-			if (inQueue.lastBrightness != inQueue.brightness)
-			{
-				inQueue.lastBrightness = inQueue.brightness;
-				diff = true;
-			}
-			if (inQueue.lastColorTemp != inQueue.colorTemp)
-			{
-				inQueue.lastColorTemp = inQueue.colorTemp;
-				diff = true;
-			}
-
-			if (diff)
-				chunkMesh.SetVertexColors(inQueue);
+			chunkMesh.SetVertexColors(block);
 		}
 
-		// Apply vertex colors to most important blocks to update
-		int count = toLightUpdate.Count;
-		for (int i = 0; i < Mathf.Min(count, World.GetLightUpdateSize()); i++)
-		{
-			diff = true;
-
-			inQueue = toLightUpdate.Dequeue();
-			inQueue.updatePending = 0;
-
-			chunkMesh.SetVertexColors(inQueue);
-
-			inQueue.postUpdate = 255;
-			postUpdate.Enqueue(inQueue);
-		}
-
-		if (diff)
+		if (counter > 0)
 			chunkMesh.ApplyVertexColors();
 	}
 
@@ -294,18 +240,18 @@ public class Chunk : MonoBehaviour
 		return blocks[x, y, z];
 	}
 
-	private void OnDrawGizmosSelected()
-	{
-		Gizmos.color = Utils.colorOrange;
+	//private void OnDrawGizmosSelected()
+	//{
+	//	Gizmos.color = Utils.colorOrange;
 
-		Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
-	}
+	//	Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
+	//}
 
-	private void OnDrawGizmos()
-	{
-		Gizmos.color = Utils.colorBlue;
+	//private void OnDrawGizmos()
+	//{
+	//	Gizmos.color = Utils.colorBlue;
 
-		if (!Application.isPlaying)
-			Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
-	}
+	//	if (!Application.isPlaying)
+	//		Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
+	//}
 }
