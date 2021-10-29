@@ -5,12 +5,23 @@ using Priority_Queue;
 
 public class ChunkGenerator
 {
-	private Timer chunkGenTimer = new Timer(1, 1);
-	private int chunksToHandle = 1;
+	private int chunksToHandle = 3;
+	private Timer chunkGenTimer;
+
+	public ChunkGenerator(int toHandle, float interval)
+	{
+		chunksToHandle = toHandle;
+		chunkGenTimer = new Timer(interval, 5);
+	}
 
 	private SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
 
-	public void GenChunks(float deltaTime)
+	public void Enqueue(Chunk chunk, float priority)
+	{
+		chunkQueue.Enqueue(chunk, priority);
+	}
+
+	public void Generate(float deltaTime)
 	{
 		chunkGenTimer.Increment(deltaTime);
 
@@ -40,24 +51,36 @@ public class ChunkGenerator
 	{
 		switch (chunk.genStage)
 		{
-			case Chunk.GenStage.Empty:
+			case Chunk.GenStage.Empty: // Create blocks
 				{
 					chunk.Init(World.GetChunkSize());
 
 					chunk.genStage = Chunk.GenStage.Allocated;
-
 					World.QueueNextStage(chunk, Chunk.GenStage.Allocated);
 				}
 				break;
-			case Chunk.GenStage.Allocated:
+			case Chunk.GenStage.Allocated: // Generate terrain
+				{
+					// TODO
+				}
 				break;
-			case Chunk.GenStage.Generated:
+			case Chunk.GenStage.Generated: // Cache data and build mesh
+				{
+					chunk.CacheNearAir();
+
+					chunk.UpdateOpacityVisuals();
+
+					chunk.genStage = Chunk.GenStage.Meshed;
+					World.QueueNextStage(chunk, Chunk.GenStage.Meshed);
+				}
 				break;
-			case Chunk.GenStage.Meshed:
+			case Chunk.GenStage.Meshed: // Calculate lights and apply vertex colors
+				{
+					Debug.Log(chunk.name + " done");
+					// TODO
+				}
 				break;
 			case Chunk.GenStage.Lit:
-				break;
-			case Chunk.GenStage.Ready:
 				break;
 		}
 	}

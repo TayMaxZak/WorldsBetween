@@ -13,9 +13,9 @@ public class World : MonoBehaviour
 
 	[SerializeField]
 	private Chunk chunkPrefab;
-	private Dictionary<Vector3Int, Chunk> chunks;
+	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
-	private List<Modifier> modifiers;
+	private List<Modifier> modifiers = new List<Modifier>();
 
 	[SerializeField]
 	private Transform lightRoot;
@@ -42,6 +42,8 @@ public class World : MonoBehaviour
 	private bool initialWorldGen = true;
 	private bool initialChunks = true;
 
+	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
+
 	[Header("Generation")]
 	[SerializeField]
 	private int nearPlayerGenRange = 4;
@@ -52,6 +54,7 @@ public class World : MonoBehaviour
 
 	private void Awake()
 	{
+		// Ensure singleton
 		if (Instance)
 		{
 			Destroy(gameObject);
@@ -60,19 +63,28 @@ public class World : MonoBehaviour
 		else
 			Instance = this;
 
+		// Pick a seed, then use it to initialize RNG
 		if (randomizeSeed)
 			seed = Random.Range(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
-		chunks = new Dictionary<Vector3Int, Chunk>();
+		// Init dictionaries
+		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
+		{
+			{ Chunk.GenStage.Empty, new ChunkGenerator(64, 0.25f) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(1, 0.02f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(4, 0.1f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(1, 1) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(1, 1) },
+		};
 
-		modifiers = new List<Modifier>();
-
+		// Init timers
 		chunkGenTimer.Reset();
 	}
 
 	private void Start()
 	{
+		// First batch of chunks
 		CreateChunksNearPlayer(2);
 
 		ApplyModifiers();
@@ -84,8 +96,10 @@ public class World : MonoBehaviour
 
 	private void CreateChunksNearPlayer(int range)
 	{
+		// Change range to actual distance
 		range *= chunkSize;
 
+		// Start pos in chunk coordinates
 		Vector3Int startPos = new Vector3Int(
 			Mathf.FloorToInt(player.position.x / chunkSize) * chunkSize,
 			Mathf.FloorToInt(player.position.y / chunkSize) * chunkSize,
@@ -106,8 +120,8 @@ public class World : MonoBehaviour
 
 					// Create and register chunk
 					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
-
-					chunks.Add(chunk.position, chunk);
+					chunk.name = "Chunk " + x + ", " + y + ", " + z;
+					chunks.Add(chunkPos, chunk);
 
 					//// Add a random light to this chunk
 					//LightSource light = Instantiate(prefabLight, new Vector3(
@@ -117,6 +131,9 @@ public class World : MonoBehaviour
 					//Quaternion.identity, lightRoot);
 
 					//light.colorTemp = Random.Range(-10, 10);
+
+					// Add chunk to generator
+					QueueNextStage(chunk, Chunk.GenStage.Empty);
 				}
 			}
 		}
@@ -135,6 +152,7 @@ public class World : MonoBehaviour
 		Instance.modifiers.Remove(modifier);
 	}
 
+	// TODO: Overhaul!
 	private void ApplyModifiers()
 	{
 		for (int i = 0; i < modifiers.Count; i++)
@@ -149,7 +167,11 @@ public class World : MonoBehaviour
 				entry.Value.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 
 				if (i == modifiers.Count - 1)
+				{
 					entry.Value.genStage = Chunk.GenStage.Generated;
+
+					QueueNextStage(entry.Value, Chunk.GenStage.Generated);
+				}
 			}
 		}
 	}
@@ -161,17 +183,10 @@ public class World : MonoBehaviour
 
 		UpdateChunkCreation();
 
+		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
+			entry.Value.Generate(Time.deltaTime);
+
 		CalculateLighting();
-	}
-
-	public static void RegisterLight(LightSource light)
-	{
-		Instance.lightSources.Add(light);
-	}
-
-	public static void RemoveLight(LightSource light)
-	{
-		Instance.lightSources.Remove(light);
 	}
 
 	private void UpdateChunkCreation()
@@ -185,14 +200,32 @@ public class World : MonoBehaviour
 
 		CreateChunksNearPlayer(nearPlayerGenRange);
 
+		// TODO: Optimize
 		ApplyModifiers();
 	}
 
 	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage)
 	{
+		Instance.chunkGenerators.TryGetValue(stage, out ChunkGenerator generator);
 
+		if (generator == null)
+			return;
+
+		// Add to appropriate queue. Closer chunks have higher priority
+		generator.Enqueue(chunk, Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
 	}
 
+	public static void RegisterLight(LightSource light)
+	{
+		Instance.lightSources.Add(light);
+	}
+
+	public static void RemoveLight(LightSource light)
+	{
+		Instance.lightSources.Remove(light);
+	}
+
+	// TODO: Overhaul!
 	private void CalculateLighting()
 	{
 		lightUpdateTimer.Increment(Time.deltaTime);
@@ -279,11 +312,6 @@ public class World : MonoBehaviour
 				lightSources[i].dirty = false;
 		}
 
-		//foreach (KeyValuePair<Vector3Int, Chunk> entry in chunks)
-		//{
-		//	entry.Value.UpdateLightVisuals();
-		//}
-
 		foreach (Chunk chunk in chunksToLightUpdate)
 		{
 			chunk.UpdateLightVisuals();
@@ -308,7 +336,7 @@ public class World : MonoBehaviour
 	{
 		Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null)
+		if (chunk == null || chunk.genStage == Chunk.GenStage.Empty)
 			return Block.empty;
 
 		return chunk.GetBlock(

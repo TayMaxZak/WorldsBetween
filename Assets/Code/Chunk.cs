@@ -6,7 +6,14 @@ using Priority_Queue;
 [SelectionBase]
 public class Chunk : MonoBehaviour
 {
-	public enum GenStage { Empty, Allocated, Generated, Meshed, Lit, Ready }
+	public enum GenStage
+	{
+		Empty,
+		Allocated,
+		Generated,
+		Meshed,
+		Lit,
+	}
 	public GenStage genStage = GenStage.Empty;
 
 	public Vector3Int position; // Coordinates of chunk
@@ -22,11 +29,14 @@ public class Chunk : MonoBehaviour
 
 	public int lightsToHandle = 0;
 
+	private void Awake()
+	{
+		UpdatePos();
+	}
+
 	public void Init(int chunkSize)
 	{
 		this.chunkSize = chunkSize;
-
-		UpdatePos();
 
 		// Create blocks
 		CreateBlocks();
