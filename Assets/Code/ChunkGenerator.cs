@@ -8,8 +8,20 @@ public class ChunkGenerator
 	private int chunksToHandle = 3;
 	private Timer chunkGenTimer;
 
-	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
-													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
+	private static readonly List<Chunk.GenStage> requireAdjacents = new List<Chunk.GenStage> {
+		Chunk.GenStage.Allocated,
+		Chunk.GenStage.Generated,
+		Chunk.GenStage.Meshed
+	};
+
+	private static readonly Vector3Int[] directions = new Vector3Int[] {
+		new Vector3Int(1, 0, 0),
+		new Vector3Int(-1, 0, 0),
+		new Vector3Int(0, 1, 0),
+		new Vector3Int(0, -1, 0),
+		new Vector3Int(0, 0, 1),
+		new Vector3Int(0, 0, -1)
+	};
 
 	public ChunkGenerator(int toHandle, float interval)
 	{
@@ -41,38 +53,40 @@ public class ChunkGenerator
 
 	private void IterateQueue()
 	{
+		int mult = World.AccelerateGen() ? 8 : 1;
+
 		int count = chunkQueue.Count;
-		for (int i = 0; i < Mathf.Min(count, chunksToHandle); i++)
+		for (int i = 0; i < Mathf.Min(count, chunksToHandle * mult); i++)
 		{
 			// TODO: Peek before dequeueing when meshing and lighting to prevent weird chunk borders
 
-			Chunk chunk = chunkQueue.First;
+			Chunk chunk = chunkQueue.Dequeue();
 
-			//// Check if neighboring chunks are ready yet
-			//if (chunk.genStage == Chunk.GenStage.Generated)
-			//{
-			//	bool adjGenerated = true;
+			// Check if neighboring chunks are ready yet
+			if (requireAdjacents.Contains(chunk.genStage))
+			{
+				bool adjGenerated = true;
 
-			//	for (int d = 0; d < directions.Length; d++)
-			//	{
-			//		// Try every orthagonal direction
-			//		Chunk adj = World.GetChunkFor(chunk.position + directions[d] * World.GetChunkSize());
-			//		if (adj == null || adj.genStage < Chunk.GenStage.Generated)
-			//		{
-			//			adjGenerated = false;
-			//			break;
-			//		}
-			//	}
+				for (int d = 0; d < directions.Length; d++)
+				{
+					// Try every orthagonal direction
+					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
+					Chunk adj = World.GetChunkFor(adjPos);
+					if (adj == null || adj.genStage < chunk.genStage)
+					{
+						//Debug.Log("[Chunk " + adjPos.x + ", " + adjPos.y + ", " + adjPos.z + "] is " + (adj == null ? "NULL" : (adj.genStage).ToString()));
+						adjGenerated = false;
+						break;
+					}
+				}
 
-			//	if (!adjGenerated)
-			//	{
-			//		// Re add to queue, at a lower priority
-			//		World.QueueNextStage(chunk, chunk.genStage, 2);
-			//		continue;
-			//	}
-			//}
-
-			chunkQueue.Dequeue();
+				if (!adjGenerated)
+				{
+					// Re add to queue, at a lower priority
+					World.QueueNextStage(chunk, chunk.genStage, 10f);
+					continue;
+				}
+			}
 
 			ProcessChunk(chunk);
 		}
@@ -113,7 +127,8 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights and apply vertex colors
 				{
-					// TODO
+					chunk.genStage = Chunk.GenStage.Lit;
+					World.QueueNextStage(chunk, chunk.genStage);
 				}
 				break;
 			case Chunk.GenStage.Lit: // Spawn entities and other stuff

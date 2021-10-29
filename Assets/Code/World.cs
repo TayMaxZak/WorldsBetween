@@ -46,6 +46,8 @@ public class World : MonoBehaviour
 	[Header("Generation")]
 	[SerializeField]
 	private int nearPlayerGenRange = 4;
+	[SerializeField]
+	private float initialGenTime = 10;
 
 	// Extras
 	private List<Chunk> chunksToLightUpdate = new List<Chunk>();
@@ -72,8 +74,8 @@ public class World : MonoBehaviour
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(64, 0.25f) },
 			{ Chunk.GenStage.Allocated, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(7, 0.05f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(6, 0.05f) },
 			{ Chunk.GenStage.Lit, new ChunkGenerator(10, 1) },
 		};
 
@@ -84,9 +86,7 @@ public class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		CreateChunksNearPlayer(8);
-
-		CalculateLighting();
+		CreateChunksNearPlayer(3);
 
 		initialWorldGen = false;
 	}
@@ -164,8 +164,6 @@ public class World : MonoBehaviour
 
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 			entry.Value.Generate(Time.deltaTime);
-
-		CalculateLighting();
 	}
 
 	private void UpdateChunkCreation()
@@ -193,7 +191,7 @@ public class World : MonoBehaviour
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority
-		generator.Enqueue(chunk, prioPenalty * Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
+		generator.Enqueue(chunk, prioPenalty + Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
 	}
 
 	public static void RegisterLight(LightSource light)
@@ -204,99 +202,6 @@ public class World : MonoBehaviour
 	public static void RemoveLight(LightSource light)
 	{
 		Instance.lightSources.Remove(light);
-	}
-
-	// TODO: Overhaul!
-	private void CalculateLighting()
-	{
-		lightUpdateTimer.Increment(Time.deltaTime);
-
-		// Is this a major light update?
-		bool doLightUpdate = lightUpdateTimer.Expired();
-
-		// Reset timer for next update
-		if (doLightUpdate)
-			lightUpdateTimer.Reset();
-
-		// Find partial time for blending light
-		float partialTime = Mathf.Clamp01(1 - lightUpdateTimer.currentTime / lightUpdateTimer.maxTime);
-		Shader.SetGlobalFloat("PartialTime", partialTime);
-
-		if (!doLightUpdate)
-			return;
-
-		//chunksToLightUpdate.Clear();
-
-		// Apply lights
-		for (int i = 0; i < lightSources.Count; i++)
-		{
-			lightSources[i].UpdatePosition();
-
-			if (!lightSources[i].dirty)
-				continue;
-
-			chunksToLightCleanup = lightSources[i].FindAffectedChunks();
-
-			//foreach (Chunk chunk in chunksToLightCleanup)
-			//{
-			//	if (!lightSources[i].affectedChunks.Contains(chunk))
-			//		chunk.CleanupLight();
-			//}
-
-			// Should this light activate?
-			bool notReady = false;
-
-			foreach (Chunk chunk in lightSources[i].affectedChunks)
-			{
-				if (chunk.genStage != Chunk.GenStage.Meshed && chunk.genStage != Chunk.GenStage.Lit)
-				{
-					notReady = true;
-					break;
-				}
-			}
-
-			if (notReady)
-				continue;
-
-			// Go through each affected chunk
-			foreach (Chunk chunk in lightSources[i].affectedChunks)
-			{
-				if (chunk.genStage != Chunk.GenStage.Meshed && chunk.genStage != Chunk.GenStage.Lit)
-					continue;
-
-				// First pass on this chunk. Reset "canvas" and apply light from scratch
-				bool firstPass = !chunksToLightUpdate.Contains(chunk);
-
-				if (firstPass)
-					chunksToLightUpdate.Add(chunk);
-
-				// Mark chunk as dirty
-				if (chunk.lightsToHandle > 0)
-				{
-					if (firstPass)
-						chunk.MarkAsDirtyForLight();
-
-					// This chunk can consider this light handled
-					chunk.lightsToHandle--;
-
-					// Last pass on this chunk? If so, begin applying vertex colors
-					bool lastPass = chunk.lightsToHandle == 0;
-
-					chunk.AddLight(lightSources[i], firstPass, lastPass);
-
-					if (lastPass)
-						chunk.genStage = Chunk.GenStage.Lit;
-				}
-			}
-
-			if (lightSources[i].dirty && !notReady)
-				lightSources[i].dirty = false;
-		}
-
-		foreach (Chunk chunk in chunksToLightUpdate)
-		{
-			chunk.UpdateLightVisuals();
-		}
 	}
 
 	public static Chunk GetChunkFor(int x, int y, int z)
@@ -345,5 +250,10 @@ public class World : MonoBehaviour
 	public static int GetLightUpdateSize()
 	{
 		return Instance.lightUpdateSize;
+	}
+
+	public static bool AccelerateGen()
+	{
+		return Time.time < Instance.initialGenTime;
 	}
 }

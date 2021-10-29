@@ -5,6 +5,7 @@ using UnityEngine;
 public class ChunkMesh : MonoBehaviour
 {
 	private static Color borderColor = new Color(0, 0, 0.5f, 0.5f);
+	private static Color whiteColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
 	private static Color debugHidden = new Color(0.3f, 0.3f, 0.1f, 0.1f);
 	private static Color debugNearAir = new Color(0.5f, 0.5f, 0.9f, 0.9f);
@@ -202,7 +203,7 @@ public class ChunkMesh : MonoBehaviour
 
 		colors = new Color[sharedVertices.Length];
 		for (int i = 0; i < colors.Length; i++)
-			colors[i] = borderColor;
+			colors[i] = whiteColor;
 
 		ApplyVertexColors();
 	}

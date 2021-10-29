@@ -715,7 +715,8 @@ MonoBehaviour:
   lightUpdateTimer:
     maxTime: 0.1
   lightUpdateSize: 1024
-  nearPlayerGenRange: 0
+  nearPlayerGenRange: 16
+  initialGenTime: 8
 --- !u!4 &1026022012
 Transform:
   m_ObjectHideFlags: 0
@@ -1345,7 +1346,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
