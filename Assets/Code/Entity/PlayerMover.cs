@@ -35,7 +35,7 @@ public class PlayerMover : MonoBehaviour
 	private void Update()
 	{
 		Chunk chunk;
-		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Lit)
+		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Generated)
 			didInit = true;
 		else
 			didInit = false;
