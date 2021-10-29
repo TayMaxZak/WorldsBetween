@@ -64,11 +64,11 @@ public class World : MonoBehaviour
 		// Init dictionaries
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(8, 0.05f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(8, 0.05f) },
+			{ Chunk.GenStage.Empty, new ChunkGenerator(64000, 0.25f) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(6, 0.01f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(32, 0.01f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(12, 0.01f) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(32, 0.01f) },
 		};
 
 		// Init timers
@@ -78,7 +78,7 @@ public class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		CreateChunksNearPlayer(3);
+		CreateChunksNearPlayer(1);
 
 		firstChunks = false;
 	}
@@ -155,7 +155,12 @@ public class World : MonoBehaviour
 		UpdateChunkCreation();
 
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
-			entry.Value.Generate(Time.deltaTime);
+		{
+			Instance.chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
+
+			if (entry.Key == Chunk.GenStage.Empty || prev.GetSize() == 0 || (entry.Key == Chunk.GenStage.Lit && prev.GetSize() < 100))
+				entry.Value.Generate(Time.deltaTime);
+		}
 	}
 
 	private void UpdateChunkCreation()

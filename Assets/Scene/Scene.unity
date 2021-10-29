@@ -707,13 +707,13 @@ MonoBehaviour:
   chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
   lightRoot: {fileID: 295908289}
   prefabLight: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
-  randomizeSeed: 0
+  randomizeSeed: 1
   seed: -1590237372
-  chunkSize: 8
+  chunkSize: 16
   chunkGenTimer:
-    maxTime: 5
-  nearPlayerGenRange: 5
-  initialGenTime: 1
+    maxTime: 3
+  nearPlayerGenRange: 6
+  initialGenTime: 10
 --- !u!4 &1026022012
 Transform:
   m_ObjectHideFlags: 0

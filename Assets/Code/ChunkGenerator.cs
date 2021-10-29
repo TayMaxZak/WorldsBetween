@@ -54,7 +54,7 @@ public class ChunkGenerator
 
 	private void IterateQueue()
 	{
-		int mult = World.AccelerateGen() ? 8 : 1;
+		int mult = World.AccelerateGen() ? 40 : 1;
 
 		int count = chunkQueue.Count;
 		for (int i = 0; i < Mathf.Min(count, chunksToHandle * mult); i++)
@@ -142,5 +142,10 @@ public class ChunkGenerator
 				}
 				break;
 		}
+	}
+
+	public int GetSize()
+	{
+		return chunkQueue.Count;
 	}
 }

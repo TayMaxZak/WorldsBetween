@@ -78,6 +78,9 @@ public class Chunk : MonoBehaviour
 		// Set brightness
 		foreach (Block block in blocks)
 		{
+			if (block.nearAir == 0)
+				continue;
+
 			// Use floats to preserve precision
 			float newBrightness = 0;
 			float newColorTemp = 0;
