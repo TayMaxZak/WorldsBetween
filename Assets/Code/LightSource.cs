@@ -75,9 +75,20 @@ public class LightSource : MonoBehaviour
 		lastWorldZ = worldZ;
 	}
 
-	public float GetBrightnessAt(Vector3Int at)
+	public float GetBrightnessAt(Vector3Int at, bool inWater)
 	{
-		return brightness / Mathf.Max(1, Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z));
+		return !inWater ?
+			Mathf.Clamp01(brightness / Mathf.Max(1, Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z))) : // Rapid decay, soft ambient
+			Mathf.Clamp01(0.4f * brightness - 0.02f * Mathf.Sqrt(Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z)) // Full decay faster, stays bright for longer
+		);
+	}
+
+	public float GetColorTemperatureAt(float value, bool inWater)
+	{
+		return !inWater ?
+			(colorTemp) :
+			(Mathf.Lerp(0, colorTemp, 0.6f + value)
+		);
 	}
 
 	private void OnDrawGizmosSelected()

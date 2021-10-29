@@ -109,12 +109,12 @@ public class Chunk : MonoBehaviour
 				Vector3Int pos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
 
 				// However bright should this position be relative to the light, added and blended into existing lights
-				float bright = light.GetBrightnessAt(pos);
+				float bright = light.GetBrightnessAt(pos, pos.y < World.GetWaterHeight());
 				newBrightness = 1 - (1 - newBrightness) * (1 - bright);
 
 				// Like opacity for a color layer
 				float colorTempOpac = bright;
-				float colorTemp = light.colorTemp;
+				float colorTemp = light.GetColorTemperatureAt(colorTempOpac, pos.y < World.GetWaterHeight());
 				newColorTemp += colorTempOpac * colorTemp;
 			}
 

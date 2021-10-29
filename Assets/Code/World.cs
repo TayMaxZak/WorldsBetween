@@ -45,6 +45,10 @@ public class World : MonoBehaviour
 	[SerializeField]
 	private float initialGenTime = 10;
 
+	[Header("Level Settings")]
+	[SerializeField]
+	private int waterHeight = 0;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -72,7 +76,7 @@ public class World : MonoBehaviour
 		};
 
 		// Init timers
-		chunkGenTimer.Reset();
+		chunkGenTimer.Reset(5);
 	}
 
 	private void Start()
@@ -270,5 +274,10 @@ public class World : MonoBehaviour
 	public static bool AccelerateGen()
 	{
 		return Time.time < Instance.initialGenTime;
+	}
+
+	public static int GetWaterHeight()
+	{
+		return Instance.waterHeight;
 	}
 }

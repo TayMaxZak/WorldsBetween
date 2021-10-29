@@ -18,7 +18,9 @@ public class PlayerMover : MonoBehaviour
 	private Vector3 velocity;
 
 	[SerializeField]
-	private float walkSpeed = 3;
+	private float walkSpeed = 4.5f;
+	private float swimSpeed = 9;
+
 	private Vector3 walkVelocity = new Vector3();
 
 	private Timer moveTickTimer = new Timer(0.05f);
@@ -58,14 +60,24 @@ public class PlayerMover : MonoBehaviour
 
 	private void MoveTick(float deltaTime)
 	{
-		Vector3 velocityVectorArrows = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * walkSpeed;
-		walkVelocity = transform.rotation * walkVelocity;
+		UpdatePosition();
 
-		velocity.x = walkVelocity.x;
-		velocity.z = walkVelocity.z;
+		bool underWater = worldY < World.GetWaterHeight();
+
+		Vector3 velocityVectorArrows = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
+		walkVelocity = !underWater ? transform.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		velocity += gravity * deltaTime;
+
+		float smooth = underWater ? 0.5f : 0.9f;
+		velocity.x = Mathf.Lerp(velocity.x, walkVelocity.x, smooth);
+		if (underWater)
+			velocity.y = Mathf.Lerp(velocity.y, walkVelocity.y, smooth);
+		velocity.z = Mathf.Lerp(velocity.z, walkVelocity.z, smooth);
+
+		if (underWater)
+			velocity *= 0.85f;
 
 		Block block;
 
