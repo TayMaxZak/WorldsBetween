@@ -65,6 +65,47 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
+	public void AsyncGenerate()
+	{
+		BkgThreadGenerate(this, System.EventArgs.Empty);
+	}
+
+	private void BkgThreadGenerate(object sender, System.EventArgs e)
+	{
+		processing = true;
+
+		BackgroundWorker bw = new BackgroundWorker();
+
+		// What to do in the background thread
+		bw.DoWork += new DoWorkEventHandler(
+		delegate (object o, DoWorkEventArgs args)
+		{
+			Generate();
+		});
+
+		// What to do when worker completes its task
+		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+		delegate (object o, RunWorkerCompletedEventArgs args)
+		{
+			processing = false;
+
+			CacheNearAir();
+
+			genStage = GenStage.Generated;
+			World.QueueNextStage(this);
+		});
+
+		bw.RunWorkerAsync();
+	}
+
+	private void Generate()
+	{
+		List<Modifier> modifiers = World.GetModifiers();
+
+		for (int i = 0; i < 1; i++)
+			ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
+	}
+
 	public void AsyncCalcLight()
 	{
 		BkgThreadCalcLight(this, System.EventArgs.Empty);
@@ -72,6 +113,8 @@ public class Chunk : MonoBehaviour
 
 	private void BkgThreadCalcLight(object sender, System.EventArgs e)
 	{
+		processing = true;
+
 		BackgroundWorker bw = new BackgroundWorker();
 
 		// What to do in the background thread
@@ -171,7 +214,7 @@ public class Chunk : MonoBehaviour
 			chunkMesh.ApplyVertexColors();
 	}
 
-	public void ApplyModifier(Modifier modifier, bool firstPass, bool lastPass)
+	private void ApplyModifier(Modifier modifier, bool firstPass, bool lastPass)
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{

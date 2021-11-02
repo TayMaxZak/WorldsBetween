@@ -61,7 +61,7 @@ public class ChunkGenerator
 
 	private void IterateQueue()
 	{
-		float accelMult = World.DoAccelerateGen() ? 50 : 0.14f;
+		float accelMult = World.DoAccelerateGen() ? 50 : 1;
 
 		int count = chunkQueue.Count;
 		int baseAttempts = Mathf.Min(count, Mathf.CeilToInt(chunksToHandle * accelMult));
@@ -138,15 +138,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Allocated: // Generate terrain
 				{
-					List<Modifier> modifiers = World.GetModifiers();
-
-					for (int i = 0; i < 1; i++)
-						chunk.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
-
-					chunk.CacheNearAir();
-
-					chunk.genStage = Chunk.GenStage.Generated;
-					World.QueueNextStage(chunk);
+					chunk.AsyncGenerate();
 				}
 				break;
 			case Chunk.GenStage.Generated: // Cache data and build mesh

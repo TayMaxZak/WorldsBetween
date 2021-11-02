@@ -71,10 +71,10 @@ public partial class World : MonoBehaviour
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(40, 0.01f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(12, 0.01f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(12, 0.01f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(40, 0.01f) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(50, 0.01f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(10, 0.01f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, 0.01f) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(50, 0.01f) },
 		};
 
 		// Init timers
