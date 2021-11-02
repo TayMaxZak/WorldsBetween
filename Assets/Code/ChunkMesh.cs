@@ -2,23 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChunkMesh : MonoBehaviour
+[System.Serializable]
+public class ChunkMesh
 {
-	private static Color borderColor = new Color(0, 0, 0.5f, 0.5f);
-	private static Color whiteColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-
-	private static Color debugHidden = new Color(0.3f, 0.3f, 0.1f, 0.1f);
-	private static Color debugNearAir = new Color(0.5f, 0.5f, 0.9f, 0.9f);
+	private static Color borderColor = new Color(0.01f, 0.01f, 0.5f, 0.5f);
 
 	private Chunk chunk;
 
+	[SerializeField]
 	private MeshFilter filter;
 
 	public Mesh blockMesh;
 
 	// Save for later
-	Vector3[] sharedVertices;
-	Color[] colors;
+	private Vector3[] sharedVertices;
+	private Color[] colors;
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
 													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
@@ -29,8 +27,6 @@ public class ChunkMesh : MonoBehaviour
 	public void Init(Chunk chunk)
 	{
 		this.chunk = chunk;
-
-		filter = GetComponentInChildren<MeshFilter>();
 
 		// Duplicate original mesh to avoid permanent changes
 		filter.sharedMesh = filter.mesh;
@@ -108,12 +104,10 @@ public class ChunkMesh : MonoBehaviour
 		List<Vector3> normals = new List<Vector3>();
 		List<Vector2> uv = new List<Vector2>();
 
-		Vector3[] blockVert;
-		Vector3[] blockNormals;
-		int[] blockTri;
-		Vector2[] blockUv;
-
-		Vector3 blockMeshOffset;
+		Vector3[] blockVert = blockMesh.vertices;
+		Vector3[] blockNormals = blockMesh.normals;
+		int[] blockTri = blockMesh.triangles;
+		Vector2[] blockUv = blockMesh.uv;
 
 		Vector3Int faceOffset = new Vector3Int();
 
@@ -147,42 +141,29 @@ public class ChunkMesh : MonoBehaviour
 
 						int indexOffset = vertices.Count;
 
-						// Local position offset for this block
-						blockMeshOffset.x = x;
-						blockMeshOffset.y = y;
-						blockMeshOffset.z = z;
-
 						// Add vertices
-						blockVert = blockMesh.vertices;
-
 						for (int i = 0; i < blockVert.Length; i++)
 						{
 							vert = Quaternion.Euler(rotations[d]) * (blockVert[i] + Vector3.forward * 0.5f);
 
-							vertices.Add(vert + Vector3.one * 0.5f + blockMeshOffset);
+							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
 						}
 
 						block.endIndex = vertices.Count;
 
 						// Add normals
-						blockNormals = blockMesh.normals;
-
 						for (int i = 0; i < blockNormals.Length; i++)
 						{
 							normals.Add(Quaternion.Euler(rotations[d]) * blockNormals[i]);
 						}
 
 						// Add triangles
-						blockTri = blockMesh.triangles;
-
 						for (int i = 0; i < blockTri.Length; i++)
 						{
 							triangles.Add(blockTri[i] + indexOffset);
 						}
 
 						// Add UVs
-						blockUv = blockMesh.uv;
-
 						for (int i = 0; i < blockUv.Length; i++)
 						{
 							uv.Add(blockUv[i]);
@@ -203,13 +184,8 @@ public class ChunkMesh : MonoBehaviour
 
 		colors = new Color[sharedVertices.Length];
 		for (int i = 0; i < colors.Length; i++)
-			colors[i] = whiteColor;
+			colors[i] = borderColor;
 
 		ApplyVertexColors();
-	}
-
-	private static float RandomJitter(float mult)
-	{
-		return (Random.value - 0.5f) * mult;
 	}
 }

@@ -114,6 +114,7 @@ public partial class World : MonoBehaviour
 
 					// Create and register chunk
 					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
+					chunk.UpdatePos();
 					chunk.name = "Chunk " + x + ", " + y + ", " + z;
 					chunks.Add(chunkPos, chunk);
 

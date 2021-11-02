@@ -20,18 +20,14 @@ public class Chunk : MonoBehaviour
 
 	public Vector3Int position; // Coordinates of chunk
 
+	public bool atEdge = false;
+
 	private int chunkSize = 8;
 
 	private Block[,,] blocks;
 
+	[SerializeField]
 	private ChunkMesh chunkMesh;
-
-	public bool atEdge = false;
-
-	private void Awake()
-	{
-		UpdatePos();
-	}
 
 	public void Init(int chunkSize)
 	{
@@ -41,11 +37,10 @@ public class Chunk : MonoBehaviour
 		CreateBlocks();
 
 		// Init chunk mesh
-		chunkMesh = GetComponent<ChunkMesh>();
 		chunkMesh.Init(this);
 	}
 
-	private void UpdatePos()
+	public void UpdatePos()
 	{
 		Vector3 pos = transform.position;
 		position.x = Mathf.RoundToInt(pos.x);
@@ -131,14 +126,6 @@ public class Chunk : MonoBehaviour
 		}
 
 		return counter;
-	}
-
-	private static float overlay(float b, float a)
-	{
-		if (a < 0.5f)
-			return 2 * a * b;
-		else
-			return 1 - 2 * (1 - a) * (1 - b);
 	}
 
 	public void UpdateLightVisuals()
@@ -244,19 +231,4 @@ public class Chunk : MonoBehaviour
 	{
 		return blocks[x, y, z];
 	}
-
-	//private void OnDrawGizmosSelected()
-	//{
-	//	Gizmos.color = Utils.colorOrange;
-
-	//	Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
-	//}
-
-	//private void OnDrawGizmos()
-	//{
-	//	Gizmos.color = Utils.colorBlue;
-
-	//	if (!Application.isPlaying)
-	//		Gizmos.DrawWireCube(transform.position + chunkSize / 2f * Vector3.one, chunkSize * Vector3.one);
-	//}
 }
