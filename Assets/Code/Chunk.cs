@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Priority_Queue;
-using System.Linq;
 
 [SelectionBase]
 public class Chunk : MonoBehaviour
@@ -83,12 +81,12 @@ public class Chunk : MonoBehaviour
 			float newColorTemp = 0;
 
 			bool changed = false;
-			for (int i = 0; i < lights.Count; i++)
+			foreach (LightSource light in lights)
 			{
 				counter++;
 
 				// First pass. Reset lighting
-				if (i == 0)
+				if (light == lights.First.Value)
 				{
 					changed = true;
 
@@ -100,8 +98,6 @@ public class Chunk : MonoBehaviour
 					newBrightness = (block.brightness) / 255f;
 					newColorTemp = -1 + (2 * block.colorTemp) / 255f;
 				}
-
-				LightSource light = lights.ElementAt(i);
 
 				Vector3Int pos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
 
