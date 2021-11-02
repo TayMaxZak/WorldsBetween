@@ -130,7 +130,7 @@ public class World : MonoBehaviour
 					}
 
 					// Add chunk to generator
-					QueueNextStage(chunk, Chunk.GenStage.Empty);
+					QueueNextStage(chunk);
 				}
 			}
 		}
@@ -156,13 +156,16 @@ public class World : MonoBehaviour
 		if (firstChunks)
 			return;
 
-		UpdateChunkCreation();
-
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			Instance.chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
-			if (entry.Key == Chunk.GenStage.Empty || prev.GetSize() == 0 || (entry.Key == Chunk.GenStage.Lit && prev.GetSize() < 100))
+			// Only make new empty chunks if empty queue is empty
+			if (entry.Key == Chunk.GenStage.Empty && entry.Value.GetSize() == 0)
+				UpdateChunkCreation();
+
+			// Wait until previous queue is wrapped up
+			if (entry.Key == Chunk.GenStage.Empty || (prev.GetSize() < entry.Value.GetSize()))
 				entry.Value.Generate(Time.deltaTime);
 		}
 	}
@@ -179,14 +182,9 @@ public class World : MonoBehaviour
 		CreateChunksNearPlayer(nearPlayerGenRange);
 	}
 
-	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage)
+	public static void QueueNextStage(Chunk chunk)
 	{
-		QueueNextStage(chunk, stage, false);
-	}
-
-	public static void QueueNextStage(Chunk chunk, Chunk.GenStage stage, bool prioPenalty)
-	{
-		Instance.chunkGenerators.TryGetValue(stage, out ChunkGenerator generator);
+		Instance.chunkGenerators.TryGetValue(chunk.genStage, out ChunkGenerator generator);
 
 		if (generator == null)
 			return;
@@ -271,7 +269,7 @@ public class World : MonoBehaviour
 		return Instance.chunkSize;
 	}
 
-	public static bool AccelerateGen()
+	public static bool DoAccelerateGen()
 	{
 		return Time.time < Instance.initialGenTime;
 	}

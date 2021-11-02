@@ -26,6 +26,8 @@ public class Chunk : MonoBehaviour
 
 	private ChunkMesh chunkMesh;
 
+	public bool atEdge = false;
+
 	private void Awake()
 	{
 		UpdatePos();

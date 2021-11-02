@@ -5,14 +5,19 @@ using Priority_Queue;
 
 public class ChunkGenerator
 {
+	private SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
+	private Queue<Chunk> reQueue = new Queue<Chunk>();
+
 	private int chunksToHandle = 3;
 	private Timer chunkGenTimer;
 
+	private int atEdge = 0;
+
 	private static readonly List<Chunk.GenStage> requireAdjacents = new List<Chunk.GenStage> {
-		//Chunk.GenStage.Allocated,
-		//Chunk.GenStage.Generated,
-		//Chunk.GenStage.Meshed,
-		//Chunk.GenStage.Lit
+		Chunk.GenStage.Allocated,
+		Chunk.GenStage.Generated,
+		Chunk.GenStage.Meshed,
+		Chunk.GenStage.Lit
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -29,8 +34,6 @@ public class ChunkGenerator
 		chunksToHandle = toHandle;
 		chunkGenTimer = new Timer(interval, 1);
 	}
-
-	private SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
 
 	public void Enqueue(Chunk chunk, float priority)
 	{
@@ -50,18 +53,19 @@ public class ChunkGenerator
 			return;
 
 		IterateQueue();
+
+		while (reQueue.Count > 0)
+			World.QueueNextStage(reQueue.Dequeue());
 	}
 
 	private void IterateQueue()
 	{
-		int mult = World.AccelerateGen() ? 40 : 1;
+		int accelMult = World.DoAccelerateGen() ? 40 : 1;
 
 		int count = chunkQueue.Count;
-		for (int i = 0; i < Mathf.Min(count, chunksToHandle * mult); i++)
+		for (int i = 0; i < Mathf.Min(count, chunksToHandle * accelMult); i++)
 		{
-			// TODO: Peek before dequeueing when meshing and lighting to prevent weird chunk borders
-
-			Chunk chunk = chunkQueue.Dequeue();
+			Chunk chunk = chunkQueue.First;
 
 			// Check if neighboring chunks are ready yet
 			if (requireAdjacents.Contains(chunk.genStage))
@@ -80,13 +84,40 @@ public class ChunkGenerator
 					}
 				}
 
+				// At edge
 				if (!adjGenerated)
 				{
-					// Re add to queue, at a lower priority
-					World.QueueNextStage(chunk, chunk.genStage, true);
-					continue;
+					// Re queue edge chunks back on top
+					reQueue.Enqueue(chunk);
+
+					if (!chunk.atEdge)
+					{
+						atEdge++;
+						chunk.atEdge = true;
+					}
+					else // Already know that rest of chunks are at the edge
+					{
+						chunkQueue.Dequeue(); // Otherwise won't be reached
+						return;
+					}
+				}
+				// Not at edge
+				else
+				{
+					if (chunk.atEdge)
+						atEdge--;
+					chunk.atEdge = false;
 				}
 			}
+			// Doesn't require adjacents
+			else
+			{
+				if (chunk.atEdge)
+					atEdge--;
+				chunk.atEdge = false;
+			}
+
+			chunkQueue.Dequeue();
 
 			ProcessChunk(chunk);
 		}
@@ -101,7 +132,7 @@ public class ChunkGenerator
 					chunk.Init(World.GetChunkSize());
 
 					chunk.genStage = Chunk.GenStage.Allocated;
-					World.QueueNextStage(chunk, chunk.genStage);
+					World.QueueNextStage(chunk);
 				}
 				break;
 			case Chunk.GenStage.Allocated: // Generate terrain
@@ -114,7 +145,7 @@ public class ChunkGenerator
 					chunk.CacheNearAir();
 
 					chunk.genStage = Chunk.GenStage.Generated;
-					World.QueueNextStage(chunk, chunk.genStage);
+					World.QueueNextStage(chunk);
 				}
 				break;
 			case Chunk.GenStage.Generated: // Cache data and build mesh
@@ -122,7 +153,7 @@ public class ChunkGenerator
 					chunk.UpdateOpacityVisuals();
 
 					chunk.genStage = Chunk.GenStage.Meshed;
-					World.QueueNextStage(chunk, chunk.genStage);
+					World.QueueNextStage(chunk);
 				}
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights
@@ -130,7 +161,7 @@ public class ChunkGenerator
 					chunk.CalculateLight();
 
 					chunk.genStage = Chunk.GenStage.Lit;
-					World.QueueNextStage(chunk, chunk.genStage);
+					World.QueueNextStage(chunk);
 				}
 				break;
 			case Chunk.GenStage.Lit: // Light visuals, spawn entities, and other stuff
@@ -138,7 +169,7 @@ public class ChunkGenerator
 					chunk.UpdateLightVisuals();
 
 					chunk.genStage = Chunk.GenStage.Ready;
-					World.QueueNextStage(chunk, chunk.genStage);
+					World.QueueNextStage(chunk);
 				}
 				break;
 		}
@@ -146,6 +177,6 @@ public class ChunkGenerator
 
 	public int GetSize()
 	{
-		return chunkQueue.Count;
+		return chunkQueue.Count - atEdge;
 	}
 }
