@@ -182,4 +182,9 @@ public class ChunkGenerator
 	{
 		return chunkQueue.Count - edgeChunks;
 	}
+
+	public int GetEdgeChunks()
+	{
+		return edgeChunks;
+	}
 }

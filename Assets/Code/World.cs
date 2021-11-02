@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Priority_Queue;
 
-public class World : MonoBehaviour
+public partial class World : MonoBehaviour
 {
 	private static World Instance;
 
@@ -208,7 +207,7 @@ public class World : MonoBehaviour
 
 			if (ls == null)
 				Instance.lightSources.Add(chunk, ls = new LinkedList<LightSource>());
-			
+
 			ls.AddLast(light);
 		}
 	}
