@@ -16,5 +16,10 @@ public partial class World : MonoBehaviour
 		{
 			return worldIn.chunkGenerators;
 		}
+
+		public static int GetGeneratorsUsed(World worldIn)
+		{
+			return worldIn.generatorsUsed;
+		}
 	}
 }

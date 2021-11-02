@@ -33,6 +33,12 @@ public class WorldEditor : Editor
 		EditorGUILayout.Space();
 		////////////////////
 
+		EditorGUILayout.LabelField("Generators used: ", World.WorldEditorInfo.GetGeneratorsUsed(script).ToString());
+
+		////////////////////
+		EditorGUILayout.Space();
+		////////////////////
+
 		EditorGUILayout.LabelField("Chunk Generators", EditorStyles.boldLabel);
 
 		var generators = World.WorldEditorInfo.GetChunkGenerators(script);

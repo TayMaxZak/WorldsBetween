@@ -63,15 +63,18 @@ public class ChunkGenerator
 		int accelMult = World.DoAccelerateGen() ? 40 : 1;
 
 		int count = chunkQueue.Count;
-		for (int i = 0; i < Mathf.Min(count, chunksToHandle * accelMult); i++)
-		{
-			Chunk chunk = chunkQueue.First;
+		int baseAttempts = Mathf.Min(count, chunksToHandle * accelMult);
+		int spareAttempts = Mathf.Min(count);
 
-			bool adjGenerated = true;
-			bool adjRequired = requireAdjacents.Contains(chunk.genStage);
+		for (int i = 0; i < baseAttempts; i++)
+		{
+			Chunk chunk = chunkQueue.Dequeue();
+
+			bool validAdj = true;
+			bool requiresAdj = requireAdjacents.Contains(chunk.genStage);
 
 			// Check if neighboring chunks are ready yet
-			if (adjRequired)
+			if (requiresAdj)
 			{
 				for (int d = 0; d < directions.Length; d++)
 				{
@@ -80,49 +83,42 @@ public class ChunkGenerator
 					Chunk adj = World.GetChunkFor(adjPos);
 					if (adj == null || adj.genStage < chunk.genStage)
 					{
-						adjGenerated = false;
+						validAdj = false;
 						break;
 					}
 				}
-
-				// At edge
-				if (!adjGenerated)
-				{
-					// Re queue edge chunks back on top
-					reQueue.Enqueue(chunk);
-
-					if (!chunk.atEdge)
-					{
-						edgeChunks++;
-						chunk.atEdge = true;
-					}
-					else // Already know that rest of chunks are at the edge
-					{
-						//chunkQueue.Dequeue(); // Otherwise won't be reached
-						//return;
-					}
-				}
-				// Not at edge
-				else
-				{
-					if (chunk.atEdge)
-						edgeChunks--;
-					chunk.atEdge = false;
-				}
 			}
-			// Doesn't require adjacents
-			else
+
+			// Either doesn't care about adjacents or has adjacents
+			if (!requiresAdj || validAdj)
 			{
+				// Update edge tracking
 				if (chunk.atEdge)
 					edgeChunks--;
 				chunk.atEdge = false;
-			}
 
-			chunkQueue.Dequeue();
-
-			// Either doesn't care about adjacents or has adjacents
-			if (!adjRequired || adjGenerated)
 				ProcessChunk(chunk);
+			}
+			else
+			{
+				// Update edge tracking
+				if (!chunk.atEdge)
+				{
+					edgeChunks++;
+					chunk.atEdge = true;
+				}
+
+				reQueue.Enqueue(chunk);
+
+				// Keep trying to find a non-edge chunk (if it makes sense to do so)
+				// Do we have spare attempts left?
+				// Is the queue still non empty after we do the remaining attempts? (remaining attempts = base attempts - current i)
+				if (spareAttempts > 0 && chunkQueue.Count - (baseAttempts - i) >= 0)
+				{
+					spareAttempts--;
+					i--;
+				}
+			}
 		}
 	}
 

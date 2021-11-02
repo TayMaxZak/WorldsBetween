@@ -48,6 +48,9 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private int waterHeight = 0;
 
+	// Debug
+	private int generatorsUsed = 0;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -68,14 +71,14 @@ public partial class World : MonoBehaviour
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(64000, 0.25f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(6, 0.01f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(32, 0.01f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(12, 0.01f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(32, 0.01f) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(15, 0.01f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(5, 0.01f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(10, 0.01f) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(30, 0.01f) },
 		};
 
 		// Init timers
-		chunkGenTimer.Reset(5);
+		chunkGenTimer.Reset(1);
 	}
 
 	private void Start()
@@ -155,6 +158,7 @@ public partial class World : MonoBehaviour
 		if (firstChunks)
 			return;
 
+		generatorsUsed = 0;
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			Instance.chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
@@ -165,7 +169,11 @@ public partial class World : MonoBehaviour
 
 			// Wait until previous queue is wrapped up
 			if (entry.Key == Chunk.GenStage.Empty || (prev.GetSize() < entry.Value.GetSize()))
+			{
 				entry.Value.Generate(Time.deltaTime);
+
+				generatorsUsed++;
+			}
 		}
 	}
 
