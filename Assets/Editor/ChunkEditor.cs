@@ -11,7 +11,7 @@ class LabelHandle : Editor
 	void OnSceneGUI()
 	{
 		Chunk chunk = (Chunk)target;
-		if (chunk == null)
+		if (chunk == null || !Application.isPlaying)
 		{
 			return;
 		}

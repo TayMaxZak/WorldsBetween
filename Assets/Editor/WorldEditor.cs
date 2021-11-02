@@ -10,6 +10,8 @@ using System;
 [CanEditMultipleObjects]
 public class WorldEditor : Editor
 {
+	protected static bool showDefaultSettings = false;
+
 	public override bool RequiresConstantRepaint()
 	{
 		return true;
@@ -17,7 +19,12 @@ public class WorldEditor : Editor
 
 	public override void OnInspectorGUI()
 	{
-		base.OnInspectorGUI();
+		showDefaultSettings = EditorGUILayout.BeginFoldoutHeaderGroup(showDefaultSettings, "World Settings");
+
+		if (showDefaultSettings)
+			base.OnInspectorGUI();
+
+		EditorGUILayout.EndFoldoutHeaderGroup();
 
 		World script = (World)target;
 

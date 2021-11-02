@@ -34,6 +34,7 @@ public partial class World : MonoBehaviour
 	private Timer chunkGenTimer = null;
 
 	private bool firstChunks = true;
+	private int generatorsUsed = 0;
 
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
 	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
@@ -47,9 +48,6 @@ public partial class World : MonoBehaviour
 	[Header("Level Settings")]
 	[SerializeField]
 	private int waterHeight = 0;
-
-	// Debug
-	private int generatorsUsed = 0;
 
 	private void Awake()
 	{
@@ -179,6 +177,10 @@ public partial class World : MonoBehaviour
 
 	private void UpdateChunkCreation()
 	{
+		// Already max render distance (9 chunks out in each direction + 2 for world edge)
+		if (chunks.Count > 12000)
+			return;
+
 		chunkGenTimer.Increment(Time.deltaTime);
 
 		if (chunkGenTimer.Expired())
