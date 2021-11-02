@@ -292,6 +292,11 @@ public partial class World : MonoBehaviour
 		return Time.time < Instance.initialGenTime;
 	}
 
+	public static bool IsGen()
+	{
+		return Instance.generatorsUsed > 1;
+	}
+
 	public static int GetWaterHeight()
 	{
 		return Instance.waterHeight;
