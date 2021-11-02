@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.ComponentModel;
 
 [SelectionBase]
 public class Chunk : MonoBehaviour
@@ -19,6 +20,8 @@ public class Chunk : MonoBehaviour
 	public Vector3Int position; // Coordinates of chunk
 
 	public bool atEdge = false;
+
+	public bool processing = false;
 
 	private int chunkSize = 8;
 
@@ -62,7 +65,36 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
-	public int CalculateLight()
+	public void AsyncCalcLight()
+	{
+		BkgThreadCalcLight(this, System.EventArgs.Empty);
+	}
+
+	private void BkgThreadCalcLight(object sender, System.EventArgs e)
+	{
+		BackgroundWorker bw = new BackgroundWorker();
+
+		// What to do in the background thread
+		bw.DoWork += new DoWorkEventHandler(
+		delegate (object o, DoWorkEventArgs args)
+		{
+			CalcLight();
+		});
+
+		// What to do when worker completes its task
+		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+		delegate (object o, RunWorkerCompletedEventArgs args)
+		{
+			processing = false;
+
+			genStage = GenStage.Lit;
+			World.QueueNextStage(this);
+		});
+
+		bw.RunWorkerAsync();
+	}
+
+	private int CalcLight()
 	{
 		LinkedList<LightSource> lights = World.GetLightsFor(this);
 		if (lights == null)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
+using System.ComponentModel;
 
 public class ChunkGenerator
 {
@@ -97,7 +98,8 @@ public class ChunkGenerator
 					edgeChunks--;
 				chunk.atEdge = false;
 
-				ProcessChunk(chunk);
+				if (!chunk.processing)
+					ProcessChunk(chunk);
 			}
 			else
 			{
@@ -138,7 +140,7 @@ public class ChunkGenerator
 				{
 					List<Modifier> modifiers = World.GetModifiers();
 
-					for (int i = 0; i < modifiers.Count; i++)
+					for (int i = 0; i < 1; i++)
 						chunk.ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 
 					chunk.CacheNearAir();
@@ -157,10 +159,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights
 				{
-					chunk.CalculateLight();
-
-					chunk.genStage = Chunk.GenStage.Lit;
-					World.QueueNextStage(chunk);
+					chunk.AsyncCalcLight();
 				}
 				break;
 			case Chunk.GenStage.Lit: // Light visuals, spawn entities, and other stuff

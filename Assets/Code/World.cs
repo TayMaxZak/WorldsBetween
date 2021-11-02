@@ -29,7 +29,14 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private int chunkSize = 8;
 
-	[Header("Performance")]
+	[Header("Generation")]
+	[SerializeField]
+	private int initialGenRange = 11;
+	[SerializeField]
+	private int nearPlayerGenRange = 4;
+	[SerializeField]
+	private float initialGenTime = 10;
+
 	[SerializeField]
 	private Timer chunkGenTimer = null;
 
@@ -39,14 +46,6 @@ public partial class World : MonoBehaviour
 
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
 	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
-
-	[Header("Generation")]
-	[SerializeField]
-	private int initialGenRange = 11;
-	[SerializeField]
-	private int nearPlayerGenRange = 4;
-	[SerializeField]
-	private float initialGenTime = 10;
 
 	[Header("Level Settings")]
 	[SerializeField]
@@ -178,10 +177,10 @@ public partial class World : MonoBehaviour
 			// Wait until previous queue is wrapped up
 			if (empty || (prev.GetSize() < entry.Value.GetSize()))
 			{
-				entry.Value.Generate(Time.deltaTime);
-
 				if (!empty)
 					generatorsUsed++;
+
+				entry.Value.Generate(Time.deltaTime);
 			}
 		}
 	}
