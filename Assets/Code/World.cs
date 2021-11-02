@@ -184,13 +184,18 @@ public class World : MonoBehaviour
 
 	public static void QueueNextStage(Chunk chunk)
 	{
+		QueueNextStage(chunk, false);
+	}
+
+	public static void QueueNextStage(Chunk chunk, bool penalize)
+	{
 		Instance.chunkGenerators.TryGetValue(chunk.genStage, out ChunkGenerator generator);
 
 		if (generator == null)
 			return;
 
-		// Add to appropriate queue. Closer chunks have higher priority
-		generator.Enqueue(chunk, Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
+		// Add to appropriate queue. Closer chunks have higher priority (lower value)
+		generator.Enqueue(chunk, (penalize ? 128 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
 	}
 
 	public static void RegisterLight(LightSource light)

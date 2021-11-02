@@ -11,7 +11,7 @@ public class ChunkGenerator
 	private int chunksToHandle = 3;
 	private Timer chunkGenTimer;
 
-	private int atEdge = 0;
+	private int edgeChunks = 0;
 
 	private static readonly List<Chunk.GenStage> requireAdjacents = new List<Chunk.GenStage> {
 		Chunk.GenStage.Allocated,
@@ -55,7 +55,7 @@ public class ChunkGenerator
 		IterateQueue();
 
 		while (reQueue.Count > 0)
-			World.QueueNextStage(reQueue.Dequeue());
+			World.QueueNextStage(reQueue.Dequeue(), true);
 	}
 
 	private void IterateQueue()
@@ -67,11 +67,12 @@ public class ChunkGenerator
 		{
 			Chunk chunk = chunkQueue.First;
 
-			// Check if neighboring chunks are ready yet
-			if (requireAdjacents.Contains(chunk.genStage))
-			{
-				bool adjGenerated = true;
+			bool adjGenerated = true;
+			bool adjRequired = requireAdjacents.Contains(chunk.genStage);
 
+			// Check if neighboring chunks are ready yet
+			if (adjRequired)
+			{
 				for (int d = 0; d < directions.Length; d++)
 				{
 					// Try every orthagonal direction
@@ -92,20 +93,20 @@ public class ChunkGenerator
 
 					if (!chunk.atEdge)
 					{
-						atEdge++;
+						edgeChunks++;
 						chunk.atEdge = true;
 					}
 					else // Already know that rest of chunks are at the edge
 					{
-						chunkQueue.Dequeue(); // Otherwise won't be reached
-						return;
+						//chunkQueue.Dequeue(); // Otherwise won't be reached
+						//return;
 					}
 				}
 				// Not at edge
 				else
 				{
 					if (chunk.atEdge)
-						atEdge--;
+						edgeChunks--;
 					chunk.atEdge = false;
 				}
 			}
@@ -113,13 +114,15 @@ public class ChunkGenerator
 			else
 			{
 				if (chunk.atEdge)
-					atEdge--;
+					edgeChunks--;
 				chunk.atEdge = false;
 			}
 
 			chunkQueue.Dequeue();
 
-			ProcessChunk(chunk);
+			// Either doesn't care about adjacents or has adjacents
+			if (!adjRequired || adjGenerated)
+				ProcessChunk(chunk);
 		}
 	}
 
@@ -177,6 +180,6 @@ public class ChunkGenerator
 
 	public int GetSize()
 	{
-		return chunkQueue.Count - atEdge;
+		return chunkQueue.Count - edgeChunks;
 	}
 }
