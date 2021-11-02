@@ -613,13 +613,14 @@ MonoBehaviour:
   lightRoot: {fileID: 295908289}
   prefabLight: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
   randomizeSeed: 0
-  seed: -1186302564
+  seed: 109859938
   chunkSize: 16
   chunkGenTimer:
     maxTime: 2
-  nearPlayerGenRange: 11
-  initialGenTime: 15
-  waterHeight: -100
+  initialGenRange: 7
+  nearPlayerGenRange: 6
+  initialGenTime: 8
+  waterHeight: -50
 --- !u!4 &1026022012
 Transform:
   m_ObjectHideFlags: 0

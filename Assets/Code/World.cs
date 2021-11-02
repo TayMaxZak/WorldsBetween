@@ -41,6 +41,8 @@ public partial class World : MonoBehaviour
 
 	[Header("Generation")]
 	[SerializeField]
+	private int initialGenRange = 11;
+	[SerializeField]
 	private int nearPlayerGenRange = 4;
 	[SerializeField]
 	private float initialGenTime = 10;
@@ -68,7 +70,7 @@ public partial class World : MonoBehaviour
 		// Init dictionaries
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(64000, 0.25f) },
+			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
 			{ Chunk.GenStage.Allocated, new ChunkGenerator(15, 0.01f) },
 			{ Chunk.GenStage.Generated, new ChunkGenerator(5, 0.01f) },
 			{ Chunk.GenStage.Meshed, new ChunkGenerator(10, 0.01f) },
@@ -82,7 +84,7 @@ public partial class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		CreateChunksNearPlayer(1);
+		CreateChunksNearPlayer(initialGenRange);
 
 		firstChunks = false;
 	}
@@ -178,9 +180,10 @@ public partial class World : MonoBehaviour
 
 	private void UpdateChunkCreation()
 	{
-		// Already max render distance (9 chunks out in each direction + 2 for world edge)
-		if (chunks.Count > 12000)
-			return;
+		//// Already max render distance (9 chunks out in each direction + 2 for world edge)
+		//// TODO: Active chunk count > than this, not just total chunks
+		//if (chunks.Count > 12000)
+		//	return;
 
 		chunkGenTimer.Increment(Time.deltaTime);
 

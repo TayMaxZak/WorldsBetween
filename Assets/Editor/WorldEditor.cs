@@ -10,7 +10,7 @@ using System;
 [CanEditMultipleObjects]
 public class WorldEditor : Editor
 {
-	protected static bool showDefaultSettings = false;
+	protected static bool showDefaultSettings = true;
 
 	public override bool RequiresConstantRepaint()
 	{
