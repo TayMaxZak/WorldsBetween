@@ -36,6 +36,14 @@ public class PlayerMover : MonoBehaviour
 
 	private void Update()
 	{
+		if (Input.GetButtonDown("Quit"))
+			Application.Quit();
+
+		MainUpdate();
+	}
+
+	private void MainUpdate()
+	{
 		Chunk chunk;
 		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Generated)
 			didInit = true;
@@ -55,7 +63,7 @@ public class PlayerMover : MonoBehaviour
 			MoveTick(moveTickTimer.maxTime);
 
 			moveTickTimer.Reset();
-		}			
+		}
 	}
 
 	private void MoveTick(float deltaTime)

@@ -73,8 +73,8 @@ public partial class World : MonoBehaviour
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
 			{ Chunk.GenStage.Allocated, new ChunkGenerator(40, 0.01f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(15, 0.01f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(20, 0.01f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(12, 0.01f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(12, 0.01f) },
 			{ Chunk.GenStage.Lit, new ChunkGenerator(40, 0.01f) },
 		};
 
