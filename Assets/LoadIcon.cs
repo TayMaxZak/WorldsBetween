@@ -11,6 +11,9 @@ public class LoadIcon : MonoBehaviour
 	[SerializeField]
 	private Image icon1, icon2;
 
+	[SerializeField]
+	private Text text;
+
 	private Color color1 = new Color(1, 1, 1, 1), color2 = new Color(1, 1, 1, 1);
 
 	[SerializeField]
@@ -25,6 +28,8 @@ public class LoadIcon : MonoBehaviour
 
 		if (!shouldSpin)
 			return;
+
+		text.text = World.ChunksToGen().ToString();
 
 		// Rotate in opposite directions
 		float rotSpeed = topSpeed * Mathf.Lerp(OTo1FromSinTime(Mathf.PI * 2.9f, 1), 1, 0.67f);

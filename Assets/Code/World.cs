@@ -35,6 +35,7 @@ public partial class World : MonoBehaviour
 
 	private bool firstChunks = true;
 	private int generatorsUsed = 0;
+	private int chunksToGen = 0;
 
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
 	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
@@ -71,14 +72,14 @@ public partial class World : MonoBehaviour
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(15, 0.01f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(5, 0.01f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(10, 0.01f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(30, 0.01f) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(40, 0.01f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(15, 0.01f) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(20, 0.01f) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(40, 0.01f) },
 		};
 
 		// Init timers
-		chunkGenTimer.Reset(1);
+		chunkGenTimer.Reset(initialGenTime);
 	}
 
 	private void Start()
@@ -160,20 +161,27 @@ public partial class World : MonoBehaviour
 			return;
 
 		generatorsUsed = 0;
+		chunksToGen = 0;
+
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			Instance.chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
+			bool empty = entry.Key == Chunk.GenStage.Empty;
+
 			// Only make new empty chunks if empty queue is empty
-			if (entry.Key == Chunk.GenStage.Empty && entry.Value.GetSize() == 0)
+			if (empty && entry.Value.GetSize() == 0)
 				UpdateChunkCreation();
 
+			chunksToGen += entry.Value.GetSize();
+
 			// Wait until previous queue is wrapped up
-			if (entry.Key == Chunk.GenStage.Empty || (prev.GetSize() < entry.Value.GetSize()))
+			if (empty || (prev.GetSize() < entry.Value.GetSize()))
 			{
 				entry.Value.Generate(Time.deltaTime);
 
-				generatorsUsed++;
+				if (!empty)
+					generatorsUsed++;
 			}
 		}
 	}
@@ -294,7 +302,12 @@ public partial class World : MonoBehaviour
 
 	public static bool IsGen()
 	{
-		return Instance.generatorsUsed > 1;
+		return Instance.generatorsUsed > 0;
+	}
+
+	public static int ChunksToGen()
+	{
+		return Instance.chunksToGen;
 	}
 
 	public static int GetWaterHeight()

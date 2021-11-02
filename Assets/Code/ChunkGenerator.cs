@@ -60,7 +60,7 @@ public class ChunkGenerator
 
 	private void IterateQueue()
 	{
-		float accelMult = World.DoAccelerateGen() ? 50 : 0.1f;
+		float accelMult = World.DoAccelerateGen() ? 50 : 0.15f;
 
 		int count = chunkQueue.Count;
 		int baseAttempts = Mathf.Min(count, Mathf.CeilToInt(chunksToHandle * accelMult));
