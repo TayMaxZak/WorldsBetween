@@ -129,15 +129,18 @@ public partial class World : MonoBehaviour
 					chunks.Add(chunkPos, chunkGO.data);
 
 					// Add a random light to this chunk
-					if (Random.value > 0.15f)
+					if (Random.value < 0.15f)
 					{
-						LightSource light = Instantiate(prefabLight, new Vector3(
-							chunkPos.x + Random.value * chunkSize,
-							chunkPos.y + Random.value * chunkSize,
-							chunkPos.z + Random.value * chunkSize),
-						Quaternion.identity, lightRoot);
+						for (int r = 0; r < 3; r++)
+						{
+							LightSource light = Instantiate(prefabLight, new Vector3(
+								chunkPos.x + Random.value * chunkSize,
+								chunkPos.y + Random.value * chunkSize,
+								chunkPos.z + Random.value * chunkSize),
+							Quaternion.identity, lightRoot);
 
-						light.colorTemp = Random.Range(-10, 10);
+							light.colorTemp = Random.Range(-10, 10);
+						}
 					}
 
 					// Add chunk to generator
