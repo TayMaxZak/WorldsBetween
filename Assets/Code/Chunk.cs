@@ -187,7 +187,7 @@ public class Chunk
 
 		BackgroundWorker bw = new BackgroundWorker();
 
-		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(chunkMesh.blockMesh);
+		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(Models.GetBlockMesh());
 
 		// What to do in the background thread
 		bw.DoWork += new DoWorkEventHandler(
