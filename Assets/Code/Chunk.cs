@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.ComponentModel;
 
-[SelectionBase]
-public class Chunk : MonoBehaviour
+public class Chunk
 {
 	public enum GenStage
 	{
@@ -17,7 +16,9 @@ public class Chunk : MonoBehaviour
 	}
 	public GenStage genStage = GenStage.Empty;
 
+
 	public Vector3Int position; // Coordinates of chunk
+
 
 	public bool atEdge = false;
 
@@ -27,8 +28,7 @@ public class Chunk : MonoBehaviour
 
 	private Block[,,] blocks;
 
-	[SerializeField]
-	private ChunkMesh chunkMesh;
+	public ChunkMesh chunkMesh = new ChunkMesh();
 
 	public void Init(int chunkSize)
 	{
@@ -36,9 +36,6 @@ public class Chunk : MonoBehaviour
 
 		// Create blocks
 		CreateBlocks();
-
-		// Init chunk mesh
-		chunkMesh.Init(this);
 	}
 
 	public void SetPos(Vector3Int pos)

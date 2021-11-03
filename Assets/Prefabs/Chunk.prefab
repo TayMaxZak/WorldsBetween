@@ -42,15 +42,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6042555085825754439}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d88b6e4416012a94580fac76addb9258, type: 3}
+  m_Script: {fileID: 11500000, guid: 9971bcc24f7fe7a408e49d18f4645a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genStage: 0
-  position: {x: 0, y: 0, z: 0}
-  atEdge: 0
-  chunkMesh:
-    filter: {fileID: 6233231840159841262}
-    blockMesh: {fileID: 3621554888825754127, guid: 44417bb8910e2d345a6119f2b0b0bc91, type: 3}
+  data:
+    genStage: 0
+    position: {x: 0, y: 0, z: 0}
+    atEdge: 0
+    processing: 0
+  filter: {fileID: 6233231840159841262}
+  blockMesh: {fileID: 3621554888825754127, guid: 44417bb8910e2d345a6119f2b0b0bc91, type: 3}
 --- !u!33 &6233231840159841262
 MeshFilter:
   m_ObjectHideFlags: 0

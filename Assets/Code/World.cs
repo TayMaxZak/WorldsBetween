@@ -11,7 +11,7 @@ public partial class World : MonoBehaviour
 	private Transform player;
 
 	[SerializeField]
-	private Chunk chunkPrefab;
+	private ChunkGameObject chunkPrefab;
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
 	private List<Modifier> modifiers = new List<Modifier>();
@@ -116,12 +116,17 @@ public partial class World : MonoBehaviour
 					if (chunks.ContainsKey(chunkPos))
 						continue;
 
-					// Create and register chunk
-					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
-					chunk.name = "Chunk " + x + ", " + y + ", " + z;
-					chunk.SetPos(chunkPos);
+					// Instantiate chunk GameObject
+					ChunkGameObject chunkGO = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
+					chunkGO.name = "Chunk " + x + ", " + y + ", " + z;
 
-					chunks.Add(chunkPos, chunk);
+					// Initialize and register chunk
+					chunkGO.data = new Chunk();
+					chunkGO.data.SetPos(chunkPos);
+
+					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter, chunkGO.blockMesh);
+
+					chunks.Add(chunkPos, chunkGO.data);
 
 					// Add a random light to this chunk
 					if (Random.value > 0.15f)
@@ -136,7 +141,7 @@ public partial class World : MonoBehaviour
 					}
 
 					// Add chunk to generator
-					QueueNextStage(chunk);
+					QueueNextStage(chunkGO.data);
 				}
 			}
 		}
