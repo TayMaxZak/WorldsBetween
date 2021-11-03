@@ -93,21 +93,38 @@ public class ChunkMesh
 		mesh.colors = colors;
 	}
 
-	public void GenerateMesh(Block[,,] blocks)
+	public struct MeshData
+	{
+		public Vector3[] vertices;
+		public Vector3[] normals;
+		public int[] triangles;
+		public Vector2[] uv;
+
+		public MeshData(Mesh mesh)
+		{
+			vertices = mesh.vertices;
+			normals = mesh.normals;
+			triangles = mesh.triangles;
+			uv = mesh.uv;
+		}
+
+		public MeshData(Vector3[] vertices, Vector3[] normals, int[] triangles, Vector2[] uv)
+		{
+			this.vertices = vertices;
+			this.normals = normals;
+			this.triangles = triangles;
+			this.uv = uv;
+		}
+	}
+
+	public MeshData GenerateMesh(MeshData blockMeshData, Block[,,] blocks)
 	{
 		Block block;
-
-		Mesh newMesh = new Mesh();
 
 		List<Vector3> vertices = new List<Vector3>();
 		List<int> triangles = new List<int>();
 		List<Vector3> normals = new List<Vector3>();
 		List<Vector2> uv = new List<Vector2>();
-
-		Vector3[] blockVert = blockMesh.vertices;
-		Vector3[] blockNormals = blockMesh.normals;
-		int[] blockTri = blockMesh.triangles;
-		Vector2[] blockUv = blockMesh.uv;
 
 		Vector3Int faceOffset = new Vector3Int();
 
@@ -142,9 +159,9 @@ public class ChunkMesh
 						int indexOffset = vertices.Count;
 
 						// Add vertices
-						for (int i = 0; i < blockVert.Length; i++)
+						for (int i = 0; i < blockMeshData.vertices.Length; i++)
 						{
-							vert = Quaternion.Euler(rotations[d]) * (blockVert[i] + Vector3.forward * 0.5f);
+							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[i] + Vector3.forward * 0.5f);
 
 							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
 						}
@@ -152,31 +169,35 @@ public class ChunkMesh
 						block.endIndex = vertices.Count;
 
 						// Add normals
-						for (int i = 0; i < blockNormals.Length; i++)
+						for (int i = 0; i < blockMeshData.normals.Length; i++)
 						{
-							normals.Add(Quaternion.Euler(rotations[d]) * blockNormals[i]);
+							normals.Add(Quaternion.Euler(rotations[d]) * blockMeshData.normals[i]);
 						}
 
 						// Add triangles
-						for (int i = 0; i < blockTri.Length; i++)
+						for (int i = 0; i < blockMeshData.triangles.Length; i++)
 						{
-							triangles.Add(blockTri[i] + indexOffset);
+							triangles.Add(blockMeshData.triangles[i] + indexOffset);
 						}
 
 						// Add UVs
-						for (int i = 0; i < blockUv.Length; i++)
+						for (int i = 0; i < blockMeshData.uv.Length; i++)
 						{
-							uv.Add(blockUv[i]);
+							uv.Add(blockMeshData.uv[i]);
 						}
 					}
 				}
 			}
 		}
 
-		newMesh.vertices = vertices.ToArray();
-		newMesh.triangles = triangles.ToArray();
-		newMesh.normals = normals.ToArray();
-		newMesh.uv = uv.ToArray();
+		return new MeshData(vertices.ToArray(), normals.ToArray(), triangles.ToArray(), uv.ToArray());
+	}
+
+	public void FinishMesh(Mesh newMesh)
+	{
+		// Can happen if thread finishes after games ends
+		if (filter == null)
+			return;
 
 		filter.mesh = newMesh;
 

@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
-using System.ComponentModel;
 
 public class ChunkGenerator
 {
-	private SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
-	private Queue<Chunk> reQueue = new Queue<Chunk>();
+	private readonly SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
+	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
-	private int chunksToHandle = 3;
-	private Timer chunkGenTimer;
+	private readonly int chunksToHandle = 3;
+	private readonly Timer chunkGenTimer;
 
 	private int edgeChunks = 0;
 
@@ -143,10 +142,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Generated: // Cache data and build mesh
 				{
-					chunk.UpdateOpacityVisuals();
-
-					chunk.genStage = Chunk.GenStage.Meshed;
-					World.QueueNextStage(chunk);
+					chunk.AsyncMakeMesh();
 				}
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights

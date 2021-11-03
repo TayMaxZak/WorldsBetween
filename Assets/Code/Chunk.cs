@@ -41,12 +41,9 @@ public class Chunk : MonoBehaviour
 		chunkMesh.Init(this);
 	}
 
-	public void UpdatePos()
+	public void SetPos(Vector3Int pos)
 	{
-		Vector3 pos = transform.position;
-		position.x = Mathf.RoundToInt(pos.x);
-		position.y = Mathf.RoundToInt(pos.y);
-		position.z = Mathf.RoundToInt(pos.z);
+		position = pos;
 	}
 
 	public void CreateBlocks()
@@ -65,6 +62,7 @@ public class Chunk : MonoBehaviour
 		}
 	}
 
+	#region Generate
 	public void AsyncGenerate()
 	{
 		BkgThreadGenerate(this, System.EventArgs.Empty);
@@ -106,6 +104,135 @@ public class Chunk : MonoBehaviour
 			ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 	}
 
+	private void ApplyModifier(Modifier modifier, bool firstPass, bool lastPass)
+	{
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f);
+
+					newOpacity -= modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
+
+					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
+				}
+			}
+		}
+	}
+
+	public void CacheNearAir()
+	{
+		Block block;
+
+		int cutoff = 127;
+
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					// Remember if this block is bordering air
+					if (blocks[x, y, z].opacity > cutoff)
+					{
+						continue;
+					}
+
+					blocks[x, y, z].nearAir = 255;
+
+					// Assign adjacent blocks in this chunk
+					if (x > 0)
+						blocks[x - 1, y, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
+						block.nearAir = 255;
+
+					if (x < chunkSize - 1)
+						blocks[x + 1, y, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
+						block.nearAir = 255;
+
+					if (y > 0)
+						blocks[x, y - 1, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
+						block.nearAir = 255;
+
+					if (y < chunkSize - 1)
+						blocks[x, y + 1, z].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
+						block.nearAir = 255;
+
+					if (z > 0)
+						blocks[x, y, z - 1].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
+						block.nearAir = 255;
+
+					if (z < chunkSize - 1)
+						blocks[x, y, z + 1].nearAir = 255;
+					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
+						block.nearAir = 255;
+				}
+			}
+		}
+	}
+	#endregion
+
+	#region Mesh
+	public void AsyncMakeMesh()
+	{
+		BkgThreadMakeMesh(this, System.EventArgs.Empty);
+	}
+
+	private void BkgThreadMakeMesh(object sender, System.EventArgs e)
+	{
+		processing = true;
+
+		BackgroundWorker bw = new BackgroundWorker();
+
+		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(chunkMesh.blockMesh);
+
+		// What to do in the background thread
+		bw.DoWork += new DoWorkEventHandler(
+		delegate (object o, DoWorkEventArgs args)
+		{
+			args.Result = MakeMesh(blockMesh);
+		});
+
+		// What to do when worker completes its task
+		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+		delegate (object o, RunWorkerCompletedEventArgs args)
+		{
+			processing = false;
+
+			// Load mesh data from thread
+			ChunkMesh.MeshData data = (ChunkMesh.MeshData)args.Result;
+
+			Mesh newMesh = new Mesh
+			{
+				vertices = data.vertices,
+				normals = data.normals,
+				triangles = data.triangles,
+				uv = data.uv
+			};
+
+			// Apply new mesh
+			chunkMesh.FinishMesh(newMesh);
+
+			genStage = GenStage.Meshed;
+			World.QueueNextStage(this);
+		});
+
+		bw.RunWorkerAsync();
+	}
+
+	private ChunkMesh.MeshData MakeMesh(ChunkMesh.MeshData blockMesh)
+	{
+		return chunkMesh.GenerateMesh(blockMesh, blocks);
+	}
+	#endregion
+
+	#region Light
 	public void AsyncCalcLight()
 	{
 		BkgThreadCalcLight(this, System.EventArgs.Empty);
@@ -213,84 +340,7 @@ public class Chunk : MonoBehaviour
 		if (counter > 0)
 			chunkMesh.ApplyVertexColors();
 	}
-
-	private void ApplyModifier(Modifier modifier, bool firstPass, bool lastPass)
-	{
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f);
-
-					newOpacity -= modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
-
-					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
-				}
-			}
-		}
-	}
-
-	public void CacheNearAir()
-	{
-		Block block;
-
-		int cutoff = 127;
-
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					// Remember if this block is bordering air
-					if (blocks[x, y, z].opacity > cutoff)
-					{
-						continue;
-					}
-
-					blocks[x, y, z].nearAir = 255;
-
-					// Assign adjacent blocks in this chunk
-					if (x > 0)
-						blocks[x - 1, y, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (x < chunkSize - 1)
-						blocks[x + 1, y, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (y > 0)
-						blocks[x, y - 1, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (y < chunkSize - 1)
-						blocks[x, y + 1, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (z > 0)
-						blocks[x, y, z - 1].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
-						block.nearAir = 255;
-
-					if (z < chunkSize - 1)
-						blocks[x, y, z + 1].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
-						block.nearAir = 255;
-				}
-			}
-		}
-	}
-
-	public void UpdateOpacityVisuals()
-	{
-		chunkMesh.GenerateMesh(blocks);
-	}
+	#endregion
 
 	// Utility
 	public bool ContainsPos(int x, int y, int z)

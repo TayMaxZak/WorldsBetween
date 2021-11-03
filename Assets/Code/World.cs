@@ -72,7 +72,7 @@ public partial class World : MonoBehaviour
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
 			{ Chunk.GenStage.Allocated, new ChunkGenerator(50, 0.01f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(10, 0.01f) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(50, 0.01f) },
 			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, 0.01f) },
 			{ Chunk.GenStage.Lit, new ChunkGenerator(50, 0.01f) },
 		};
@@ -91,6 +91,8 @@ public partial class World : MonoBehaviour
 
 	private void CreateChunksNearPlayer(int range)
 	{
+		// TODO: Reuse grid of chunks instead of instantiating new ones
+
 		// Change range to actual distance
 		range *= chunkSize;
 
@@ -116,8 +118,9 @@ public partial class World : MonoBehaviour
 
 					// Create and register chunk
 					Chunk chunk = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
-					chunk.UpdatePos();
 					chunk.name = "Chunk " + x + ", " + y + ", " + z;
+					chunk.SetPos(chunkPos);
+
 					chunks.Add(chunkPos, chunk);
 
 					// Add a random light to this chunk
@@ -180,17 +183,19 @@ public partial class World : MonoBehaviour
 				if (!empty)
 					generatorsUsed++;
 
-				entry.Value.Generate(Time.deltaTime);
+				// Don't overload number of generators
+				if (generatorsUsed <= 2)
+					entry.Value.Generate(Time.deltaTime);
 			}
 		}
 	}
 
 	private void UpdateChunkCreation()
 	{
-		//// Already max render distance (9 chunks out in each direction + 2 for world edge)
-		//// TODO: Active chunk count > than this, not just total chunks
-		//if (chunks.Count > 12000)
-		//	return;
+		// Already max render distance (9 chunks out in each direction + 2 for world edge)
+		// TODO: Active chunk count > than this, not just total chunks
+		if (chunks.Count > 12000)
+			return;
 
 		chunkGenTimer.Increment(Time.deltaTime);
 
