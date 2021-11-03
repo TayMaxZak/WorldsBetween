@@ -81,7 +81,7 @@ public partial class World : MonoBehaviour
 		};
 
 		// Init timers
-		chunkGenTimer.Reset(initialGenTime);
+		chunkGenTimer.Reset(1);
 	}
 
 	private void Start()
@@ -164,9 +164,9 @@ public partial class World : MonoBehaviour
 					chunks.Add(chunkPos, chunk);
 
 					// Add random lights to this chunk
-					if (Random.value < 0.15f)
+					if (Random.value > 0.05f)
 					{
-						for (int r = 0; r < 4; r++)
+						for (int r = 0; r < 3; r++)
 						{
 							LightSource light = Instantiate(prefabLight, new Vector3(
 								chunkPos.x + Random.value * chunkSize,
