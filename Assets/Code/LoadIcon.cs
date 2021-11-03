@@ -45,7 +45,9 @@ public class LoadIcon : MonoBehaviour
 		// Fade from low to high opacity
 		float fadeSpeed = 1.5f;
 		color1.a = OTo1FromSinTime(Mathf.PI / fadeSpeed, 0);
+		color1.a = 1 - (1 - color1.a) * (1 - color1.a);
 		color2.a = OTo1FromSinTime(Mathf.PI / fadeSpeed, Mathf.PI / fadeSpeed);
+		color2.a = 1 - (1 - color2.a) * (1 - color2.a);
 
 		// Assign colors
 		icon1.color = color1;
