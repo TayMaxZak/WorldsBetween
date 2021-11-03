@@ -12,7 +12,6 @@ public partial class World : MonoBehaviour
 
 	[SerializeField]
 	private ChunkGameObject chunkPrefab;
-	private Dictionary<Vector3Int, ChunkGameObject> chunkGOs = new Dictionary<Vector3Int, ChunkGameObject>();
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
 	private List<Modifier> modifiers = new List<Modifier>();
@@ -32,13 +31,11 @@ public partial class World : MonoBehaviour
 
 	[Header("Generation")]
 	[SerializeField]
-	private int initialGenRange = 1; // How many chunks around the player should be immediately gend
+	private int initialGenRange = 11;
 	[SerializeField]
-	private int nearPlayerGenRange = 9; // How many chunks around the player should be constantly gend
+	private int nearPlayerGenRange = 4;
 	[SerializeField]
-	private int simulateRange = 11; // How many chunks around the player should be represented with game objects
-	[SerializeField]
-	private float initialGenTime = 10; // How long should the starting accelerated gen period be
+	private float initialGenTime = 10;
 
 	[SerializeField]
 	private Timer chunkGenTimer = null;
@@ -81,59 +78,21 @@ public partial class World : MonoBehaviour
 		};
 
 		// Init timers
-		chunkGenTimer.Reset(1);
+		chunkGenTimer.Reset(initialGenTime);
 	}
 
 	private void Start()
 	{
-		InstantiateChunks();
-
 		// First batch of chunks
 		CreateChunksNearPlayer(initialGenRange);
 
 		firstChunks = false;
 	}
 
-	private void InstantiateChunks()
-	{
-		int range = simulateRange;
-
-		// Change range to actual distance
-		range *= chunkSize;
-
-		// Start pos in chunk coordinates
-		Vector3Int startPos = new Vector3Int(
-			Mathf.FloorToInt(player.position.x / chunkSize) * chunkSize,
-			Mathf.FloorToInt(player.position.y / chunkSize) * chunkSize,
-			Mathf.FloorToInt(player.position.z / chunkSize) * chunkSize
-		);
-
-		int i = 0;
-		// Go through all nearby chunk positions
-		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
-		{
-			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize)
-			{
-				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
-				{
-					Vector3Int chunkPos = new Vector3Int(x, y, z);
-
-					// Instantiate chunk GameObject
-					ChunkGameObject chunkGO = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
-
-					chunkGO.name = "Chunk GO " + i;
-					i++;
-
-					chunkGOs.Add(chunkPos, chunkGO);
-
-					chunkGO.gameObject.SetActive(false);
-				}
-			}
-		}
-	}
-
 	private void CreateChunksNearPlayer(int range)
 	{
+		// TODO: Reuse grid of chunks instead of instantiating new ones
+
 		// Change range to actual distance
 		range *= chunkSize;
 
@@ -147,7 +106,7 @@ public partial class World : MonoBehaviour
 		// Go through all nearby chunk positions
 		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
 		{
-			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize)
+			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize) // TODO: Remove testing code
 			{
 				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
 				{
@@ -157,40 +116,32 @@ public partial class World : MonoBehaviour
 					if (chunks.ContainsKey(chunkPos))
 						continue;
 
+					// Instantiate chunk GameObject
+					ChunkGameObject chunkGO = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
+					chunkGO.name = "Chunk " + x + ", " + y + ", " + z;
+
 					// Initialize and register chunk
-					Chunk chunk = new Chunk();
-					chunk.SetPos(chunkPos);
+					chunkGO.data = new Chunk();
+					chunkGO.data.SetPos(chunkPos);
 
-					chunks.Add(chunkPos, chunk);
+					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter, chunkGO.blockMesh);
 
-					// Add random lights to this chunk
-					if (Random.value > 0.05f)
+					chunks.Add(chunkPos, chunkGO.data);
+
+					// Add a random light to this chunk
+					if (Random.value > 0.15f)
 					{
-						for (int r = 0; r < 3; r++)
-						{
-							LightSource light = Instantiate(prefabLight, new Vector3(
-								chunkPos.x + Random.value * chunkSize,
-								chunkPos.y + Random.value * chunkSize,
-								chunkPos.z + Random.value * chunkSize),
-							Quaternion.identity, lightRoot);
+						LightSource light = Instantiate(prefabLight, new Vector3(
+							chunkPos.x + Random.value * chunkSize,
+							chunkPos.y + Random.value * chunkSize,
+							chunkPos.z + Random.value * chunkSize),
+						Quaternion.identity, lightRoot);
 
-							light.colorTemp = Random.Range(-10, 10);
-						}
+						light.colorTemp = Random.Range(-10, 10);
 					}
 
-					// Find matching game object
-					Instance.chunkGOs.TryGetValue(chunkPos, out ChunkGameObject chunkGO);
-
-					if (chunkGO)
-					{
-						chunkGO.gameObject.SetActive(true);
-
-						chunkGO.data = chunk;
-						chunkGO.data.chunkMesh.Init(chunk, chunkGO.filter);
-
-						// Add chunk to generator
-						QueueNextStage(chunk);
-					}
+					// Add chunk to generator
+					QueueNextStage(chunkGO.data);
 				}
 			}
 		}
@@ -216,7 +167,6 @@ public partial class World : MonoBehaviour
 		if (firstChunks)
 			return;
 
-		// Reset counters
 		generatorsUsed = 0;
 		chunksToGen = 0;
 
@@ -247,6 +197,11 @@ public partial class World : MonoBehaviour
 
 	private void UpdateChunkCreation()
 	{
+		// Already max render distance (9 chunks out in each direction + 2 for world edge)
+		// TODO: Active chunk count > than this, not just total chunks
+		if (chunks.Count > 12000)
+			return;
+
 		chunkGenTimer.Increment(Time.deltaTime);
 
 		if (chunkGenTimer.Expired())

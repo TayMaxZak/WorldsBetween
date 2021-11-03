@@ -10,6 +10,8 @@ public class ChunkMesh
 
 	private MeshFilter filter;
 
+	public Mesh blockMesh;
+
 	// Save for later
 	private Vector3[] sharedVertices;
 	private Color[] colors;
@@ -20,7 +22,7 @@ public class ChunkMesh
 	private static readonly Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
 													new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
 
-	public void Init(Chunk chunk, MeshFilter filter)
+	public void Init(Chunk chunk, MeshFilter filter, Mesh blockMesh)
 	{
 		this.chunk = chunk;
 
@@ -28,6 +30,8 @@ public class ChunkMesh
 
 		// Duplicate original mesh to avoid permanent changes
 		filter.sharedMesh = filter.mesh;
+
+		this.blockMesh = blockMesh;
 	}
 
 	public void SetVertexColors(Block block)

@@ -3,8 +3,7 @@
 [SelectionBase]
 public class ChunkGameObject : MonoBehaviour
 {
-	[System.NonSerialized]
 	public Chunk data;
-
 	public MeshFilter filter;
+	public Mesh blockMesh;
 }
