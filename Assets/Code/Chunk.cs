@@ -97,7 +97,7 @@ public class Chunk
 	{
 		List<Modifier> modifiers = World.GetModifiers();
 
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < modifiers.Count; i++)
 			ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 	}
 

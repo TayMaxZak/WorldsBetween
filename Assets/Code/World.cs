@@ -129,9 +129,9 @@ public partial class World : MonoBehaviour
 					chunks.Add(chunkPos, chunkGO.data);
 
 					// Add a random light to this chunk
-					if (Random.value < 0.15f)
+					if (Random.value < 0.2f)
 					{
-						for (int r = 0; r < 3; r++)
+						for (int r = 0; r < 4; r++)
 						{
 							LightSource light = Instantiate(prefabLight, new Vector3(
 								chunkPos.x + Random.value * chunkSize,
@@ -200,11 +200,6 @@ public partial class World : MonoBehaviour
 
 	private void UpdateChunkCreation()
 	{
-		// Already max render distance (9 chunks out in each direction + 2 for world edge)
-		// TODO: Active chunk count > than this, not just total chunks
-		if (chunks.Count > 12000)
-			return;
-
 		chunkGenTimer.Increment(Time.deltaTime);
 
 		if (chunkGenTimer.Expired())
