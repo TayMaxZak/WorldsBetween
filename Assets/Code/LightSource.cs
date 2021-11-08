@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
-public class LightSource : MonoBehaviour
+public class LightSource
 {
 	[HideInInspector]
 	public int worldX, worldY, worldZ; // Coordinates in world space
@@ -18,10 +18,12 @@ public class LightSource : MonoBehaviour
 
 	public bool dirty = true;
 
-	private void Awake()
+	public LightSource(float brightness, float colorTemp, Vector3 pos)
 	{
-		UpdatePosition();
-		World.RegisterLight(this);
+		this.brightness = brightness;
+		this.colorTemp = colorTemp;
+
+		UpdatePosition(pos);
 	}
 
 	public List<Vector3Int> FindAffectedChunks()
@@ -61,11 +63,11 @@ public class LightSource : MonoBehaviour
 		return oldAffectedChunks;
 	}
 
-	public void UpdatePosition()
+	public void UpdatePosition(Vector3 pos)
 	{
-		worldX = Mathf.RoundToInt(transform.position.x);
-		worldY = Mathf.RoundToInt(transform.position.y);
-		worldZ = Mathf.RoundToInt(transform.position.z);
+		worldX = Mathf.RoundToInt(pos.x);
+		worldY = Mathf.RoundToInt(pos.y);
+		worldZ = Mathf.RoundToInt(pos.z);
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 			dirty = true;
@@ -89,23 +91,5 @@ public class LightSource : MonoBehaviour
 			(colorTemp) :
 			(Mathf.Lerp(0, colorTemp, 0.6f + value)
 		);
-	}
-
-	private void OnDrawGizmosSelected()
-	{
-		float maxDistance = Mathf.Sqrt(brightness * 250); // i.e., brightness / distance^2 = 0.004
-
-		Gizmos.color = Utils.colorYellow;
-		Gizmos.DrawWireSphere(transform.position, maxDistance);
-
-		Gizmos.color = Utils.colorOrange;
-		Gizmos.DrawWireSphere(transform.position, maxDistance * 0.5f);
-
-		int chunkSize = 8;
-
-		int range = Mathf.CeilToInt((maxDistance * 0.5f) / chunkSize);
-
-		Gizmos.color = Utils.colorDarkGrayBlue;
-		Gizmos.DrawWireCube(transform.position, Vector3.one * chunkSize * range * 2);
 	}
 }

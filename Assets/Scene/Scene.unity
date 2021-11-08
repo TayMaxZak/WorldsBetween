@@ -493,12 +493,11 @@ MonoBehaviour:
   player: {fileID: 1129277323}
   chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
   lightRoot: {fileID: 295908289}
-  prefabLight: {fileID: 9134533309769133904, guid: d769569cb0981f64fb8f02cabf9df563, type: 3}
   randomizeSeed: 1
   seed: 141757827
   chunkSize: 16
-  initialGenRange: 9
-  nearPlayerGenRange: 9
+  initialGenRange: 7
+  nearPlayerGenRange: 7
   initialGenTime: 5
   chunkGenTimer:
     maxTime: 15

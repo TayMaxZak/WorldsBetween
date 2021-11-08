@@ -133,13 +133,15 @@ public partial class World : MonoBehaviour
 					{
 						for (int r = 0; r < 4; r++)
 						{
-							LightSource light = Instantiate(prefabLight, new Vector3(
-								chunkPos.x + Random.value * chunkSize,
-								chunkPos.y + Random.value * chunkSize,
-								chunkPos.z + Random.value * chunkSize),
-							Quaternion.identity, lightRoot);
-
-							light.colorTemp = Random.Range(-10, 10);
+							RegisterLight(new LightSource(
+								0.5f,
+								Random.Range(-10, 10),
+								new Vector3(
+									chunkPos.x + Random.value * chunkSize,
+									chunkPos.y + Random.value * chunkSize,
+									chunkPos.z + Random.value * chunkSize)
+								)
+							);
 						}
 					}
 
