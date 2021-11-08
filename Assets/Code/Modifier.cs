@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Modifier : MonoBehaviour
+public class Modifier
 {
 	private bool didInit = false;
 

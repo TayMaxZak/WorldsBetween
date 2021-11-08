@@ -95,13 +95,13 @@ public class Chunk
 
 	private void Generate()
 	{
-		List<Modifier> modifiers = World.GetModifiers();
+		List<Noise> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)
 			ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 	}
 
-	private void ApplyModifier(Modifier modifier, bool firstPass, bool lastPass)
+	private void ApplyModifier(Noise modifier, bool firstPass, bool lastPass)
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{

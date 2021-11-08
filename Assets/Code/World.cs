@@ -15,7 +15,7 @@ public partial class World : MonoBehaviour
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
 	[SerializeField]
-	private List<Modifier> modifiers = new List<Modifier>();
+	private List<Noise> modifiers = new List<Noise>();
 
 	[Header("World Settings")]
 	[SerializeField]
@@ -73,7 +73,7 @@ public partial class World : MonoBehaviour
 			{ Chunk.GenStage.Lit, new ChunkGenerator(50, 0.01f) },
 		};
 
-		foreach (Modifier mod in modifiers)
+		foreach (Noise mod in modifiers)
 			mod.Init();
 
 		// Init timers
@@ -151,17 +151,17 @@ public partial class World : MonoBehaviour
 		}
 	}
 
-	public static void RegisterModifier(Modifier modifier)
+	public static void RegisterModifier(Noise modifier)
 	{
 		Instance.modifiers.Add(modifier);
 	}
 
-	public static void RemoveModifier(Modifier modifier)
+	public static void RemoveModifier(Noise modifier)
 	{
 		Instance.modifiers.Remove(modifier);
 	}
 
-	public static List<Modifier> GetModifiers()
+	public static List<Noise> GetModifiers()
 	{
 		return Instance.modifiers;
 	}
