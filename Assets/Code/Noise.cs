@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class Noise : Modifier
 {
-	public float scale = 0.0424f;
+	public Vector3 scale = Vector3.one;
 	public float offset = 2444.0424f;
 	public float strength = 1;
 	public float cutoff = 0;
@@ -24,9 +24,9 @@ public class Noise : Modifier
 
 	public override float StrengthAt(float x, float y, float z)
 	{
-		x = x * scale + offset + randomOffset.x;
-		y = y * scale + offset + randomOffset.y;
-		z = z * scale + offset + randomOffset.z;
+		x = x * scale.x + offset + randomOffset.x;
+		y = y * scale.y + offset + randomOffset.y;
+		z = z * scale.z + offset + randomOffset.z;
 
 		float xPlane = Mathf.PerlinNoise(y, z);
 		float yPlane = Mathf.PerlinNoise(z, x);
