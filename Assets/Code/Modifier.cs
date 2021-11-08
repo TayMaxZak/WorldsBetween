@@ -2,30 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[SelectionBase]
+[System.Serializable]
 public class Modifier : MonoBehaviour
 {
 	private bool didInit = false;
 
-	[HideInInspector]
-	public int worldX, worldY, worldZ; // Coordinates in world space
+	public Vector3Int pos; // Coordinates in world space
 
-	private void Awake()
-	{
-		World.RegisterModifier(this);
-
-		Init();
-	}
-
-	protected virtual bool Init()
+	public virtual bool Init()
 	{
 		if (didInit)
 			return false;
 		didInit = true;
-
-		worldX = Mathf.RoundToInt(transform.position.x);
-		worldY = Mathf.RoundToInt(transform.position.y);
-		worldZ = Mathf.RoundToInt(transform.position.z);
 
 		return true;
 	}

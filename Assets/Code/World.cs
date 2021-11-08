@@ -14,12 +14,8 @@ public partial class World : MonoBehaviour
 	private ChunkGameObject chunkPrefab;
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
+	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
-
-	[SerializeField]
-	private Transform lightRoot;
-	[SerializeField]
-	private LightSource prefabLight;
 
 	[Header("World Settings")]
 	[SerializeField]
@@ -76,6 +72,9 @@ public partial class World : MonoBehaviour
 			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, 0.01f) },
 			{ Chunk.GenStage.Lit, new ChunkGenerator(50, 0.01f) },
 		};
+
+		foreach (Modifier mod in modifiers)
+			mod.Init();
 
 		// Init timers
 		chunkGenTimer.Reset(initialGenTime);

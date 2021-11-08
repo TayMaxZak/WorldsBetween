@@ -70,11 +70,19 @@ public class LightSource
 		worldZ = Mathf.RoundToInt(pos.z);
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
+		{
 			dirty = true;
+			OnDirty();
+		}
 
 		lastWorldX = worldX;
 		lastWorldY = worldY;
 		lastWorldZ = worldZ;
+	}
+
+	protected virtual void OnDirty()
+	{
+		
 	}
 
 	public float GetBrightnessAt(Vector3Int at, bool inWater)

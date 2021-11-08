@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[SelectionBase]
+[System.Serializable]
 public class Carver : Modifier
 {
 	public float strength = 1;
@@ -10,7 +10,7 @@ public class Carver : Modifier
 
 	public override float StrengthAt(float x, float y, float z)
 	{
-		bool inside = range * range > Utils.DistanceSqr(worldX, worldY, worldZ, (int)x, (int)y, (int)z);
+		bool inside = range * range > Utils.DistanceSqr(pos.x, pos.y, pos.z, (int)x, (int)y, (int)z);
 
 		return inside ? strength : 0;
 	}

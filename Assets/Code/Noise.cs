@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[SelectionBase]
+[System.Serializable]
 public class Noise : Modifier
 {
 	public float scale = 0.0424f;
@@ -12,7 +12,7 @@ public class Noise : Modifier
 
 	private Vector3 randomOffset = Vector3.zero;
 
-	protected override bool Init()
+	public override bool Init()
 	{
 		if (!base.Init())
 			return false;
