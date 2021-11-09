@@ -174,6 +174,12 @@ public partial class World : MonoBehaviour
 		generatorsUsed = 0;
 		chunksToGen = 0;
 
+		// Update chunk generators
+		if (DoAccelerateGen())
+			ChunkGenerator.SetThreadingMode(ChunkGenerator.ThreadingMode.FullUsage);
+		else
+			ChunkGenerator.SetThreadingMode(ChunkGenerator.ThreadingMode.Background);
+
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			Instance.chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);

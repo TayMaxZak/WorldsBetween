@@ -2,9 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
+using System.Threading.Tasks;
 
 public class ChunkGenerator
 {
+	public enum ThreadingMode
+	{
+		Background,
+		FullUsage
+	}
+
+	private static ThreadingMode threadingMode = ThreadingMode.Background;
+	private bool busy = false;
+
 	private readonly SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
@@ -42,6 +52,9 @@ public class ChunkGenerator
 
 	public void Generate(float deltaTime)
 	{
+		if (threadingMode == ThreadingMode.Background && busy)
+			return;
+
 		chunkGenTimer.Increment(deltaTime);
 
 		bool doChunkGen = chunkGenTimer.Expired();
@@ -60,8 +73,22 @@ public class ChunkGenerator
 
 	private void IterateQueue()
 	{
-		float accelMult = World.DoAccelerateGen() ? 50 : 1;
+		if (threadingMode == ThreadingMode.FullUsage)
+		{
+			// Never busy in this mode
+			busy = false;
 
+			FullUsageIterate();
+		}
+		else if (threadingMode == ThreadingMode.Background)
+		{
+			BackgroundIterate();
+		}
+	}
+
+	private void FullUsageIterate()
+	{
+		float accelMult = World.DoAccelerateGen() ? 50 : 1;
 		int count = chunkQueue.Count;
 		int baseAttempts = Mathf.Min(count, Mathf.CeilToInt(chunksToHandle * accelMult));
 		int spareAttempts = Mathf.Min(count);
@@ -123,6 +150,74 @@ public class ChunkGenerator
 		}
 	}
 
+	private async void BackgroundIterate()
+	{
+		while (chunkQueue.Count > 0)
+		{
+			Chunk chunk = chunkQueue.Dequeue();
+
+			bool validAdj = true;
+			bool requiresAdj = requireAdjacents.Contains(chunk.genStage);
+
+			// Check if neighboring chunks are ready yet
+			if (requiresAdj)
+			{
+				for (int d = 0; d < directions.Length; d++)
+				{
+					// Try every orthagonal direction
+					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
+					Chunk adj = World.GetChunkFor(adjPos);
+					if (adj == null || adj.genStage < chunk.genStage)
+					{
+						validAdj = false;
+						break;
+					}
+				}
+			}
+
+			// Either doesn't care about adjacents or has adjacents
+			if (!requiresAdj || validAdj)
+			{
+				// Update edge tracking
+				if (chunk.atEdge)
+					edgeChunks--;
+				chunk.atEdge = false;
+
+				// Not already processing? Then start
+				if (!chunk.processing)
+				{
+					busy = true;
+
+					ProcessChunk(chunk);
+
+					// Does this process lead to a 'processing' state?
+					if (chunk.processing)
+					{
+						while (chunk.processing == true)
+						{
+							await Task.Yield(); // Wait before continuing
+						}
+					}
+
+					busy = false;
+				}
+			}
+			else
+			{
+				// Update edge tracking
+				if (!chunk.atEdge)
+				{
+					edgeChunks++;
+					chunk.atEdge = true;
+				}
+
+				reQueue.Enqueue(chunk);
+			}
+		}
+	}
+
+
+
 	private void ProcessChunk(Chunk chunk)
 	{
 		switch (chunk.genStage)
@@ -169,5 +264,10 @@ public class ChunkGenerator
 	public int GetEdgeChunks()
 	{
 		return edgeChunks;
+	}
+
+	public static void SetThreadingMode(ThreadingMode newMode)
+	{
+		threadingMode = newMode;
 	}
 }
