@@ -77,7 +77,7 @@ public partial class World : MonoBehaviour
 			mod.Init();
 
 		// Init timers
-		chunkGenTimer.Reset(initialGenTime);
+		chunkGenTimer.Reset();
 	}
 
 	private void Start()
@@ -200,7 +200,15 @@ public partial class World : MonoBehaviour
 
 				// Don't overload number of generators
 				if (generatorsUsed <= 2)
+				{
 					entry.Value.Generate(Time.deltaTime);
+
+					entry.Value.SetWait(false);
+				}
+				else
+				{
+					entry.Value.SetWait(true);
+				}
 			}
 		}
 	}

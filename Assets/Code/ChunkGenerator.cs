@@ -14,12 +14,11 @@ public class ChunkGenerator
 
 	private static ThreadingMode threadingMode = ThreadingMode.Background;
 	private bool busy = false;
+	private bool wait = false;
 
 	private readonly SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
-
-	private readonly SimplePriorityQueue<Chunk> chunkQueueWaitlist = new SimplePriorityQueue<Chunk>();
 
 	private readonly int chunksToHandle = 3;
 	private readonly Timer chunkGenTimer;
@@ -50,14 +49,7 @@ public class ChunkGenerator
 
 	public void Enqueue(Chunk chunk, float priority)
 	{
-		if (threadingMode == ThreadingMode.Background && busy)
-		{
-			chunkQueueWaitlist.Enqueue(chunk, priority);
-		}
-		else
-		{
-			chunkQueue.Enqueue(chunk, priority);
-		}
+		chunkQueue.Enqueue(chunk, priority);
 	}
 
 	public void Generate(float deltaTime)
@@ -65,17 +57,6 @@ public class ChunkGenerator
 		if (threadingMode == ThreadingMode.Background && busy)
 		{
 			return;
-		}
-
-		while (chunkQueueWaitlist.Count > 0)
-		{
-			Chunk chunk = chunkQueueWaitlist.First;
-
-			float prio = chunkQueueWaitlist.GetPriority(chunk);
-
-			chunkQueueWaitlist.Dequeue();
-
-			chunkQueue.Enqueue(chunk, prio);
 		}
 
 		chunkGenTimer.Increment(deltaTime);
@@ -111,7 +92,7 @@ public class ChunkGenerator
 
 	private void FullUsageIterate()
 	{
-		float accelMult = World.DoAccelerateGen() ? 50 : 1;
+		float accelMult = World.DoAccelerateGen() ? 50 : 10;
 		int count = chunkQueue.Count;
 		int baseAttempts = Mathf.Min(count, Mathf.CeilToInt(chunksToHandle * accelMult));
 		int spareAttempts = Mathf.Min(count);
@@ -131,7 +112,7 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage)
+					if (adj == null || adj.genStage < chunk.genStage || chunk.isProcessing)
 					{
 						validAdj = false;
 						break;
@@ -179,6 +160,12 @@ public class ChunkGenerator
 
 		while (GetSize() > 0)
 		{
+			// Set externally; sit tight until other queues have made some progress
+			while (wait == true)
+			{
+				await Task.Yield();
+			}
+
 			Chunk chunk = chunkQueue.Dequeue();
 
 			bool validAdj = true;
@@ -289,6 +276,11 @@ public class ChunkGenerator
 	public bool IsBusy()
 	{
 		return threadingMode == ThreadingMode.Background && busy;
+	}
+
+	public void SetWait(bool newWait)
+	{
+		wait = newWait;
 	}
 
 	public int GetEdgeChunks()
