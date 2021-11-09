@@ -222,7 +222,10 @@ public partial class World : MonoBehaviour
 		else
 			return;
 
-		CreateChunksNearPlayer(nearPlayerGenRange);
+		if (DoAccelerateGen())
+			CreateChunksNearPlayer(initialGenRange);
+		else
+			CreateChunksNearPlayer(nearPlayerGenRange);
 	}
 
 	public static void QueueNextStage(Chunk chunk)

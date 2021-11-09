@@ -20,7 +20,8 @@ class ChunkGameObjectEditor : Editor
 		Handles.Label(script.transform.position + Vector3.one * World.GetChunkSize() / 2 + Vector3.up * 2,
 			script.transform.position.ToString() + 
 			"\ngenStage: " + script.data.genStage.ToString() + 
-			"\natEdge: " + script.data.atEdge.ToString(),
+			"\natEdge: " + script.data.atEdge.ToString() +
+			"\nisProcessing: " + script.data.isProcessing.ToString(),
 		style);
 	}
 }

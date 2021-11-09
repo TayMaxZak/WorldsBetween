@@ -112,7 +112,7 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage || chunk.isProcessing)
+					if (adj == null || adj.genStage < chunk.genStage/* || chunk.isProcessing*/)
 					{
 						validAdj = false;
 						break;
@@ -179,7 +179,7 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage || adj.isProcessing)
+					if (adj == null || adj.genStage < chunk.genStage/* || adj.isProcessing*/)
 					{
 						validAdj = false;
 						break;
