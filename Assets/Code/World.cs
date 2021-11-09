@@ -195,7 +195,7 @@ public partial class World : MonoBehaviour
 			// Wait until previous queue is wrapped up
 			if (empty || (prev.GetSize() < entry.Value.GetSize()))
 			{
-				if (!empty)
+				if (!empty || entry.Value.IsBusy())
 					generatorsUsed++;
 
 				// Don't overload number of generators

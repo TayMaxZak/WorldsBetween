@@ -16,7 +16,10 @@ public class ChunkGenerator
 	private bool busy = false;
 
 	private readonly SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
+
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
+
+	private readonly SimplePriorityQueue<Chunk> chunkQueueWaitlist = new SimplePriorityQueue<Chunk>();
 
 	private readonly int chunksToHandle = 3;
 	private readonly Timer chunkGenTimer;
@@ -47,13 +50,33 @@ public class ChunkGenerator
 
 	public void Enqueue(Chunk chunk, float priority)
 	{
-		chunkQueue.Enqueue(chunk, priority);
+		if (threadingMode == ThreadingMode.Background && busy)
+		{
+			chunkQueueWaitlist.Enqueue(chunk, priority);
+		}
+		else
+		{
+			chunkQueue.Enqueue(chunk, priority);
+		}
 	}
 
 	public void Generate(float deltaTime)
 	{
 		if (threadingMode == ThreadingMode.Background && busy)
+		{
 			return;
+		}
+
+		while (chunkQueueWaitlist.Count > 0)
+		{
+			Chunk chunk = chunkQueueWaitlist.First;
+
+			float prio = chunkQueueWaitlist.GetPriority(chunk);
+
+			chunkQueueWaitlist.Dequeue();
+
+			chunkQueue.Enqueue(chunk, prio);
+		}
 
 		chunkGenTimer.Increment(deltaTime);
 
@@ -124,7 +147,7 @@ public class ChunkGenerator
 					edgeChunks--;
 				chunk.atEdge = false;
 
-				if (!chunk.processing)
+				if (!chunk.isProcessing)
 					ProcessChunk(chunk);
 			}
 			else
@@ -152,7 +175,9 @@ public class ChunkGenerator
 
 	private async void BackgroundIterate()
 	{
-		while (chunkQueue.Count > 0)
+		busy = true;
+
+		while (GetSize() > 0)
 		{
 			Chunk chunk = chunkQueue.Dequeue();
 
@@ -167,7 +192,7 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage)
+					if (adj == null || adj.genStage < chunk.genStage || adj.isProcessing)
 					{
 						validAdj = false;
 						break;
@@ -184,22 +209,22 @@ public class ChunkGenerator
 				chunk.atEdge = false;
 
 				// Not already processing? Then start
-				if (!chunk.processing)
+				if (!chunk.isProcessing)
 				{
-					busy = true;
-
 					ProcessChunk(chunk);
 
 					// Does this process lead to a 'processing' state?
-					if (chunk.processing)
+					while (chunk.isProcessing == true)
 					{
-						while (chunk.processing == true)
-						{
-							await Task.Yield(); // Wait before continuing
-						}
+						await Task.Yield(); // Wait before continuing
 					}
-
-					busy = false;
+				}
+				else
+				{
+					while (chunk.isProcessing == true)
+					{
+						await Task.Yield(); // Wait before continuing
+					}
 				}
 			}
 			else
@@ -214,9 +239,9 @@ public class ChunkGenerator
 				reQueue.Enqueue(chunk);
 			}
 		}
+
+		busy = false;
 	}
-
-
 
 	private void ProcessChunk(Chunk chunk)
 	{
@@ -259,6 +284,11 @@ public class ChunkGenerator
 	public int GetSize()
 	{
 		return chunkQueue.Count - edgeChunks;
+	}
+
+	public bool IsBusy()
+	{
+		return threadingMode == ThreadingMode.Background && busy;
 	}
 
 	public int GetEdgeChunks()

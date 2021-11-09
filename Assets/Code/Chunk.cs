@@ -22,7 +22,7 @@ public class Chunk
 
 	public bool atEdge = false;
 
-	public bool processing = false;
+	public bool isProcessing = false;
 
 	private int chunkSize = 8;
 
@@ -67,7 +67,7 @@ public class Chunk
 
 	private void BkgThreadGenerate(object sender, System.EventArgs e)
 	{
-		processing = true;
+		isProcessing = true;
 
 		BackgroundWorker bw = new BackgroundWorker();
 
@@ -82,7 +82,7 @@ public class Chunk
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
 		delegate (object o, RunWorkerCompletedEventArgs args)
 		{
-			processing = false;
+			isProcessing = false;
 
 			CacheNearAir();
 
@@ -183,7 +183,7 @@ public class Chunk
 
 	private void BkgThreadMakeMesh(object sender, System.EventArgs e)
 	{
-		processing = true;
+		isProcessing = true;
 
 		BackgroundWorker bw = new BackgroundWorker();
 
@@ -200,7 +200,7 @@ public class Chunk
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
 		delegate (object o, RunWorkerCompletedEventArgs args)
 		{
-			processing = false;
+			isProcessing = false;
 
 			// Load mesh data from thread
 			ChunkMesh.MeshData data = (ChunkMesh.MeshData)args.Result;
@@ -237,7 +237,7 @@ public class Chunk
 
 	private void BkgThreadCalcLight(object sender, System.EventArgs e)
 	{
-		processing = true;
+		isProcessing = true;
 
 		BackgroundWorker bw = new BackgroundWorker();
 
@@ -252,7 +252,7 @@ public class Chunk
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
 		delegate (object o, RunWorkerCompletedEventArgs args)
 		{
-			processing = false;
+			isProcessing = false;
 
 			genStage = GenStage.Lit;
 			World.QueueNextStage(this);
