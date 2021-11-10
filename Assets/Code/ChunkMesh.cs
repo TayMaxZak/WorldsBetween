@@ -40,14 +40,22 @@ public class ChunkMesh
 		return filter.sharedMesh;
 	}
 
+	public struct LightingData
+	{
+		public float avgBrightness;
+		public float avgColorTemp;
+
+		public LightingData(float avgBrightness, float avgColorTemp)
+		{
+			this.avgBrightness = avgBrightness;
+			this.avgColorTemp = avgColorTemp;
+		}
+	}
+
 	public void SetVertexColors(Block block)
 	{
-		float offset = 0.5f;
-
-		Block adj;
-
 		Vector3 meshPos;
-		Vector3Int blockPos = new Vector3Int();
+		Vector3Int vertexPos = new Vector3Int();
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
@@ -57,31 +65,29 @@ public class ChunkMesh
 
 			// Find actual block to sample for brightness
 			meshPos = sharedVertices[i];
-			blockPos.x = (int)(meshPos.x + offset);
-			blockPos.y = (int)(meshPos.y + offset) + 1;
-			blockPos.z = (int)(meshPos.z + offset);
+			vertexPos.x = Mathf.RoundToInt(meshPos.x + chunk.position.x);
+			vertexPos.y = Mathf.RoundToInt(meshPos.y + chunk.position.y);
+			vertexPos.z = Mathf.RoundToInt(meshPos.z + chunk.position.z);
 
 			// Block that's closest to this actual vertex
-			adj = World.GetBlockFor(chunk.position + blockPos);
-			if (adj == null || adj.nearAir == 0)
-				adj = block;
+			LightingData ld = GetLightingDataAt(vertexPos);
 
 			// Convert brightness value to float
-			float lastBright = adj.brightness / 255f;
+			float lastBright = ld.avgBrightness / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastBright = adj.brightness / 255f;
 
-			float newBright = adj.brightness / 255f;
+			float newBright = ld.avgBrightness / 255f;
 
 			// Convert hue value to float
-			float lastHue = adj.colorTemp / 255f;
+			float lastColorTemp = ld.avgColorTemp / 255f;
 			//if (adj.postUpdate > 0)
 			//	lastHue = adj.colorTemp / 255f;
 
-			float newHue = adj.colorTemp / 255f;
+			float newColorTemp = ld.avgColorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
-			colors[i] = new Color(lastBright, newBright, lastHue, newHue);
+			colors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
 
 			//// Placeholder
 			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) + 0.5f, RandomJitter(0.25f) + 0.5f);
@@ -92,6 +98,80 @@ public class ChunkMesh
 
 		//if (filter.sharedMesh.colors.Length == 0)
 		//	ApplyVertexColors();
+	}
+
+	private LightingData GetLightingDataAt(Vector3Int pos)
+	{
+		Block adj;
+
+		float count = 0;
+		float avgBrightness = 0;
+		float avgColorTemp = 0;
+
+		float offset = 0.5f;
+
+		Vector3Int debugPosV = new Vector3Int(pos.x, pos.y, pos.z);
+		Vector3 debugPosB = new Vector3(pos.x + offset, pos.y + offset, pos.z + offset);
+
+		pos.x = (int)(pos.x + offset);
+		pos.y = (int)(pos.y + offset);
+		pos.z = (int)(pos.z + offset);
+
+		for (int x = -1; x < 1; x++)
+		{
+			for (int y = -1; y < 1; y++)
+			{
+				for (int z = -1; z < 1; z++)
+				{
+					if (chunk.ContainsPos(pos.x + x, pos.y + y, pos.z + z))
+						adj = chunk.GetBlock(pos.x + x - chunk.position.x, pos.y + y - chunk.position.y, pos.z + z - chunk.position.z);
+					else
+						adj = World.GetBlockFor(pos.x + x, pos.y + y, pos.z + z);
+
+					if (adj.nearAir == 0)
+						continue;
+
+					count++;
+					avgBrightness += adj.brightness;
+					avgColorTemp += adj.colorTemp;
+				}
+			}
+		}
+
+		// Try again?
+		if (count == 0)
+		{
+			pos.x = (int)(pos.x - 1);
+			pos.y = (int)(pos.y - 1);
+			pos.z = (int)(pos.z - 1);
+
+			for (int x = -1; x < 1; x++)
+			{
+				for (int y = -1; y < 1; y++)
+				{
+					for (int z = -1; z < 1; z++)
+					{
+						if (chunk.ContainsPos(pos.x + x, pos.y + y, pos.z + z))
+							adj = chunk.GetBlock(pos.x + x - chunk.position.x, pos.y + y - chunk.position.y, pos.z + z - chunk.position.z);
+						else
+							adj = World.GetBlockFor(pos.x + x, pos.y + y, pos.z + z);
+
+						if (adj.nearAir == 0)
+							continue;
+
+						count++;
+						avgBrightness += adj.brightness;
+						avgColorTemp += adj.colorTemp;
+					}
+				}
+			}
+		}
+
+		// Prevent division by zero
+		if (count == 0)
+			count++;
+
+		return new LightingData(avgBrightness / count, avgColorTemp / count);
 	}
 
 	public void ApplyVertexColors()
