@@ -48,9 +48,9 @@ public abstract class LightSource
 
 	protected abstract void OnDirty();
 
-	public abstract float GetBrightnessAt(Vector3Int at, bool inWater);
+	public abstract float GetBrightnessAt(Chunk chunk, Vector3Int at, bool inWater);
 
-	public abstract float GetColorTemperatureAt(float value, bool inWater);
+	public abstract float GetColorTemperatureAt(Chunk chunk, float value, bool inWater);
 
 	public List<Vector3Int> GetAffectedChunks()
 	{

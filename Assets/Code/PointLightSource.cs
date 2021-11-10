@@ -61,19 +61,22 @@ public class PointLightSource : LightSource
 		}
 	}
 
-	public override float GetBrightnessAt(Vector3Int at, bool inWater)
+	private void CalculateShadowsFor(Chunk chunk)
+	{
+
+	}
+
+	public override float GetBrightnessAt(Chunk chunk, Vector3Int at, bool inWater)
 	{
 		return !inWater ?
 			Mathf.Clamp01(brightness / Mathf.Max(1, Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z))) : // Rapid decay, soft ambient
-			Mathf.Clamp01(0.4f * brightness - 0.02f * Mathf.Sqrt(Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z)) // Full decay faster, stays bright for longer
-		);
+			Mathf.Clamp01(0.4f * brightness - 0.02f * Mathf.Sqrt(Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z))); // Full decay faster, stays bright for longer
 	}
 
-	public override float GetColorTemperatureAt(float value, bool inWater)
+	public override float GetColorTemperatureAt(Chunk chunk, float value, bool inWater)
 	{
 		return !inWater ?
 			(colorTemp) :
-			(Mathf.Lerp(0, colorTemp, 0.6f + value)
-		);
+			(Mathf.Lerp(0, colorTemp, 0.6f + value));
 	}
 }

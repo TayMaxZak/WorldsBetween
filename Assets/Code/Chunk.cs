@@ -30,6 +30,10 @@ public class Chunk
 
 	public ChunkMesh chunkMesh = new ChunkMesh();
 
+
+	// Represents where each light reaches. true = light, false = shadow
+	protected Dictionary<LightSource, ChunkBitArray> shadowBits = new Dictionary<LightSource, ChunkBitArray>();
+
 	public void Init(int chunkSize)
 	{
 		this.chunkSize = chunkSize;
@@ -298,15 +302,29 @@ public class Chunk
 					newColorTemp = -1 + (2 * block.colorTemp) / 255f;
 				}
 
-				Vector3Int pos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
+				Vector3Int worldPos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
 
 				// However bright should this position be relative to the light, added and blended into existing lights
-				float bright = light.GetBrightnessAt(pos, pos.y < World.GetWaterHeight());
+				float bright = light.GetBrightnessAt(this, worldPos, worldPos.y < World.GetWaterHeight());
+
+				{
+					shadowBits.TryGetValue(light, out ChunkBitArray bits);
+
+					if (bits == null)
+					{
+						shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize()));
+					}
+
+					int mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
+
+					bright *= mult;
+				}
+
 				newBrightness = 1 - (1 - newBrightness) * (1 - bright);
 
 				// Like opacity for a color layer
 				float colorTempOpac = bright;
-				float colorTemp = light.GetColorTemperatureAt(colorTempOpac, pos.y < World.GetWaterHeight());
+				float colorTemp = light.GetColorTemperatureAt(this, colorTempOpac, worldPos.y < World.GetWaterHeight());
 				newColorTemp += colorTempOpac * colorTemp;
 			}
 
