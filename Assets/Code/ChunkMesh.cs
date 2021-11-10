@@ -5,6 +5,7 @@ using UnityEngine;
 public class ChunkMesh
 {
 	private static Color borderColor = new Color(0.01f, 0.01f, 0.5f, 0.5f);
+	private static Color resetColor = new Color(0.02f, 0.02f, 0.5f, 0.5f);
 
 	private Chunk chunk;
 
@@ -32,6 +33,11 @@ public class ChunkMesh
 		filter.sharedMesh = filter.mesh;
 
 		this.blockMesh = blockMesh;
+	}
+
+	public Mesh GetSharedMesh()
+	{
+		return filter.sharedMesh;
 	}
 
 	public void SetVertexColors(Block block)
@@ -90,6 +96,10 @@ public class ChunkMesh
 
 	public void ApplyVertexColors()
 	{
+		// Can happen if thread finishes after games ends
+		if (filter == null)
+			return;
+
 		// Apply vertex colors
 		Mesh mesh = filter.sharedMesh;
 		mesh.colors = colors;
@@ -208,6 +218,17 @@ public class ChunkMesh
 		colors = new Color[sharedVertices.Length];
 		for (int i = 0; i < colors.Length; i++)
 			colors[i] = borderColor;
+
+		ApplyVertexColors();
+	}
+
+	public void ResetColors()
+	{
+		if (colors == null)
+			return;
+
+		for (int i = 0; i < colors.Length; i++)
+			colors[i] = resetColor;
 
 		ApplyVertexColors();
 	}

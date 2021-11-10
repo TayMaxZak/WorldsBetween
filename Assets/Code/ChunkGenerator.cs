@@ -49,7 +49,8 @@ public class ChunkGenerator
 
 	public void Enqueue(Chunk chunk, float priority)
 	{
-		chunkQueue.Enqueue(chunk, priority);
+		if (!chunkQueue.Contains(chunk)) // Avoid duplicates
+			chunkQueue.Enqueue(chunk, priority);
 	}
 
 	public void Generate(float deltaTime)

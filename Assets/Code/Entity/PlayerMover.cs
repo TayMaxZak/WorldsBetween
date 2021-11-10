@@ -10,6 +10,8 @@ public class PlayerMover : MonoBehaviour
 	[HideInInspector]
 	public int worldX, worldY, worldZ; // Coordinates in world space
 
+	private int lastWorldX, lastWorldY, lastWorldZ; // Coordinates in world space
+
 	private Vector3 lastActualPos;
 
 	// Velocity
@@ -117,5 +119,21 @@ public class PlayerMover : MonoBehaviour
 		worldX = Mathf.FloorToInt(transform.position.x);
 		worldY = Mathf.FloorToInt(transform.position.y);
 		worldZ = Mathf.FloorToInt(transform.position.z);
+
+		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
+		{
+			Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
+
+			if (chunk != null && !chunk.isProcessing && chunk.genStage > Chunk.GenStage.Meshed)
+			{
+				chunk.ResetColors();
+				chunk.genStage = Chunk.GenStage.Meshed;
+				World.QueueNextStage(chunk, false);
+			}
+		}
+
+		lastWorldX = worldX;
+		lastWorldY = worldY;
+		lastWorldZ = worldZ;
 	}
 }

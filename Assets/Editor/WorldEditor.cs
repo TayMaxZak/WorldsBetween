@@ -17,6 +17,11 @@ public class WorldEditor : Editor
 		return true;
 	}
 
+	private void OnEnable()
+	{
+		showDefaultSettings = !Application.isPlaying;
+	}
+
 	public override void OnInspectorGUI()
 	{
 		//showDefaultSettings = EditorGUILayout.BeginFoldoutHeaderGroup(showDefaultSettings, "World Settings");

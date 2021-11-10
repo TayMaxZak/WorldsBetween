@@ -339,6 +339,11 @@ public class Chunk
 	}
 	#endregion
 
+	public void ResetColors()
+	{
+		chunkMesh.ResetColors();
+	}
+
 	// Utility
 	public bool ContainsPos(int x, int y, int z)
 	{
