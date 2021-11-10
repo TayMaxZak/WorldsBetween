@@ -133,8 +133,8 @@ public partial class World : MonoBehaviour
 						for (int r = 0; r < Random.value * 5; r++)
 						{
 							RegisterLight(new PointLightSource(
-								0.5f,
-								Random.Range(-10, 10),
+								Random.Range(0.5f, 1.5f) * Random.Range(0.5f, 1.5f),
+								Random.Range(-2f, 2f),
 								new Vector3(
 									chunkPos.x + Random.value * chunkSize,
 									chunkPos.y + Random.value * chunkSize,

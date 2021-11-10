@@ -304,30 +304,40 @@ public class Chunk
 
 				Vector3Int worldPos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
 
+				float dist = light.GetDistanceTo(worldPos);
+
 				// However bright should this position be relative to the light, added and blended into existing lights
-				float bright = light.GetBrightnessAt(this, worldPos, worldPos.y < World.GetWaterHeight());
+				float bright = light.GetBrightnessAt(this, dist, worldPos.y < World.GetWaterHeight());
 
+				if (bright <= 1 / 255f)
+					continue;
+
+				float atten = light.GetAttenAt(this, dist, worldPos.y < World.GetWaterHeight());
+
+				// Apply shadows
+				shadowBits.TryGetValue(light, out ChunkBitArray bits);
+
+				// Calculate shadows
+				if (bits == null)
 				{
-					shadowBits.TryGetValue(light, out ChunkBitArray bits);
-
-					if (bits == null)
-					{
-						shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), false));
-					}
-
-					bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
-
-					int mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
-
-					bright *= mult;
+					shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), false));
 				}
+
+				bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
+
+				// Get shadows
+				float mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
+				mult = Mathf.Clamp01(mult + atten);
+
+				// Apply shadows & final falloff. Shadows are less intense near the source
+				bright *= mult;
 
 				newBrightness = 1 - (1 - newBrightness) * (1 - bright);
 
-				// Like opacity for a color layer
-				float colorTempOpac = 1 - (1 - bright) * (1 - bright);
-				float colorTemp = light.GetColorTemperatureAt(this, colorTempOpac, worldPos.y < World.GetWaterHeight());
-				newColorTemp += colorTempOpac * colorTemp;
+				// Like opacity for a Color layer
+				float colorTempOpac = light.GetColorOpacityAt(this, dist, worldPos.y < World.GetWaterHeight());
+				colorTempOpac *= mult;
+				newColorTemp += colorTempOpac * light.colorTemp;
 			}
 
 			if (changed)

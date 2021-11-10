@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PointLightSource : LightSource
 {
+	private float falloffFactor = 16;
+	private float exponent = 4;
+
 	public PointLightSource(float brightness, float colorTemp, Vector3 pos) : base(brightness, colorTemp, pos) { }
 
 	public PointLightSource(float brightness, float colorTemp) : base(brightness, colorTemp) { }
@@ -61,18 +64,39 @@ public class PointLightSource : LightSource
 		}
 	}
 
-	public override float GetBrightnessAt(Chunk chunk, Vector3Int at, bool inWater)
+	public override float GetBrightnessAt(Chunk chunk, float distance, bool inWater)
 	{
-		return !inWater ?
-			Mathf.Clamp01(brightness / Mathf.Max(1, Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z))) : // Rapid decay, soft ambient
-			Mathf.Clamp01(0.4f * brightness - 0.02f * Mathf.Sqrt(Utils.DistanceSqr(worldX, worldY, worldZ, at.x, at.y, at.z))); // Full decay faster, stays bright for longer
+		float falloff = 1f - distance * (1f / (falloffFactor * brightness));
+		falloff = Mathf.Clamp01(falloff);
+
+		for (int i = 1; i < exponent; i++)
+			falloff *= falloff;
+
+		return falloff;
 	}
 
-	public override float GetColorTemperatureAt(Chunk chunk, float value, bool inWater)
+	public override float GetAttenAt(Chunk chunk, float distance, bool inWater)
 	{
-		return !inWater ?
-			(colorTemp) :
-			(Mathf.Lerp(0, colorTemp, 0.6f + value));
+		float falloff = 1f - distance * (1f / (falloffFactor * brightness));
+		falloff = Mathf.Clamp01(falloff);
+
+		for (int i = 1; i < exponent; i++)
+			falloff *= falloff;
+
+		return falloff;
+	}
+
+	public override float GetColorOpacityAt(Chunk chunk, float distance, bool inWater)
+	{
+		distance = Mathf.Max(0, distance - 1);
+
+		float falloff = 1f - distance * (1f / (falloffFactor * brightness));
+		falloff = Mathf.Clamp01(falloff);
+
+		for (int i = 1; i < exponent; i++)
+			falloff *= falloff;
+
+		return falloff;
 	}
 
 	public override bool IsShadowed(Vector3Int blockPos)
@@ -80,11 +104,18 @@ public class PointLightSource : LightSource
 		float adj = 0.5f;
 
 		Vector3 offset = new Vector3(worldX - blockPos.x, worldY - blockPos.y, worldZ - blockPos.z).normalized;
-		bool occluded = World.GetBlockFor(
-			(int)(blockPos.x + offset.x + adj),
-			(int)(blockPos.y + offset.y + adj),
-			(int)(blockPos.z + offset.z + adj)).opacity > 127;
+		for (int i = 1; i <= 3; i++)
+		{
+			bool occluded = World.GetBlockFor(
+				(int)(blockPos.x + offset.x * i + adj),
+				(int)(blockPos.y + offset.y * i + adj),
+				(int)(blockPos.z + offset.z * i + adj)
+			).opacity > 127;
 
-		return occluded;
+			if (occluded)
+				return true;
+		}
+
+		return false;
 	}
 }

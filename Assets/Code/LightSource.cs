@@ -48,9 +48,17 @@ public abstract class LightSource
 
 	protected abstract void OnDirty();
 
-	public abstract float GetBrightnessAt(Chunk chunk, Vector3Int at, bool inWater);
+	public float GetDistanceTo(Vector3Int blockPos)
+	{
+		float d = Utils.DistanceSqr(worldX, worldY, worldZ, blockPos.x, blockPos.y, blockPos.z);
+		return Mathf.Sqrt(d);
+	}
 
-	public abstract float GetColorTemperatureAt(Chunk chunk, float value, bool inWater);
+	public abstract float GetBrightnessAt(Chunk chunk, float distance, bool inWater);
+
+	public abstract float GetAttenAt(Chunk chunk, float distance, bool inWater);
+
+	public abstract float GetColorOpacityAt(Chunk chunk, float value, bool inWater);
 
 	public List<Vector3Int> GetAffectedChunks()
 	{
