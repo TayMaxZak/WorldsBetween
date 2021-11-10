@@ -77,9 +77,14 @@ public class PointLightSource : LightSource
 
 	public override bool IsShadowed(Vector3Int blockPos)
 	{
-		Vector3 offset = new Vector3(worldX - blockPos.x, worldY - blockPos.y, worldZ - blockPos.z).normalized;
-		bool occluded = World.GetBlockFor(blockPos.x + (int)offset.x, blockPos.y + (int)offset.y, blockPos.z + (int)offset.z).opacity >= 127;
+		float adj = 0.5f;
 
-		return false;
+		Vector3 offset = new Vector3(worldX - blockPos.x, worldY - blockPos.y, worldZ - blockPos.z).normalized;
+		bool occluded = World.GetBlockFor(
+			(int)(blockPos.x + offset.x + adj),
+			(int)(blockPos.y + offset.y + adj),
+			(int)(blockPos.z + offset.z + adj)).opacity > 127;
+
+		return occluded;
 	}
 }

@@ -29,7 +29,7 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
-	private PointLightSource flashlight = new PointLightSource(2.0f, 0.5f);
+	private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Start()
 	{
