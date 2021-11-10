@@ -132,7 +132,7 @@ public partial class World : MonoBehaviour
 					{
 						for (int r = 0; r < 4; r++)
 						{
-							RegisterLight(new LightSource(
+							RegisterLight(new PointLightSource(
 								0.5f,
 								Random.Range(-10, 10),
 								new Vector3(
@@ -248,20 +248,22 @@ public partial class World : MonoBehaviour
 	{
 		light.FindAffectedChunks();
 
-		foreach (Vector3Int chunk in light.affectedChunks)
+		foreach (Vector3Int chunk in light.GetAffectedChunks())
 		{
 			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
 
+			// First light added to this chunk
 			if (ls == null)
 				Instance.lightSources.Add(chunk, ls = new LinkedList<LightSource>());
 
-			ls.AddLast(light);
+			if (!ls.Contains(light))
+				ls.AddLast(light);
 		}
 	}
 
 	public static void RemoveLight(LightSource light)
 	{
-		foreach (Vector3Int chunk in light.affectedChunks)
+		foreach (Vector3Int chunk in light.GetAffectedChunks())
 		{
 			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
 
