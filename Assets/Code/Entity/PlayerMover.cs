@@ -29,7 +29,9 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
-	private PointLightSource flashlight = new PointLightSource(1, 0.5f);
+	private PointLightSource flashlight = new PointLightSource(1.5f, 0.5f);
+
+	private bool alternate = false;
 
 	private void Start()
 	{
@@ -124,7 +126,13 @@ public class PlayerMover : MonoBehaviour
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			flashlight.UpdatePosition(transform.position);
+			alternate = !alternate;
+
+			if (alternate)
+			{
+				flashlight.colorTemp = SeedlessRandom.NextFloatInRange(-3, 3);
+				flashlight.UpdatePosition(transform.position);
+			}
 		}
 
 		lastWorldX = worldX;

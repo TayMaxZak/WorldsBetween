@@ -286,7 +286,7 @@ public partial class World : MonoBehaviour
 			if (recalcLight)
 			{
 				Chunk c = GetChunkFor(chunk);
-				if (c != null)
+				if (c != null && !c.isProcessing && c.genStage > Chunk.GenStage.Meshed)
 				{
 					c.genStage = Chunk.GenStage.Meshed;
 					QueueNextStage(c, false);
@@ -308,7 +308,7 @@ public partial class World : MonoBehaviour
 			if (recalcLight)
 			{
 				Chunk c = GetChunkFor(chunk);
-				if (c != null)
+				if (c != null && !c.isProcessing && c.genStage > Chunk.GenStage.Meshed)
 				{
 					c.genStage = Chunk.GenStage.Meshed;
 					QueueNextStage(c, false);
