@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class PointLightSource : LightSource
 {
-	public PointLightSource(float brightness, float colorTemp, Vector3 pos) : base(brightness, colorTemp, pos)
-	{
-		this.brightness = brightness;
-		this.colorTemp = colorTemp;
+	public PointLightSource(float brightness, float colorTemp, Vector3 pos) : base(brightness, colorTemp, pos) { }
 
-		UpdatePosition(pos);
-	}
+	public PointLightSource(float brightness, float colorTemp) : base(brightness, colorTemp) { }
 
 	public override List<Vector3Int> FindAffectedChunks()
 	{
@@ -18,7 +14,9 @@ public class PointLightSource : LightSource
 		oldAffectedChunks.Clear();
 
 		foreach (Vector3Int chunk in affectedChunks)
+		{
 			oldAffectedChunks.Add(chunk);
+		}
 
 		affectedChunks.Clear();
 
@@ -42,6 +40,10 @@ public class PointLightSource : LightSource
 					);
 
 					affectedChunks.Add(chunk);
+
+					// Only return changed chunks
+					if (oldAffectedChunks.Contains(chunk))
+						oldAffectedChunks.Remove(chunk);
 				}
 			}
 		}
@@ -51,7 +53,12 @@ public class PointLightSource : LightSource
 
 	protected override void OnDirty()
 	{
-		
+		Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
+
+		if (chunk != null && !chunk.isProcessing && chunk.genStage > Chunk.GenStage.Meshed)
+		{
+			World.UpdateLight(this, true);
+		}
 	}
 
 	public override float GetBrightnessAt(Vector3Int at, bool inWater)

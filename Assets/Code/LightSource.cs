@@ -16,12 +16,15 @@ public abstract class LightSource
 
 	public bool dirty = true;
 
-	public LightSource(float brightness, float colorTemp, Vector3 pos)
+	public LightSource(float brightness, float colorTemp, Vector3 pos) : this(brightness, colorTemp)
+	{
+		UpdatePosition(pos);
+	}
+
+	public LightSource(float brightness, float colorTemp)
 	{
 		this.brightness = brightness;
 		this.colorTemp = colorTemp;
-
-		UpdatePosition(pos);
 	}
 
 	public abstract List<Vector3Int> FindAffectedChunks();

@@ -29,6 +29,8 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
+	private PointLightSource flashlight = new PointLightSource(1, 0.5f);
+
 	private void Start()
 	{
 		UpdatePosition();
@@ -122,14 +124,7 @@ public class PlayerMover : MonoBehaviour
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
-
-			if (chunk != null && !chunk.isProcessing && chunk.genStage > Chunk.GenStage.Meshed)
-			{
-				chunk.ResetColors();
-				chunk.genStage = Chunk.GenStage.Meshed;
-				World.QueueNextStage(chunk, false);
-			}
+			flashlight.UpdatePosition(transform.position);
 		}
 
 		lastWorldX = worldX;

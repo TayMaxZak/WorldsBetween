@@ -272,6 +272,58 @@ public partial class World : MonoBehaviour
 		}
 	}
 
+	public static void UpdateLight(LightSource light, bool recalcLight)
+	{
+		List<Vector3Int> oldChunks = light.FindAffectedChunks();
+
+		foreach (Vector3Int chunk in oldChunks)
+		{
+			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+
+			if (ls != null)
+				ls.Remove(light);
+
+			if (recalcLight)
+			{
+				Chunk c = GetChunkFor(chunk);
+				if (c != null)
+				{
+					c.genStage = Chunk.GenStage.Meshed;
+					QueueNextStage(c, false);
+				}
+			}
+		}
+
+		foreach (Vector3Int chunk in light.GetAffectedChunks())
+		{
+			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+
+			// First light added to this chunk
+			if (ls == null)
+				Instance.lightSources.Add(chunk, ls = new LinkedList<LightSource>());
+
+			if (!ls.Contains(light))
+				ls.AddLast(light);
+
+			if (recalcLight)
+			{
+				Chunk c = GetChunkFor(chunk);
+				if (c != null)
+				{
+					c.genStage = Chunk.GenStage.Meshed;
+					QueueNextStage(c, false);
+				}
+			}
+		}
+	}
+
+	public static void RecalcLight(Chunk chunk)
+	{
+		chunk.ResetColors();
+		chunk.genStage = Chunk.GenStage.Meshed;
+		QueueNextStage(chunk, false);
+	}
+
 	public static LinkedList<LightSource> GetLightsFor(Chunk chunk)
 	{
 		Instance.lightSources.TryGetValue(chunk.position, out LinkedList<LightSource> ls);
