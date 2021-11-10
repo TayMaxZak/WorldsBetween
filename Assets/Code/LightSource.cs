@@ -56,4 +56,9 @@ public abstract class LightSource
 	{
 		return affectedChunks;
 	}
+
+	public virtual bool IsShadowed(Vector3Int blockPos)
+	{
+		return false;
+	}
 }

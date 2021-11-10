@@ -61,11 +61,6 @@ public class PointLightSource : LightSource
 		}
 	}
 
-	private void CalculateShadowsFor(Chunk chunk)
-	{
-
-	}
-
 	public override float GetBrightnessAt(Chunk chunk, Vector3Int at, bool inWater)
 	{
 		return !inWater ?
@@ -78,5 +73,13 @@ public class PointLightSource : LightSource
 		return !inWater ?
 			(colorTemp) :
 			(Mathf.Lerp(0, colorTemp, 0.6f + value));
+	}
+
+	public override bool IsShadowed(Vector3Int blockPos)
+	{
+		Vector3 offset = new Vector3(worldX - blockPos.x, worldY - blockPos.y, worldZ - blockPos.z).normalized;
+		bool occluded = World.GetBlockFor(blockPos.x + (int)offset.x, blockPos.y + (int)offset.y, blockPos.z + (int)offset.z).opacity >= 127;
+
+		return false;
 	}
 }

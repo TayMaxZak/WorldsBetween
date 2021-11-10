@@ -130,7 +130,7 @@ public partial class World : MonoBehaviour
 					// Add a random light to this chunk
 					if (Random.value < 0.2f)
 					{
-						for (int r = 0; r < 4; r++)
+						for (int r = 0; r < Random.value * 5; r++)
 						{
 							RegisterLight(new PointLightSource(
 								0.5f,
@@ -286,11 +286,8 @@ public partial class World : MonoBehaviour
 			if (recalcLight)
 			{
 				Chunk c = GetChunkFor(chunk);
-				if (c != null && !c.isProcessing && c.genStage > Chunk.GenStage.Meshed)
-				{
-					c.genStage = Chunk.GenStage.Meshed;
-					QueueNextStage(c, false);
-				}
+				if (c != null)
+					c.ClearLights();
 			}
 		}
 
@@ -308,20 +305,10 @@ public partial class World : MonoBehaviour
 			if (recalcLight)
 			{
 				Chunk c = GetChunkFor(chunk);
-				if (c != null && !c.isProcessing && c.genStage > Chunk.GenStage.Meshed)
-				{
-					c.genStage = Chunk.GenStage.Meshed;
-					QueueNextStage(c, false);
-				}
+				if (c != null)
+					c.ClearLights();
 			}
 		}
-	}
-
-	public static void RecalcLight(Chunk chunk)
-	{
-		chunk.ResetColors();
-		chunk.genStage = Chunk.GenStage.Meshed;
-		QueueNextStage(chunk, false);
 	}
 
 	public static LinkedList<LightSource> GetLightsFor(Chunk chunk)

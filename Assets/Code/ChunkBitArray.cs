@@ -9,11 +9,12 @@ public class ChunkBitArray
 
 	private readonly int size;
 
-	public ChunkBitArray(int dimension)
+	public ChunkBitArray(int dimension, bool value)
 	{
 		size = dimension;
-		bits = new BitArray(size * size * size);
-		bits.SetAll(true);
+		bits = new BitArray(size * size * size, value);
+		//for (int i = 0; i < bits.Length; i++)
+		//	bits[i] = SeedlessRandom.NextFloat() > 0.5f;
 	}
 
 	public bool Get(int x, int y, int z)

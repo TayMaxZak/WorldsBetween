@@ -312,8 +312,10 @@ public class Chunk
 
 					if (bits == null)
 					{
-						shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize()));
+						shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), false));
 					}
+
+					bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
 
 					int mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
 
@@ -323,7 +325,7 @@ public class Chunk
 				newBrightness = 1 - (1 - newBrightness) * (1 - bright);
 
 				// Like opacity for a color layer
-				float colorTempOpac = bright;
+				float colorTempOpac = 1 - (1 - bright) * (1 - bright);
 				float colorTemp = light.GetColorTemperatureAt(this, colorTempOpac, worldPos.y < World.GetWaterHeight());
 				newColorTemp += colorTempOpac * colorTemp;
 			}
@@ -357,9 +359,17 @@ public class Chunk
 	}
 	#endregion
 
-	public void ResetColors()
+	public void ClearLights()
 	{
-		chunkMesh.ResetColors();
+		if (isProcessing || genStage < GenStage.Meshed)
+			return;
+
+		// TODO: Clear dictionaries if unused?
+
+		//chunkMesh.ResetColors();
+
+		genStage = GenStage.Meshed;
+		World.QueueNextStage(this, false);
 	}
 
 	// Utility
