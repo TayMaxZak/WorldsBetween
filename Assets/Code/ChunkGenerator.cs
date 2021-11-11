@@ -115,8 +115,15 @@ public class ChunkGenerator
 					Chunk adj = World.GetChunkFor(adjPos);
 					if (adj == null || adj.genStage < chunk.genStage || chunk.isProcessing)
 					{
-						validAdj = false;
-						break;
+						if (adj != null || World.IsInfinite())
+						{
+							validAdj = false;
+							break;
+						}
+						else
+						{
+							continue;
+						}
 					}
 				}
 			}
@@ -182,8 +189,15 @@ public class ChunkGenerator
 					Chunk adj = World.GetChunkFor(adjPos);
 					if (adj == null || adj.genStage < chunk.genStage || chunk.isProcessing)
 					{
-						validAdj = false;
-						break;
+						if (adj != null || World.IsInfinite())
+						{
+							validAdj = false;
+							break;
+						}
+						else
+						{
+							continue;
+						}
 					}
 				}
 			}
