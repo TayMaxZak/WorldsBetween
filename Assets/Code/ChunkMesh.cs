@@ -116,15 +116,15 @@ public class ChunkMesh
 
 		Vector3Int adjPos = new Vector3Int();
 
-		for (int x = -1; x < 1; x++)
+		for (int x = -1; x <= 1; x += 2)
 		{
-			for (int y = -1; y < 1; y++)
+			for (int y = -1; y <= 1; y += 2)
 			{
-				for (int z = -1; z < 1; z++)
+				for (int z = -1; z <= 1; z += 2)
 				{
-					adjPos.x = Mathf.RoundToInt(vertPos.x + x);
-					adjPos.y = Mathf.RoundToInt(vertPos.y + y);
-					adjPos.z = Mathf.RoundToInt(vertPos.z + z);
+					adjPos.x = Mathf.FloorToInt(vertPos.x + x * 0.5f);
+					adjPos.y = Mathf.FloorToInt(vertPos.y + y * 0.5f);
+					adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
 
 					if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
 						adj = chunk.GetBlock(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
