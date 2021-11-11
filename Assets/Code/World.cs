@@ -49,6 +49,7 @@ public partial class World : MonoBehaviour
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
 
+	private GameObject chunkRoot;
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
 	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -88,13 +89,16 @@ public partial class World : MonoBehaviour
 		// Init timers
 		chunkGenTimer.Reset();
 
-		waterSystem.transform.position = new Vector3(player.transform.position.x, waterHeight, player.transform.position.z);
+		WaterFollow(player);
 
 		if (sunObject)
 		{
 			sunObject.Init();
 			RegisterLight(sunObject.lightSource);
 		}
+
+		chunkRoot = new GameObject();
+		chunkRoot.name = "Chunks";
 
 		if (disable)
 			enabled = false;
@@ -136,7 +140,7 @@ public partial class World : MonoBehaviour
 						continue;
 
 					// Instantiate chunk GameObject
-					ChunkGameObject chunkGO = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, transform);
+					ChunkGameObject chunkGO = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, chunkRoot.transform);
 					chunkGO.name = "Chunk " + x + ", " + y + ", " + z;
 
 					// Initialize and register chunk
@@ -247,6 +251,11 @@ public partial class World : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public static void WaterFollow(Transform t)
+	{
+		Instance.waterSystem.transform.position = new Vector3(t.position.x, Instance.waterHeight, t.position.z);
 	}
 
 	private void UpdateChunkCreation()
