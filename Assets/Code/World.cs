@@ -7,6 +7,7 @@ public partial class World : MonoBehaviour
 	private static World Instance;
 
 	public bool disable = false;
+	public bool infinite = true;
 
 	[Header("References")]
 	[SerializeField]
@@ -236,6 +237,9 @@ public partial class World : MonoBehaviour
 
 	private void UpdateChunkCreation()
 	{
+		if (!infinite)
+			return;
+
 		chunkGenTimer.Increment(Time.deltaTime);
 
 		if (chunkGenTimer.Expired())
@@ -385,6 +389,11 @@ public partial class World : MonoBehaviour
 	public static bool DoAccelerateGen()
 	{
 		return Time.time < Instance.initialGenTime;
+	}
+
+	public static bool IsInfinite()
+	{
+		return Instance.infinite;
 	}
 
 	public static bool IsGen()

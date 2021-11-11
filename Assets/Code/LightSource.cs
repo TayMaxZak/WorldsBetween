@@ -14,8 +14,6 @@ public abstract class LightSource
 	protected List<Vector3Int> affectedChunks = new List<Vector3Int>();
 	protected List<Vector3Int> oldAffectedChunks = new List<Vector3Int>();
 
-	public bool dirty = true;
-
 	public LightSource(float brightness, float colorTemp, Vector3 pos) : this(brightness, colorTemp)
 	{
 		UpdatePosition(pos);
@@ -37,7 +35,6 @@ public abstract class LightSource
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			dirty = true;
 			OnDirty();
 		}
 

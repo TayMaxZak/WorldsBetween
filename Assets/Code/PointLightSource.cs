@@ -24,7 +24,7 @@ public class PointLightSource : LightSource
 		affectedChunks.Clear();
 
 		// Find new chunks in range
-		float maxDistance = falloffFactor * brightness - 1;
+		float maxDistance = falloffFactor * brightness * 0.6f;
 
 		int chunkSize = World.GetChunkSize();
 
