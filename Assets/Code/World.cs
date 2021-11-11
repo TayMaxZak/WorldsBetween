@@ -20,6 +20,9 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private List<Noise> modifiers = new List<Noise>();
 
+	[SerializeField]
+	private GameObject waterSystem;
+
 	[Header("World Settings")]
 	[SerializeField]
 	private bool randomizeSeed = false;
@@ -81,6 +84,8 @@ public partial class World : MonoBehaviour
 
 		// Init timers
 		chunkGenTimer.Reset();
+
+		waterSystem.transform.position = new Vector3(player.transform.position.x, waterHeight, player.transform.position.z);
 
 		if (disable)
 			enabled = false;

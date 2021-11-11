@@ -408,28 +408,6 @@ Transform:
   m_Father: {fileID: 2035976869}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -16.72, y: -67.223, z: -39.832}
---- !u!1 &379496122 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 265787125046037239, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
-  m_PrefabInstance: {fileID: 265787125220469837}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &379496123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 379496122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isGlobal: 1
-  priority: 0
-  blendDistance: 0
-  weight: 0.231
-  sharedProfile: {fileID: 0}
 --- !u!1 &447050935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1197,6 +1175,7 @@ MonoBehaviour:
     offset: 13406.25
     strength: 0.1
     cutoff: 0
+  waterSystem: {fileID: 1369908092}
   randomizeSeed: 0
   seed: -752996949
   chunkSize: 16
@@ -1205,7 +1184,7 @@ MonoBehaviour:
   initialGenTime: 10
   chunkGenTimer:
     maxTime: 2
-  waterHeight: -50
+  waterHeight: 25
 --- !u!4 &1026022012
 Transform:
   m_ObjectHideFlags: 0
@@ -1705,6 +1684,11 @@ Transform:
   m_Father: {fileID: 1904163967}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1369908092 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 265787123884642097, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
+  m_PrefabInstance: {fileID: 265787125220469837}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1414371044
 GameObject:
   m_ObjectHideFlags: 0
@@ -2613,7 +2597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 265787123884642096, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 265787123884642096, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
       propertyPath: m_LocalPosition.z
