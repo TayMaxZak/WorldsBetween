@@ -65,7 +65,7 @@ public class ChunkGenerator
 		bool doChunkGen = chunkGenTimer.Expired();
 
 		if (doChunkGen)
-			chunkGenTimer.Reset(Mathf.Max(deltaTime, chunkGenTimer.maxTime));
+			chunkGenTimer.Reset(Mathf.Clamp(deltaTime, chunkGenTimer.maxTime, 1));
 
 		if (!doChunkGen)
 			return;

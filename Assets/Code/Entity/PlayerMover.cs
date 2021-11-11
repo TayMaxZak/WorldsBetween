@@ -59,8 +59,6 @@ public class PlayerMover : MonoBehaviour
 
 		cam.transform.position = Vector3.Lerp(lastActualPos, transform.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime) + Vector3.up;
 
-		World.WaterFollow(cam.transform);
-
 		moveTickTimer.Increment(Time.deltaTime);
 
 		if (moveTickTimer.Expired())
