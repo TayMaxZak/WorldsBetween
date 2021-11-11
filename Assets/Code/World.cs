@@ -23,6 +23,9 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private GameObject waterSystem;
 
+	[SerializeField]
+	private Sun sunObject;
+
 	[Header("World Settings")]
 	[SerializeField]
 	private bool randomizeSeed = false;
@@ -86,6 +89,12 @@ public partial class World : MonoBehaviour
 		chunkGenTimer.Reset();
 
 		waterSystem.transform.position = new Vector3(player.transform.position.x, waterHeight, player.transform.position.z);
+
+		if (sunObject)
+		{
+			sunObject.Init();
+			RegisterLight(sunObject.lightSource);
+		}
 
 		if (disable)
 			enabled = false;
@@ -276,6 +285,9 @@ public partial class World : MonoBehaviour
 
 	public static void RegisterLight(LightSource light)
 	{
+		if (Instance.sunObject && light != Instance.sunObject.lightSource)
+			UpdateLight(Instance.sunObject.lightSource, false);
+
 		light.FindAffectedChunks();
 
 		foreach (Vector3Int chunk in light.GetAffectedChunks())
@@ -304,22 +316,30 @@ public partial class World : MonoBehaviour
 
 	public static void UpdateLight(LightSource light, bool recalcLight)
 	{
+		if (Instance.sunObject && light != Instance.sunObject.lightSource)
+			UpdateLight(Instance.sunObject.lightSource, false);
+
 		List<Vector3Int> oldChunks = light.FindAffectedChunks();
 
-		foreach (Vector3Int chunk in oldChunks)
+		// Some lights do not track old chunks
+		if (oldChunks != null)
 		{
-			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
-
-			if (ls != null)
-				ls.Remove(light);
-
-			if (recalcLight)
+			foreach (Vector3Int chunk in oldChunks)
 			{
-				Chunk c = GetChunkFor(chunk);
-				if (c != null)
+				Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+
+				if (ls != null)
+					ls.Remove(light);
+
+				if (recalcLight)
 				{
-					c.QueueLightUpdate();
-					c.NeedsLightDataRecalc(light);
+					Chunk c = GetChunkFor(chunk);
+					if (c != null)
+					{
+						c.QueueLightUpdate();
+						if (light != Instance.sunObject.lightSource)
+							c.NeedsLightDataRecalc(light);
+					}
 				}
 			}
 		}
@@ -341,7 +361,8 @@ public partial class World : MonoBehaviour
 				if (c != null)
 				{
 					c.QueueLightUpdate();
-					c.NeedsLightDataRecalc(light);
+					if (light != Instance.sunObject.lightSource)
+						c.NeedsLightDataRecalc(light);
 				}
 			}
 		}
@@ -420,5 +441,10 @@ public partial class World : MonoBehaviour
 	public static int GetWaterHeight()
 	{
 		return Instance.waterHeight;
+	}
+
+	public static Dictionary<Vector3Int,LinkedList<LightSource>>.KeyCollection GetLitChunks()
+	{
+		return Instance.lightSources.Keys;
 	}
 }

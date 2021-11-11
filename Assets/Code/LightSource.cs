@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class LightSource
 {
+	[HideInInspector]
 	public int worldX, worldY, worldZ; // Coordinates in world space
 
 	protected int lastWorldX, lastWorldY, lastWorldZ; // Last coordinates in world space (to determine if dirty)
@@ -23,6 +24,12 @@ public abstract class LightSource
 	{
 		this.brightness = brightness;
 		this.colorTemp = colorTemp;
+	}
+
+	public LightSource()
+	{
+		affectedChunks = new List<Vector3Int>();
+		oldAffectedChunks = new List<Vector3Int>();
 	}
 
 	public abstract List<Vector3Int> FindAffectedChunks();

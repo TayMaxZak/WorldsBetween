@@ -11,6 +11,8 @@ public class PointLightSource : LightSource
 
 	public PointLightSource(float brightness, float colorTemp) : base(brightness, colorTemp) { }
 
+	public PointLightSource() : base() { }
+
 	public override List<Vector3Int> FindAffectedChunks()
 	{
 		// Remember and return old chunks
