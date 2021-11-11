@@ -54,8 +54,14 @@ public class ChunkMesh
 
 	public void SetVertexColors(Block block)
 	{
+		if (block.nearAir == 0)
+			block = block;
+
 		Vector3 meshPos;
 		Vector3Int vertexPos = new Vector3Int();
+		Vector3Int blockPos = new Vector3Int(block.localX, block.localY, block.localZ);
+
+		float roundingOffset = 0.5f;
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
@@ -70,7 +76,7 @@ public class ChunkMesh
 			vertexPos.z = Mathf.RoundToInt(meshPos.z + chunk.position.z);
 
 			// Block that's closest to this actual vertex
-			LightingData ld = GetLightingDataAt(vertexPos);
+			LightingData ld = GetLightingDataAt(vertexPos, new Vector3(roundingOffset + blockPos.x - meshPos.x, roundingOffset + blockPos.y - meshPos.y, roundingOffset + blockPos.z - meshPos.z));
 
 			// Convert brightness value to float
 			float lastBright = ld.avgBrightness / 255f;
@@ -100,7 +106,7 @@ public class ChunkMesh
 		//	ApplyVertexColors();
 	}
 
-	private LightingData GetLightingDataAt(Vector3Int pos)
+	private LightingData GetLightingDataAt(Vector3Int vertPos, Vector3 offsets)
 	{
 		Block adj;
 
@@ -108,14 +114,25 @@ public class ChunkMesh
 		float avgBrightness = 0;
 		float avgColorTemp = 0;
 
-		float offset = 0.5f;
+		Vector3Int posOff = new Vector3Int((int)(vertPos.x + offsets.x), (int)(vertPos.y + offsets.y), (int)(vertPos.z + offsets.z));
 
-		Vector3Int debugPosV = new Vector3Int(pos.x, pos.y, pos.z);
-		Vector3 debugPosB = new Vector3(pos.x + offset, pos.y + offset, pos.z + offset);
+		if (chunk.ContainsPos(posOff.x - chunk.position.x, posOff.y - chunk.position.x, posOff.z - chunk.position.x))
+			adj = chunk.GetBlock(posOff.x - chunk.position.x, posOff.y - chunk.position.y, posOff.z - chunk.position.z);
+		else
+			adj = World.GetBlockFor(posOff.x, posOff.y, posOff.z);
 
-		pos.x = (int)(pos.x + offset);
-		pos.y = (int)(pos.y + offset);
-		pos.z = (int)(pos.z + offset);
+		if (adj.nearAir == 0)
+			return new LightingData(255, 0.0f);
+
+		count++;
+		avgBrightness += adj.brightness;
+		avgColorTemp += adj.colorTemp;
+
+		// Prevent division by zero
+		if (count == 0)
+			count = count;
+
+		return new LightingData(avgBrightness / count, avgColorTemp / count);
 
 		for (int x = -1; x < 1; x++)
 		{
@@ -123,10 +140,10 @@ public class ChunkMesh
 			{
 				for (int z = -1; z < 1; z++)
 				{
-					if (chunk.ContainsPos(pos.x + x, pos.y + y, pos.z + z))
-						adj = chunk.GetBlock(pos.x + x - chunk.position.x, pos.y + y - chunk.position.y, pos.z + z - chunk.position.z);
+					if (chunk.ContainsPos(vertPos.x + x, vertPos.y + y, vertPos.z + z))
+						adj = chunk.GetBlock(vertPos.x + x - chunk.position.x, vertPos.y + y - chunk.position.y, vertPos.z + z - chunk.position.z);
 					else
-						adj = World.GetBlockFor(pos.x + x, pos.y + y, pos.z + z);
+						adj = World.GetBlockFor(vertPos.x + x, vertPos.y + y, vertPos.z + z);
 
 					if (adj.nearAir == 0)
 						continue;
@@ -137,39 +154,6 @@ public class ChunkMesh
 				}
 			}
 		}
-
-		// Try again?
-		if (count == 0)
-		{
-			pos.x = (int)(pos.x - 1);
-			pos.y = (int)(pos.y - 1);
-			pos.z = (int)(pos.z - 1);
-
-			for (int x = -1; x < 1; x++)
-			{
-				for (int y = -1; y < 1; y++)
-				{
-					for (int z = -1; z < 1; z++)
-					{
-						if (chunk.ContainsPos(pos.x + x, pos.y + y, pos.z + z))
-							adj = chunk.GetBlock(pos.x + x - chunk.position.x, pos.y + y - chunk.position.y, pos.z + z - chunk.position.z);
-						else
-							adj = World.GetBlockFor(pos.x + x, pos.y + y, pos.z + z);
-
-						if (adj.nearAir == 0)
-							continue;
-
-						count++;
-						avgBrightness += adj.brightness;
-						avgColorTemp += adj.colorTemp;
-					}
-				}
-			}
-		}
-
-		// Prevent division by zero
-		if (count == 0)
-			count++;
 
 		return new LightingData(avgBrightness / count, avgColorTemp / count);
 	}

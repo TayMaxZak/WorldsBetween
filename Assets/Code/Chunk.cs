@@ -320,10 +320,11 @@ public class Chunk
 				// Calculate shadows
 				if (bits == null)
 				{
-					shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), false));
+					shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), true));
 				}
 
-				bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
+				//bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
+				//bits.Set((1 - SeedlessRandom.NextFloat() * SeedlessRandom.NextFloat() * SeedlessRandom.NextFloat()) > 0.5, block.localX, block.localY, block.localZ);
 
 				// Get shadows
 				float mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
@@ -361,7 +362,9 @@ public class Chunk
 		{
 			counter++;
 
-			chunkMesh.SetVertexColors(block);
+			// Only update necessary blocks
+			if (block.nearAir > 0)
+				chunkMesh.SetVertexColors(block);
 		}
 
 		if (counter > 0)
@@ -390,6 +393,9 @@ public class Chunk
 
 	public Block GetBlock(int x, int y, int z)
 	{
+		if (!ContainsPos(x, y, z))
+			x = x;
+
 		return blocks[x, y, z];
 	}
 }

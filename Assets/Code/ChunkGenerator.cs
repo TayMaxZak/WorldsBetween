@@ -65,7 +65,7 @@ public class ChunkGenerator
 		bool doChunkGen = chunkGenTimer.Expired();
 
 		if (doChunkGen)
-			chunkGenTimer.Reset();
+			chunkGenTimer.Reset(Mathf.Max(deltaTime, chunkGenTimer.maxTime));
 
 		if (!doChunkGen)
 			return;
@@ -93,7 +93,7 @@ public class ChunkGenerator
 
 	private void FullUsageIterate()
 	{
-		float accelMult = World.DoAccelerateGen() ? 50 : 10;
+		float accelMult = 50;
 		int count = chunkQueue.Count;
 		int baseAttempts = Mathf.Min(count, Mathf.CeilToInt(chunksToHandle * accelMult));
 		int spareAttempts = Mathf.Min(count);

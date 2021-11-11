@@ -130,11 +130,27 @@ public partial class World : MonoBehaviour
 					// Add a random light to this chunk
 					if (Random.value < 0.2f)
 					{
-						for (int r = 0; r < Random.value * 5; r++)
+						for (int r = 0; r <= 5 + Random.value * 45; r++)
 						{
 							RegisterLight(new PointLightSource(
-								Random.Range(0.5f, 1.5f) * Random.Range(0.5f, 1.5f),
-								Random.Range(-2f, 2f),
+								Random.Range(0.4f, 0.7f),
+								Random.Range(-2f, 1f) + Random.Range(0f, 3f),
+								new Vector3(
+									chunkPos.x + Random.value * chunkSize,
+									chunkPos.y + Random.value * chunkSize,
+									chunkPos.z + Random.value * chunkSize)
+								)
+							);
+						}
+					}
+					else
+					if (Random.value < 0.1f)
+					{
+						for (int r = 0; r <= 1 + Random.value * 2; r++)
+						{
+							RegisterLight(new PointLightSource(
+								1.7f,
+								-0.7f,
 								new Vector3(
 									chunkPos.x + Random.value * chunkSize,
 									chunkPos.y + Random.value * chunkSize,
