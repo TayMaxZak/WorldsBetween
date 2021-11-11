@@ -312,7 +312,10 @@ public partial class World : MonoBehaviour
 			{
 				Chunk c = GetChunkFor(chunk);
 				if (c != null)
-					c.ClearLights();
+				{
+					c.QueueLightUpdate();
+					c.NeedsLightDataRecalc(light);
+				}
 			}
 		}
 
@@ -331,7 +334,10 @@ public partial class World : MonoBehaviour
 			{
 				Chunk c = GetChunkFor(chunk);
 				if (c != null)
-					c.ClearLights();
+				{
+					c.QueueLightUpdate();
+					c.NeedsLightDataRecalc(light);
+				}
 			}
 		}
 	}

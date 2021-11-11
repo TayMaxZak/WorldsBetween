@@ -9,8 +9,12 @@ public class ChunkBitArray
 
 	private readonly int size;
 
+	public bool needsCalc = true;
+
 	public ChunkBitArray(int dimension, bool value)
 	{
+		needsCalc = true;
+
 		size = dimension;
 		bits = new BitArray(size * size * size, value);
 		//for (int i = 0; i < bits.Length; i++)

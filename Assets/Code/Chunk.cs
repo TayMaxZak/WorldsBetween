@@ -323,8 +323,9 @@ public class Chunk
 					shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), true));
 				}
 
-				//bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
-				//bits.Set((1 - SeedlessRandom.NextFloat() * SeedlessRandom.NextFloat() * SeedlessRandom.NextFloat()) > 0.5, block.localX, block.localY, block.localZ);
+				// First time calculating for this block
+				if (bits.needsCalc)
+					bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
 
 				// Get shadows
 				float mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
@@ -351,6 +352,10 @@ public class Chunk
 			}
 		}
 
+		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in shadowBits)
+			entry.Value.needsCalc = false;
+
+
 		return counter;
 	}
 
@@ -372,7 +377,7 @@ public class Chunk
 	}
 	#endregion
 
-	public void ClearLights()
+	public void QueueLightUpdate()
 	{
 		if (isProcessing || genStage < GenStage.Meshed)
 			return;
@@ -383,6 +388,16 @@ public class Chunk
 
 		genStage = GenStage.Meshed;
 		World.QueueNextStage(this, false);
+	}
+
+	public void NeedsLightDataRecalc(LightSource light)
+	{
+		if (isProcessing || genStage < GenStage.Meshed)
+			return;
+
+		shadowBits.TryGetValue(light, out ChunkBitArray bits);
+		if (bits != null)
+			bits.needsCalc = false;
 	}
 
 	// Utility
