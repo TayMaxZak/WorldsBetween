@@ -1154,7 +1154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1026022011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1167,6 +1167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbc28df5073d7d47b394f4db71171fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disable: 1
   player: {fileID: 1129277323}
   chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
   modifiers:
@@ -2748,6 +2749,83 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3d3c5cd9902d004fa2da695ff8f4a4f, type: 3}
+--- !u!1001 &7899593666035602137
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7899593665628932642, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: testWorld
+      value: 
+      objectReference: {fileID: 1026022011}
+    - target: {fileID: 7899593665628932643, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_Name
+      value: FogHandler
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: underwater.start
+      value: -64
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: underwater.fogColor.b
+      value: 0.27450982
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: underwater.fogColor.g
+      value: 0.14094773
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
+      propertyPath: underwater.fogColor.r
+      value: 0.10588235
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
 --- !u!1001 &8417224533704127629
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2755,9 +2833,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8417224531919593866, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: far clip plane
-      value: 179.23
+    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder

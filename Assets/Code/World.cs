@@ -6,6 +6,8 @@ public partial class World : MonoBehaviour
 {
 	private static World Instance;
 
+	public bool disable = false;
+
 	[Header("References")]
 	[SerializeField]
 	private Transform player;
@@ -78,6 +80,9 @@ public partial class World : MonoBehaviour
 
 		// Init timers
 		chunkGenTimer.Reset();
+
+		if (disable)
+			enabled = false;
 	}
 
 	private void Start()

@@ -21,5 +21,10 @@ public partial class World : MonoBehaviour
 		{
 			return worldIn.generatorsUsed;
 		}
+
+		public static int GetWaterHeight(World worldIn)
+		{
+			return worldIn.waterHeight;
+		}
 	}
 }

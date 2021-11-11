@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7899593665628932643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7899593665628932644}
+  - component: {fileID: 7899593665628932645}
+  - component: {fileID: 7899593665628932642}
+  m_Layer: 0
+  m_Name: FogHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7899593665628932644
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899593665628932643}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7899593665628932645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899593665628932643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8dbc5ce7bccb264a96a26c8c58d33ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  init:
+    fogColor: {r: 0, g: 0, b: 0, a: 1}
+    start: 50
+    end: 200
+    skybox: {fileID: 2100000, guid: 77b87f08dc38c0343b1771184ea29785, type: 2}
+  underwater:
+    fogColor: {r: 0.10196077, g: 0.10592266, b: 0.28235295, a: 1}
+    start: 0
+    end: 64
+    skybox: {fileID: 2100000, guid: 4f6642ea9361e8c468baf87e22e7a74a, type: 2}
+--- !u!114 &7899593665628932642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899593665628932643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04f4b47a861c74547806a1c53f5be96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testHandler: {fileID: 7899593665628932645}
+  testWorld: {fileID: 0}

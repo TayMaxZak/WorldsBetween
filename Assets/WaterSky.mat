@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Water
-  m_Shader: {fileID: -6465566751694194690, guid: 3d0d3d04b8e90324c9a354d3d7993178, type: 3}
-  m_ShaderKeywords: UNITY_APPLY_FOG
+  m_Name: WaterSky
+  m_Shader: {fileID: 104, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _SUNDISK_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _BackTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -27,7 +31,31 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DownTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FrontTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LeftTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -43,40 +71,20 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_23691d0f192b4dfd986344679763412a_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 2c503adca3bf5464999c48538df03bb7, type: 3}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_fb015067b0ea4a568b6c3df95e602b4d_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_fc6c783166a84ebd8749d51a81417726_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2DLOD_fcf00caabc1345ab99f838ce763e4ddd_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 2c503adca3bf5464999c48538df03bb7, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_365163be33854b1396800d8d093b1476_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 71512b6ab6690504abbeb79ff92803fc, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_62943800aead413ba054c55b7fb188a3_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 4a233762e0d3cc5498d26c65d0ab8210, type: 3}
+    - _RightTex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Triplanar_095f9efcee5f4a7ab5282d0e9f2ff094_Texture_1:
-        m_Texture: {fileID: 2800000, guid: fd53a7e1e1b6295458c7d0d182c4c1ec, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Triplanar_f17d3690bc084e568a08e153693d0cf4_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 3485d1a66b5aa4c42bc2e52327bfb9b4, type: 3}
+    - _UpTex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -92,49 +100,48 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - PartialTime: 0
-    - Vector1_22f3ffb57c1e4ee9843d2639960961ff: 0.5
-    - Vector1_680218533ff24c0c9d75ba34967753fa: 0.5
-    - Vector1_82648bf1266f40a6b3d102de9b1f946b: 0.2
-    - Vector1_BE32BCCB: 0
-    - Vector1_a6011146fee84023ae2d22184638e49c: 130
-    - Vector1_a6011146fee84023ae2d22184638e49c_1: 6
-    - Vector1_a6011146fee84023ae2d22184638e49c_2: 0.06
-    - Vector1_a6011146fee84023ae2d22184638e49c_3: 0.0233
-    - Vector1_a6011146fee84023ae2d22184638e49c_4: 0.4
-    - Vector1_a6011146fee84023ae2d22184638e49c_5: 30
-    - Vector1_b4c3679be03544d2a3a84aec81500dfc: 64
     - _AlphaClip: 0
+    - _AtmosphereThickness: 0
     - _Blend: 0
     - _BumpScale: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _Exposure: 1.01
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
+    - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _Rotation: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SunDisk: 0
+    - _SunSize: 0.04
+    - _SunSizeConvergence: 5
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_7b83442e480847ab8819d34ecaeee29c: {r: 0.12736674, g: 0.097187616, b: 0.2264151, a: 1}
-    - Color_b3292922cb3b463ca09e901ebfb97e46: {r: 0.38803846, g: 0.66042835, b: 0.754717, a: 1}
-    - Color_b3292922cb3b463ca09e901ebfb97e46_1: {r: 0.8349056, g: 0.9607641, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GroundColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SkyTint: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _Tint: {r: 0.10588235, g: 0.14094773, b: 0.27450982, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &4172543627793422927
+--- !u!114 &4589125305659837157
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,4 +153,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 2
+  version: 4
