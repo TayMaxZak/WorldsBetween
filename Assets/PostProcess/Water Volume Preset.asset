@@ -86,30 +86,6 @@ MonoBehaviour:
     m_Value: 1
     min: 0.01
     max: 5
---- !u!114 &-2172621305154079721
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 221518ef91623a7438a71fef23660601, type: 3}
-  m_Name: WhiteBalance
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  temperature:
-    m_OverrideState: 1
-    m_Value: -10
-    min: -100
-    max: 100
-  tint:
-    m_OverrideState: 0
-    m_Value: 0
-    min: -100
-    max: 100
 --- !u!114 &-1597712036125542070
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -160,7 +136,7 @@ MonoBehaviour:
   - {fileID: -2842007661666113986}
   - {fileID: 2183639081204137322}
   - {fileID: -3179485117720069119}
-  - {fileID: -2172621305154079721}
+  - {fileID: 8250384655452044226}
 --- !u!114 &840394290189983625
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -528,3 +504,41 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
     min: 0
+--- !u!114 &8250384655452044226
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
+  m_Name: ColorAdjustments
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  postExposure:
+    m_OverrideState: 1
+    m_Value: -0.42
+  contrast:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -100
+    max: 100
+  colorFilter:
+    m_OverrideState: 1
+    m_Value: {r: 0.87277323, g: 1.102115, b: 1.2231566, a: 1}
+    hdr: 1
+    showAlpha: 0
+    showEyeDropper: 1
+  hueShift:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -180
+    max: 180
+  saturation:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -100
+    max: 100

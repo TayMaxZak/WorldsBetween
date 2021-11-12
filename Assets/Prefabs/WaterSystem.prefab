@@ -139,7 +139,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 265787125046037239}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 265787123884642096}
@@ -159,7 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGlobal: 0
   priority: 1
-  blendDistance: 0.8
+  blendDistance: 0.1
   weight: 1
   sharedProfile: {fileID: 11400000, guid: a8b0d4aed4dbd10468f89f44493e929b, type: 2}
 --- !u!65 &265787125046037238

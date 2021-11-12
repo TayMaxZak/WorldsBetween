@@ -46,7 +46,7 @@ public class WaterFogHandler : MonoBehaviour
 
 	public static bool InWater(Camera test, int waterHeight)
 	{
-		return test.transform.position.y <= waterHeight + 0.5f;
+		return test.transform.position.y <= waterHeight + 0.9f;
 	}
 
 	public static void SetSettings(WaterFogHandler handler, bool inWater)
