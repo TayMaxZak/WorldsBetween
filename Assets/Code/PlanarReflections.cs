@@ -206,6 +206,8 @@ namespace UnityEngine.Rendering.Universal
 			cameraData.requiresDepthOption = CameraOverrideOption.Off;
 			cameraData.SetRenderer(1);
 
+			cameraData.renderPostProcessing = false;
+
 			var t = transform;
 			var reflectionCamera = go.GetComponent<Camera>();
 			reflectionCamera.transform.SetPositionAndRotation(t.position, t.rotation);
