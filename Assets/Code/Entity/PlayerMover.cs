@@ -29,7 +29,7 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
-	private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
+	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Start()
 	{
@@ -124,7 +124,7 @@ public class PlayerMover : MonoBehaviour
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			flashlight.UpdatePosition(transform.position);
+			//flashlight.UpdatePosition(transform.position);
 		}
 
 		lastWorldX = worldX;

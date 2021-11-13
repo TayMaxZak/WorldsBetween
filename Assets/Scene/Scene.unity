@@ -2196,10 +2196,10 @@ MonoBehaviour:
     cutoff: 0
   waterSystem: {fileID: 1369908092}
   sunObject: {fileID: 2035213415}
-  randomizeSeed: 0
+  randomizeSeed: 1
   seed: -423858130
   chunkSize: 16
-  initialGenRange: 8
+  initialGenRange: 4
   nearPlayerGenRange: 10
   initialGenTime: 10
   chunkGenTimer:
@@ -4858,6 +4858,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8417224531880680240, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
       value: 7
