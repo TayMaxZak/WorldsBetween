@@ -21,6 +21,11 @@ public class SeedlessRandom : MonoBehaviour
 			Instance = this;
 	}
 
+	public static int NextInt()
+	{
+		return Instance.random.Next();
+	}
+
 	public static float NextFloat()
 	{
 		return (float)Instance.random.NextDouble();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class ChunkGenerator
 {
@@ -47,8 +48,10 @@ public class ChunkGenerator
 
 	public void Enqueue(Chunk chunk, float priority, bool useMultiQueue)
 	{
-		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
+		foreach (int i in Enumerable.Range(0, useMultiQueue ? chunkQueues.Count : 1).OrderBy(x => SeedlessRandom.NextInt()))
 		{
+			SimplePriorityQueue<Chunk> spq = chunkQueues[i];
+
 			// Check for duplicates, and try next queues if necessary
 			if (!spq.Contains(chunk))
 			{
