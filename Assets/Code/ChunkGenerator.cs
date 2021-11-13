@@ -15,7 +15,7 @@ public class ChunkGenerator
 	private bool busy = false;
 	//private bool wait = false;
 
-	private readonly SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
+	private readonly List<SimplePriorityQueue<Chunk>> chunkQueues = new List<SimplePriorityQueue<Chunk>>();
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
@@ -46,12 +46,22 @@ public class ChunkGenerator
 	{
 		this.cycleDelay = cycleDelay;
 		this.queueCount = queueCount;
+
+		for (int i = 0; i < queueCount; i++)
+			chunkQueues.Add(new SimplePriorityQueue<Chunk>());
 	}
 
 	public void Enqueue(Chunk chunk, float priority)
 	{
-		if (!chunkQueue.Contains(chunk)) // Avoid duplicates
-			chunkQueue.Enqueue(chunk, priority);
+		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
+		{
+			// Check for duplicates, and try next queues if necessary
+			if (!spq.Contains(chunk))
+			{
+				spq.Enqueue(chunk, priority);
+				return;
+			}
+		}
 	}
 
 	public void Generate()
@@ -71,11 +81,12 @@ public class ChunkGenerator
 	{
 		if (threadingMode == ThreadingMode.Background)
 		{
-			BackgroundIterate();
+			foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
+				BackgroundIterate(spq);
 		}
 	}
 
-	private async void BackgroundIterate()
+	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue)
 	{
 		busy = true;
 
@@ -83,7 +94,10 @@ public class ChunkGenerator
 		{
 			await Task.Delay(Mathf.CeilToInt(cycleDelay * 1000));
 
-			Chunk chunk = chunkQueue.Dequeue();
+			if (queue.Count <= 0)
+				break;
+
+			Chunk chunk = queue.Dequeue();
 
 			bool validAdj = true;
 			bool requiresAdj = requireAdjacents.Contains(chunk.genStage);
@@ -138,6 +152,7 @@ public class ChunkGenerator
 					}
 				}
 			}
+			// Unable to complete this chunk
 			else
 			{
 				// Update edge tracking
@@ -196,7 +211,12 @@ public class ChunkGenerator
 
 	public int GetSize()
 	{
-		return chunkQueue.Count - edgeChunks;
+		int total = 0;
+
+		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
+			total += spq.Count;
+
+		return total - edgeChunks;
 	}
 
 	public bool IsBusy()
