@@ -32,6 +32,9 @@ public class WorldEditor : Editor
 
 		//EditorGUILayout.EndFoldoutHeaderGroup();
 
+		if (!Application.isPlaying)
+			return;
+
 		World script = (World)target;
 
 		////////////////////
@@ -40,13 +43,13 @@ public class WorldEditor : Editor
 
 		EditorGUILayout.LabelField("World Size", EditorStyles.boldLabel);
 
-		EditorGUILayout.LabelField("Chunk count: ", World.WorldEditorInfo.GetChunkCount(script).ToString());
+		EditorGUILayout.LabelField("Chunk count: ", World.GetChunks().Count.ToString());
 
 		////////////////////
 		EditorGUILayout.Space();
 		////////////////////
 
-		EditorGUILayout.LabelField("Generators used: ", World.WorldEditorInfo.GetGeneratorsUsed(script).ToString());
+		EditorGUILayout.LabelField("Generators used: ", World.Generator.GeneratorsUsed().ToString());
 
 		////////////////////
 		EditorGUILayout.Space();
@@ -54,7 +57,7 @@ public class WorldEditor : Editor
 
 		EditorGUILayout.LabelField("Chunk Generators", EditorStyles.boldLabel);
 
-		var generators = World.WorldEditorInfo.GetChunkGenerators(script);
+		var generators = World.Generator.GetChunkGenerators();
 
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in generators)
 		{

@@ -19,9 +19,9 @@ public class DirectionalLightSource : LightSource
 
 	public DirectionalLightSource() : base() { }
 
-	public override List<Vector3Int> FindAffectedChunks()
+	public override List<Vector3Int> FindAffectedChunkCoords()
 	{
-		var keys = World.GetLitChunks();
+		var keys = World.GetLitChunkCoords();
 
 		affectedChunks.Clear();
 		foreach (Vector3Int key in keys)

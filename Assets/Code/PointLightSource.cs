@@ -13,7 +13,7 @@ public class PointLightSource : LightSource
 
 	public PointLightSource() : base() { }
 
-	public override List<Vector3Int> FindAffectedChunks()
+	public override List<Vector3Int> FindAffectedChunkCoords()
 	{
 		// Remember and return old chunks
 		oldAffectedChunks.Clear();

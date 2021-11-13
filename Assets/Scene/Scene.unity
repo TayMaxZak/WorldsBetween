@@ -2164,10 +2164,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbc28df5073d7d47b394f4db71171fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disable: 0
-  infinite: 0
-  player: {fileID: 1451397879}
-  chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
+  relativeOrigin: {fileID: 1451397879}
+  waterSystem: {fileID: 1369908092}
+  sunObject: {fileID: 2035213415}
   modifiers:
   - pos: {x: 0, y: 0, z: 0}
     scale: {x: 0.0001, y: 0.001, z: 0.0001}
@@ -2194,16 +2193,15 @@ MonoBehaviour:
     offset: 13406.25
     strength: 0.1
     cutoff: 0
-  waterSystem: {fileID: 1369908092}
-  sunObject: {fileID: 2035213415}
+  generator:
+    active: 0
+    chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
+    initialGenRange: 1
+    nearPlayerGenRange: 4
   randomizeSeed: 0
   seed: -1330000633
   chunkSize: 16
-  initialGenRange: 1
-  nearPlayerGenRange: 10
-  initialGenTime: 10
-  chunkGenTimer:
-    maxTime: 2
+  isInfinite: 0
   waterHeight: 0
 --- !u!4 &1026022012
 Transform:
@@ -3158,7 +3156,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1451397879}
   m_Layer: 0
-  m_Name: FakePlayer
+  m_Name: RelativeOrigin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

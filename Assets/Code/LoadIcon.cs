@@ -19,7 +19,7 @@ public class LoadIcon : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		bool shouldSpin = World.IsGen();
+		bool shouldSpin = World.Generator.IsGenerating();
 
 		group.alpha = shouldSpin ? 0.85f : 0;
 

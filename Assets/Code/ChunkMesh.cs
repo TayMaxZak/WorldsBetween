@@ -54,9 +54,6 @@ public class ChunkMesh
 
 	public void SetVertexColors(Block block)
 	{
-		if (block.nearAir == 0)
-			block = block;
-
 		Vector3 meshPos;
 		Vector3Int vertexPos = new Vector3Int();
 		Vector3Int blockPos = new Vector3Int(block.localX, block.localY, block.localZ);
@@ -140,12 +137,6 @@ public class ChunkMesh
 				}
 			}
 		}
-
-		// Prevent division by zero
-		if (count == 0)
-			count = count;
-		else
-			count = count;
 
 		return new LightingData(avgBrightness / count, avgColorTemp / count);
 	}

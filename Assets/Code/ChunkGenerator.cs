@@ -8,8 +8,7 @@ public class ChunkGenerator
 {
 	public enum ThreadingMode
 	{
-		Background,
-		FullUsage
+		Background
 	}
 
 	private static ThreadingMode threadingMode = ThreadingMode.Background;
@@ -21,7 +20,7 @@ public class ChunkGenerator
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
 	private readonly int chunksToHandle = 3;
-	private readonly Timer chunkGenTimer;
+	private readonly float cycleDelay;
 
 	private int edgeChunks = 0;
 
@@ -44,7 +43,7 @@ public class ChunkGenerator
 	public ChunkGenerator(int toHandle, float interval)
 	{
 		chunksToHandle = toHandle;
-		chunkGenTimer = new Timer(interval, 1);
+		cycleDelay = interval;
 	}
 
 	public void Enqueue(Chunk chunk, float priority)
@@ -60,105 +59,17 @@ public class ChunkGenerator
 			return;
 		}
 
-		chunkGenTimer.Increment(deltaTime);
-
-		bool doChunkGen = chunkGenTimer.Expired();
-
-		if (doChunkGen)
-			chunkGenTimer.Reset(Mathf.Clamp(deltaTime, chunkGenTimer.maxTime, 1));
-
-		if (!doChunkGen)
-			return;
-
 		IterateQueue();
 
 		while (reQueue.Count > 0)
-			World.QueueNextStage(reQueue.Dequeue(), true);
+			World.Generator.QueueNextStage(reQueue.Dequeue(), true);
 	}
 
 	private void IterateQueue()
 	{
-		if (threadingMode == ThreadingMode.FullUsage)
-		{
-			// Never busy in this mode
-			busy = false;
-
-			FullUsageIterate();
-		}
-		else if (threadingMode == ThreadingMode.Background)
+		if (threadingMode == ThreadingMode.Background)
 		{
 			BackgroundIterate();
-		}
-	}
-
-	private void FullUsageIterate()
-	{
-		float accelMult = 50;
-		int count = chunkQueue.Count;
-		int baseAttempts = Mathf.Min(count, Mathf.CeilToInt(chunksToHandle * accelMult));
-		int spareAttempts = Mathf.Min(count);
-
-		for (int i = 0; i < baseAttempts; i++)
-		{
-			Chunk chunk = chunkQueue.Dequeue();
-
-			bool validAdj = true;
-			bool requiresAdj = requireAdjacents.Contains(chunk.genStage);
-
-			// Check if neighboring chunks are ready yet
-			if (requiresAdj)
-			{
-				for (int d = 0; d < directions.Length; d++)
-				{
-					// Try every orthagonal direction
-					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
-					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage || chunk.isProcessing)
-					{
-						if (adj != null || World.IsInfinite())
-						{
-							validAdj = false;
-							break;
-						}
-						else
-						{
-							continue;
-						}
-					}
-				}
-			}
-
-			// Either doesn't care about adjacents or has adjacents
-			if (!requiresAdj || validAdj)
-			{
-				// Update edge tracking
-				if (chunk.atEdge)
-					edgeChunks--;
-				chunk.atEdge = false;
-
-				if (!chunk.isProcessing)
-					ProcessChunk(chunk);
-			}
-			else
-			{
-				// Update edge tracking
-				if (!chunk.atEdge)
-				{
-					edgeChunks++;
-					chunk.atEdge = true;
-				}
-
-				reQueue.Enqueue(chunk);
-
-				// Keep trying to find a non-edge chunk (if it makes sense to do so)
-				// Do we have spare attempts left?
-				// Is the queue still non empty after we do the remaining attempts? (remaining attempts = base attempts - current i)
-				if (spareAttempts > 0 && chunkQueue.Count - (baseAttempts - i) >= 0)
-				{
-					spareAttempts--;
-					i--;
-				}
-			}
 		}
 	}
 
@@ -173,6 +84,8 @@ public class ChunkGenerator
 			{
 				await Task.Yield();
 			}
+
+			await Task.Delay(Mathf.CeilToInt(cycleDelay * 1000));
 
 			Chunk chunk = chunkQueue.Dequeue();
 
@@ -254,7 +167,7 @@ public class ChunkGenerator
 					chunk.Init(World.GetChunkSize());
 
 					chunk.genStage = Chunk.GenStage.Allocated;
-					World.QueueNextStage(chunk);
+					World.Generator.QueueNextStage(chunk);
 				}
 				break;
 			case Chunk.GenStage.Allocated: // Generate terrain
@@ -269,6 +182,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights
 				{
+					World.AddSunlight(chunk);
 					chunk.AsyncCalcLight();
 				}
 				break;
@@ -277,7 +191,7 @@ public class ChunkGenerator
 					chunk.UpdateLightVisuals();
 
 					chunk.genStage = Chunk.GenStage.Ready;
-					World.QueueNextStage(chunk);
+					World.Generator.QueueNextStage(chunk);
 				}
 				break;
 		}
@@ -301,10 +215,5 @@ public class ChunkGenerator
 	public int GetEdgeChunks()
 	{
 		return edgeChunks;
-	}
-
-	public static void SetThreadingMode(ThreadingMode newMode)
-	{
-		threadingMode = newMode;
 	}
 }

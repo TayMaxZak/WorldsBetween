@@ -6,19 +6,9 @@ public partial class World : MonoBehaviour
 {
 	private static World Instance;
 
-	public bool disable = false;
-	public bool infinite = true;
-
 	[Header("References")]
 	[SerializeField]
-	private Transform player;
-
-	[SerializeField]
-	private ChunkGameObject chunkPrefab;
-	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
-
-	[SerializeField]
-	private List<Noise> modifiers = new List<Noise>();
+	private Transform relativeOrigin;
 
 	[SerializeField]
 	private GameObject waterSystem;
@@ -26,7 +16,18 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private Sun sunObject;
 
-	[Header("World Settings")]
+	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
+
+	[SerializeField]
+	private List<Noise> modifiers = new List<Noise>();
+
+	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
+
+	[SerializeField]
+	private WorldGenerator generator;
+	public static WorldGenerator Generator;
+
+	[Header("General Settings")]
 	[SerializeField]
 	private bool randomizeSeed = false;
 	[SerializeField]
@@ -34,26 +35,9 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private int chunkSize = 8;
 
-	[Header("Generation")]
-	[SerializeField]
-	private int initialGenRange = 11;
-	[SerializeField]
-	private int nearPlayerGenRange = 4;
-	[SerializeField]
-	private float initialGenTime = 10;
+	public bool isInfinite = true;
 
-	[SerializeField]
-	private Timer chunkGenTimer = null;
-
-	private bool firstChunks = true;
-	private int generatorsUsed = 0;
-	private int chunksToGen = 0;
-
-	private GameObject chunkRoot;
-	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
-	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
-
-	[Header("Level Settings")]
+	[Header("World Settings")]
 	[SerializeField]
 	private int waterHeight = 0;
 
@@ -73,123 +57,32 @@ public partial class World : MonoBehaviour
 			seed = Random.Range(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
-		// Init dictionaries
-		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
-		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(50, 0.01f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(50, 0.01f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, 0.01f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(50, 0.01f) },
-		};
-
 		foreach (Noise mod in modifiers)
 			mod.Init();
 
-		// Init timers
-		chunkGenTimer.Reset();
+		Generator = generator;
+		Generator.Init();
 
-		if (player)
-			WaterFollow(player);
+		// Scene objects
+		if (relativeOrigin)
+			WaterFollow(relativeOrigin);
 
 		if (sunObject)
 		{
 			sunObject.Init();
 			RegisterLight(sunObject.lightSource);
 		}
-
-		chunkRoot = new GameObject();
-		chunkRoot.name = "Chunks";
-
-		if (disable)
-			enabled = false;
 	}
 
 	private void Start()
 	{
 		// First batch of chunks
-		CreateChunksNearPlayer(initialGenRange);
-
-		firstChunks = false;
+		Generator.InitialGen();
 	}
 
-	private void CreateChunksNearPlayer(int range)
+	private void Update()
 	{
-		// TODO: Reuse grid of chunks instead of instantiating new ones
-
-		// Change range to actual distance
-		range *= chunkSize;
-
-		// Start pos in chunk coordinates
-		Vector3Int startPos = new Vector3Int(
-			Mathf.FloorToInt(player.position.x / chunkSize) * chunkSize,
-			Mathf.FloorToInt(player.position.y / chunkSize) * chunkSize,
-			Mathf.FloorToInt(player.position.z / chunkSize) * chunkSize
-		);
-
-		// Go through all nearby chunk positions
-		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
-		{
-			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize) // TODO: Remove testing code
-			{
-				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
-				{
-					Vector3Int chunkPos = new Vector3Int(x, y, z);
-
-					// Chunk already exists at this location
-					if (chunks.ContainsKey(chunkPos))
-						continue;
-
-					// Instantiate chunk GameObject
-					ChunkGameObject chunkGO = Instantiate(chunkPrefab, chunkPos, Quaternion.identity, chunkRoot.transform);
-					chunkGO.name = "Chunk " + x + ", " + y + ", " + z;
-
-					// Initialize and register chunk
-					chunkGO.data = new Chunk();
-					chunkGO.data.SetPos(chunkPos);
-
-					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter, chunkGO.blockMesh);
-
-					chunks.Add(chunkPos, chunkGO.data);
-
-					// Add a random light to this chunk
-					if (Random.value < 0.2f)
-					{
-						for (int r = 0; r <= 5 + Random.value * 45; r++)
-						{
-							RegisterLight(new PointLightSource(
-								Random.Range(0.4f, 0.7f),
-								Random.Range(-2f, 1f) + Random.Range(0f, 3f),
-								new Vector3(
-									chunkPos.x + Random.value * chunkSize,
-									chunkPos.y + Random.value * chunkSize,
-									chunkPos.z + Random.value * chunkSize)
-								)
-							);
-						}
-					}
-					else
-					if (Random.value < 0.1f)
-					{
-						for (int r = 0; r <= 1 + Random.value * 2; r++)
-						{
-							RegisterLight(new PointLightSource(
-								1.7f,
-								-0.7f,
-								new Vector3(
-									chunkPos.x + Random.value * chunkSize,
-									chunkPos.y + Random.value * chunkSize,
-									chunkPos.z + Random.value * chunkSize)
-								)
-							);
-						}
-					}
-
-					// Add chunk to generator
-					QueueNextStage(chunkGO.data);
-				}
-			}
-		}
+		Generator.ContinueGenerating();
 	}
 
 	public static void RegisterModifier(Noise modifier)
@@ -207,90 +100,9 @@ public partial class World : MonoBehaviour
 		return Instance.modifiers;
 	}
 
-	private void Update()
-	{
-		if (firstChunks)
-			return;
-
-		generatorsUsed = 0;
-		chunksToGen = 0;
-
-		// Update chunk generators
-		if (DoAccelerateGen())
-			ChunkGenerator.SetThreadingMode(ChunkGenerator.ThreadingMode.FullUsage);
-		else
-			ChunkGenerator.SetThreadingMode(ChunkGenerator.ThreadingMode.Background);
-
-		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
-		{
-			Instance.chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
-
-			bool empty = entry.Key == Chunk.GenStage.Empty;
-
-			// Only make new empty chunks if empty queue is empty
-			if (empty && entry.Value.GetSize() == 0)
-				UpdateChunkCreation();
-
-			chunksToGen += entry.Value.GetSize();
-
-			// Wait until previous queue is wrapped up
-			if (empty || (prev.GetSize() < entry.Value.GetSize()))
-			{
-				if (!empty || entry.Value.IsBusy())
-					generatorsUsed++;
-
-				// Don't overload number of generators
-				if (generatorsUsed <= 2)
-				{
-					entry.Value.Generate(Time.deltaTime);
-
-					entry.Value.SetWait(false);
-				}
-				else
-				{
-					entry.Value.SetWait(true);
-				}
-			}
-		}
-	}
-
 	public static void WaterFollow(Transform t)
 	{
 		Instance.waterSystem.transform.position = new Vector3(t.position.x, Instance.waterHeight, t.position.z);
-	}
-
-	private void UpdateChunkCreation()
-	{
-		if (!infinite)
-			return;
-
-		chunkGenTimer.Increment(Time.deltaTime);
-
-		if (chunkGenTimer.Expired())
-			chunkGenTimer.Reset();
-		else
-			return;
-
-		if (DoAccelerateGen())
-			CreateChunksNearPlayer(initialGenRange);
-		else
-			CreateChunksNearPlayer(nearPlayerGenRange);
-	}
-
-	public static void QueueNextStage(Chunk chunk)
-	{
-		QueueNextStage(chunk, false);
-	}
-
-	public static void QueueNextStage(Chunk chunk, bool penalize)
-	{
-		Instance.chunkGenerators.TryGetValue(chunk.genStage, out ChunkGenerator generator);
-
-		if (generator == null)
-			return;
-
-		// Add to appropriate queue. Closer chunks have higher priority (lower value)
-		generator.Enqueue(chunk, (penalize ? 128 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * Instance.chunkSize / 2f) - Instance.player.transform.position));
 	}
 
 	public static void RegisterLight(LightSource light)
@@ -298,15 +110,15 @@ public partial class World : MonoBehaviour
 		if (Instance.sunObject && light != Instance.sunObject.lightSource)
 			UpdateLight(Instance.sunObject.lightSource, false);
 
-		light.FindAffectedChunks();
+		light.FindAffectedChunkCoords();
 
-		foreach (Vector3Int chunk in light.GetAffectedChunks())
+		foreach (Vector3Int coord in light.GetAffectedChunkCoords())
 		{
-			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+			Instance.lightSources.TryGetValue(coord, out LinkedList<LightSource> ls);
 
 			// First light added to this chunk
 			if (ls == null)
-				Instance.lightSources.Add(chunk, ls = new LinkedList<LightSource>());
+				Instance.lightSources.Add(coord, ls = new LinkedList<LightSource>());
 
 			if (!ls.Contains(light))
 				ls.AddLast(light);
@@ -315,9 +127,9 @@ public partial class World : MonoBehaviour
 
 	public static void RemoveLight(LightSource light)
 	{
-		foreach (Vector3Int chunk in light.GetAffectedChunks())
+		foreach (Vector3Int coord in light.GetAffectedChunkCoords())
 		{
-			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+			Instance.lightSources.TryGetValue(coord, out LinkedList<LightSource> ls);
 
 			if (ls != null)
 				ls.Remove(light);
@@ -329,53 +141,71 @@ public partial class World : MonoBehaviour
 		if (Instance.sunObject && light != Instance.sunObject.lightSource)
 			UpdateLight(Instance.sunObject.lightSource, false);
 
-		List<Vector3Int> oldChunks = light.FindAffectedChunks();
+		List<Vector3Int> oldChunks = light.FindAffectedChunkCoords();
 
 		// Some lights do not track old chunks
 		if (oldChunks != null)
 		{
-			foreach (Vector3Int chunk in oldChunks)
+			foreach (Vector3Int coord in oldChunks)
 			{
-				Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+				Instance.lightSources.TryGetValue(coord, out LinkedList<LightSource> ls);
 
 				if (ls != null)
 					ls.Remove(light);
 
 				if (recalcLight)
 				{
-					Chunk c = GetChunkFor(chunk);
-					if (c != null)
+					Chunk chunk = GetChunkFor(coord);
+					if (chunk != null)
 					{
-						c.QueueLightUpdate();
+						chunk.QueueLightUpdate();
 						if (light != Instance.sunObject.lightSource)
-							c.NeedsLightDataRecalc(light);
+							chunk.NeedsLightDataRecalc(light);
 					}
 				}
 			}
 		}
 
-		foreach (Vector3Int chunk in light.GetAffectedChunks())
+		foreach (Vector3Int coord in light.GetAffectedChunkCoords())
 		{
-			Instance.lightSources.TryGetValue(chunk, out LinkedList<LightSource> ls);
+			Instance.lightSources.TryGetValue(coord, out LinkedList<LightSource> ls);
 
 			// First light added to this chunk
 			if (ls == null)
-				Instance.lightSources.Add(chunk, ls = new LinkedList<LightSource>());
+				Instance.lightSources.Add(coord, ls = new LinkedList<LightSource>());
 
 			if (!ls.Contains(light))
 				ls.AddLast(light);
 
 			if (recalcLight)
 			{
-				Chunk c = GetChunkFor(chunk);
-				if (c != null)
+				Chunk chunk = GetChunkFor(coord);
+				if (chunk != null)
 				{
-					c.QueueLightUpdate();
+					chunk.QueueLightUpdate();
 					if (light != Instance.sunObject.lightSource)
-						c.NeedsLightDataRecalc(light);
+						chunk.NeedsLightDataRecalc(light);
 				}
 			}
 		}
+	}
+
+	public static void AddSunlight(Chunk newChunk)
+	{
+		if (!Instance.sunObject)
+			return;
+
+		LightSource sun = Instance.sunObject.lightSource;
+		Vector3Int coord = newChunk.position;
+
+		Instance.lightSources.TryGetValue(coord, out LinkedList<LightSource> ls);
+
+		// First light added to this chunk
+		if (ls == null)
+			Instance.lightSources.Add(coord, ls = new LinkedList<LightSource>());
+
+		if (!ls.Contains(sun))
+			ls.AddLast(sun);
 	}
 
 	public static LinkedList<LightSource> GetLightsFor(Chunk chunk)
@@ -428,24 +258,24 @@ public partial class World : MonoBehaviour
 		return Instance.chunkSize;
 	}
 
-	public static bool DoAccelerateGen()
+	public static Transform GetRelativeOrigin()
 	{
-		return Time.time < Instance.initialGenTime;
+		return Instance.relativeOrigin;
+	}
+
+	public static Dictionary<Vector3Int, Chunk> GetChunks()
+	{
+		return Instance.chunks;
+	}
+
+	public static Dictionary<Vector3Int, LinkedList<LightSource>>.KeyCollection GetLitChunkCoords()
+	{
+		return Instance.lightSources.Keys;
 	}
 
 	public static bool IsInfinite()
 	{
-		return Instance.infinite;
-	}
-
-	public static bool IsGen()
-	{
-		return Instance.generatorsUsed > 0;
-	}
-
-	public static int ChunksToGen()
-	{
-		return Instance.chunksToGen;
+		return Instance.isInfinite;
 	}
 
 	public static int GetWaterHeight()
@@ -453,15 +283,16 @@ public partial class World : MonoBehaviour
 		return Instance.waterHeight;
 	}
 
-	public static Dictionary<Vector3Int,LinkedList<LightSource>>.KeyCollection GetLitChunks()
+	// TODO: Clean up
+	public static int GetWaterHeight(World worldIn)
 	{
-		return Instance.lightSources.Keys;
+		return worldIn.waterHeight;
 	}
 
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
-		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + initialGenRange * 2) * chunkSize);
+		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + generator.GetRange() * 2) * chunkSize);
 	}
 }

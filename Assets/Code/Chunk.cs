@@ -91,7 +91,7 @@ public class Chunk
 			CacheNearAir();
 
 			genStage = GenStage.Generated;
-			World.QueueNextStage(this);
+			World.Generator.QueueNextStage(this);
 		});
 
 		bw.RunWorkerAsync();
@@ -221,7 +221,7 @@ public class Chunk
 			chunkMesh.FinishMesh(newMesh);
 
 			genStage = GenStage.Meshed;
-			World.QueueNextStage(this);
+			World.Generator.QueueNextStage(this);
 		});
 
 		bw.RunWorkerAsync();
@@ -259,7 +259,7 @@ public class Chunk
 			isProcessing = false;
 
 			genStage = GenStage.Lit;
-			World.QueueNextStage(this);
+			World.Generator.QueueNextStage(this);
 		});
 
 		bw.RunWorkerAsync();
@@ -387,7 +387,7 @@ public class Chunk
 		//chunkMesh.ResetColors();
 
 		genStage = GenStage.Meshed;
-		World.QueueNextStage(this, false);
+		World.Generator.QueueNextStage(this, false);
 	}
 
 	public void NeedsLightDataRecalc(LightSource light)
@@ -408,9 +408,6 @@ public class Chunk
 
 	public Block GetBlock(int x, int y, int z)
 	{
-		if (!ContainsPos(x, y, z))
-			x = x;
-
 		return blocks[x, y, z];
 	}
 }

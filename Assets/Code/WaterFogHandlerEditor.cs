@@ -21,7 +21,7 @@ public class WaterFogHandlerEditor : MonoBehaviour
 			// If ANY scene is underwater, set underwater settings
 			foreach (SceneView sc in SceneView.sceneViews)
 			{
-				if (WaterFogHandler.InWater(sc.camera, World.WorldEditorInfo.GetWaterHeight(testWorld)))
+				if (WaterFogHandler.InWater(sc.camera, World.GetWaterHeight(testWorld)))
 				{
 					inWater = true;
 					break;

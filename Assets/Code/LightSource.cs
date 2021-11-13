@@ -32,7 +32,7 @@ public abstract class LightSource
 		oldAffectedChunks = new List<Vector3Int>();
 	}
 
-	public abstract List<Vector3Int> FindAffectedChunks();
+	public abstract List<Vector3Int> FindAffectedChunkCoords();
 
 	public void UpdatePosition(Vector3 newPos)
 	{
@@ -64,7 +64,7 @@ public abstract class LightSource
 
 	public abstract float GetColorOpacityAt(Chunk chunk, float value, bool inWater);
 
-	public List<Vector3Int> GetAffectedChunks()
+	public List<Vector3Int> GetAffectedChunkCoords()
 	{
 		return affectedChunks;
 	}
