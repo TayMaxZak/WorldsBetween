@@ -89,7 +89,8 @@ public partial class World : MonoBehaviour
 		// Init timers
 		chunkGenTimer.Reset();
 
-		WaterFollow(player);
+		if (player)
+			WaterFollow(player);
 
 		if (sunObject)
 		{
@@ -455,5 +456,12 @@ public partial class World : MonoBehaviour
 	public static Dictionary<Vector3Int,LinkedList<LightSource>>.KeyCollection GetLitChunks()
 	{
 		return Instance.lightSources.Keys;
+	}
+
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.color = Utils.colorDarkGrayBlue;
+
+		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + initialGenRange * 2) * chunkSize);
 	}
 }
