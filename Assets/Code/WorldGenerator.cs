@@ -6,6 +6,7 @@ using UnityEngine;
 public class WorldGenerator
 {
 	public bool active = true;
+	public bool multiQ = false;
 
 	[Header("References")]
 	[SerializeField]
@@ -58,36 +59,17 @@ public class WorldGenerator
 
 		chunksToGen = 0;
 		generatorsUsed = 0;
-		
+
 
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
-			chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
-
-			bool empty = entry.Key == Chunk.GenStage.Empty;
-
 			chunksToGen += entry.Value.GetSize();
 
-			// Wait until previous queue is wrapped up
-			//if (empty || (prev.GetSize() < entry.Value.GetSize()))
-			//{
-				if (!empty && entry.Value.IsBusy())
-					generatorsUsed++;
+			bool empty = entry.Key == Chunk.GenStage.Empty;
+			if (!empty && entry.Value.IsBusy())
+				generatorsUsed++;
 
-				entry.Value.Generate();
-
-				//// Don't overload number of generators
-				//if (generatorsUsed <= 2)
-				//{
-				//	entry.Value.Generate(Time.deltaTime);
-
-				//	entry.Value.SetWait(false);
-				//}
-				//else
-				//{
-				//	entry.Value.SetWait(true);
-				//}
-			//}
+			entry.Value.Generate();
 		}
 	}
 
@@ -199,7 +181,8 @@ public class WorldGenerator
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority (lower value)
-		generator.Enqueue(chunk, (requeue ? -16 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position));
+		float priority = (requeue ? -4 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position);
+		generator.Enqueue(chunk, priority, multiQ);
 	}
 
 	public int GetRange()

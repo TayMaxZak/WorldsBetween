@@ -6,20 +6,10 @@ using System.Threading.Tasks;
 
 public class ChunkGenerator
 {
-	public enum ThreadingMode
-	{
-		Background
-	}
-
-	private static ThreadingMode threadingMode = ThreadingMode.Background;
-	private bool busy = false;
-	//private bool wait = false;
-
 	private readonly List<SimplePriorityQueue<Chunk>> chunkQueues = new List<SimplePriorityQueue<Chunk>>();
+	private readonly Dictionary<SimplePriorityQueue<Chunk>,bool> busy = new Dictionary<SimplePriorityQueue<Chunk>, bool>();
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
-
-	private readonly int queueCount = 1;
 
 	private readonly float cycleDelay;
 	private readonly int penaltyDelay = 5; // In ms
@@ -45,13 +35,17 @@ public class ChunkGenerator
 	public ChunkGenerator(float cycleDelay, int queueCount)
 	{
 		this.cycleDelay = cycleDelay;
-		this.queueCount = queueCount;
 
 		for (int i = 0; i < queueCount; i++)
-			chunkQueues.Add(new SimplePriorityQueue<Chunk>());
+		{
+			SimplePriorityQueue<Chunk> spq = new SimplePriorityQueue<Chunk>();
+
+			chunkQueues.Add(spq);
+			busy.Add(spq, false);
+		}
 	}
 
-	public void Enqueue(Chunk chunk, float priority)
+	public void Enqueue(Chunk chunk, float priority, bool useMultiQueue)
 	{
 		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
 		{
@@ -61,34 +55,29 @@ public class ChunkGenerator
 				spq.Enqueue(chunk, priority);
 				return;
 			}
+
+			// Only try first queue
+			if (!useMultiQueue)
+				return;
 		}
 	}
 
 	public void Generate()
 	{
-		if (threadingMode == ThreadingMode.Background && busy)
+		// Only allow generate non-busy queues
+		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
 		{
-			return;
+			if (!busy[spq])
+				BackgroundIterate(spq);
 		}
-
-		IterateQueue();
 
 		while (reQueue.Count > 0)
 			World.Generator.QueueNextStage(reQueue.Dequeue(), true);
 	}
 
-	private void IterateQueue()
-	{
-		if (threadingMode == ThreadingMode.Background)
-		{
-			foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
-				BackgroundIterate(spq);
-		}
-	}
-
 	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue)
 	{
-		busy = true;
+		busy[queue] = true;
 
 		while (GetSize() > 0)
 		{
@@ -169,7 +158,7 @@ public class ChunkGenerator
 			}
 		}
 
-		busy = false;
+		busy[queue] = false;
 	}
 
 	private void ProcessChunk(Chunk chunk)
@@ -221,7 +210,12 @@ public class ChunkGenerator
 
 	public bool IsBusy()
 	{
-		return threadingMode == ThreadingMode.Background && busy;
+		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
+		{
+			if (busy[spq])
+				return true;
+		}
+		return false;
 	}
 
 	public int GetEdgeChunks()
