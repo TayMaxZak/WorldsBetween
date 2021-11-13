@@ -30,11 +30,11 @@ public class WorldGenerator
 		float delay = 0;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(delay) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(delay) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(delay) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(delay) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(delay) },
+			{ Chunk.GenStage.Empty, new ChunkGenerator(delay, 2) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(delay, 1) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(delay, 1) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(delay, 1) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(delay, 1) },
 		};
 
 		chunkGenTimer.Reset();
@@ -74,7 +74,7 @@ public class WorldGenerator
 				if (!empty && entry.Value.IsBusy())
 					generatorsUsed++;
 
-				entry.Value.Generate(Time.deltaTime);
+				entry.Value.Generate();
 
 				//// Don't overload number of generators
 				//if (generatorsUsed <= 2)
@@ -191,7 +191,7 @@ public class WorldGenerator
 		QueueNextStage(chunk, false);
 	}
 
-	public void QueueNextStage(Chunk chunk, bool penalize)
+	public void QueueNextStage(Chunk chunk, bool requeue)
 	{
 		chunkGenerators.TryGetValue(chunk.genStage, out ChunkGenerator generator);
 
@@ -199,7 +199,7 @@ public class WorldGenerator
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority (lower value)
-		generator.Enqueue(chunk, (penalize ? 256 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position));
+		generator.Enqueue(chunk, (requeue ? -16 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position));
 	}
 
 	public int GetRange()

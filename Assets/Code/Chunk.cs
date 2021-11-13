@@ -233,7 +233,7 @@ public class Chunk
 	}
 	#endregion
 
-	#region Light
+	#region Light Calc
 	public void AsyncCalcLight()
 	{
 		BkgThreadCalcLight(this, System.EventArgs.Empty);
@@ -358,22 +358,52 @@ public class Chunk
 
 		return counter;
 	}
+	#endregion
 
-	public void UpdateLightVisuals()
+	#region Light Visuals
+	public void AsyncLightVisuals()
 	{
-		int counter = 0;
+		BkgThreadLightVisuals(this, System.EventArgs.Empty);
+	}
 
+	private void BkgThreadLightVisuals(object sender, System.EventArgs e)
+	{
+		isProcessing = true;
+
+		BackgroundWorker bw = new BackgroundWorker();
+
+		// What to do in the background thread
+		bw.DoWork += new DoWorkEventHandler(
+		delegate (object o, DoWorkEventArgs args)
+		{
+			args.Result = UpdateLightVisuals();
+		});
+
+		// What to do when worker completes its task
+		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+		delegate (object o, RunWorkerCompletedEventArgs args)
+		{
+			isProcessing = false;
+
+			chunkMesh.ApplyVertexColors((Color[])args.Result);
+
+			genStage = GenStage.Ready;
+			World.Generator.QueueNextStage(this);
+		});
+
+		bw.RunWorkerAsync();
+	}
+
+	private Color[] UpdateLightVisuals()
+	{
 		foreach (Block block in blocks)
 		{
-			counter++;
-
 			// Only update necessary blocks
 			if (block.nearAir > 0)
 				chunkMesh.SetVertexColors(block);
 		}
 
-		if (counter > 0)
-			chunkMesh.ApplyVertexColors();
+		return chunkMesh.GetVertexColors();
 	}
 	#endregion
 

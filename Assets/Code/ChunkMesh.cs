@@ -15,7 +15,7 @@ public class ChunkMesh
 
 	// Save for later
 	private Vector3[] sharedVertices;
-	private Color[] colors;
+	private Color[] vertexColors;
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
 													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
@@ -40,12 +40,12 @@ public class ChunkMesh
 		return filter.sharedMesh;
 	}
 
-	public struct LightingData
+	public struct LightingSample
 	{
 		public float avgBrightness;
 		public float avgColorTemp;
 
-		public LightingData(float avgBrightness, float avgColorTemp)
+		public LightingSample(float avgBrightness, float avgColorTemp)
 		{
 			this.avgBrightness = avgBrightness;
 			this.avgColorTemp = avgColorTemp;
@@ -73,7 +73,7 @@ public class ChunkMesh
 			vertexPos.z = Mathf.RoundToInt(meshPos.z + chunk.position.z);
 
 			// Block that's closest to this actual vertex
-			LightingData ld = GetLightingDataAt(vertexPos, new Vector3(roundingOffset + blockPos.x - meshPos.x, roundingOffset + blockPos.y - meshPos.y, roundingOffset + blockPos.z - meshPos.z));
+			LightingSample ld = SampleLightingAt(vertexPos, new Vector3(roundingOffset + blockPos.x - meshPos.x, roundingOffset + blockPos.y - meshPos.y, roundingOffset + blockPos.z - meshPos.z));
 
 			// Convert brightness value to float
 			float lastBright = ld.avgBrightness / 255f;
@@ -90,7 +90,7 @@ public class ChunkMesh
 			float newColorTemp = ld.avgColorTemp / 255f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
-			colors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
+			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
 
 			//// Placeholder
 			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) + 0.5f, RandomJitter(0.25f) + 0.5f);
@@ -98,12 +98,9 @@ public class ChunkMesh
 			//bool bright = World.GetBlockFor(chunk.position + blockPos).opacity <= 127;
 			//colors[i] = new Color(bright ? 0.8f : 0.2f, bright ? 0.8f : 0.2f, bright ? 0.2f : 0.8f, bright ? 0.2f : 0.8f);
 		}
-
-		//if (filter.sharedMesh.colors.Length == 0)
-		//	ApplyVertexColors();
 	}
 
-	private LightingData GetLightingDataAt(Vector3Int vertPos, Vector3 offsets)
+	private LightingSample SampleLightingAt(Vector3Int vertPos, Vector3 offsets)
 	{
 		Block adj;
 
@@ -138,18 +135,25 @@ public class ChunkMesh
 			}
 		}
 
-		return new LightingData(avgBrightness / count, avgColorTemp / count);
+		return new LightingSample(avgBrightness / count, avgColorTemp / count);
 	}
 
-	public void ApplyVertexColors()
+	public Color[] GetVertexColors()
 	{
+		return vertexColors;
+	}
+
+	public void ApplyVertexColors(Color[] newColors)
+	{
+		vertexColors = newColors;
+
 		// Can happen if thread finishes after games ends
 		if (filter == null)
 			return;
 
 		// Apply vertex colors
 		Mesh mesh = filter.sharedMesh;
-		mesh.colors = colors;
+		mesh.colors = vertexColors;
 	}
 
 	public struct MeshData
@@ -262,21 +266,21 @@ public class ChunkMesh
 
 		sharedVertices = filter.sharedMesh.vertices;
 
-		colors = new Color[sharedVertices.Length];
-		for (int i = 0; i < colors.Length; i++)
-			colors[i] = borderColor;
+		vertexColors = new Color[sharedVertices.Length];
+		for (int i = 0; i < vertexColors.Length; i++)
+			vertexColors[i] = borderColor;
 
-		ApplyVertexColors();
+		ApplyVertexColors(vertexColors);
 	}
 
 	public void ResetColors()
 	{
-		if (colors == null)
+		if (vertexColors == null)
 			return;
 
-		for (int i = 0; i < colors.Length; i++)
-			colors[i] = resetColor;
+		for (int i = 0; i < vertexColors.Length; i++)
+			vertexColors[i] = resetColor;
 
-		ApplyVertexColors();
+		ApplyVertexColors(vertexColors);
 	}
 }

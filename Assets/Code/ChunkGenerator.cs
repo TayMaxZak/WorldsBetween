@@ -19,8 +19,10 @@ public class ChunkGenerator
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
+	private readonly int queueCount = 1;
+
 	private readonly float cycleDelay;
-	private readonly int penaltyDelay = 20; // In ms
+	private readonly int penaltyDelay = 5; // In ms
 
 	private int edgeChunks = 0;
 
@@ -40,9 +42,10 @@ public class ChunkGenerator
 		new Vector3Int(0, 0, -1)
 	};
 
-	public ChunkGenerator(float interval)
+	public ChunkGenerator(float cycleDelay, int queueCount)
 	{
-		cycleDelay = interval;
+		this.cycleDelay = cycleDelay;
+		this.queueCount = queueCount;
 	}
 
 	public void Enqueue(Chunk chunk, float priority)
@@ -51,7 +54,7 @@ public class ChunkGenerator
 			chunkQueue.Enqueue(chunk, priority);
 	}
 
-	public void Generate(float deltaTime)
+	public void Generate()
 	{
 		if (threadingMode == ThreadingMode.Background && busy)
 		{
@@ -185,10 +188,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Lit: // Light visuals, spawn entities, and other stuff
 				{
-					chunk.UpdateLightVisuals();
-
-					chunk.genStage = Chunk.GenStage.Ready;
-					World.Generator.QueueNextStage(chunk);
+					chunk.AsyncLightVisuals();
 				}
 				break;
 		}
