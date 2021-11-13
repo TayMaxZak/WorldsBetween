@@ -13,14 +13,14 @@ public class ChunkGenerator
 
 	private static ThreadingMode threadingMode = ThreadingMode.Background;
 	private bool busy = false;
-	private bool wait = false;
+	//private bool wait = false;
 
 	private readonly SimplePriorityQueue<Chunk> chunkQueue = new SimplePriorityQueue<Chunk>();
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
-	private readonly int chunksToHandle = 3;
 	private readonly float cycleDelay;
+	private readonly int penaltyDelay = 20; // In ms
 
 	private int edgeChunks = 0;
 
@@ -40,9 +40,8 @@ public class ChunkGenerator
 		new Vector3Int(0, 0, -1)
 	};
 
-	public ChunkGenerator(int toHandle, float interval)
+	public ChunkGenerator(float interval)
 	{
-		chunksToHandle = toHandle;
 		cycleDelay = interval;
 	}
 
@@ -79,12 +78,6 @@ public class ChunkGenerator
 
 		while (GetSize() > 0)
 		{
-			// Set externally; sit tight until other queues have made some progress
-			while (wait == true)
-			{
-				await Task.Yield();
-			}
-
 			await Task.Delay(Mathf.CeilToInt(cycleDelay * 1000));
 
 			Chunk chunk = chunkQueue.Dequeue();
@@ -152,6 +145,9 @@ public class ChunkGenerator
 				}
 
 				reQueue.Enqueue(chunk);
+
+				// Sit tight until other generators have made some progress
+				await Task.Delay(Mathf.CeilToInt(penaltyDelay));
 			}
 		}
 
@@ -206,11 +202,6 @@ public class ChunkGenerator
 	public bool IsBusy()
 	{
 		return threadingMode == ThreadingMode.Background && busy;
-	}
-
-	public void SetWait(bool newWait)
-	{
-		wait = newWait;
 	}
 
 	public int GetEdgeChunks()

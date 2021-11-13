@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7899593665628932644}
   - component: {fileID: 7899593665628932645}
-  - component: {fileID: 1970517184999124421}
   m_Layer: 0
   m_Name: FogHandler
   m_TagString: Untagged
@@ -54,17 +53,3 @@ MonoBehaviour:
     start: 0
     end: 64
     skybox: {fileID: 2100000, guid: 4f6642ea9361e8c468baf87e22e7a74a, type: 2}
---- !u!114 &1970517184999124421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7899593665628932643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04f4b47a861c74547806a1c53f5be96a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  testHandler: {fileID: 7899593665628932645}
-  testWorld: {fileID: 0}

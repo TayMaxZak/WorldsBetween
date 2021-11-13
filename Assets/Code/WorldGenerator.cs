@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class WorldGenerator
 {
-	public bool active = false;
+	public bool active = true;
 
 	[Header("References")]
 	[SerializeField]
@@ -13,13 +13,11 @@ public class WorldGenerator
 
 	[Header("Generation")]
 	[SerializeField]
-	private int initialGenRange = 11;
-	[SerializeField]
-	private int nearPlayerGenRange = 4;
+	private int genRange = 8;
 
 	private Timer chunkGenTimer = new Timer(1);
 
-	private bool firstChunks = true;
+	private bool awaitingInitalGen = true;
 
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
@@ -32,11 +30,11 @@ public class WorldGenerator
 		float delay = 0;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(800, delay) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(50, delay) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(50, delay) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, delay) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(50, delay) },
+			{ Chunk.GenStage.Empty, new ChunkGenerator(delay) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(delay) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(delay) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(delay) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(delay) },
 		};
 
 		chunkGenTimer.Reset();
@@ -47,14 +45,17 @@ public class WorldGenerator
 
 	public void InitialGen()
 	{
-		firstChunks = false;
+		awaitingInitalGen = false;
 
 		// First batch of chunks
-		CreateChunksNearPlayer(initialGenRange);
+		CreateChunksNearPlayer(genRange);
 	}
 
 	public void ContinueGenerating()
 	{
+		if (awaitingInitalGen || !active)
+			return;
+
 		chunksToGen = 0;
 		generatorsUsed = 0;
 		
@@ -68,23 +69,25 @@ public class WorldGenerator
 			chunksToGen += entry.Value.GetSize();
 
 			// Wait until previous queue is wrapped up
-			if (empty || (prev.GetSize() < entry.Value.GetSize()))
-			{
-				if (!empty || entry.Value.IsBusy())
+			//if (empty || (prev.GetSize() < entry.Value.GetSize()))
+			//{
+				if (!empty && entry.Value.IsBusy())
 					generatorsUsed++;
 
-				// Don't overload number of generators
-				if (generatorsUsed <= 2)
-				{
-					entry.Value.Generate(Time.deltaTime);
+				entry.Value.Generate(Time.deltaTime);
 
-					entry.Value.SetWait(false);
-				}
-				else
-				{
-					entry.Value.SetWait(true);
-				}
-			}
+				//// Don't overload number of generators
+				//if (generatorsUsed <= 2)
+				//{
+				//	entry.Value.Generate(Time.deltaTime);
+
+				//	entry.Value.SetWait(false);
+				//}
+				//else
+				//{
+				//	entry.Value.SetWait(true);
+				//}
+			//}
 		}
 	}
 
@@ -170,50 +173,6 @@ public class WorldGenerator
 		}
 	}
 
-	//private void Update()
-	//{
-	//	if (firstChunks)
-	//		return;
-
-	//	generatorsUsed = 0;
-	//	chunksToGen = 0;
-
-	//	// Update chunk generators
-	//	ChunkGenerator.SetThreadingMode(ChunkGenerator.ThreadingMode.Background);
-
-	//	foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
-	//	{
-	//		chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
-
-	//		bool empty = entry.Key == Chunk.GenStage.Empty;
-
-	//		// Only make new empty chunks if empty queue is empty
-	//		if (empty && entry.Value.GetSize() == 0)
-	//			UpdateChunkGameObjects();
-
-	//		chunksToGen += entry.Value.GetSize();
-
-	//		// Wait until previous queue is wrapped up
-	//		if (empty || (prev.GetSize() < entry.Value.GetSize()))
-	//		{
-	//			if (!empty || entry.Value.IsBusy())
-	//				generatorsUsed++;
-
-	//			// Don't overload number of generators
-	//			if (generatorsUsed <= 2)
-	//			{
-	//				entry.Value.Generate(Time.deltaTime);
-
-	//				entry.Value.SetWait(false);
-	//			}
-	//			else
-	//			{
-	//				entry.Value.SetWait(true);
-	//			}
-	//		}
-	//	}
-	//}
-
 	private void UpdateChunkGameObjects()
 	{
 		if (!World.IsInfinite())
@@ -240,12 +199,12 @@ public class WorldGenerator
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority (lower value)
-		generator.Enqueue(chunk, (penalize ? 128 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position));
+		generator.Enqueue(chunk, (penalize ? 256 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position));
 	}
 
 	public int GetRange()
 	{
-		return initialGenRange;
+		return genRange;
 	}
 
 	public bool IsGenerating()
