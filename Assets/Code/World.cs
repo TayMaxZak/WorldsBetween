@@ -200,7 +200,6 @@ public partial class World : MonoBehaviour
 
 		Instance.lightSources.TryGetValue(coord, out LinkedList<LightSource> ls);
 
-		// First light added to this chunk
 		if (ls == null)
 			Instance.lightSources.Add(coord, ls = new LinkedList<LightSource>());
 

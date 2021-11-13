@@ -183,6 +183,7 @@ public class ChunkGenerator
 			case Chunk.GenStage.Meshed: // Calculate lights
 				{
 					World.AddSunlight(chunk);
+
 					chunk.AsyncCalcLight();
 				}
 				break;

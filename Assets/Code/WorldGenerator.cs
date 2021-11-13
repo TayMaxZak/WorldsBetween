@@ -29,13 +29,14 @@ public class WorldGenerator
 
 	public void Init()
 	{
+		float delay = 0;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(800, 0.25f) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(50, 0.2f) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(50, 0.2f) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, 0.2f) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(50, 0.2f) },
+			{ Chunk.GenStage.Empty, new ChunkGenerator(800, delay) },
+			{ Chunk.GenStage.Allocated, new ChunkGenerator(50, delay) },
+			{ Chunk.GenStage.Generated, new ChunkGenerator(50, delay) },
+			{ Chunk.GenStage.Meshed, new ChunkGenerator(50, delay) },
+			{ Chunk.GenStage.Lit, new ChunkGenerator(50, delay) },
 		};
 
 		chunkGenTimer.Reset();
