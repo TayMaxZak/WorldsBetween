@@ -74,7 +74,7 @@ public class PlayerMover : MonoBehaviour
 	{
 		UpdatePosition();
 
-		bool underWater = worldY < World.GetWaterHeight();
+		bool underWater = worldY - 0.4f < World.GetWaterHeight();
 
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);

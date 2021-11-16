@@ -29,7 +29,7 @@ public class WorldGenerator
 	public void Init()
 	{
 		float delay = 0;
-		int queues = 8;
+		int queues = 16;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Empty, new ChunkGenerator(delay, 1) },
