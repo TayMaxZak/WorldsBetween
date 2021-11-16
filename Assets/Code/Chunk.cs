@@ -312,7 +312,7 @@ public class Chunk
 				if (bright <= 1 / 255f)
 					continue;
 
-				float atten = light.GetAttenAt(this, dist, worldPos.y < World.GetWaterHeight());
+				float atten = light.GetShadowBrightnessAt(this, dist, worldPos.y < World.GetWaterHeight());
 
 				// Apply shadows
 				shadowBits.TryGetValue(light, out ChunkBitArray bits);

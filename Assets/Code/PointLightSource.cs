@@ -77,7 +77,7 @@ public class PointLightSource : LightSource
 		return falloff;
 	}
 
-	public override float GetAttenAt(Chunk chunk, float distance, bool inWater)
+	public override float GetShadowBrightnessAt(Chunk chunk, float distance, bool inWater)
 	{
 		float falloff = 1f - distance * (1f / (falloffFactor * brightness));
 		falloff = Mathf.Clamp01(falloff);

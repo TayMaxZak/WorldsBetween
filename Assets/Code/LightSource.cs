@@ -60,7 +60,7 @@ public abstract class LightSource
 
 	public abstract float GetBrightnessAt(Chunk chunk, float distance, bool inWater);
 
-	public abstract float GetAttenAt(Chunk chunk, float distance, bool inWater);
+	public abstract float GetShadowBrightnessAt(Chunk chunk, float distance, bool inWater);
 
 	public abstract float GetColorOpacityAt(Chunk chunk, float value, bool inWater);
 
