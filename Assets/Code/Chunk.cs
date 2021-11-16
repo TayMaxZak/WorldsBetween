@@ -180,24 +180,24 @@ public class Chunk
 	#endregion
 
 	#region Mesh
-	public void AsyncMakeMesh()
+	public void AsyncMakeSurface()
 	{
-		BkgThreadMakeMesh(this, System.EventArgs.Empty);
+		BkgThreadMakeSurface(this, System.EventArgs.Empty);
 	}
 
-	private void BkgThreadMakeMesh(object sender, System.EventArgs e)
+	private void BkgThreadMakeSurface(object sender, System.EventArgs e)
 	{
 		isProcessing = true;
 
 		BackgroundWorker bw = new BackgroundWorker();
 
-		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(chunkMesh.blockMesh);
+		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(BlockModels.GetModelFor(0));
 
 		// What to do in the background thread
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = MakeMesh(blockMesh);
+			args.Result = MakeSurface(blockMesh);
 		});
 
 		// What to do when worker completes its task
@@ -227,7 +227,7 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private ChunkMesh.MeshData MakeMesh(ChunkMesh.MeshData blockMesh)
+	private ChunkMesh.MeshData MakeSurface(ChunkMesh.MeshData blockMesh)
 	{
 		return chunkMesh.GenerateMesh(blockMesh, blocks);
 	}
