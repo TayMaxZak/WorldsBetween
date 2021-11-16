@@ -52,7 +52,7 @@ public abstract class LightSource
 
 	protected abstract void OnDirty();
 
-	public float GetDistanceTo(Vector3Int blockPos)
+	public virtual float GetDistanceTo(Vector3Int blockPos)
 	{
 		float d = Utils.DistanceSqr(worldX, worldY, worldZ, blockPos.x, blockPos.y, blockPos.z);
 		return Mathf.Sqrt(d);
