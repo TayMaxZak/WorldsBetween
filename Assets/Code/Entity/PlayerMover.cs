@@ -95,13 +95,13 @@ public class PlayerMover : MonoBehaviour
 
 		// Intersection with floor
 		block = World.GetBlockFor(worldX, worldY - 1, worldZ);
-		if (block.opacity > 127)
+		if (!block.IsAir())
 		{
 			velocity.y = 0;
 
 			block = World.GetBlockFor(worldX, worldY, worldZ);
 
-			if (block.opacity > 127)
+			if (!block.IsAir())
 			{
 				Move(Vector3.up);
 			}

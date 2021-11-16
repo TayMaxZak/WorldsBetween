@@ -183,7 +183,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.GenStage.Generated: // Cache data and build mesh
 				{
-					chunk.AsyncMakeSurface();
+					chunk.AsyncMakeMesh();
 				}
 				break;
 			case Chunk.GenStage.Meshed: // Calculate lights

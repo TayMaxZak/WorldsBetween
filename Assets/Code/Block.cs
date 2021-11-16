@@ -65,4 +65,9 @@ public class Block
 
 		this.opacity = opacity;
 	}
+
+	public bool IsAir()
+	{
+		return opacity <= 127;
+	}
 }

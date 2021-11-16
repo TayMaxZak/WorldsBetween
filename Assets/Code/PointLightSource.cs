@@ -108,11 +108,11 @@ public class PointLightSource : LightSource
 		Vector3 offset = new Vector3(worldX - blockPos.x, worldY - blockPos.y, worldZ - blockPos.z).normalized;
 		for (int i = 1; i <= 3; i++)
 		{
-			bool occluded = World.GetBlockFor(
+			bool occluded = !World.GetBlockFor(
 				(int)(blockPos.x + offset.x * i + adj),
 				(int)(blockPos.y + offset.y * i + adj),
 				(int)(blockPos.z + offset.z * i + adj)
-			).opacity > 127;
+			).IsAir();
 
 			if (occluded)
 				return true;

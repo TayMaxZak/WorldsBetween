@@ -28,6 +28,8 @@ public class Chunk
 
 	private Block[,,] blocks;
 
+	private LinkedList<BlockSurface>[,,] surfaces;
+
 	public ChunkMesh chunkMesh = new ChunkMesh();
 
 
@@ -38,8 +40,7 @@ public class Chunk
 	{
 		this.chunkSize = chunkSize;
 
-		// Create blocks
-		CreateBlocks();
+		CreateCollections();
 	}
 
 	public void SetPos(Vector3Int pos)
@@ -47,7 +48,7 @@ public class Chunk
 		position = pos;
 	}
 
-	public void CreateBlocks()
+	public void CreateCollections()
 	{
 		blocks = new Block[chunkSize, chunkSize, chunkSize];
 
@@ -61,6 +62,8 @@ public class Chunk
 				}
 			}
 		}
+
+		surfaces = new LinkedList<BlockSurface>[chunkSize, chunkSize, chunkSize];
 	}
 
 	#region Generate
@@ -88,7 +91,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			CacheNearAir();
+			MakeSurface();
 
 			genStage = GenStage.Generated;
 			World.Generator.QueueNextStage(this);
@@ -123,12 +126,8 @@ public class Chunk
 		}
 	}
 
-	public void CacheNearAir()
+	public void MakeSurface()
 	{
-		Block block;
-
-		int cutoff = 127;
-
 		for (byte x = 0; x < chunkSize; x++)
 		{
 			for (byte y = 0; y < chunkSize; y++)
@@ -136,56 +135,69 @@ public class Chunk
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					// Remember if this block is bordering air
-					if (blocks[x, y, z].opacity > cutoff)
+					if (!blocks[x, y, z].IsAir())
 					{
 						continue;
 					}
 
 					blocks[x, y, z].nearAir = 255;
 
-					// Assign adjacent blocks in this chunk
-					if (x > 0)
-						blocks[x - 1, y, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (x < chunkSize - 1)
-						blocks[x + 1, y, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (y > 0)
-						blocks[x, y - 1, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (y < chunkSize - 1)
-						blocks[x, y + 1, z].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
-						block.nearAir = 255;
-
-					if (z > 0)
-						blocks[x, y, z - 1].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
-						block.nearAir = 255;
-
-					if (z < chunkSize - 1)
-						blocks[x, y, z + 1].nearAir = 255;
-					else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
-						block.nearAir = 255;
+					// Handle adjacent blocks for this block
+					HandleAdjacents(x, y, z);
 				}
 			}
 		}
 	}
+
+	private void HandleAdjacents(int x, int y, int z)
+	{
+		Block block;
+
+
+
+		if (x < chunkSize - 1)
+			blocks[x + 1, y, z].nearAir = 255;
+		else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
+			block.nearAir = 255;
+
+		if (x > 0)
+			blocks[x - 1, y, z].nearAir = 255;
+		else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
+			block.nearAir = 255;
+
+
+
+		if (y < chunkSize - 1)
+			blocks[x, y + 1, z].nearAir = 255;
+		else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
+			block.nearAir = 255;
+
+		if (y > 0)
+			blocks[x, y - 1, z].nearAir = 255;
+		else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
+			block.nearAir = 255;
+
+
+
+		if (z < chunkSize - 1)
+			blocks[x, y, z + 1].nearAir = 255;
+		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
+			block.nearAir = 255;
+
+		if (z > 0)
+			blocks[x, y, z - 1].nearAir = 255;
+		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
+			block.nearAir = 255;
+	}
 	#endregion
 
 	#region Mesh
-	public void AsyncMakeSurface()
+	public void AsyncMakeMesh()
 	{
-		BkgThreadMakeSurface(this, System.EventArgs.Empty);
+		BkgThreadMakeMesh(this, System.EventArgs.Empty);
 	}
 
-	private void BkgThreadMakeSurface(object sender, System.EventArgs e)
+	private void BkgThreadMakeMesh(object sender, System.EventArgs e)
 	{
 		isProcessing = true;
 
@@ -197,7 +209,7 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = MakeSurface(blockMesh);
+			args.Result = MakeMesh(blockMesh);
 		});
 
 		// What to do when worker completes its task
@@ -227,7 +239,7 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private ChunkMesh.MeshData MakeSurface(ChunkMesh.MeshData blockMesh)
+	private ChunkMesh.MeshData MakeMesh(ChunkMesh.MeshData blockMesh)
 	{
 		return chunkMesh.GenerateMesh(blockMesh, blocks);
 	}

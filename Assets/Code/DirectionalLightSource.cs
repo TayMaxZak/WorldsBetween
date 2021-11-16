@@ -96,11 +96,11 @@ public class DirectionalLightSource : LightSource
 
 		for (int i = 1; i <= 6; i++)
 		{
-			bool occluded = World.GetBlockFor(
+			bool occluded = !World.GetBlockFor(
 				(int)(blockPos.x + -direction.x * i + adj),
 				(int)(blockPos.y + -direction.y * i + adj),
 				(int)(blockPos.z + -direction.z * i + adj)
-			).opacity > 127;
+			).IsAir();
 
 			if (occluded)
 				return true;

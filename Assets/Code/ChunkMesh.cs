@@ -200,7 +200,7 @@ public class ChunkMesh
 
 					// Empty block
 					// TODO: Change
-					if (block.opacity <= 127 || block.nearAir == 0)
+					if (block.IsAir() || block.nearAir == 0)
 						continue;
 
 					// Remember which vertex index this block starts at
@@ -212,7 +212,7 @@ public class ChunkMesh
 						faceOffset.y = chunk.position.y + y + directions[d].y;
 						faceOffset.z = chunk.position.z + z + directions[d].z;
 
-						if (World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).opacity > 127)
+						if (!World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).IsAir())
 							continue;
 
 						int indexOffset = vertices.Count;
