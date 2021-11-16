@@ -8,7 +8,7 @@ public class DirectionalLightSource : LightSource
 	private Vector3 direction;
 
 	private float waterFalloffFactor = 64;
-	private float waterExponent = 3;
+	private float waterExponent = 4;
 
 	public DirectionalLightSource(float brightness, float colorTemp, Vector3 direction) : base(brightness, colorTemp, direction)
 	{
@@ -55,13 +55,13 @@ public class DirectionalLightSource : LightSource
 		//else
 		//	return Mathf.Clamp01(0.5f * brightness);
 
-		float falloff = 1f - distance * (1f / (waterFalloffFactor * brightness));
+		float falloff = 1f - distance * (1f / (waterFalloffFactor * SeedlessRandom.NextFloatInRange(0.55f, 1)));
 		falloff = Mathf.Clamp01(falloff);
 
 		for (int i = 1; i < waterExponent; i++)
 			falloff *= falloff;
 
-		return 0.5f * Mathf.Min(falloff, brightness);
+		return 0.75f * falloff * brightness;
 	}
 
 	public override float GetAttenAt(Chunk chunk, float distance, bool inWater)
@@ -81,13 +81,13 @@ public class DirectionalLightSource : LightSource
 
 		distance = Mathf.Max(0, distance - 1);
 
-		float falloff = 1f - distance * (1f / (waterFalloffFactor * brightness));
+		float falloff = 1f - distance * (1f / (waterFalloffFactor * SeedlessRandom.NextFloatInRange(0.55f, 1)));
 		falloff = Mathf.Clamp01(falloff);
 
 		for (int i = 1; i < waterExponent; i++)
 			falloff *= falloff;
 
-		return 0.5f * Mathf.Min(falloff, brightness);
+		return 0.75f * falloff * brightness;
 	}
 
 	public override bool IsShadowed(Vector3Int blockPos)
