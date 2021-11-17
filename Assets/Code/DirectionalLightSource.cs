@@ -54,6 +54,8 @@ public class DirectionalLightSource : LightSource
 		{
 			float dotMult = Mathf.Clamp01(Vector3.Dot(direction, -surface.normal));
 
+			dotMult = 1 - (1 - dotMult) * (1 - dotMult);
+
 			return Mathf.Clamp01(brightness * dotMult);
 		}
 

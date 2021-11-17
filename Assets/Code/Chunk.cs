@@ -437,4 +437,9 @@ public class Chunk
 	{
 		return blocks[x, y, z];
 	}
+
+	public LinkedList<BlockSurface> GetSurfaces(int x, int y, int z)
+	{
+		return surfaces[x, y, z];
+	}
 }

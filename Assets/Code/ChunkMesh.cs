@@ -38,13 +38,13 @@ public class ChunkMesh
 
 	public struct LightingSample
 	{
-		public float avgBrightness;
-		public float avgColorTemp;
+		public float brightness;
+		public float colorTemp;
 
-		public LightingSample(float avgBrightness, float avgColorTemp)
+		public LightingSample(float brightness, float colorTemp)
 		{
-			this.avgBrightness = avgBrightness;
-			this.avgColorTemp = avgColorTemp;
+			this.brightness = brightness;
+			this.colorTemp = colorTemp;
 		}
 	}
 
@@ -53,8 +53,6 @@ public class ChunkMesh
 		Vector3 meshPos;
 		Vector3Int vertexPos = new Vector3Int();
 		Vector3Int blockPos = new Vector3Int(surface.block.localX, surface.block.localY, surface.block.localZ);
-
-		//float roundingOffset = 0.5f;
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
@@ -69,15 +67,15 @@ public class ChunkMesh
 			vertexPos.z = Mathf.RoundToInt(meshPos.z + chunk.position.z);
 
 			// Surfaces closest to this actual vertex
-			//LightingSample ld = SampleLightingAt(vertexPos, new Vector3(roundingOffset + blockPos.x - meshPos.x, roundingOffset + blockPos.y - meshPos.y, roundingOffset + blockPos.z - meshPos.z));
+			LightingSample ld = SampleLightingAt(vertexPos, surface);
 
-			float lastBright = surface.brightness;
+			float lastBright = ld.brightness;
 
-			float newBright = surface.brightness;
+			float newBright = ld.brightness;
 
-			float lastColorTemp = surface.colorTemp;
+			float lastColorTemp = ld.colorTemp;
 
-			float newColorTemp = surface.colorTemp;
+			float newColorTemp = ld.colorTemp;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
@@ -90,43 +88,46 @@ public class ChunkMesh
 		}
 	}
 
-	//private LightingSample SampleLightingAt(Vector3Int vertPos, Vector3 offsets)
-	//{
-	//	Block adj;
+	private LightingSample SampleLightingAt(Vector3Int vertPos, BlockSurface surface)
+	{
+		LinkedList<BlockSurface> adj;
 
-	//	float count = 0;
-	//	float avgBrightness = 0;
-	//	float avgColorTemp = 0;
+		float count = 0;
+		float avgBrightness = 0;
+		float avgColorTemp = 0;
 
-	//	Vector3Int adjPos = new Vector3Int();
+		Vector3Int adjPos = new Vector3Int();
 
-	//	for (int x = -1; x <= 1; x += 2)
-	//	{
-	//		for (int y = -1; y <= 1; y += 2)
-	//		{
-	//			for (int z = -1; z <= 1; z += 2)
-	//			{
-	//				adjPos.x = Mathf.FloorToInt(vertPos.x + x * 0.5f);
-	//				adjPos.y = Mathf.FloorToInt(vertPos.y + y * 0.5f);
-	//				adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
+		for (int x = -1; x <= 1; x += 2)
+		{
+			for (int y = -1; y <= 1; y += 2)
+			{
+				for (int z = -1; z <= 1; z += 2)
+				{
+					adjPos.x = Mathf.FloorToInt(vertPos.x + x * 0.5f);
+					adjPos.y = Mathf.FloorToInt(vertPos.y + y * 0.5f);
+					adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
 
-	//				if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
-	//					adj = chunk.GetBlock(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
-	//				else
-	//					adj = World.GetBlockFor(adjPos.x, adjPos.y, adjPos.z);
+					if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
+						adj = chunk.GetSurfaces(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
+					else
+						adj = World.GetSurfacesFor(adjPos.x, adjPos.y, adjPos.z);
 
-	//				if (adj.maybeNearAir == 0)
-	//					continue;
+					if (adj == null)
+						continue;
 
-	//				count++;
-	//				avgBrightness += adj.brightness;
-	//				avgColorTemp += adj.colorTemp;
-	//			}
-	//		}
-	//	}
+					foreach (BlockSurface s in adj)
+					{
+						count++;
+						avgBrightness += s.brightness;
+						avgColorTemp += s.colorTemp;
+					}
+				}
+			}
+		}
 
-	//	return new LightingSample(avgBrightness / count, avgColorTemp / count);
-	//}
+		return new LightingSample(avgBrightness / count, avgColorTemp / count);
+	}
 
 	public Color[] GetVertexColors()
 	{
@@ -238,6 +239,9 @@ public class ChunkMesh
 						if (surfaces[x, y, z] == null)
 							surfaces[x, y, z] = new LinkedList<BlockSurface>();
 						surfaces[x, y, z].AddLast(surface);
+
+						if (surfaces[x, y, z].Count > 6)
+							Debug.LogError("Too many surfaces on one block");
 
 						// Add normals
 						for (int i = 0; i < blockMeshData.normals.Length; i++)
