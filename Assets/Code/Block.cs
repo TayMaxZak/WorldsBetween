@@ -50,4 +50,9 @@ public class Block
 	{
 		return opacity <= 127;
 	}
+
+	public Vector3Int GetLocalPosVector()
+	{
+		return new Vector3Int(localX, localY, localZ);
+	}
 }

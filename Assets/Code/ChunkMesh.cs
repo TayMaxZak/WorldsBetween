@@ -88,15 +88,17 @@ public class ChunkMesh
 		}
 	}
 
-	private LightingSample SampleLightingAt(Vector3Int vertPos, BlockSurface surface)
+	private LightingSample SampleLightingAt(Vector3Int vertPos, BlockSurface inputSurface)
 	{
-		LinkedList<BlockSurface> adj;
+		LinkedList<BlockSurface> adjSurfaces;
 
 		float count = 0;
 		float avgBrightness = 0;
 		float avgColorTemp = 0;
 
 		Vector3Int adjPos = new Vector3Int();
+
+		Vector3 testDif, controlDif;
 
 		for (int x = -1; x <= 1; x += 2)
 		{
@@ -109,18 +111,41 @@ public class ChunkMesh
 					adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
 
 					if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
-						adj = chunk.GetSurfaces(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
+						adjSurfaces = chunk.GetSurfaces(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
 					else
-						adj = World.GetSurfacesFor(adjPos.x, adjPos.y, adjPos.z);
+						adjSurfaces = World.GetSurfacesFor(adjPos.x, adjPos.y, adjPos.z);
 
-					if (adj == null)
+					if (adjSurfaces == null)
 						continue;
 
-					foreach (BlockSurface s in adj)
+					foreach (BlockSurface adjSurface in adjSurfaces)
 					{
+						// Test if "above" the input surface, by finding distance along axis
+						testDif = Vector3.Scale(inputSurface.normal, adjSurface.GetWorldPosition() - inputSurface.GetBlockWorldPosition());
+						controlDif = Vector3.Scale(inputSurface.normal, inputSurface.relativeOffset);
+
+						float dot = Vector3.SqrMagnitude(testDif) - Vector3.SqrMagnitude(controlDif);
+						bool above = dot > 0.001f;
+
+						// Test if same normal
+						bool normal = adjSurface.normal == inputSurface.normal;
+
+						// If not above, then normals have to match
+						if (!above)
+						{
+							if (!normal)
+								continue;
+						}
+						// Fits criteria, but is it too bright?
+						else
+						{
+							if (adjSurface.brightness > inputSurface.brightness)
+								continue;
+						}
+
 						count++;
-						avgBrightness += s.brightness;
-						avgColorTemp += s.colorTemp;
+						avgBrightness += adjSurface.brightness;
+						avgColorTemp += adjSurface.colorTemp;
 					}
 				}
 			}
@@ -216,7 +241,7 @@ public class ChunkMesh
 							continue;
 						surfacesAdded++;
 
-						BlockSurface surface = new BlockSurface(directions[d], new Vector3(directions[d].x * 0.5f + 0.5f, directions[d].y * 0.5f + 0.5f, directions[d].z * 0.5f + 0.5f));
+						BlockSurface surface = new BlockSurface(chunk, block, directions[d], new Vector3(directions[d].x * 0.5f, directions[d].y * 0.5f, directions[d].z * 0.5f));
 
 						int indexOffset = vertices.Count;
 						// Remember which vertex index this surface starts at
@@ -232,8 +257,6 @@ public class ChunkMesh
 
 						// Remember which vertex index this surface starts at
 						surface.endIndex = vertices.Count;
-
-						surface.block = block;
 
 						// Remember this surface
 						if (surfaces[x, y, z] == null)

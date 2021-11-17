@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class BlockSurface
 {
-	public Vector3 normal;
-	public Vector3 relativeOffset; // Where is the CENTER of this surface relative to the ORIGIN of its associated block
+	public Chunk chunk;
 	public Block block;
+	public Vector3 normal;
+	public Vector3 relativeOffset; // Where is the CENTER of this surface relative to the CENTER (0.5) of its associated block
 
 	// Which vertices are associated with the mesh of this surface?
 	public int startIndex, endIndex;
@@ -15,11 +16,30 @@ public class BlockSurface
 	public float lastBrightness; // How bright was this surface at the last light update
 
 	public float colorTemp; // Lighting color temp of this surface (0 is red-orange, 1 is blue-gray)
-	public float lastColorTemp; // Lighting color temp of this surface at the last light update
+	public float lastColorTemp; // Lighting color temp of this surface at the last light update\
 
-	public BlockSurface(Vector3 normal, Vector3 relativeOffset)
+	private static Vector3 blockCenter = new Vector3(0.5f, 0.5f, 0.5f);
+
+	public BlockSurface(Chunk chunk, Block block, Vector3 normal, Vector3 relativeOffset)
 	{
+		this.chunk = chunk;
+		this.block = block;
 		this.normal = normal;
 		this.relativeOffset = relativeOffset;
+	}
+
+	public Vector3 GetLocalPosition()
+	{
+		return blockCenter + relativeOffset + block.GetLocalPosVector();
+	}
+
+	public Vector3 GetWorldPosition()
+	{
+		return GetLocalPosition() + chunk.position;
+	}
+
+	public Vector3 GetBlockWorldPosition()
+	{
+		return blockCenter + block.GetLocalPosVector() + chunk.position;
 	}
 }
