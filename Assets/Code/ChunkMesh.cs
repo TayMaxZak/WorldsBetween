@@ -118,66 +118,41 @@ public class ChunkMesh
 					if (adjSurfaces == null)
 						continue;
 
+					float tolerance = 0.025f;
+
 					foreach (BlockSurface adjSurface in adjSurfaces)
 					{
-						// Test if "above" the input surface, by finding distance along axis
-						testDif = Vector3.Scale(inputSurface.normal, adjSurface.GetWorldPosition() - inputSurface.GetBlockWorldPosition());
-						controlDif = Vector3.Scale(inputSurface.normal, inputSurface.relativeOffset);
+						float normalDot = Vector3.Dot(inputSurface.normal, adjSurface.normal);
+						float polarityDot = Vector3.Dot(inputSurface.normal, (adjSurface.GetWorldPosition() - inputSurface.GetWorldPosition()).normalized);
 
-						float dot = Vector3.SqrMagnitude(testDif) - Vector3.SqrMagnitude(controlDif);
-						bool above = dot > 0.001f;
-						bool below = dot < -0.001f;
+						bool highlight = polarityDot < -tolerance;
+						bool crease = polarityDot > tolerance;
 
 						// Test if same normal
-						bool normal = adjSurface.normal == inputSurface.normal;
+						bool edge = normalDot < 1 - tolerance;
+						bool flat = !edge;
 
-						bool darkBlend = false, lightBlend = false;
-						float tolerance = 0.025f;
-
-						// If not above, then normals have to match
-						if (!above)
+						// Outer edge should be brighter
+						if (!edge || adjSurface.brightness < inputSurface.brightness - tolerance)
 						{
-							if (!normal)
-								darkBlend = false;
-							else
-								darkBlend = true;
+							highlight = false;
 						}
-						// Fits criteria, but is it the wrong brightness?
-						else
+						// Inner edge should be darker
+						if (!edge || adjSurface.brightness > inputSurface.brightness + tolerance)
 						{
-							if (adjSurface.brightness > inputSurface.brightness + tolerance)
-								darkBlend = false;
-							else
-								darkBlend = true;
+							crease = false;
 						}
 
-						// If not below, then normals have to match
-						if (!below)
+						// Flat surface
+						if (!crease && !highlight)
 						{
-							if (!normal)
-								lightBlend = false;
-							else
-								lightBlend = true;
-						}
-						// Fits criteria, but is it the wrong brightness?
-						else
-						{
-							if (adjSurface.brightness < inputSurface.brightness - tolerance)
-								lightBlend = false;
-							else
-								lightBlend = true;
+							if (!flat)
+								continue;
 						}
 
-						if (!lightBlend && !darkBlend)
-						{
-							continue;
-						}
-						else
-						{
-							count++;
-							avgBrightness += adjSurface.brightness;
-							avgColorTemp += adjSurface.colorTemp;
-						}
+						count++;
+						avgBrightness += adjSurface.brightness;
+						avgColorTemp += adjSurface.colorTemp;
 					}
 				}
 			}
