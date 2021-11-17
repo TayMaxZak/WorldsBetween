@@ -16,12 +16,13 @@ public class Block
 	public byte colorTemp; // Lighting color temp of this block (0 is red-orange, 127 is white, 255 is blue-gray)
 	public byte lastColorTemp; // Lighting color temp of this block at the last light update
 
-	public byte nearAir; // Is this block visible to the player
-
+	// TODO: Make into a flags enum; mor eclear what each value means, more memory efficient, etc.
+	public byte maybeNearAir; // Is this block visible to the player
 	public byte needsUpdate; // nonzero = light changed and should be updated
 	public byte updatePending; // nonzero = update in progress, do not touch
 	public byte postUpdate; // nonzero = needs to finalize update
 
+	// TODO: Migrate to surfaces
 	public int startIndex, endIndex; // Which vertices to search?
 
 	public Block(byte localX, byte localY, byte localZ, byte opacity) : this(localX, localY, localZ, opacity, 0)
@@ -36,7 +37,7 @@ public class Block
 		colorTemp = 127;
 		lastColorTemp = colorTemp;
 
-		nearAir = 0;
+		maybeNearAir = 0;
 
 		needsUpdate = 0;
 		updatePending = 0;

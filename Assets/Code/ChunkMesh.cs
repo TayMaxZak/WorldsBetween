@@ -121,7 +121,7 @@ public class ChunkMesh
 					else
 						adj = World.GetBlockFor(adjPos.x, adjPos.y, adjPos.z);
 
-					if (adj.nearAir == 0)
+					if (adj.maybeNearAir == 0)
 						continue;
 
 					count++;
@@ -176,7 +176,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData GenerateMesh(MeshData blockMeshData, Block[,,] blocks)
+	public MeshData MakeSurfaceAndMesh(MeshData blockMeshData, Block[,,] blocks)
 	{
 		Block block;
 
@@ -198,22 +198,31 @@ public class ChunkMesh
 				{
 					block = blocks[x, y, z];
 
-					// Empty block
-					// TODO: Change
-					if (block.IsAir() || block.nearAir == 0)
+					// No model for this block
+					if (block.IsAir())
+					{
+						// Air should not count as near air?
+						//block.maybeNearAir = 0;
+						continue;
+					}
+					// 
+					else if (block.maybeNearAir == 0)
 						continue;
 
 					// Remember which vertex index this block starts at
 					block.startIndex = vertices.Count;
 
+					int surfaces = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
 						faceOffset.x = chunk.position.x + x + directions[d].x;
 						faceOffset.y = chunk.position.y + y + directions[d].y;
 						faceOffset.z = chunk.position.z + z + directions[d].z;
 
+						// Should a surface be made in this direction
 						if (!World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).IsAir())
 							continue;
+						surfaces++;
 
 						int indexOffset = vertices.Count;
 
@@ -245,6 +254,9 @@ public class ChunkMesh
 							uv.Add(blockMeshData.uv[i]);
 						}
 					}
+					// No surfaces created, not actually near air
+					if (surfaces == 0)
+						block.maybeNearAir = 0;
 				}
 			}
 		}

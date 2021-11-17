@@ -91,7 +91,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			MakeSurface();
+			CacheMaybeFlags();
 
 			genStage = GenStage.Generated;
 			World.Generator.QueueNextStage(this);
@@ -126,7 +126,7 @@ public class Chunk
 		}
 	}
 
-	public void MakeSurface()
+	public void CacheMaybeFlags()
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -134,60 +134,58 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					// Remember if this block is bordering air
+					// Only care if this block is an air block
 					if (!blocks[x, y, z].IsAir())
 					{
 						continue;
 					}
 
-					blocks[x, y, z].nearAir = 255;
+					// TODO: ???????????????
+					//blocks[x, y, z].maybeNearAir = 255;
 
 					// Handle adjacent blocks for this block
-					HandleAdjacents(x, y, z);
+					FlagAdjacentsAsMaybeNearAir(x, y, z);
 				}
 			}
 		}
 	}
 
-	private void HandleAdjacents(int x, int y, int z)
+	private void FlagAdjacentsAsMaybeNearAir(int x, int y, int z)
 	{
 		Block block;
 
-
-
+		// X-axis
 		if (x < chunkSize - 1)
-			blocks[x + 1, y, z].nearAir = 255;
+			blocks[x + 1, y, z].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
-			block.nearAir = 255;
+			block.maybeNearAir = 255;
 
 		if (x > 0)
-			blocks[x - 1, y, z].nearAir = 255;
+			blocks[x - 1, y, z].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
-			block.nearAir = 255;
+			block.maybeNearAir = 255;
 
-
-
+		// Y-axis
 		if (y < chunkSize - 1)
-			blocks[x, y + 1, z].nearAir = 255;
+			blocks[x, y + 1, z].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
-			block.nearAir = 255;
+			block.maybeNearAir = 255;
 
 		if (y > 0)
-			blocks[x, y - 1, z].nearAir = 255;
+			blocks[x, y - 1, z].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
-			block.nearAir = 255;
+			block.maybeNearAir = 255;
 
-
-
+		// Z-axis
 		if (z < chunkSize - 1)
-			blocks[x, y, z + 1].nearAir = 255;
+			blocks[x, y, z + 1].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
-			block.nearAir = 255;
+			block.maybeNearAir = 255;
 
 		if (z > 0)
-			blocks[x, y, z - 1].nearAir = 255;
+			blocks[x, y, z - 1].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
-			block.nearAir = 255;
+			block.maybeNearAir = 255;
 	}
 	#endregion
 
@@ -241,7 +239,7 @@ public class Chunk
 
 	private ChunkMesh.MeshData MakeMesh(ChunkMesh.MeshData blockMesh)
 	{
-		return chunkMesh.GenerateMesh(blockMesh, blocks);
+		return chunkMesh.MakeSurfaceAndMesh(blockMesh, blocks);
 	}
 	#endregion
 
@@ -288,7 +286,7 @@ public class Chunk
 		// Set brightness
 		foreach (Block block in blocks)
 		{
-			if (block.nearAir == 0)
+			if (block.maybeNearAir == 0)
 				continue;
 
 			// Use floats to preserve precision
@@ -411,7 +409,7 @@ public class Chunk
 		foreach (Block block in blocks)
 		{
 			// Only update necessary blocks
-			if (block.nearAir > 0)
+			if (block.maybeNearAir > 0)
 				chunkMesh.SetVertexColors(block);
 		}
 
