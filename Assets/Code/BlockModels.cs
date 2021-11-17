@@ -7,7 +7,7 @@ public class BlockModels : MonoBehaviour
 	private static BlockModels Instance;
 
 	[SerializeField]
-	private Mesh[] models;
+	private BlockModel[] models;
 
 	private void Awake()
 	{
@@ -21,7 +21,7 @@ public class BlockModels : MonoBehaviour
 			Instance = this;
 	}
 
-	public static Mesh GetModelFor(int blockType)
+	public static BlockModel GetModelFor(int blockType)
 	{
 		return Instance.models[blockType];
 	}

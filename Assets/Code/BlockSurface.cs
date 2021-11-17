@@ -5,7 +5,11 @@ using UnityEngine;
 public class BlockSurface
 {
 	public Vector3 normal;
-	public Vector3 relativeOffset; // Where is the center of this surface relative to its associated block
+	public Vector3 relativeOffset; // Where is the CENTER of this surface relative to the ORIGIN of its associated block
+	public Block block;
+
+	// Which vertices are associated with the mesh of this surface?
+	public int startIndex, endIndex;
 
 	public BlockSurface(Vector3 normal, Vector3 relativeOffset)
 	{

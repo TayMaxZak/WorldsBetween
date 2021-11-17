@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class BlockModel : ScriptableObject
 {
-	public SurfaceModel[] flags = new SurfaceModel[6] {
+	public SurfaceModel[] faces = new SurfaceModel[6] {
 		new SurfaceModel("Right"),
 		new SurfaceModel("Left"),
 		new SurfaceModel("Top"),

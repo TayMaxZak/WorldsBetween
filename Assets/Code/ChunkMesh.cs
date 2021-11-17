@@ -48,17 +48,17 @@ public class ChunkMesh
 		}
 	}
 
-	public void SetVertexColors(Block block)
+	public void SetVertexColors(BlockSurface surface)
 	{
 		Vector3 meshPos;
 		Vector3Int vertexPos = new Vector3Int();
-		Vector3Int blockPos = new Vector3Int(block.localX, block.localY, block.localZ);
+		Vector3Int blockPos = new Vector3Int(surface.block.localX, surface.block.localY, surface.block.localZ);
 
 		float roundingOffset = 0.5f;
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
-		for (int i = block.startIndex; i < block.endIndex; i++)
+		for (int i = surface.startIndex; i < surface.endIndex; i++)
 		{
 			loopCounter++;
 
@@ -176,7 +176,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData MakeSurfaceAndMesh(MeshData blockMeshData, Block[,,] blocks)
+	public MeshData MakeSurfaceAndMesh(MeshData blockMeshData, Block[,,] blocks, LinkedList<BlockSurface>[,,] surfaces)
 	{
 		Block block;
 
@@ -209,10 +209,7 @@ public class ChunkMesh
 					else if (block.maybeNearAir == 0)
 						continue;
 
-					// Remember which vertex index this block starts at
-					block.startIndex = vertices.Count;
-
-					int surfaces = 0;
+					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
 						faceOffset.x = chunk.position.x + x + directions[d].x;
@@ -222,9 +219,13 @@ public class ChunkMesh
 						// Should a surface be made in this direction
 						if (!World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).IsAir())
 							continue;
-						surfaces++;
+						surfacesAdded++;
+
+						BlockSurface surface = new BlockSurface(directions[d], new Vector3(directions[d].x * 0.5f + 0.5f, directions[d].y * 0.5f + 0.5f, directions[d].z * 0.5f + 0.5f));
 
 						int indexOffset = vertices.Count;
+						// Remember which vertex index this surface starts at
+						surface.startIndex = indexOffset;
 
 						// Add vertices
 						for (int i = 0; i < blockMeshData.vertices.Length; i++)
@@ -234,7 +235,15 @@ public class ChunkMesh
 							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
 						}
 
-						block.endIndex = vertices.Count;
+						// Remember which vertex index this surface starts at
+						surface.endIndex = vertices.Count;
+
+						surface.block = block;
+
+						// Remember this surface
+						if (surfaces[x, y, z] == null)
+							surfaces[x, y, z] = new LinkedList<BlockSurface>();
+						surfaces[x, y, z].AddLast(surface);
 
 						// Add normals
 						for (int i = 0; i < blockMeshData.normals.Length; i++)
@@ -255,7 +264,7 @@ public class ChunkMesh
 						}
 					}
 					// No surfaces created, not actually near air
-					if (surfaces == 0)
+					if (surfacesAdded == 0)
 						block.maybeNearAir = 0;
 				}
 			}

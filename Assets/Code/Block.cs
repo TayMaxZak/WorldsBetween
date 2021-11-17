@@ -22,9 +22,6 @@ public class Block
 	public byte updatePending; // nonzero = update in progress, do not touch
 	public byte postUpdate; // nonzero = needs to finalize update
 
-	// TODO: Migrate to surfaces
-	public int startIndex, endIndex; // Which vertices to search?
-
 	public Block(byte localX, byte localY, byte localZ, byte opacity) : this(localX, localY, localZ, opacity, 0)
 	{
 		this.localX = localX;

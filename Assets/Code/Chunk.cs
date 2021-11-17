@@ -201,7 +201,7 @@ public class Chunk
 
 		BackgroundWorker bw = new BackgroundWorker();
 
-		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(BlockModels.GetModelFor(0));
+		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(BlockModels.GetModelFor(0).faces[0].faceMesh);
 
 		// What to do in the background thread
 		bw.DoWork += new DoWorkEventHandler(
@@ -239,7 +239,7 @@ public class Chunk
 
 	private ChunkMesh.MeshData MakeMesh(ChunkMesh.MeshData blockMesh)
 	{
-		return chunkMesh.MakeSurfaceAndMesh(blockMesh, blocks);
+		return chunkMesh.MakeSurfaceAndMesh(blockMesh, blocks, surfaces);
 	}
 	#endregion
 
@@ -406,11 +406,15 @@ public class Chunk
 
 	private Color[] UpdateLightVisuals()
 	{
-		foreach (Block block in blocks)
+		foreach (LinkedList<BlockSurface> ls in surfaces)
 		{
-			// Only update necessary blocks
-			if (block.maybeNearAir > 0)
-				chunkMesh.SetVertexColors(block);
+			if (ls == null)
+				continue;
+
+			foreach (BlockSurface surf in ls)
+			{
+				chunkMesh.SetVertexColors(surf);
+			}
 		}
 
 		return chunkMesh.GetVertexColors();
