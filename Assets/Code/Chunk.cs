@@ -311,10 +311,8 @@ public class Chunk
 					// However bright should this position be relative to the light, added and blended into existing lights
 					float bright = light.GetBrightnessAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
 
-					if (bright <= 0.01f)
-						continue;
-
-					float atten = light.GetShadowBrightnessAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
+					//if (bright <= 0.01f)
+					//	continue;
 
 					// Apply shadows
 					shadowBits.TryGetValue(light, out ChunkBitArray bits);
@@ -329,11 +327,9 @@ public class Chunk
 					if (bits.needsCalc)
 						bits.Set(!light.IsShadowed(worldPos), surface.block.localX, surface.block.localY, surface.block.localZ);
 
-					// Get shadows
+					// Get and apply shadows
 					float mult = bits.Get(surface.block.localX, surface.block.localY, surface.block.localZ) ? 1 : 0;
-					mult = Mathf.Clamp01(mult + atten);
 
-					// Apply shadows & final falloff. Shadows are less intense near the source
 					bright *= mult;
 
 					surface.brightness = 1 - (1 - surface.brightness) * (1 - bright);

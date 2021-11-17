@@ -60,8 +60,6 @@ public abstract class LightSource
 
 	public abstract float GetBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater);
 
-	public abstract float GetShadowBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater);
-
 	public abstract float GetColorOpacityAt(Chunk chunk, BlockSurface surface, float value, bool inWater);
 
 	public List<Vector3Int> GetAffectedChunkCoords()

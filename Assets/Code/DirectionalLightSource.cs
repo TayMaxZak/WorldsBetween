@@ -52,8 +52,6 @@ public class DirectionalLightSource : LightSource
 	{
 		float dotMult = Mathf.Clamp01(Vector3.Dot(direction, -surface.normal));
 
-		dotMult = 1 - (1 - dotMult) * (1 - dotMult);
-
 		if (!inWater)
 			return Mathf.Clamp01(brightness * dotMult);
 
@@ -66,14 +64,6 @@ public class DirectionalLightSource : LightSource
 		dotMult = (1 + dotMult) / 2;
 
 		return 0.7f * dotMult * falloff * brightness;
-	}
-
-	public override float GetShadowBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
-	{
-		if (!inWater)
-			return SeedlessRandom.NextFloatInRange(0.1f, 0.2f);
-
-		return 0;
 	}
 
 	public override float GetColorOpacityAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
