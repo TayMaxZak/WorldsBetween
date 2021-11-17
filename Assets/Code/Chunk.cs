@@ -284,87 +284,70 @@ public class Chunk
 		int counter = 0;
 
 		// Set brightness
-		foreach (Block block in blocks)
+		foreach (LinkedList<BlockSurface> ls in surfaces)
 		{
-			if (block.maybeNearAir == 0)
+			if (ls == null)
 				continue;
 
-			// Use floats to preserve precision
-			float newBrightness = 0;
-			float newColorTemp = 0;
-
-			bool changed = false;
-			foreach (LightSource light in lights)
+			foreach (BlockSurface surface in ls)
 			{
-				counter++;
-
-				// First pass. Reset lighting
-				if (light == lights.First.Value)
+				foreach (LightSource light in lights)
 				{
-					changed = true;
+					counter++;
 
-					block.lastBrightness = block.brightness;
-					block.brightness = 0;
-					block.lastColorTemp = block.colorTemp;
-					block.colorTemp = 127;
+					// First pass. Reset lighting
+					if (light == lights.First.Value)
+					{
+						surface.lastBrightness = surface.brightness;
+						surface.brightness = 0;
+						surface.lastColorTemp = surface.colorTemp;
+						surface.colorTemp = 0.5f;
+					}
 
-					newBrightness = (block.brightness) / 255f;
-					newColorTemp = -1 + (2 * block.colorTemp) / 255f;
+					Vector3Int worldPos = new Vector3Int(position.x + surface.block.localX, position.y + surface.block.localY, position.z + surface.block.localZ);
+
+					float dist = light.GetDistanceTo(worldPos);
+
+					// However bright should this position be relative to the light, added and blended into existing lights
+					float bright = light.GetBrightnessAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
+
+					if (bright <= 0.01f)
+						continue;
+
+					float atten = light.GetShadowBrightnessAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
+
+					// Apply shadows
+					shadowBits.TryGetValue(light, out ChunkBitArray bits);
+
+					// Calculate shadows
+					if (bits == null)
+					{
+						shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), true));
+					}
+
+					// First time calculating for this block
+					if (bits.needsCalc)
+						bits.Set(!light.IsShadowed(worldPos), surface.block.localX, surface.block.localY, surface.block.localZ);
+
+					// Get shadows
+					float mult = bits.Get(surface.block.localX, surface.block.localY, surface.block.localZ) ? 1 : 0;
+					mult = Mathf.Clamp01(mult + atten);
+
+					// Apply shadows & final falloff. Shadows are less intense near the source
+					bright *= mult;
+
+					surface.brightness = 1 - (1 - surface.brightness) * (1 - bright);
+
+					// Like opacity for a Color layer
+					float colorTempOpac = light.GetColorOpacityAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
+					colorTempOpac *= mult;
+					surface.colorTemp += colorTempOpac * light.colorTemp;
 				}
-
-				Vector3Int worldPos = new Vector3Int(position.x + block.localX, position.y + block.localY, position.z + block.localZ);
-
-				float dist = light.GetDistanceTo(worldPos);
-
-				// However bright should this position be relative to the light, added and blended into existing lights
-				float bright = light.GetBrightnessAt(this, dist, worldPos.y < World.GetWaterHeight());
-
-				if (bright <= 1 / 255f)
-					continue;
-
-				float atten = light.GetShadowBrightnessAt(this, dist, worldPos.y < World.GetWaterHeight());
-
-				// Apply shadows
-				shadowBits.TryGetValue(light, out ChunkBitArray bits);
-
-				// Calculate shadows
-				if (bits == null)
-				{
-					shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), true));
-				}
-
-				// First time calculating for this block
-				if (bits.needsCalc)
-					bits.Set(!light.IsShadowed(worldPos), block.localX, block.localY, block.localZ);
-
-				// Get shadows
-				float mult = bits.Get(block.localX, block.localY, block.localZ) ? 1 : 0;
-				mult = Mathf.Clamp01(mult + atten);
-
-				// Apply shadows & final falloff. Shadows are less intense near the source
-				bright *= mult;
-
-				newBrightness = 1 - (1 - newBrightness) * (1 - bright);
-
-				// Like opacity for a Color layer
-				float colorTempOpac = light.GetColorOpacityAt(this, dist, worldPos.y < World.GetWaterHeight());
-				colorTempOpac *= mult;
-				newColorTemp += colorTempOpac * light.colorTemp;
-			}
-
-			if (changed)
-			{
-				block.brightness = (byte)(newBrightness * 255f);
-				float a = Mathf.Clamp(newColorTemp, -1, 1);
-				float b = a + 1;
-				float c = b / 2;
-				block.colorTemp = (byte)(255f * c);
 			}
 		}
 
 		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in shadowBits)
 			entry.Value.needsCalc = false;
-
 
 		return counter;
 	}

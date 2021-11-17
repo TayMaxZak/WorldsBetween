@@ -58,11 +58,11 @@ public abstract class LightSource
 		return Mathf.Sqrt(d);
 	}
 
-	public abstract float GetBrightnessAt(Chunk chunk, float distance, bool inWater);
+	public abstract float GetBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater);
 
-	public abstract float GetShadowBrightnessAt(Chunk chunk, float distance, bool inWater);
+	public abstract float GetShadowBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater);
 
-	public abstract float GetColorOpacityAt(Chunk chunk, float value, bool inWater);
+	public abstract float GetColorOpacityAt(Chunk chunk, BlockSurface surface, float value, bool inWater);
 
 	public List<Vector3Int> GetAffectedChunkCoords()
 	{

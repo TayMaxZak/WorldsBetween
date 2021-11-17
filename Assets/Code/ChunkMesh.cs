@@ -54,7 +54,7 @@ public class ChunkMesh
 		Vector3Int vertexPos = new Vector3Int();
 		Vector3Int blockPos = new Vector3Int(surface.block.localX, surface.block.localY, surface.block.localZ);
 
-		float roundingOffset = 0.5f;
+		//float roundingOffset = 0.5f;
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
@@ -68,22 +68,16 @@ public class ChunkMesh
 			vertexPos.y = Mathf.RoundToInt(meshPos.y + chunk.position.y);
 			vertexPos.z = Mathf.RoundToInt(meshPos.z + chunk.position.z);
 
-			// Block that's closest to this actual vertex
-			LightingSample ld = SampleLightingAt(vertexPos, new Vector3(roundingOffset + blockPos.x - meshPos.x, roundingOffset + blockPos.y - meshPos.y, roundingOffset + blockPos.z - meshPos.z));
+			// Surfaces closest to this actual vertex
+			//LightingSample ld = SampleLightingAt(vertexPos, new Vector3(roundingOffset + blockPos.x - meshPos.x, roundingOffset + blockPos.y - meshPos.y, roundingOffset + blockPos.z - meshPos.z));
 
-			// Convert brightness value to float
-			float lastBright = ld.avgBrightness / 255f;
-			//if (adj.postUpdate > 0)
-			//	lastBright = adj.brightness / 255f;
+			float lastBright = surface.brightness;
 
-			float newBright = ld.avgBrightness / 255f;
+			float newBright = surface.brightness;
 
-			// Convert hue value to float
-			float lastColorTemp = ld.avgColorTemp / 255f;
-			//if (adj.postUpdate > 0)
-			//	lastHue = adj.colorTemp / 255f;
+			float lastColorTemp = surface.colorTemp;
 
-			float newColorTemp = ld.avgColorTemp / 255f;
+			float newColorTemp = surface.colorTemp;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
@@ -96,43 +90,43 @@ public class ChunkMesh
 		}
 	}
 
-	private LightingSample SampleLightingAt(Vector3Int vertPos, Vector3 offsets)
-	{
-		Block adj;
+	//private LightingSample SampleLightingAt(Vector3Int vertPos, Vector3 offsets)
+	//{
+	//	Block adj;
 
-		float count = 0;
-		float avgBrightness = 0;
-		float avgColorTemp = 0;
+	//	float count = 0;
+	//	float avgBrightness = 0;
+	//	float avgColorTemp = 0;
 
-		Vector3Int adjPos = new Vector3Int();
+	//	Vector3Int adjPos = new Vector3Int();
 
-		for (int x = -1; x <= 1; x += 2)
-		{
-			for (int y = -1; y <= 1; y += 2)
-			{
-				for (int z = -1; z <= 1; z += 2)
-				{
-					adjPos.x = Mathf.FloorToInt(vertPos.x + x * 0.5f);
-					adjPos.y = Mathf.FloorToInt(vertPos.y + y * 0.5f);
-					adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
+	//	for (int x = -1; x <= 1; x += 2)
+	//	{
+	//		for (int y = -1; y <= 1; y += 2)
+	//		{
+	//			for (int z = -1; z <= 1; z += 2)
+	//			{
+	//				adjPos.x = Mathf.FloorToInt(vertPos.x + x * 0.5f);
+	//				adjPos.y = Mathf.FloorToInt(vertPos.y + y * 0.5f);
+	//				adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
 
-					if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
-						adj = chunk.GetBlock(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
-					else
-						adj = World.GetBlockFor(adjPos.x, adjPos.y, adjPos.z);
+	//				if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
+	//					adj = chunk.GetBlock(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
+	//				else
+	//					adj = World.GetBlockFor(adjPos.x, adjPos.y, adjPos.z);
 
-					if (adj.maybeNearAir == 0)
-						continue;
+	//				if (adj.maybeNearAir == 0)
+	//					continue;
 
-					count++;
-					avgBrightness += adj.brightness;
-					avgColorTemp += adj.colorTemp;
-				}
-			}
-		}
+	//				count++;
+	//				avgBrightness += adj.brightness;
+	//				avgColorTemp += adj.colorTemp;
+	//			}
+	//		}
+	//	}
 
-		return new LightingSample(avgBrightness / count, avgColorTemp / count);
-	}
+	//	return new LightingSample(avgBrightness / count, avgColorTemp / count);
+	//}
 
 	public Color[] GetVertexColors()
 	{

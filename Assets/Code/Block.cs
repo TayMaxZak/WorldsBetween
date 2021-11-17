@@ -10,12 +10,6 @@ public class Block
 
 	public byte opacity; // How full is this block (0 is empty air, 15 is completely solid)
 
-	public byte brightness; // How bright is this block (0 is complete darkness, 15 is fully bright) // TODO: R, G, and B
-	public byte lastBrightness; // How bright was this block at the last light update
-
-	public byte colorTemp; // Lighting color temp of this block (0 is red-orange, 127 is white, 255 is blue-gray)
-	public byte lastColorTemp; // Lighting color temp of this block at the last light update
-
 	// TODO: Make into a flags enum; mor eclear what each value means, more memory efficient, etc.
 	public byte maybeNearAir; // Is this block visible to the player
 	public byte needsUpdate; // nonzero = light changed and should be updated
@@ -27,12 +21,6 @@ public class Block
 		this.localX = localX;
 		this.localY = localY;
 		this.localZ = localZ;
-
-		brightness = 0;
-		lastBrightness = brightness;
-
-		colorTemp = 127;
-		lastColorTemp = colorTemp;
 
 		maybeNearAir = 0;
 
@@ -49,13 +37,7 @@ public class Block
 		this.localY = localY;
 		this.localZ = localZ;
 
-		brightness = 0;
-		lastBrightness = brightness;
-
-		colorTemp = 127;
-		lastColorTemp = colorTemp;
-
-		nearAir = 0;
+		maybeNearAir = nearAir;
 
 		needsUpdate = 0;
 		updatePending = 0;

@@ -66,7 +66,7 @@ public class PointLightSource : LightSource
 		}
 	}
 
-	public override float GetBrightnessAt(Chunk chunk, float distance, bool inWater)
+	public override float GetBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
 	{
 		float falloff = 1f - distance * (1f / (falloffFactor * brightness));
 		falloff = Mathf.Clamp01(falloff);
@@ -77,7 +77,7 @@ public class PointLightSource : LightSource
 		return falloff;
 	}
 
-	public override float GetShadowBrightnessAt(Chunk chunk, float distance, bool inWater)
+	public override float GetShadowBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
 	{
 		float falloff = 1f - distance * (1f / (falloffFactor * brightness));
 		falloff = Mathf.Clamp01(falloff);
@@ -88,7 +88,7 @@ public class PointLightSource : LightSource
 		return falloff;
 	}
 
-	public override float GetColorOpacityAt(Chunk chunk, float distance, bool inWater)
+	public override float GetColorOpacityAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
 	{
 		distance = Mathf.Max(0, distance - 1);
 
