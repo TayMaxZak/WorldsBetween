@@ -55,7 +55,7 @@ public class DirectionalLightSource : LightSource
 		//else
 		//	return Mathf.Clamp01(0.5f * brightness);
 
-		float falloff = 1f - distance * (1f / (waterFalloffFactor * SeedlessRandom.NextFloatInRange(0.64f, 1)));
+		float falloff = 1f - distance * (1f / (waterFalloffFactor * SeedlessRandom.NextFloatInRange(0.75f, 1)));
 		falloff = Mathf.Clamp01(falloff);
 
 		for (int i = 1; i < waterExponent; i++)
@@ -67,7 +67,7 @@ public class DirectionalLightSource : LightSource
 	public override float GetShadowBrightnessAt(Chunk chunk, float distance, bool inWater)
 	{
 		if (!inWater)
-			return SeedlessRandom.NextFloatInRange(0.1f, 0.2f);
+			return SeedlessRandom.NextFloatInRange(0.16f, 0.2f);
 
 		return 0;
 	}

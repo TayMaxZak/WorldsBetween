@@ -202,7 +202,7 @@ public class ChunkMesh
 					if (block.IsAir())
 					{
 						// Air should not count as near air?
-						//block.maybeNearAir = 0;
+						block.maybeNearAir = 0;
 						continue;
 					}
 					// 
