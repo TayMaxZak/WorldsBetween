@@ -132,6 +132,7 @@ public class ChunkMesh
 						bool normal = adjSurface.normal == inputSurface.normal;
 
 						bool darkBlend = false, lightBlend = false;
+						float tolerance = 0.025f;
 
 						// If not above, then normals have to match
 						if (!above)
@@ -144,7 +145,7 @@ public class ChunkMesh
 						// Fits criteria, but is it the wrong brightness?
 						else
 						{
-							if (adjSurface.brightness > inputSurface.brightness)
+							if (adjSurface.brightness > inputSurface.brightness + tolerance)
 								darkBlend = false;
 							else
 								darkBlend = true;
@@ -161,7 +162,7 @@ public class ChunkMesh
 						// Fits criteria, but is it the wrong brightness?
 						else
 						{
-							if (adjSurface.brightness < inputSurface.brightness)
+							if (adjSurface.brightness < inputSurface.brightness - tolerance)
 								lightBlend = false;
 							else
 								lightBlend = true;
@@ -272,6 +273,7 @@ public class ChunkMesh
 							continue;
 						surfacesAdded++;
 
+						//Vector3 randomNormal = new Vector3(SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1));
 						BlockSurface surface = new BlockSurface(chunk, block, directions[d], new Vector3(directions[d].x * 0.5f, directions[d].y * 0.5f, directions[d].z * 0.5f));
 
 						int indexOffset = vertices.Count;
