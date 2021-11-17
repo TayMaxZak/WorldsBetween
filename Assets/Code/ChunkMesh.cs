@@ -126,26 +126,57 @@ public class ChunkMesh
 
 						float dot = Vector3.SqrMagnitude(testDif) - Vector3.SqrMagnitude(controlDif);
 						bool above = dot > 0.001f;
+						bool below = dot < -0.001f;
 
 						// Test if same normal
 						bool normal = adjSurface.normal == inputSurface.normal;
+
+						bool darkBlend = false, lightBlend = false;
 
 						// If not above, then normals have to match
 						if (!above)
 						{
 							if (!normal)
-								continue;
+								darkBlend = false;
+							else
+								darkBlend = true;
 						}
-						// Fits criteria, but is it too bright?
+						// Fits criteria, but is it the wrong brightness?
 						else
 						{
 							if (adjSurface.brightness > inputSurface.brightness)
-								continue;
+								darkBlend = false;
+							else
+								darkBlend = true;
 						}
 
-						count++;
-						avgBrightness += adjSurface.brightness;
-						avgColorTemp += adjSurface.colorTemp;
+						// If not below, then normals have to match
+						if (!below)
+						{
+							if (!normal)
+								lightBlend = false;
+							else
+								lightBlend = true;
+						}
+						// Fits criteria, but is it the wrong brightness?
+						else
+						{
+							if (adjSurface.brightness < inputSurface.brightness)
+								lightBlend = false;
+							else
+								lightBlend = true;
+						}
+
+						if (!lightBlend && !darkBlend)
+						{
+							continue;
+						}
+						else
+						{
+							count++;
+							avgBrightness += adjSurface.brightness;
+							avgColorTemp += adjSurface.colorTemp;
+						}
 					}
 				}
 			}
