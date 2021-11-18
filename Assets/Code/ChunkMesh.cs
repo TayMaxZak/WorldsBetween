@@ -50,9 +50,8 @@ public class ChunkMesh
 
 	public void SetVertexColors(BlockSurface surface)
 	{
-		Vector3 meshPos;
-		Vector3Int vertexPos = new Vector3Int();
-		Vector3Int blockPos = new Vector3Int(surface.block.localX, surface.block.localY, surface.block.localZ);
+		Vector3 localVertPos;
+		Vector3Int worldVertPos = new Vector3Int();
 
 		// Loop through all vertices needed
 		int loopCounter = 0;
@@ -61,34 +60,30 @@ public class ChunkMesh
 			loopCounter++;
 
 			// Find actual block to sample for brightness
-			meshPos = sharedVertices[i];
-			vertexPos.x = Mathf.RoundToInt(meshPos.x + chunk.position.x);
-			vertexPos.y = Mathf.RoundToInt(meshPos.y + chunk.position.y);
-			vertexPos.z = Mathf.RoundToInt(meshPos.z + chunk.position.z);
+			localVertPos = sharedVertices[i];
+			worldVertPos.x = Mathf.RoundToInt(localVertPos.x + chunk.position.x);
+			worldVertPos.y = Mathf.RoundToInt(localVertPos.y + chunk.position.y);
+			worldVertPos.z = Mathf.RoundToInt(localVertPos.z + chunk.position.z);
 
 			// Surfaces closest to this actual vertex
-			LightingSample ld = SampleLightingAt(vertexPos, surface);
+			LightingSample ls = SampleLightingAt(worldVertPos, surface);
 
-			float lastBright = ld.brightness;
+			float blend = 1f;
 
-			float newBright = ld.brightness;
+			float lastBright = Mathf.Lerp(surface.brightness, ls.brightness, blend);
 
-			float lastColorTemp = ld.colorTemp;
+			float newBright = Mathf.Lerp(surface.brightness, ls.brightness, blend);
 
-			float newColorTemp = ld.colorTemp;
+			float lastColorTemp = Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend);
+
+			float newColorTemp = Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend);
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
-
-			//// Placeholder
-			//colors[i] = new Color(RandomJitter(0.0f) + 0.2f, RandomJitter(0.0f) + 0.2f, RandomJitter(0.25f) + 0.5f, RandomJitter(0.25f) + 0.5f);
-
-			//bool bright = World.GetBlockFor(chunk.position + blockPos).opacity <= 127;
-			//colors[i] = new Color(bright ? 0.8f : 0.2f, bright ? 0.8f : 0.2f, bright ? 0.2f : 0.8f, bright ? 0.2f : 0.8f);
 		}
 	}
 
-	private LightingSample SampleLightingAt(Vector3Int vertPos, BlockSurface inputSurface)
+	private LightingSample SampleLightingAt(Vector3Int worldVertPos, BlockSurface inputSurface)
 	{
 		LinkedList<BlockSurface> adjSurfaces;
 
@@ -96,9 +91,7 @@ public class ChunkMesh
 		float avgBrightness = 0;
 		float avgColorTemp = 0;
 
-		Vector3Int adjPos = new Vector3Int();
-
-		Vector3 testDif, controlDif;
+		Vector3Int adjBlockPos = new Vector3Int();
 
 		for (int x = -1; x <= 1; x += 2)
 		{
@@ -106,47 +99,55 @@ public class ChunkMesh
 			{
 				for (int z = -1; z <= 1; z += 2)
 				{
-					adjPos.x = Mathf.FloorToInt(vertPos.x + x * 0.5f);
-					adjPos.y = Mathf.FloorToInt(vertPos.y + y * 0.5f);
-					adjPos.z = Mathf.FloorToInt(vertPos.z + z * 0.5f);
+					adjBlockPos.x = Mathf.FloorToInt(worldVertPos.x + x * 0.5f);
+					adjBlockPos.y = Mathf.FloorToInt(worldVertPos.y + y * 0.5f);
+					adjBlockPos.z = Mathf.FloorToInt(worldVertPos.z + z * 0.5f);
 
-					if (chunk.ContainsPos(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z))
-						adjSurfaces = chunk.GetSurfaces(adjPos.x - chunk.position.x, adjPos.y - chunk.position.y, adjPos.z - chunk.position.z);
+					if (chunk.ContainsPos(adjBlockPos.x - chunk.position.x, adjBlockPos.y - chunk.position.y, adjBlockPos.z - chunk.position.z))
+						adjSurfaces = chunk.GetSurfaces(adjBlockPos.x - chunk.position.x, adjBlockPos.y - chunk.position.y, adjBlockPos.z - chunk.position.z);
 					else
-						adjSurfaces = World.GetSurfacesFor(adjPos.x, adjPos.y, adjPos.z);
+						adjSurfaces = World.GetSurfacesFor(adjBlockPos.x, adjBlockPos.y, adjBlockPos.z);
 
 					if (adjSurfaces == null)
 						continue;
 
-					float tolerance = 0.025f;
+					float tolerance = 0.001f;
 
 					foreach (BlockSurface adjSurface in adjSurfaces)
 					{
+						// Dot product of each surface normal
 						float normalDot = Vector3.Dot(inputSurface.normal, adjSurface.normal);
-						float polarityDot = Vector3.Dot(inputSurface.normal, (adjSurface.GetWorldPosition() - inputSurface.GetWorldPosition()).normalized);
-
-						bool highlight = polarityDot < -tolerance;
-						bool crease = polarityDot > tolerance;
+						// Dot product of input surface normal and offset direction between both surfaces
+						float polarityDot = Vector3.Dot(inputSurface.normal, (adjSurface.GetWorldPosition() - worldVertPos));
+						// Dot product of adjacent surface's relative offset and input surface's offset relative to the adjacent surface's block
+						float distanceDot = Vector3.Dot(adjSurface.relativeOffset, worldVertPos - adjSurface.GetBlockWorldPosition());
 
 						// Test if same normal
 						bool edge = normalDot < 1 - tolerance;
 						bool flat = !edge;
 
-						// Outer edge should be brighter
-						if (!edge || adjSurface.brightness < inputSurface.brightness - tolerance)
+						bool crease = edge && polarityDot > tolerance;
+
+						bool shadow = false, bounce = false;
+
+						// Test shadow conditions
+						if (adjSurface.brightness < inputSurface.brightness - tolerance)
 						{
-							highlight = false;
+							shadow = crease;
 						}
-						// Inner edge should be darker
-						if (!edge || adjSurface.brightness > inputSurface.brightness + tolerance)
+						// Test bounce conditions
+						else if (adjSurface.brightness > inputSurface.brightness + tolerance)
 						{
-							crease = false;
+							bounce = false;
+
+							if (distanceDot < tolerance)
+								bounce = false;
 						}
 
 						// Flat surface
-						if (!crease && !highlight)
+						if (!shadow && !bounce)
 						{
-							if (!flat)
+							if (!flat || distanceDot < -tolerance)
 								continue;
 						}
 

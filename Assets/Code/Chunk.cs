@@ -304,7 +304,7 @@ public class Chunk
 						surface.colorTemp = 0.5f;
 					}
 
-					Vector3Int worldPos = new Vector3Int(position.x + surface.block.localX, position.y + surface.block.localY, position.z + surface.block.localZ);
+					Vector3Int worldPos = surface.GetAdjBlockWorldCoord();
 
 					float dist = light.GetDistanceTo(worldPos);
 
@@ -328,15 +328,17 @@ public class Chunk
 						bits.Set(!light.IsShadowed(worldPos), surface.block.localX, surface.block.localY, surface.block.localZ);
 
 					// Get and apply shadows
-					float mult = bits.Get(surface.block.localX, surface.block.localY, surface.block.localZ) ? 1 : 0;
+					float shadowedMult = bits.Get(surface.block.localX, surface.block.localY, surface.block.localZ) ? 1 : 0;
 
-					bright *= mult;
+					bright *= shadowedMult;
 
 					surface.brightness = 1 - (1 - surface.brightness) * (1 - bright);
 
 					// Like opacity for a Color layer
 					float colorTempOpac = light.GetColorOpacityAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
-					colorTempOpac *= mult;
+
+					colorTempOpac *= shadowedMult;
+
 					surface.colorTemp += colorTempOpac * light.colorTemp;
 				}
 			}

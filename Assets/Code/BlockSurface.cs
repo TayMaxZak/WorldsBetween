@@ -42,4 +42,18 @@ public class BlockSurface
 	{
 		return blockCenter + block.GetLocalPosVector() + chunk.position;
 	}
+
+	public Vector3Int GetAdjBlockLocalCoord()
+	{
+		return new Vector3Int(
+			Mathf.FloorToInt(blockCenter.x + relativeOffset.x + normal.x * 0.5f + block.localX),
+			Mathf.FloorToInt(blockCenter.y + relativeOffset.y + normal.y * 0.5f + block.localY),
+			Mathf.FloorToInt(blockCenter.z + relativeOffset.z + normal.z * 0.5f + block.localZ)
+		);
+	}
+
+	public Vector3Int GetAdjBlockWorldCoord()
+	{
+		return GetAdjBlockLocalCoord() + chunk.position;
+	}
 }
