@@ -352,20 +352,22 @@ public class Chunk
 			}
 		}
 
-		// Ambient light retrieval
-		foreach (LinkedList<BlockSurface> ls in surfaces)
-		{
-			if (ls == null)
-				continue;
+		//// TODO: Make this a separate stage of lighting, after all adjacent chunks have calculated main lights too
+		//// TODO: Lerp between this ambient lighting node and the 7 other ones nearby (8-way lerp)
+		//// Ambient light retrieval
+		//foreach (LinkedList<BlockSurface> ls in surfaces)
+		//{
+		//	if (ls == null)
+		//		continue;
 
-			foreach (BlockSurface surface in ls)
-			{
-				ChunkMesh.LightingSample sample = ambientLight.Retrieve(surface.normal);
+		//	foreach (BlockSurface surface in ls)
+		//	{
+		//		ChunkMesh.LightingSample sample = ambientLight.Retrieve(surface.normal);
 
-				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
-				surface.colorTemp += sample.colorTemp;
-			}
-		}
+		//		surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
+		//		surface.colorTemp += sample.colorTemp;
+		//	}
+		//}
 
 		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in shadowBits)
 			entry.Value.needsCalc = false;

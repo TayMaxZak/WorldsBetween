@@ -54,6 +54,7 @@ public class AmbientLightNode
 	{
 		foreach (AmbientPoint point in points)
 		{
+			// TODO: Instead of using surface normal as input, look at the difference in positions between the input surface and the ambient point (avoid obvious backlighting)
 			float dotMult = Mathf.Clamp01(Vector3.Dot(point.direction, normal));
 
 			point.brightness = 1 - (1 - point.brightness) * (1 - dotMult * brightness / surfaceArea);
@@ -63,12 +64,16 @@ public class AmbientLightNode
 
 	public ChunkMesh.LightingSample Retrieve(Vector3 normal)
 	{
+		float dotFactor = 0.0f;
+
 		float brightness = 0;
 		float colorTemp = 0;
 
 		foreach (AmbientPoint point in points)
 		{
 			float dotMult = Mathf.Clamp01(Vector3.Dot(-point.direction, normal));
+			Mathf.Lerp(1, dotMult, dotFactor);
+
 			brightness = 1 - (1 - brightness) * (1 - dotMult * point.brightness);
 			colorTemp += dotMult * point.colorTemp;
 		}
