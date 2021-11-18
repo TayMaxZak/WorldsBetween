@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.ComponentModel;
 
+[System.Serializable]
 public class Chunk
 {
 	public enum GenStage
@@ -34,7 +35,10 @@ public class Chunk
 
 
 	// Represents where each light reaches. true = light, false = shadow
-	protected Dictionary<LightSource, ChunkBitArray> shadowBits = new Dictionary<LightSource, ChunkBitArray>();
+	private Dictionary<LightSource, ChunkBitArray> shadowBits = new Dictionary<LightSource, ChunkBitArray>();
+
+	[SerializeField]
+	private AmbientLightNode ambientLight;
 
 	public void Init(int chunkSize)
 	{
@@ -64,6 +68,8 @@ public class Chunk
 		}
 
 		surfaces = new LinkedList<BlockSurface>[chunkSize, chunkSize, chunkSize];
+
+		ambientLight = new AmbientLightNode(chunkSize);
 	}
 
 	#region Generate
@@ -291,6 +297,8 @@ public class Chunk
 
 			foreach (BlockSurface surface in ls)
 			{
+				Vector3Int worldPos = surface.GetAdjBlockWorldCoord();
+
 				foreach (LightSource light in lights)
 				{
 					counter++;
@@ -303,8 +311,6 @@ public class Chunk
 						surface.lastColorTemp = surface.colorTemp;
 						surface.colorTemp = 0.0f;
 					}
-
-					Vector3Int worldPos = surface.GetAdjBlockWorldCoord();
 
 					float dist = light.GetDistanceTo(worldPos);
 
@@ -341,6 +347,23 @@ public class Chunk
 
 					surface.colorTemp += colorTempOpac * light.colorTemp;
 				}
+
+				ambientLight.Contribute(surface.normal, surface.brightness, surface.colorTemp);
+			}
+		}
+
+		// Ambient light retrieval
+		foreach (LinkedList<BlockSurface> ls in surfaces)
+		{
+			if (ls == null)
+				continue;
+
+			foreach (BlockSurface surface in ls)
+			{
+				ChunkMesh.LightingSample sample = ambientLight.Retrieve(surface.normal);
+
+				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
+				surface.colorTemp += sample.colorTemp;
 			}
 		}
 

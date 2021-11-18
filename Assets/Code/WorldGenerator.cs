@@ -116,37 +116,37 @@ public class WorldGenerator
 
 					World.GetChunks().Add(chunkPos, chunkGO.data);
 
-					// Add a random light to this chunk
-					if (Random.value < 0.2f)
-					{
-						for (int r = 0; r <= 5 + Random.value * 45; r++)
-						{
-							World.RegisterLight(new PointLightSource(
-								Random.Range(0.4f, 0.7f),
-								Random.Range(-2f, 1f) + Random.Range(0f, 3f),
-								new Vector3(
-									chunkPos.x + Random.value * chunkSize,
-									chunkPos.y + Random.value * chunkSize,
-									chunkPos.z + Random.value * chunkSize)
-								)
-							);
-						}
-					}
-					else if (Random.value < 0.1f)
-					{
-						for (int r = 0; r <= 1 + Random.value * 2; r++)
-						{
-							World.RegisterLight(new PointLightSource(
-								1.7f,
-								-0.7f,
-								new Vector3(
-									chunkPos.x + Random.value * chunkSize,
-									chunkPos.y + Random.value * chunkSize,
-									chunkPos.z + Random.value * chunkSize)
-								)
-							);
-						}
-					}
+					//// Add a random light to this chunk
+					//if (Random.value < 0.2f)
+					//{
+					//	for (int r = 0; r <= 5 + Random.value * 45; r++)
+					//	{
+					//		World.RegisterLight(new PointLightSource(
+					//			Random.Range(0.4f, 0.7f),
+					//			Random.Range(-2f, 1f) + Random.Range(0f, 3f),
+					//			new Vector3(
+					//				chunkPos.x + Random.value * chunkSize,
+					//				chunkPos.y + Random.value * chunkSize,
+					//				chunkPos.z + Random.value * chunkSize)
+					//			)
+					//		);
+					//	}
+					//}
+					//else if (Random.value < 0.1f)
+					//{
+					//	for (int r = 0; r <= 1 + Random.value * 2; r++)
+					//	{
+					//		World.RegisterLight(new PointLightSource(
+					//			1.7f,
+					//			-0.7f,
+					//			new Vector3(
+					//				chunkPos.x + Random.value * chunkSize,
+					//				chunkPos.y + Random.value * chunkSize,
+					//				chunkPos.z + Random.value * chunkSize)
+					//			)
+					//		);
+					//	}
+					//}
 
 					// Add chunk to generator
 					QueueNextStage(chunkGO.data);
