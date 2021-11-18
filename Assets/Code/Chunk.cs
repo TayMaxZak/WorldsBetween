@@ -301,7 +301,7 @@ public class Chunk
 						surface.lastBrightness = surface.brightness;
 						surface.brightness = 0;
 						surface.lastColorTemp = surface.colorTemp;
-						surface.colorTemp = 0.5f;
+						surface.colorTemp = 0.0f;
 					}
 
 					Vector3Int worldPos = surface.GetAdjBlockWorldCoord();

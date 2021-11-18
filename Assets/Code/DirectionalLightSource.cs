@@ -86,7 +86,7 @@ public class DirectionalLightSource : LightSource
 	{
 		float adj = 0.5f;
 
-		for (int i = 1; i <= 6; i++)
+		for (int i = 1; i <= 16; i++)
 		{
 			bool occluded = !World.GetBlockFor(
 				(int)(blockPos.x + -direction.x * i + adj),

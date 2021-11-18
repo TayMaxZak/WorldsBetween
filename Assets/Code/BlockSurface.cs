@@ -15,8 +15,8 @@ public class BlockSurface
 	public float brightness; // How bright is this surface (0 is complete darkness, 1 is fully bright)
 	public float lastBrightness; // How bright was this surface at the last light update
 
-	public float colorTemp; // Lighting color temp of this surface (0 is red-orange, 1 is blue-gray)
-	public float lastColorTemp; // Lighting color temp of this surface at the last light update\
+	public float colorTemp; // Lighting color temp of this surface (-1 is red-orange, 1 is blue-gray)
+	public float lastColorTemp; // Lighting color temp of this surface at the last light update
 
 	private static Vector3 blockCenter = new Vector3(0.5f, 0.5f, 0.5f);
 

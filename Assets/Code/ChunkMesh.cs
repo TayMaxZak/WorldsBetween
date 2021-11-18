@@ -74,9 +74,9 @@ public class ChunkMesh
 
 			float newBright = Mathf.Lerp(surface.brightness, ls.brightness, blend);
 
-			float lastColorTemp = Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend);
+			float lastColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend) + 1) / 2f;
 
-			float newColorTemp = Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend);
+			float newColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend) + 1) / 2f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
