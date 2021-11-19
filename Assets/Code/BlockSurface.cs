@@ -56,4 +56,9 @@ public class BlockSurface
 	{
 		return GetAdjBlockLocalCoord() + chunk.position;
 	}
+
+	public Vector3Int GetBlockWorldCoord()
+	{
+		return block.GetLocalPosVector() + chunk.position;
+	}
 }

@@ -21,6 +21,7 @@ public class ChunkGenerator
 		Chunk.GenStage.Generate,
 		Chunk.GenStage.MakeSurface,
 		Chunk.GenStage.CalcLight,
+		Chunk.GenStage.AmbientLight,
 		Chunk.GenStage.ApplyVertexColors
 	};
 

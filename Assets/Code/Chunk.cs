@@ -70,7 +70,7 @@ public class Chunk
 
 		surfaces = new LinkedList<BlockSurface>[chunkSize, chunkSize, chunkSize];
 
-		ambientLight = new AmbientLightNode(chunkSize);
+		ambientLight = new AmbientLightNode(new Vector3Int(position.x + chunkSize / 2, position.y + chunkSize / 2, position.z + chunkSize / 2), chunkSize);
 	}
 
 	#region Generate
@@ -394,7 +394,6 @@ public class Chunk
 
 	private void AmbientLight()
 	{
-		// TODO: Lerp between this ambient lighting node and the 7 other ones nearby (8-way lerp)
 		// Ambient light retrieval
 		foreach (LinkedList<BlockSurface> ls in surfaces)
 		{
@@ -403,7 +402,7 @@ public class Chunk
 
 			foreach (BlockSurface surface in ls)
 			{
-				ChunkMesh.LightingSample sample = ambientLight.Retrieve(surface.normal);
+				LightingSample sample = ambientLight.Retrieve(surface.GetBlockWorldCoord(), surface.normal);
 
 				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
 				surface.colorTemp += sample.colorTemp;
@@ -448,6 +447,7 @@ public class Chunk
 
 	private Color[] UpdateLightVisuals()
 	{
+		// TODO: First surface of every chunk has broken vertex colors
 		foreach (LinkedList<BlockSurface> ls in surfaces)
 		{
 			if (ls == null)
@@ -500,5 +500,10 @@ public class Chunk
 	public LinkedList<BlockSurface> GetSurfaces(int x, int y, int z)
 	{
 		return surfaces[x, y, z];
+	}
+
+	public AmbientLightNode GetAmbientLightNode()
+	{
+		return ambientLight;
 	}
 }
