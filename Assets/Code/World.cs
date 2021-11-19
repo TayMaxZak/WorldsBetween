@@ -237,7 +237,7 @@ public partial class World : MonoBehaviour
 	{
 		Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.genStage == Chunk.GenStage.Empty)
+		if (chunk == null || chunk.genStage == Chunk.GenStage.Allocate)
 			return Block.empty;
 
 		return chunk.GetBlock(
@@ -256,7 +256,7 @@ public partial class World : MonoBehaviour
 	{
 		Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.genStage == Chunk.GenStage.Empty)
+		if (chunk == null || chunk.genStage == Chunk.GenStage.Allocate)
 			return null;
 
 		return chunk.GetSurfaces(

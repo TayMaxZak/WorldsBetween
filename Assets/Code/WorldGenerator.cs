@@ -32,11 +32,12 @@ public class WorldGenerator
 		int queues = 16;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Empty, new ChunkGenerator(delay, 1) },
-			{ Chunk.GenStage.Allocated, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.Generated, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.Meshed, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.Lit, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.Allocate, new ChunkGenerator(delay, 1) },
+			{ Chunk.GenStage.Generate, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.MakeSurface, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.CalcLight, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.AmbientLight, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.ApplyVertexColors, new ChunkGenerator(delay, queues) },
 		};
 
 		chunkGenTimer.Reset();
@@ -66,7 +67,7 @@ public class WorldGenerator
 		{
 			chunksToGen += entry.Value.GetSize();
 
-			bool empty = entry.Key == Chunk.GenStage.Empty;
+			bool empty = entry.Key == Chunk.GenStage.Allocate;
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
@@ -115,38 +116,6 @@ public class WorldGenerator
 					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);
 
 					World.GetChunks().Add(chunkPos, chunkGO.data);
-
-					// Add a random light to this chunk
-					if (Random.value < 0.2f)
-					{
-						for (int r = 0; r <= 5 + Random.value * 45; r++)
-						{
-							World.RegisterLight(new PointLightSource(
-								Random.Range(0.4f, 0.7f),
-								Random.Range(-2f, 1f) + Random.Range(0f, 3f),
-								new Vector3(
-									chunkPos.x + Random.value * chunkSize,
-									chunkPos.y + Random.value * chunkSize,
-									chunkPos.z + Random.value * chunkSize)
-								)
-							);
-						}
-					}
-					else if (Random.value < 0.1f)
-					{
-						for (int r = 0; r <= 1 + Random.value * 2; r++)
-						{
-							World.RegisterLight(new PointLightSource(
-								1.7f,
-								-0.7f,
-								new Vector3(
-									chunkPos.x + Random.value * chunkSize,
-									chunkPos.y + Random.value * chunkSize,
-									chunkPos.z + Random.value * chunkSize)
-								)
-							);
-						}
-					}
 
 					// Add chunk to generator
 					QueueNextStage(chunkGO.data);

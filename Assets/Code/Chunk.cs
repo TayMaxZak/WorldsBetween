@@ -8,14 +8,15 @@ public class Chunk
 {
 	public enum GenStage
 	{
-		Empty,
-		Allocated,
-		Generated,
-		Meshed,
-		Lit,
+		Allocate,
+		Generate,
+		MakeSurface,
+		CalcLight,
+		AmbientLight,
+		ApplyVertexColors,
 		Ready
 	}
-	public GenStage genStage = GenStage.Empty;
+	public GenStage genStage = GenStage.Allocate;
 
 
 	public Vector3Int position; // Coordinates of chunk
@@ -99,7 +100,7 @@ public class Chunk
 
 			CacheMaybeFlags();
 
-			genStage = GenStage.Generated;
+			genStage = GenStage.MakeSurface;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -236,7 +237,7 @@ public class Chunk
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
 
-			genStage = GenStage.Meshed;
+			genStage = GenStage.CalcLight;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -274,7 +275,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.Lit;
+			genStage = GenStage.AmbientLight;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -352,27 +353,62 @@ public class Chunk
 			}
 		}
 
-		//// TODO: Make this a separate stage of lighting, after all adjacent chunks have calculated main lights too
-		//// TODO: Lerp between this ambient lighting node and the 7 other ones nearby (8-way lerp)
-		//// Ambient light retrieval
-		//foreach (LinkedList<BlockSurface> ls in surfaces)
-		//{
-		//	if (ls == null)
-		//		continue;
-
-		//	foreach (BlockSurface surface in ls)
-		//	{
-		//		ChunkMesh.LightingSample sample = ambientLight.Retrieve(surface.normal);
-
-		//		surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
-		//		surface.colorTemp += sample.colorTemp;
-		//	}
-		//}
-
 		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in shadowBits)
 			entry.Value.needsCalc = false;
 
 		return counter;
+	}
+	#endregion
+
+	#region Light Calc
+	public void AsyncAmbientLight()
+	{
+		BkgThreadAmbientLight(this, System.EventArgs.Empty);
+	}
+
+	private void BkgThreadAmbientLight(object sender, System.EventArgs e)
+	{
+		isProcessing = true;
+
+		BackgroundWorker bw = new BackgroundWorker();
+
+		// What to do in the background thread
+		bw.DoWork += new DoWorkEventHandler(
+		delegate (object o, DoWorkEventArgs args)
+		{
+			AmbientLight();
+		});
+
+		// What to do when worker completes its task
+		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+		delegate (object o, RunWorkerCompletedEventArgs args)
+		{
+			isProcessing = false;
+
+			genStage = GenStage.ApplyVertexColors;
+			World.Generator.QueueNextStage(this);
+		});
+
+		bw.RunWorkerAsync();
+	}
+
+	private void AmbientLight()
+	{
+		// TODO: Lerp between this ambient lighting node and the 7 other ones nearby (8-way lerp)
+		// Ambient light retrieval
+		foreach (LinkedList<BlockSurface> ls in surfaces)
+		{
+			if (ls == null)
+				continue;
+
+			foreach (BlockSurface surface in ls)
+			{
+				ChunkMesh.LightingSample sample = ambientLight.Retrieve(surface.normal);
+
+				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
+				surface.colorTemp += sample.colorTemp;
+			}
+		}
 	}
 	#endregion
 
@@ -429,20 +465,20 @@ public class Chunk
 
 	public void QueueLightUpdate()
 	{
-		if (isProcessing || genStage < GenStage.Meshed)
+		if (isProcessing || genStage < GenStage.CalcLight)
 			return;
 
 		// TODO: Clear dictionaries if unused?
 
 		//chunkMesh.ResetColors();
 
-		genStage = GenStage.Meshed;
+		genStage = GenStage.CalcLight;
 		World.Generator.QueueNextStage(this, false);
 	}
 
 	public void NeedsLightDataRecalc(LightSource light)
 	{
-		if (isProcessing || genStage < GenStage.Meshed)
+		if (isProcessing || genStage < GenStage.CalcLight)
 			return;
 
 		shadowBits.TryGetValue(light, out ChunkBitArray bits);

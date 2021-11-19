@@ -72,9 +72,8 @@ public class AmbientLightNode
 		foreach (AmbientPoint point in points)
 		{
 			float dotMult = Mathf.Clamp01(Vector3.Dot(-point.direction, normal));
-			Mathf.Lerp(1, dotMult, dotFactor);
 
-			brightness = 1 - (1 - brightness) * (1 - dotMult * point.brightness);
+			brightness = 1 - (1 - brightness) * (1 - Mathf.Lerp(1, dotMult, dotFactor) * point.brightness);
 			colorTemp += dotMult * point.colorTemp;
 		}
 

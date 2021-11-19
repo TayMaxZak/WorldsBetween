@@ -37,7 +37,7 @@ public class DirectionalLightSource : LightSource
 	{
 		Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
 
-		if (chunk != null && !chunk.isProcessing && chunk.genStage > Chunk.GenStage.Meshed)
+		if (chunk != null && !chunk.isProcessing && chunk.genStage > Chunk.GenStage.CalcLight)
 		{
 			World.UpdateLight(this, true);
 		}

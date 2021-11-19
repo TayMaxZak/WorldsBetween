@@ -18,10 +18,10 @@ public class ChunkGenerator
 	private int edgeChunks = 0;
 
 	private static readonly List<Chunk.GenStage> requireAdjacents = new List<Chunk.GenStage> {
-		Chunk.GenStage.Allocated,
-		Chunk.GenStage.Generated,
-		Chunk.GenStage.Meshed,
-		Chunk.GenStage.Lit
+		Chunk.GenStage.Generate,
+		Chunk.GenStage.MakeSurface,
+		Chunk.GenStage.CalcLight,
+		Chunk.GenStage.ApplyVertexColors
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -168,32 +168,37 @@ public class ChunkGenerator
 	{
 		switch (chunk.genStage)
 		{
-			case Chunk.GenStage.Empty: // Create blocks
+			case Chunk.GenStage.Allocate: // Create blocks
 				{
 					chunk.Init(World.GetChunkSize());
 
-					chunk.genStage = Chunk.GenStage.Allocated;
+					chunk.genStage = Chunk.GenStage.Generate;
 					World.Generator.QueueNextStage(chunk);
 				}
 				break;
-			case Chunk.GenStage.Allocated: // Generate terrain
+			case Chunk.GenStage.Generate: // Generate terrain
 				{
 					chunk.AsyncGenerate();
 				}
 				break;
-			case Chunk.GenStage.Generated: // Cache data and build mesh
+			case Chunk.GenStage.MakeSurface: // Cache data and build mesh
 				{
 					chunk.AsyncMakeMesh();
 				}
 				break;
-			case Chunk.GenStage.Meshed: // Calculate lights
+			case Chunk.GenStage.CalcLight: // Calculate lights
 				{
 					World.AddSunlight(chunk);
 
 					chunk.AsyncCalcLight();
 				}
 				break;
-			case Chunk.GenStage.Lit: // Light visuals, spawn entities, and other stuff
+			case Chunk.GenStage.AmbientLight: // Light visuals, spawn entities, and other stuff
+				{
+					chunk.AsyncAmbientLight();
+				}
+				break;
+			case Chunk.GenStage.ApplyVertexColors: // Light visuals, spawn entities, and other stuff
 				{
 					chunk.AsyncLightVisuals();
 				}
