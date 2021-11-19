@@ -56,15 +56,15 @@ public class ChunkMesh
 			// Surfaces closest to this actual vertex
 			LightingSample ls = SampleLightingAt(worldVertPos, surface);
 
-			float blend = 1f;
+			float sampleBlend = 1f;
 
-			float lastBright = Mathf.Lerp(surface.brightness, ls.brightness, blend);
+			float lastBright = Mathf.Lerp(surface.brightness, ls.brightness, sampleBlend);
 
-			float newBright = Mathf.Lerp(surface.brightness, ls.brightness, blend);
+			float newBright = Mathf.Lerp(surface.brightness, ls.brightness, sampleBlend);
 
-			float lastColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend) + 1) / 2f;
+			float lastColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, sampleBlend) + 1) / 2f;
 
-			float newColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, blend) + 1) / 2f;
+			float newColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, sampleBlend) + 1) / 2f;
 
 			// Assign lighting data: new brightness, last brightness, new hue, last hue
 			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);

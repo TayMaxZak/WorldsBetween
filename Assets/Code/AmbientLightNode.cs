@@ -72,13 +72,13 @@ public class AmbientLightNode
 
 	public LightingSample Retrieve(Vector3Int position, Vector3 normal)
 	{
-		float dotFactor = 0.0f;
+		float dotFactor = 0.5f;
 
 		float brightness = 0;
 		float colorTemp = 0;
 
 		int count = 0;
-		int buffer = 1;
+		int buffer = 0;
 		for (int x = 0 + buffer; x < 3 - buffer; x++)
 		{
 			for (int y = 0 + buffer; y < 3 - buffer; y++)
@@ -101,15 +101,19 @@ public class AmbientLightNode
 						neighborArray[x, y, z] = amb;
 
 					Vector3 dif = new Vector3((float)(amb.centerPos.x - position.x) / size, (float)(amb.centerPos.y - position.y) / size, (float)(amb.centerPos.z - position.z) / size);
-					dif = new Vector3(Mathf.Abs(dif.x), Mathf.Abs(dif.y), Mathf.Abs(dif.z));
+					dif *= 1 + 0;
+					dif = new Vector3(1 - Mathf.Abs(dif.x), 1 - Mathf.Abs(dif.y), 1 - Mathf.Abs(dif.z));
+					//dif = new Vector3(SeedlessRandom.NextFloat(), SeedlessRandom.NextFloat(), SeedlessRandom.NextFloat());
 
 					// Too far (further than one chunk size away)
-					if (dif.x > 1 || dif.y > 1 || dif.z > 1)
+					float cutoff = 0.0001f;
+					if (dif.x <= cutoff && dif.y <= cutoff && dif.z <= cutoff)
 						continue;
 
 					count++;
 
-					float neighborMult = ((1 - dif.x) + (1 - dif.y) + (1 - dif.z)) / 8;
+					//float neighborMult = ((dif.x) + (dif.y) + (dif.z)) / 12;
+					float neighborMult = dif.sqrMagnitude / 12;
 
 					foreach (AmbientPoint point in amb.points)
 					{

@@ -360,7 +360,7 @@ public class Chunk
 	}
 	#endregion
 
-	#region Light Calc
+	#region Ambient Light
 	public void AsyncAmbientLight()
 	{
 		BkgThreadAmbientLight(this, System.EventArgs.Empty);
@@ -394,6 +394,9 @@ public class Chunk
 
 	private void AmbientLight()
 	{
+		Chunk startChunk;
+		Vector3Int coord;
+
 		// Ambient light retrieval
 		foreach (LinkedList<BlockSurface> ls in surfaces)
 		{
@@ -402,7 +405,13 @@ public class Chunk
 
 			foreach (BlockSurface surface in ls)
 			{
-				LightingSample sample = ambientLight.Retrieve(surface.GetBlockWorldCoord(), surface.normal);
+				coord = surface.GetAdjBlockWorldCoord();
+
+				startChunk = World.GetChunkFor(coord);
+
+				if (startChunk == null)
+					continue;
+				LightingSample sample = startChunk.ambientLight.Retrieve(coord, surface.normal);
 
 				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
 				surface.colorTemp += sample.colorTemp;
