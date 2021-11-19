@@ -9,6 +9,7 @@ public class Noise : Modifier
 	public float offset = 2444.0424f;
 	public float strength = 1;
 	public float cutoff = 0;
+	public bool ribbon = false;
 
 	private Vector3 randomOffset = Vector3.zero;
 
@@ -33,6 +34,9 @@ public class Noise : Modifier
 		float zPlane = Mathf.PerlinNoise(x, y);
 
 		float noise = Mathf.Clamp01((xPlane + yPlane + zPlane) / 3f);
+
+		if (ribbon)
+			noise = Mathf.Clamp01(Mathf.Abs(noise - 0.5f) * 3.5f);
 
 		noise = Mathf.Clamp01(noise - cutoff) / (1 - cutoff);
 

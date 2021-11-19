@@ -5,6 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class Modifier
 {
+	public string label = "";
+
 	private bool didInit = false;
 
 	public Vector3Int pos; // Coordinates in world space
