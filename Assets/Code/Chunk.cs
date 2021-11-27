@@ -275,7 +275,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.AmbientLight;
+			genStage = GenStage.ApplyVertexColors;
 			World.Generator.QueueNextStage(this);
 		});
 

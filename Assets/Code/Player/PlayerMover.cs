@@ -2,9 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[SelectionBase]
 public class PlayerMover : MonoBehaviour
 {
+	[SerializeField]
+	private Transform locator;
+	[SerializeField]
+	private Transform locatorBlock;
+
 	public Camera cam;
+	private Vector3 camOffset;
 
 	// Position
 	[HideInInspector]
@@ -37,7 +44,11 @@ public class PlayerMover : MonoBehaviour
 	{
 		UpdatePosition();
 
+		camOffset = cam.transform.localPosition;
 		cam.transform.parent = null;
+
+		locator.parent = null;
+		locatorBlock.parent = null;
 
 		didInit = true;
 	}
@@ -55,14 +66,17 @@ public class PlayerMover : MonoBehaviour
 		if (!didInit)
 			return;
 
-		cam.transform.position = Vector3.Lerp(lastActualPos, transform.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime) + Vector3.up;
+		cam.transform.position = Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime) + camOffset;
 
 		moveTickTimer.Increment(Time.deltaTime);
 
 		if (moveTickTimer.Expired())
 		{
-			lastActualPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+			lastActualPos = new Vector3(locator.position.x, locator.position.y, locator.position.z);
 			MoveTick(moveTickTimer.maxTime);
+
+			float offset = 0.5f;
+			locatorBlock.position = new Vector3(worldX + offset, worldY + offset, worldZ + offset);
 
 			moveTickTimer.Reset();
 		}
@@ -116,19 +130,19 @@ public class PlayerMover : MonoBehaviour
 
 	private void Move(Vector3 delta)
 	{
-		transform.position += delta;
+		locator.position += delta;
 		UpdatePosition();
 	}
 
 	private void UpdatePosition()
 	{
-		worldX = Mathf.FloorToInt(transform.position.x);
-		worldY = Mathf.FloorToInt(transform.position.y);
-		worldZ = Mathf.FloorToInt(transform.position.z);
+		worldX = Mathf.FloorToInt(locator.position.x);
+		worldY = Mathf.FloorToInt(locator.position.y);
+		worldZ = Mathf.FloorToInt(locator.position.z);
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			//flashlight.UpdatePosition(transform.position);
+			//flashlight.UpdatePosition(locator.position);
 		}
 
 		lastWorldX = worldX;
