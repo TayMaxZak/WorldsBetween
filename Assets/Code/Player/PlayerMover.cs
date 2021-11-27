@@ -6,9 +6,9 @@ using UnityEngine;
 public class PlayerMover : MonoBehaviour
 {
 	[SerializeField]
-	private Transform locator;
+	public Transform locator;
 	[SerializeField]
-	private Transform locatorBlock;
+	public Transform locatorBlock;
 
 	public Camera cam;
 	private Vector3 camOffset;
@@ -32,11 +32,13 @@ public class PlayerMover : MonoBehaviour
 
 	private Vector3 walkVelocity = new Vector3();
 
-	private Timer moveTickTimer = new Timer(0.05f);
+	private Timer moveTickTimer = new Timer(0.1f);
 
 	private bool didInit = false;
-
-	private bool realChunk = true;
+	
+	[System.NonSerialized]
+	[HideInInspector]
+	public bool realChunk = true;
 
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
@@ -148,5 +150,15 @@ public class PlayerMover : MonoBehaviour
 		lastWorldX = worldX;
 		lastWorldY = worldY;
 		lastWorldZ = worldZ;
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Utils.colorYellow;
+		Gizmos.DrawWireCube(locatorBlock.position, Vector3.one);
+		Gizmos.color = Utils.colorOrange;
+		Gizmos.DrawWireSphere(locator.position, 0.9f);
+		Gizmos.color = Utils.colorBlue;
+		Gizmos.DrawRay(cam.transform.position - camOffset, Vector3.up * 2);
 	}
 }
