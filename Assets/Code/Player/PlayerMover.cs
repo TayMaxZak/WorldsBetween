@@ -16,7 +16,7 @@ public class PlayerMover : MonoBehaviour
 
 	// Velocity
 	[SerializeField]
-	private Vector3 gravity = new Vector3(0, -12, 0);
+	private Vector3 gravity = new Vector3(0, -20, 0);
 	private Vector3 velocity;
 
 	[SerializeField]
@@ -29,6 +29,8 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
+	private bool realChunk = true;
+
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Start()
@@ -36,6 +38,8 @@ public class PlayerMover : MonoBehaviour
 		UpdatePosition();
 
 		cam.transform.parent = null;
+
+		didInit = true;
 	}
 
 	private void Update()
@@ -48,12 +52,6 @@ public class PlayerMover : MonoBehaviour
 
 	private void MainUpdate()
 	{
-		Chunk chunk;
-		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Ready)
-			didInit = true;
-		else
-			didInit = false;
-
 		if (!didInit)
 			return;
 
@@ -74,7 +72,13 @@ public class PlayerMover : MonoBehaviour
 	{
 		UpdatePosition();
 
-		bool underWater = worldY - 0.4f < World.GetWaterHeight();
+		Chunk chunk;
+		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Ready)
+			realChunk = true;
+		else
+			realChunk = false;
+
+		bool underWater = worldY - 0.4f < World.GetWaterHeight() || !realChunk;
 
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
@@ -95,7 +99,7 @@ public class PlayerMover : MonoBehaviour
 
 		// Intersection with floor
 		block = World.GetBlockFor(worldX, worldY - 1, worldZ);
-		if (!block.IsAir())
+		if (!block.IsAir() && realChunk)
 		{
 			velocity.y = 0;
 
