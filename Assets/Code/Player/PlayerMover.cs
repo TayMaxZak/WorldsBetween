@@ -27,6 +27,7 @@ public class PlayerMover : MonoBehaviour
 	// Velocity
 	[SerializeField]
 	private Vector3 gravity = new Vector3(0, -20, 0);
+	[SerializeField]
 	private Vector3 velocity;
 
 	[SerializeField]
@@ -40,7 +41,7 @@ public class PlayerMover : MonoBehaviour
 	private Timer moveTickTimer = new Timer(0.2f);
 
 	private bool didInit = false;
-	
+
 	[System.NonSerialized]
 	[HideInInspector]
 	public bool realChunk = true;
@@ -72,7 +73,7 @@ public class PlayerMover : MonoBehaviour
 		if (!didInit)
 			return;
 
-		body.position = Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime);
+		body.position = Vector3.up + Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime);
 
 		moveTickTimer.Increment(Time.deltaTime);
 
@@ -98,14 +99,16 @@ public class PlayerMover : MonoBehaviour
 		else
 			realChunk = false;
 
+		// Apply water effects
 		bool underWater = worldY - 0.4f < World.GetWaterHeight() || !realChunk;
 
+		// Directional input
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		// Applying input velocity
-		float smooth = 1 - (underWater ?  0.9f : 0.5f);
+		float smooth = 1 - (underWater ? 0.9f : 0.0f);
 		velocity.x = Mathf.Lerp(velocity.x, walkVelocity.x, smooth);
 		if (underWater)
 			velocity.y = Mathf.Lerp(velocity.y, walkVelocity.y, smooth);
@@ -114,26 +117,40 @@ public class PlayerMover : MonoBehaviour
 		// Falling
 		velocity += (underWater ? 0.0f : 1) * gravity * deltaTime;
 
+		// Drag
 		if (underWater)
 			velocity *= 1f - 0.05f;
 
-		Block block;
+		if (Intersecting(deltaTime))
+			velocity *= -0.4f;
 
-		// Intersection with floor
-		block = World.GetBlockFor(worldX, worldY - 1, worldZ);
-		if (!block.IsAir() && realChunk)
+		Move(velocity * deltaTime);
+	}
+
+	private bool Intersecting(float deltaTime)
+	{
+		Block checkBlock;
+
+		bool intersected = false;
+
+		// Intersection with surface
+		Vector3Int checkPos = new Vector3Int(Mathf.FloorToInt(locator.position.x + velocity.x * deltaTime),
+			Mathf.FloorToInt(locator.position.y + velocity.y * deltaTime),
+			Mathf.FloorToInt(locator.position.z + velocity.z * deltaTime));
+		checkBlock = World.GetBlockFor(checkPos);
+		if (!checkBlock.IsAir() && realChunk)
 		{
-			velocity.y = 0;
+			intersected = true;
 
-			block = World.GetBlockFor(worldX, worldY, worldZ);
-
-			if (!block.IsAir())
+			checkPos.y += 1;
+			checkBlock = World.GetBlockFor(checkPos);
+			if (!checkBlock.IsAir() && realChunk)
 			{
-				Move(Vector3.up * 20 * deltaTime);
+				intersected = true;
 			}
 		}
 
-		Move(velocity * deltaTime);
+		return intersected;
 	}
 
 	private void Move(Vector3 delta)
@@ -168,5 +185,17 @@ public class PlayerMover : MonoBehaviour
 
 		Gizmos.color = Utils.colorBlue;
 		Gizmos.DrawRay(body.position - Vector3.up, Vector3.up * 1.5f);
+
+
+		Gizmos.color = Color.red;
+
+		float offset = 0.5f;
+		float deltaTime = moveTickTimer.maxTime;
+		Gizmos.DrawWireCube(new Vector3(
+				offset + Mathf.FloorToInt(locator.position.x + velocity.x * deltaTime),
+				offset + Mathf.FloorToInt(locator.position.y + velocity.y * deltaTime),
+				offset + Mathf.FloorToInt(locator.position.z + velocity.z * deltaTime)
+			),
+			Vector3.one);
 	}
 }

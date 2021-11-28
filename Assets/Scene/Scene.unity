@@ -1622,6 +1622,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: gravity.y
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: moveTickTimer.maxTime
       value: 0.05
       objectReference: {fileID: 0}
@@ -1631,15 +1635,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5004,6 +5008,10 @@ PrefabInstance:
       propertyPath: sunObject
       value: 
       objectReference: {fileID: 2035213415}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: waterHeight
+      value: -25
+      objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: waterSystem
       value: 
