@@ -115,27 +115,32 @@ public class PlayerMover : MonoBehaviour
 		velocity.z = Mathf.Lerp(velocity.z, walkVelocity.z, smooth);
 
 		// Falling
-		velocity += (underWater ? 0.0f : 1) * gravity * deltaTime;
+		Vector3 fallVelocity = (underWater ? 0.0f : 1) * gravity * deltaTime;
+
+		bool intersect = Intersecting(deltaTime, ref fallVelocity);
+
+		if (!intersect || Mathf.Abs(fallVelocity.y) > Mathf.Abs(gravity.y * deltaTime))
+			velocity += fallVelocity;
 
 		// Drag
 		if (underWater)
 			velocity *= 1f - 0.05f;
 
-		Intersecting(deltaTime);
+		Intersecting(deltaTime, ref velocity);
 
 		Move(velocity * deltaTime);
 	}
 
-	private bool Intersecting(float deltaTime)
+	private bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
 		Block checkBlock;
 
 		bool intersected = false;
 
 		// Intersection with surface
-		Vector3Int checkPos = new Vector3Int(Mathf.FloorToInt(locator.position.x + velocity.x * deltaTime),
-			Mathf.FloorToInt(locator.position.y + velocity.y * deltaTime),
-			Mathf.FloorToInt(locator.position.z + velocity.z * deltaTime));
+		Vector3Int checkPos = new Vector3Int(Mathf.FloorToInt(locator.position.x + testVel.x * deltaTime),
+			Mathf.FloorToInt(locator.position.y + testVel.y * deltaTime),
+			Mathf.FloorToInt(locator.position.z + testVel.z * deltaTime));
 		checkBlock = World.GetBlockFor(checkPos);
 		if (!checkBlock.IsAir() && realChunk)
 		{
@@ -155,7 +160,7 @@ public class PlayerMover : MonoBehaviour
 
 		if (intersected)
 		{
-			velocity += Vector3.Scale(velocity, -1.2f * normal);
+			testVel += Vector3.Scale(testVel, -1.05f * normal);
 		}
 
 		return intersected;

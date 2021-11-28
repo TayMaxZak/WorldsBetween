@@ -130,7 +130,7 @@ public class Chunk
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
 
 					if (lastPass && y + position.y > 6)
-						blocks[x, y, z].opacity = 0;
+						blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 16, 0, 255);
 				}
 			}
 		}
@@ -278,7 +278,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.ApplyVertexColors;
+			genStage = GenStage.AmbientLight;
 			World.Generator.QueueNextStage(this);
 		});
 
