@@ -128,6 +128,9 @@ public class Chunk
 					newOpacity -= modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
 
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
+
+					if (lastPass && y + position.y > 6)
+						blocks[x, y, z].opacity = 0;
 				}
 			}
 		}

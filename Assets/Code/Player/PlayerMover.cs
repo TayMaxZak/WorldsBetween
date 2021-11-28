@@ -121,8 +121,7 @@ public class PlayerMover : MonoBehaviour
 		if (underWater)
 			velocity *= 1f - 0.05f;
 
-		if (Intersecting(deltaTime))
-			velocity *= -0.4f;
+		Intersecting(deltaTime);
 
 		Move(velocity * deltaTime);
 	}
@@ -142,12 +141,21 @@ public class PlayerMover : MonoBehaviour
 		{
 			intersected = true;
 
-			checkPos.y += 1;
-			checkBlock = World.GetBlockFor(checkPos);
-			if (!checkBlock.IsAir() && realChunk)
-			{
-				intersected = true;
-			}
+			//checkPos.y += 1;
+			//checkBlock = World.GetBlockFor(checkPos);
+			//if (!checkBlock.IsAir() && realChunk)
+			//{
+			//	intersected = true;
+			//}
+		}
+
+		// Repel
+		Vector3 normal = new Vector3Int(worldX, worldY, worldZ) - checkPos;
+		normal = new Vector3(Mathf.Abs(normal.x), Mathf.Abs(normal.y), Mathf.Abs(normal.z));
+
+		if (intersected)
+		{
+			velocity += Vector3.Scale(velocity, -1.2f * normal);
 		}
 
 		return intersected;
