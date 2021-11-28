@@ -28,7 +28,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8417224532618400518}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8417224531880680240
 GameObject:
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 8417224531880680268}
   - component: {fileID: 8417224531880680269}
   m_Layer: 15
-  m_Name: Player
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,9 +58,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 0.9, y: 2, z: 0.7}
-  m_Children: []
+  m_Children:
+  - {fileID: 8417224531919593861}
   m_Father: {fileID: 8417224532618400518}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8417224531880680268
 MeshFilter:
@@ -138,11 +139,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8417224531919593864}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.3000002, z: 0}
+  m_LocalScale: {x: 1.1111112, y: 0.5, z: 1.4285713}
   m_Children: []
-  m_Father: {fileID: 8417224532618400518}
+  m_Father: {fileID: 8417224531880680243}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &8417224531919593866
@@ -241,7 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseSensitivity: 250
-  playerBody: {fileID: 8417224532618400518}
+  playerBody: {fileID: 8417224531880680243}
 --- !u!1 &8417224532618400519
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +271,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8417224531919593861}
   - {fileID: 8417224531880680243}
   - {fileID: 7832385438691284394}
   - {fileID: 7018331006766783025}
@@ -291,12 +291,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   locator: {fileID: 7832385438691284394}
   locatorBlock: {fileID: 7018331006766783025}
+  body: {fileID: 8417224531880680243}
   cam: {fileID: 8417224531919593866}
   worldX: 0
   worldY: 0
   worldZ: 0
   gravity: {x: 0, y: -20, z: 0}
   walkSpeed: 4.5
+  swimSpeed: 7
+  moveTickTimer:
+    maxTime: 0.05
 --- !u!1 &8503646745212854119
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,5 +329,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8417224532618400518}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

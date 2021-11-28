@@ -10,8 +10,11 @@ public class PlayerMover : MonoBehaviour
 	[SerializeField]
 	public Transform locatorBlock;
 
+	[SerializeField]
+	public Transform body;
+
 	public Camera cam;
-	private Vector3 camOffset;
+	private Vector3 eyeOffset;
 
 	// Position
 	[HideInInspector]
@@ -28,11 +31,13 @@ public class PlayerMover : MonoBehaviour
 
 	[SerializeField]
 	private float walkSpeed = 4.5f;
-	private float swimSpeed = 9;
+	[SerializeField]
+	private float swimSpeed = 7;
 
 	private Vector3 walkVelocity = new Vector3();
 
-	private Timer moveTickTimer = new Timer(0.1f);
+	[SerializeField]
+	private Timer moveTickTimer = new Timer(0.2f);
 
 	private bool didInit = false;
 	
@@ -46,8 +51,7 @@ public class PlayerMover : MonoBehaviour
 	{
 		UpdatePosition();
 
-		camOffset = cam.transform.localPosition;
-		cam.transform.parent = null;
+		eyeOffset = cam.transform.localPosition;
 
 		locator.parent = null;
 		locatorBlock.parent = null;
@@ -68,7 +72,7 @@ public class PlayerMover : MonoBehaviour
 		if (!didInit)
 			return;
 
-		cam.transform.position = Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime) + camOffset;
+		body.position = Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime);
 
 		moveTickTimer.Increment(Time.deltaTime);
 
@@ -96,20 +100,22 @@ public class PlayerMover : MonoBehaviour
 
 		bool underWater = worldY - 0.4f < World.GetWaterHeight() || !realChunk;
 
-		Vector3 velocityVectorArrows = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
-		walkVelocity = !underWater ? transform.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
+		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
-		velocity += gravity * deltaTime;
-
-		float smooth = underWater ? 0.5f : 0.9f;
+		// Applying input velocity
+		float smooth = 1 - (underWater ?  0.9f : 0.5f);
 		velocity.x = Mathf.Lerp(velocity.x, walkVelocity.x, smooth);
 		if (underWater)
 			velocity.y = Mathf.Lerp(velocity.y, walkVelocity.y, smooth);
 		velocity.z = Mathf.Lerp(velocity.z, walkVelocity.z, smooth);
 
+		// Falling
+		velocity += (underWater ? 0.0f : 1) * gravity * deltaTime;
+
 		if (underWater)
-			velocity *= 0.85f;
+			velocity *= 1f - 0.05f;
 
 		Block block;
 
@@ -123,7 +129,7 @@ public class PlayerMover : MonoBehaviour
 
 			if (!block.IsAir())
 			{
-				Move(Vector3.up);
+				Move(Vector3.up * 20 * deltaTime);
 			}
 		}
 
@@ -144,7 +150,7 @@ public class PlayerMover : MonoBehaviour
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			//flashlight.UpdatePosition(locator.position);
+			// Dirty
 		}
 
 		lastWorldX = worldX;
@@ -156,9 +162,11 @@ public class PlayerMover : MonoBehaviour
 	{
 		Gizmos.color = Utils.colorYellow;
 		Gizmos.DrawWireCube(locatorBlock.position, Vector3.one);
+
 		Gizmos.color = Utils.colorOrange;
 		Gizmos.DrawWireSphere(locator.position, 0.9f);
+
 		Gizmos.color = Utils.colorBlue;
-		Gizmos.DrawRay(cam.transform.position - camOffset, Vector3.up * 2);
+		Gizmos.DrawRay(body.position - Vector3.up, Vector3.up * 1.5f);
 	}
 }
