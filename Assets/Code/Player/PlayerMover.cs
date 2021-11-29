@@ -104,7 +104,7 @@ public class PlayerMover : MonoBehaviour
 
 	private void Jump()
 	{
-		jumpVel = Vector3.up * 5;
+		jumpVel = Vector3.up * 7;
 		grounded = false;
 	}
 
