@@ -78,6 +78,11 @@ public class PlayerMover : MonoBehaviour
 		if (grounded && Input.GetButtonDown("Jump"))
 			Jump();
 
+		if (Input.GetButtonDown("Vitals"))
+			UIManager.SetWatchRaised(true);
+		else if (Input.GetButtonUp("Vitals"))
+			UIManager.SetWatchRaised(false);
+
 		MainUpdate();
 	}
 
