@@ -23,7 +23,7 @@ public class AmbientLightNode
 	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
 													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
 
-	private readonly int size;
+	private readonly int nodeSize;
 
 	private readonly int surfaceArea;
 
@@ -38,11 +38,11 @@ public class AmbientLightNode
 
 	public AmbientLightNode(Vector3Int center, int dimension)
 	{
-		size = dimension;
+		nodeSize = dimension;
 
-		surfaceArea = size * size;
+		surfaceArea = nodeSize * nodeSize;
 
-		volume = size * size * size;
+		volume = nodeSize * nodeSize * nodeSize;
 
 		points = new List<AmbientPoint> {
 			new AmbientPoint(directions[0]),
@@ -89,38 +89,33 @@ public class AmbientLightNode
 
 					if (amb == null)
 					{
-						amb = World.GetChunkFor(centerPos.x + (x - 1) * size, centerPos.y + (y - 1) * size, centerPos.z + (z - 1) * size)?.GetAmbientLightNode();
+						amb = World.GetChunkFor(centerPos.x + (x - 1) * nodeSize, centerPos.y + (y - 1) * nodeSize, centerPos.z + (z - 1) * nodeSize)?.GetAmbientLightNode();
 					}
 
 					// Still null?
 					// TODO: Stricter requireAdjacents requirements for this genStage
-					// TODO: How to handle neighboring chunks not existing :(
+					// TODO: How to handle neighboring chunks not existing
 					if (amb == null)
 						continue; // amb = this;
 					else
 						neighborArray[x, y, z] = amb;
 
-					Vector3 dif = new Vector3((float)(amb.centerPos.x - position.x) / size, (float)(amb.centerPos.y - position.y) / size, (float)(amb.centerPos.z - position.z) / size);
-					dif *= 1 + 0;
-					dif = new Vector3(1 - Mathf.Abs(dif.x), 1 - Mathf.Abs(dif.y), 1 - Mathf.Abs(dif.z));
-					//dif = new Vector3(SeedlessRandom.NextFloat(), SeedlessRandom.NextFloat(), SeedlessRandom.NextFloat());
-
-					// Too far (further than one chunk size away)
-					float cutoff = 0.0001f;
-					if (dif.x <= cutoff && dif.y <= cutoff && dif.z <= cutoff)
-						continue;
-
 					count++;
 
-					//float neighborMult = ((dif.x) + (dif.y) + (dif.z)) / 12;
-					float neighborMult = dif.sqrMagnitude / 12;
+					float dist = Mathf.Sqrt(Utils.DistSquared(position.x, position.y, position.z, amb.centerPos.x, amb.centerPos.y, amb.centerPos.z));
+
+					float contribution = 1 - (dist / nodeSize);
+
+					// Too far
+					if (contribution <= 0)
+						continue;
 
 					foreach (AmbientPoint point in amb.points)
 					{
 						float dotMult = Mathf.Clamp01(Vector3.Dot(-point.direction, normal));
 
-						brightness += Mathf.Lerp(1, dotMult, dotFactor) * neighborMult * point.brightness;
-						colorTemp += Mathf.Lerp(1, dotMult, dotFactor) * neighborMult * point.colorTemp;
+						brightness += Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.brightness;
+						colorTemp += Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.colorTemp;
 					}
 				}
 			}
