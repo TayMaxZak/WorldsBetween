@@ -42,10 +42,6 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
-	[System.NonSerialized]
-	[HideInInspector]
-	public bool realChunk = true;
-
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Start()
@@ -93,6 +89,8 @@ public class PlayerMover : MonoBehaviour
 	{
 		UpdatePosition();
 
+		bool realChunk = true;
+
 		Chunk chunk;
 		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Ready)
 			realChunk = true;
@@ -108,7 +106,7 @@ public class PlayerMover : MonoBehaviour
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		// Applying input velocity
-		float smooth = 1 - (underWater ? 0.9f : 0.0f);
+		float smooth = 1 - (underWater ? 1 - deltaTime * 2 : 1 - deltaTime * 8);
 		velocity.x = Mathf.Lerp(velocity.x, walkVelocity.x, smooth);
 		if (underWater)
 			velocity.y = Mathf.Lerp(velocity.y, walkVelocity.y, smooth);
@@ -124,7 +122,7 @@ public class PlayerMover : MonoBehaviour
 
 		// Drag
 		if (underWater)
-			velocity *= 1f - 0.05f;
+			velocity *= 1f - deltaTime / 2;
 
 		Intersecting(deltaTime, ref velocity);
 
@@ -142,6 +140,9 @@ public class PlayerMover : MonoBehaviour
 			Mathf.FloorToInt(locator.position.y + testVel.y * deltaTime),
 			Mathf.FloorToInt(locator.position.z + testVel.z * deltaTime));
 		checkBlock = World.GetBlockFor(checkPos);
+
+		bool realChunk = checkBlock != Block.empty;
+
 		if (!checkBlock.IsAir() && realChunk)
 		{
 			intersected = true;
