@@ -6,6 +6,9 @@ using UnityEngine;
 public class PlayerMover : MonoBehaviour
 {
 	[SerializeField]
+	private Sound enterWaterSound;
+
+	[SerializeField]
 	public Transform locator;
 	[SerializeField]
 	public Transform locatorBlock;
@@ -39,10 +42,18 @@ public class PlayerMover : MonoBehaviour
 
 	[SerializeField]
 	private Timer moveTickTimer = new Timer(0.2f);
+	private float epsilon;
 
 	private bool didInit = false;
 
+	private bool underWater;
+
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
+
+	private void Awake()
+	{
+		epsilon = moveTickTimer.maxTime * 2;
+	}
 
 	private void Start()
 	{
@@ -98,7 +109,12 @@ public class PlayerMover : MonoBehaviour
 			realChunk = false;
 
 		// Apply water effects
-		bool underWater = worldY - 0.4f < World.GetWaterHeight() || !realChunk;
+		bool newUnderWater = worldY - 0.4f < World.GetWaterHeight() || !realChunk;
+
+		if (realChunk && newUnderWater && !underWater && enterWaterSound)
+			AudioManager.PlaySound(enterWaterSound, transform.position);
+
+		underWater = newUnderWater;
 
 		// Directional input
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
@@ -106,19 +122,18 @@ public class PlayerMover : MonoBehaviour
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		// Applying input velocity
-		float smooth = 1 - (underWater ? 1 - deltaTime * 2 : 1 - deltaTime * 8);
+		float smooth = 1 - (underWater ? 1 - deltaTime * 2 : 1 - deltaTime * 6);
 		velocity.x = Mathf.Lerp(velocity.x, walkVelocity.x, smooth);
 		if (underWater)
 			velocity.y = Mathf.Lerp(velocity.y, walkVelocity.y, smooth);
 		velocity.z = Mathf.Lerp(velocity.z, walkVelocity.z, smooth);
 
 		// Falling
-		Vector3 fallVelocity = (underWater ? 0.0f : 1) * gravity * deltaTime;
+		Vector3 fallVelocity = (underWater ? 0.1f : 1) * gravity * deltaTime;
 
-		bool intersect = Intersecting(deltaTime, ref fallVelocity);
+		Intersecting(deltaTime, ref fallVelocity);
 
-		if (!intersect || Mathf.Abs(fallVelocity.y) > Mathf.Abs(gravity.y * deltaTime))
-			velocity += fallVelocity;
+		velocity += fallVelocity;
 
 		// Drag
 		if (underWater)
@@ -161,7 +176,10 @@ public class PlayerMover : MonoBehaviour
 
 		if (intersected)
 		{
-			testVel += Vector3.Scale(testVel, -1.05f * normal);
+			if (testVel.sqrMagnitude * deltaTime > epsilon)
+				testVel += Vector3.Scale(testVel, -1.05f * normal);
+			else
+				testVel += Vector3.Scale(testVel, -normal);
 		}
 
 		return intersected;
