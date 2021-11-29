@@ -109,13 +109,13 @@ public class Chunk
 
 	private void Generate()
 	{
-		List<Noise> modifiers = World.GetModifiers();
+		List<NoiseModifier> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)
 			ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
 	}
 
-	private void ApplyModifier(Noise modifier, bool firstPass, bool lastPass)
+	private void ApplyModifier(NoiseModifier modifier, bool firstPass, bool lastPass)
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -129,8 +129,8 @@ public class Chunk
 
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
 
-					//if (lastPass && y + position.y > 6)
-					//	blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 16, 0, 255);
+					if (lastPass && Mathf.Abs(y + position.y - 0) < 4)
+						blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 16, 0, 255);
 				}
 			}
 		}

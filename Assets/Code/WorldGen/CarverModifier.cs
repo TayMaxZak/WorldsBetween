@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Carver : Modifier
+public class CarverModifier : Modifier
 {
 	public float strength = 1;
 	public float range = 5;

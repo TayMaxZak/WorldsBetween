@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Noise : Modifier
+public class NoiseModifier : Modifier
 {
 	public Vector3 scale = Vector3.one;
 	public float offset = 2444.0424f;

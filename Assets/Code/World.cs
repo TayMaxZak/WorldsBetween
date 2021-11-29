@@ -19,7 +19,7 @@ public partial class World : MonoBehaviour
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
 	[SerializeField]
-	private List<Noise> modifiers = new List<Noise>();
+	private List<NoiseModifier> modifiers = new List<NoiseModifier>();
 
 	private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -57,7 +57,7 @@ public partial class World : MonoBehaviour
 			seed = Random.Range(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
-		foreach (Noise mod in modifiers)
+		foreach (NoiseModifier mod in modifiers)
 			mod.Init();
 
 		Generator = generator;
@@ -85,17 +85,17 @@ public partial class World : MonoBehaviour
 		Generator.ContinueGenerating();
 	}
 
-	public static void RegisterModifier(Noise modifier)
+	public static void RegisterModifier(NoiseModifier modifier)
 	{
 		Instance.modifiers.Add(modifier);
 	}
 
-	public static void RemoveModifier(Noise modifier)
+	public static void RemoveModifier(NoiseModifier modifier)
 	{
 		Instance.modifiers.Remove(modifier);
 	}
 
-	public static List<Noise> GetModifiers()
+	public static List<NoiseModifier> GetModifiers()
 	{
 		return Instance.modifiers;
 	}
