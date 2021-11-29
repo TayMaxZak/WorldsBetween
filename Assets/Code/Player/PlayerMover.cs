@@ -48,6 +48,9 @@ public class PlayerMover : MonoBehaviour
 
 	private bool underWater;
 
+	private bool grounded = false;
+	private Vector3 jumpVel;
+
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Awake()
@@ -71,6 +74,9 @@ public class PlayerMover : MonoBehaviour
 	{
 		if (Input.GetButtonDown("Quit"))
 			Application.Quit();
+
+		if (grounded && Input.GetButtonDown("Jump"))
+			Jump();
 
 		MainUpdate();
 	}
@@ -96,6 +102,12 @@ public class PlayerMover : MonoBehaviour
 		}
 	}
 
+	private void Jump()
+	{
+		jumpVel = Vector3.up * 5;
+		grounded = false;
+	}
+
 	private void MoveTick(float deltaTime)
 	{
 		UpdatePosition();
@@ -116,6 +128,8 @@ public class PlayerMover : MonoBehaviour
 
 		underWater = newUnderWater;
 
+		grounded = !World.GetBlockFor(worldX, Mathf.FloorToInt(locator.position.y - 0.45f), worldZ).IsAir() && !underWater;
+
 		// Directional input
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
@@ -134,6 +148,9 @@ public class PlayerMover : MonoBehaviour
 		Intersecting(deltaTime, ref fallVelocity);
 
 		velocity += fallVelocity;
+
+		velocity += jumpVel;
+		jumpVel = Vector3.zero;
 
 		// Drag
 		if (underWater)
