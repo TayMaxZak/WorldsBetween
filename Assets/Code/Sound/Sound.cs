@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Defines a sound with an audio clip and audio settings
+[CreateAssetMenu(menuName = "Sound")]
 [System.Serializable]
-public class Sound
+public class Sound : ScriptableObject
 {
 	public AudioClip clip = null;
 
 	public AudioSource preset = null;
 
 	public RangeFloat pitchRange = new RangeFloat(0.5f, 1.5f);
-
-	public static implicit operator bool(Sound exists)
-	{
-		return exists != null && exists.clip != null && exists.preset != null && exists.pitchRange != null;
-	}
 }
 
 [System.Serializable]
