@@ -16,6 +16,8 @@ public class Block
 	public byte updatePending; // nonzero = update in progress, do not touch
 	public byte postUpdate; // nonzero = needs to finalize update
 
+	public byte blockType; // 0 = normal block, 1 = grass
+
 	public Block(byte localX, byte localY, byte localZ, byte opacity) : this(localX, localY, localZ, opacity, 0)
 	{
 		this.localX = localX;

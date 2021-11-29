@@ -211,13 +211,11 @@ public class Chunk
 
 		BackgroundWorker bw = new BackgroundWorker();
 
-		ChunkMesh.MeshData blockMesh = new ChunkMesh.MeshData(BlockModels.GetModelFor(0).faces[0].faceMesh);
-
 		// What to do in the background thread
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = MakeMesh(blockMesh);
+			args.Result = MakeMesh();
 		});
 
 		// What to do when worker completes its task
@@ -247,9 +245,9 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private ChunkMesh.MeshData MakeMesh(ChunkMesh.MeshData blockMesh)
+	private ChunkMesh.MeshData MakeMesh()
 	{
-		return chunkMesh.MakeSurfaceAndMesh(blockMesh, blocks, surfaces);
+		return chunkMesh.MakeSurfaceAndMesh(blocks, surfaces);
 	}
 	#endregion
 

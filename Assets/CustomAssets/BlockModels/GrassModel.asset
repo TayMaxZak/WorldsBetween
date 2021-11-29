@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82091c6ba84e3846b098452ad4f5b7e, type: 3}
   m_Name: GrassModel
   m_EditorClassIdentifier: 
-  flags:
+  faces:
   - label: Right
     faceMesh: {fileID: 3621554888825754127, guid: 44417bb8910e2d345a6119f2b0b0bc91, type: 3}
     replaceAdjModel: 0
@@ -21,10 +21,10 @@ MonoBehaviour:
     replaceAdjModel: 0
   - label: Top
     faceMesh: {fileID: 3621554888825754127, guid: 44417bb8910e2d345a6119f2b0b0bc91, type: 3}
-    replaceAdjModel: 0
+    replaceAdjModel: 1
   - label: Bottom
     faceMesh: {fileID: 3621554888825754127, guid: 44417bb8910e2d345a6119f2b0b0bc91, type: 3}
-    replaceAdjModel: 1
+    replaceAdjModel: 0
   - label: Front
     faceMesh: {fileID: 3621554888825754127, guid: 44417bb8910e2d345a6119f2b0b0bc91, type: 3}
     replaceAdjModel: 0

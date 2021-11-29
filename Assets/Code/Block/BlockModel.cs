@@ -22,6 +22,9 @@ public class BlockModel : ScriptableObject
 		public Mesh faceMesh;
 		public bool replaceAdjModel; // e.g., the bottom model of this block replaces the top model of the block under it
 
+		[HideInInspector]
+		public ChunkMesh.MeshData meshData;
+
 		public SurfaceModel(string label)
 		{
 			this.label = label;

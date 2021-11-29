@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockModels : MonoBehaviour
+public class ModelsList : MonoBehaviour
 {
-	private static BlockModels Instance;
+	private static ModelsList Instance;
 
 	[SerializeField]
 	private BlockModel[] models;
@@ -19,6 +19,13 @@ public class BlockModels : MonoBehaviour
 		}
 		else
 			Instance = this;
+
+		// Get mesh data
+		foreach (BlockModel bm in models)
+		{
+			foreach (BlockModel.SurfaceModel sm in bm.faces)
+				sm.meshData = new ChunkMesh.MeshData(sm.faceMesh);
+		}
 	}
 
 	public static BlockModel GetModelFor(int blockType)

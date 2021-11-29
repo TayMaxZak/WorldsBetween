@@ -192,7 +192,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData MakeSurfaceAndMesh(MeshData blockMeshData, Block[,,] blocks, LinkedList<BlockSurface>[,,] surfaces)
+	public MeshData MakeSurfaceAndMesh(Block[,,] blocks, LinkedList<BlockSurface>[,,] surfaces)
 	{
 		Block block;
 
@@ -224,6 +224,8 @@ public class ChunkMesh
 					// 
 					else if (block.maybeNearAir == 0)
 						continue;
+
+					MeshData blockMeshData = ModelsList.GetModelFor(0).faces[0].meshData;
 
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
