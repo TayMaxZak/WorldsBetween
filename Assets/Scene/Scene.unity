@@ -5005,6 +5005,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2035213415}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: waterHeight
+      value: -32
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: waterSystem
       value: 
       objectReference: {fileID: 1369908092}
@@ -5014,7 +5018,7 @@ PrefabInstance:
       objectReference: {fileID: 1451397879}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.genRange
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
