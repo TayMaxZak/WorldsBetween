@@ -160,6 +160,8 @@ public class PlayerMover : MonoBehaviour
 		// Drag
 		if (underWater)
 			velocity *= 1f - deltaTime / 2;
+		else
+			velocity *= 1f - deltaTime / 5;
 
 		Intersecting(deltaTime, ref velocity);
 
@@ -205,6 +207,11 @@ public class PlayerMover : MonoBehaviour
 		}
 
 		return intersected;
+	}
+
+	public void AddVelocity(Vector3 vel)
+	{
+		velocity += vel;
 	}
 
 	private void Move(Vector3 delta)
