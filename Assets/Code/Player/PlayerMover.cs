@@ -222,6 +222,11 @@ public class PlayerMover : MonoBehaviour
 		velocity += vel;
 	}
 
+	public void SetVelocity(Vector3 vel)
+	{
+		velocity = vel;
+	}
+
 	private void Move(Vector3 delta)
 	{
 		locator.position += delta;
