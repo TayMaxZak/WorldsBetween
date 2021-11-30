@@ -72,7 +72,7 @@ public class AmbientLightNode
 
 	public LightingSample Retrieve(Vector3Int position, Vector3 normal)
 	{
-		float dotFactor = 0.5f;
+		float dotFactor = 0.0f;
 
 		float brightness = 0;
 		float colorTemp = 0;

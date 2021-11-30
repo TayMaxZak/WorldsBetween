@@ -130,7 +130,7 @@ public class Chunk
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
 
 					if (lastPass && Mathf.Abs(y + position.y - 0) < 4)
-						blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 16, 0, 255);
+						blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 8, 0, 255);
 				}
 			}
 		}

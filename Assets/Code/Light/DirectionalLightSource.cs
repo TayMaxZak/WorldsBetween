@@ -50,7 +50,7 @@ public class DirectionalLightSource : LightSource
 
 	public override float GetBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
 	{
-		float dotMult = Mathf.Clamp01(Vector3.Dot(direction, -surface.normal));
+		float dotMult = Mathf.Clamp01(Mathf.Ceil(Vector3.Dot(direction, -surface.normal) - 0.1f));
 
 		if (!inWater)
 			return Mathf.Clamp01(brightness * dotMult);

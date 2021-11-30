@@ -126,10 +126,10 @@ public class ChunkMesh
 						// Test bounce conditions
 						else if (adjSurface.brightness > inputSurface.brightness + tolerance)
 						{
-							//bounce = edge && !crease;
+							bounce = !crease;
 
-							if (distanceDot < tolerance)
-								bounce = false;
+							//if (distanceDot < tolerance)
+							//	bounce = false;
 						}
 
 						// Flat surface
