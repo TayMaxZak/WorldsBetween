@@ -51,11 +51,15 @@ public class PlayerMover : MonoBehaviour
 	private bool grounded = false;
 	private Vector3 jumpVel;
 
+	public bool ticking = false;
+	public float tickingDelta;
+
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Awake()
 	{
 		epsilon = moveTickTimer.maxTime * 2;
+		tickingDelta = moveTickTimer.maxTime;
 	}
 
 	private void Start()
@@ -91,12 +95,16 @@ public class PlayerMover : MonoBehaviour
 		if (!didInit)
 			return;
 
+		ticking = false;
+
 		body.position = Vector3.up + Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime);
 
 		moveTickTimer.Increment(Time.deltaTime);
 
 		if (moveTickTimer.Expired())
 		{
+			ticking = true;
+
 			lastActualPos = new Vector3(locator.position.x, locator.position.y, locator.position.z);
 			MoveTick(moveTickTimer.maxTime);
 
@@ -161,7 +169,7 @@ public class PlayerMover : MonoBehaviour
 		if (underWater)
 			velocity *= 1f - deltaTime / 2;
 		else
-			velocity *= 1f - deltaTime / 5;
+			velocity *= 1f - deltaTime / 3;
 
 		Intersecting(deltaTime, ref velocity);
 

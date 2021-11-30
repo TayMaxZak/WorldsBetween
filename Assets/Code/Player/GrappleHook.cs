@@ -29,6 +29,12 @@ public class GrappleHook : MonoBehaviour
 			else
 				ReleaseHook();
 		}
+		if (isAttached && isLocked && Input.GetButton("Equipment"))
+		{
+			length -= Time.deltaTime;
+		}
+
+
 
 		if (isAttached && isLocked)
 		{
@@ -37,15 +43,18 @@ public class GrappleHook : MonoBehaviour
 			//if (Vector3.SqrMagnitude(body.position - attachBlockPos) > length * length)
 			//	body.position = attachBlockPos + (body.position - attachBlockPos).normalized * length;
 
-			float dist = Vector3.Distance(body.position, attachBlockPos);
-			if (dist > length)
-				mover.AddVelocity(-(body.position - attachBlockPos).normalized * (dist - length));
+			if (mover.ticking)
+			{
+				float dist = Vector3.Distance(body.position, attachBlockPos);
+				if (dist > length)
+					mover.AddVelocity(-(body.position - attachBlockPos).normalized * (dist - length) * (dist - length) * 20 * mover.tickingDelta);
+			}
 		}
 	}
 
 	private void ShootHook()
 	{
-		attachBlock = new Vector3Int(Mathf.FloorToInt(body.position.x), Mathf.FloorToInt(body.position.y), Mathf.FloorToInt(body.position.z));
+		attachBlock = BlockCast();
 		attachBlockPos = attachBlock + Vector3.one * 0.5f;
 
 		isAttached = true;
@@ -62,5 +71,28 @@ public class GrappleHook : MonoBehaviour
 	{
 		isAttached = false;
 		isLocked = false;
+	}
+
+	public Vector3Int BlockCast()
+	{
+		Transform camTran = mover.cam.transform;
+		Vector3Int blockPos = new Vector3Int(Mathf.FloorToInt(camTran.position.x), Mathf.FloorToInt(camTran.position.y), Mathf.FloorToInt(camTran.position.z));
+		Vector3 direction = camTran.forward;
+
+		float adj = 0.5f;
+
+		for (int i = 1; i <= 16; i++)
+		{
+			bool occluded = !World.GetBlockFor(
+				(int)(blockPos.x + direction.x * i + adj),
+				(int)(blockPos.y + direction.y * i + adj),
+				(int)(blockPos.z + direction.z * i + adj)
+			).IsAir();
+
+			if (occluded)
+				return new Vector3Int((int)(blockPos.x + direction.x * i + adj), (int)(blockPos.y + direction.y * i + adj), (int)(blockPos.z + direction.z * i + adj));
+		}
+
+		return blockPos;
 	}
 }
