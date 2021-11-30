@@ -28,11 +28,11 @@ public class WorldGenerator
 
 	public void Init()
 	{
-		float delay = 0;
+		float delay = 0f;
 		int queues = 16;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Allocate, new ChunkGenerator(delay, 1) },
+			{ Chunk.GenStage.Allocate, new ChunkGenerator(0, 1) },
 			{ Chunk.GenStage.Generate, new ChunkGenerator(delay, queues) },
 			{ Chunk.GenStage.MakeSurface, new ChunkGenerator(delay, queues) },
 			{ Chunk.GenStage.CalcLight, new ChunkGenerator(delay, queues) },

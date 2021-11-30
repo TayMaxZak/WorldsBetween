@@ -417,7 +417,7 @@ public class Chunk
 
 				float oldBrightness = surface.brightness;
 				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
-				surface.colorTemp = Mathf.Lerp(sample.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(sample.brightness / (oldBrightness + sample.brightness))));
+				//surface.colorTemp = Mathf.Lerp(sample.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(sample.brightness / (oldBrightness + sample.brightness))));
 			}
 		}
 	}
