@@ -340,14 +340,15 @@ public class Chunk
 
 					bright *= shadowedMult;
 
+					float oldBrightness = surface.brightness;
 					surface.brightness = 1 - (1 - surface.brightness) * (1 - bright);
 
 					// Like opacity for a Color layer
 					float colorTempOpac = light.GetColorOpacityAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
 
-					colorTempOpac *= shadowedMult;
+					//colorTempOpac *= shadowedMult;
 
-					surface.colorTemp += colorTempOpac * light.colorTemp;
+					surface.colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 -  Mathf.Clamp01(bright / (oldBrightness + bright))));
 				}
 
 				ambientLight.Contribute(surface.normal, surface.brightness, surface.colorTemp);
@@ -414,8 +415,9 @@ public class Chunk
 					continue;
 				LightingSample sample = startChunk.ambientLight.Retrieve(coord, surface.normal);
 
+				float oldBrightness = surface.brightness;
 				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
-				surface.colorTemp += sample.colorTemp;
+				surface.colorTemp = Mathf.Lerp(sample.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(sample.brightness / (oldBrightness + sample.brightness))));
 			}
 		}
 	}

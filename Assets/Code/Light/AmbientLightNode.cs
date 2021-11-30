@@ -115,7 +115,7 @@ public class AmbientLightNode
 						float dotMult = Mathf.Clamp01(Vector3.Dot(-point.direction, normal));
 
 						brightness += Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.brightness;
-						colorTemp += Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.colorTemp;
+						//colorTemp -= Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.colorTemp;
 					}
 				}
 			}

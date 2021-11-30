@@ -69,7 +69,7 @@ public class DirectionalLightSource : LightSource
 	public override float GetColorOpacityAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
 	{
 		if (!inWater)
-			return Mathf.Clamp01(brightness);
+			return Mathf.Clamp01(1);
 
 		distance = Mathf.Max(0, distance - 1);
 
@@ -79,7 +79,7 @@ public class DirectionalLightSource : LightSource
 		for (int i = 1; i < waterExponent; i++)
 			falloff *= falloff;
 
-		return 0.75f * falloff * brightness;
+		return 0.75f * falloff * 1;
 	}
 
 	public override bool IsShadowed(Vector3Int blockPos)
