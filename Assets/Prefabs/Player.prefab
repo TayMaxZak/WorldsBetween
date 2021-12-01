@@ -78,7 +78,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8417224531880680240}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -252,7 +252,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8417224532618400518}
+  - component: {fileID: 6215269175067649699}
   - component: {fileID: 8417224532618400513}
+  - component: {fileID: 1335200600}
+  - component: {fileID: 1335200601}
   m_Layer: 15
   m_Name: Player
   m_TagString: Untagged
@@ -277,6 +280,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6215269175067649699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8417224532618400519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c23c4a0b6efbce64d959fc300d6e91b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHealth: 100
+  maxHealth: 100
+  healthRegen: 4
+  currentStamina: 100
+  maxStamina: 100
+  staminaRegen: 10
+  vitalsTimer:
+    maxTime: 0.05
 --- !u!114 &8417224532618400513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,6 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27fa7b476663dd47806d74bf384754e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enterWaterSound: {fileID: 11400000, guid: d0557916523330f4eb4952a01ec240c9, type: 2}
   locator: {fileID: 7832385438691284394}
   locatorBlock: {fileID: 7018331006766783025}
   body: {fileID: 8417224531880680243}
@@ -297,10 +321,50 @@ MonoBehaviour:
   worldY: 0
   worldZ: 0
   gravity: {x: 0, y: -20, z: 0}
-  walkSpeed: 4.5
-  swimSpeed: 7
+  velocity: {x: 0, y: 0, z: 0}
+  walkSpeed: 0.79
+  swimSpeed: 0.375
+  jumpSpeed: 8
   moveTickTimer:
     maxTime: 0.05
+  ticking: 0
+  tickingDelta: 0
+  onRope: 0
+--- !u!114 &1335200600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8417224532618400519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff15c77c9ec4b4249824a7b553258ac4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mover: {fileID: 8417224532618400513}
+  initPos: {x: 0, y: 0, z: 0}
+  activate:
+    maxTime: 1
+--- !u!114 &1335200601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8417224532618400519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d0c9bd6ee9ff6642979f476b0fd0f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mover: {fileID: 8417224532618400513}
+  attachBlock: {x: 0, y: 0, z: 0}
+  attachBlockPos: {x: 0, y: 0, z: 0}
+  isAttached: 0
+  isLocked: 0
+  length: 0
+  line: {fileID: 0}
 --- !u!1 &8503646745212854119
 GameObject:
   m_ObjectHideFlags: 0

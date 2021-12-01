@@ -11,6 +11,10 @@ public class UIManager : MonoBehaviour
 
 	public Animator watchAnim;
 
+	public TMPro.TextMeshProUGUI healthText;
+
+	public UnityEngine.UI.Image staminaSlider;
+
 	private void Awake()
 	{
 		if (!Instance)
@@ -24,5 +28,15 @@ public class UIManager : MonoBehaviour
 		Instance.watchRaised = raised;
 
 		Instance.watchAnim.SetBool("WatchRaised", raised);
+	}
+
+	public static void SetCurrentHealth(int health)
+	{
+		Instance.healthText.text = "" + health;
+	}
+
+	public static void SetCurrentStamina(float stamina)
+	{
+		Instance.staminaSlider.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stamina * 100);
 	}
 }
