@@ -181,11 +181,14 @@ public class PlayerMover : MonoBehaviour
 
 		// Directional input
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? (sprinting ? sprintSpeed : walkSpeed) : swimSpeed);
+		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? ((sprinting && grounded) ? sprintSpeed : walkSpeed) : swimSpeed);
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
-		if (!vitals.dead && (grounded || underWater))
+		if (!vitals.dead)
 		{
+			if (!grounded && !underWater)
+				walkVelocity *= 0.15f;
+
 			Intersecting(deltaTime, ref walkVelocity);
 
 			// Applying input velocity
