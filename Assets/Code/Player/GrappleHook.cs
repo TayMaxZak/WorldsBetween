@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GrappleHook : MonoBehaviour
 {
+	public PlayerVitals vitals;
 	public PlayerMover mover;
 
 	public Vector3Int attachBlock;
@@ -19,6 +20,14 @@ public class GrappleHook : MonoBehaviour
 
 	public void Update()
 	{
+		if (vitals.dead)
+		{
+			if (isAttached)
+				ReleaseHook();
+			else
+				return;
+		}
+
 		if (!isAttached && Input.GetButtonDown("Equipment"))
 		{
 			ShootHook();
@@ -36,8 +45,6 @@ public class GrappleHook : MonoBehaviour
 			if (length <= 0.1f)
 				ReleaseHook();
 		}
-
-
 
 		if (isAttached)
 		{

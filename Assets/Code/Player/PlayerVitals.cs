@@ -76,9 +76,11 @@ public class PlayerVitals : MonoBehaviour
 			heartbeatLoop.volume = 0;
 			breathingLoop.volume = 0;
 
-			UIManager.SetDeath(1);
+			UIManager.SetDeathPostProcess(1);
 
 			UIManager.SetWatchRaised(false);
+
+			UIManager.SetDeathUI(true);
 		}
 		else
 		{
@@ -101,7 +103,7 @@ public class PlayerVitals : MonoBehaviour
 			float nearDeath = (1 - currentHealth / maxHealth);
 			nearDeath = Mathf.Clamp01((nearDeath - 0.75f) * 4);
 			nearDeath *= nearDeath * nearDeath * nearDeath;
-			UIManager.SetDeath(0.7f * nearDeath);
+			UIManager.SetDeathPostProcess(0.7f * nearDeath);
 		}
 	}
 
@@ -197,6 +199,8 @@ public class PlayerVitals : MonoBehaviour
 	public void Respawn()
 	{
 		dead = false;
+
+		UIManager.SetDeathUI(false);
 
 		currentHealth = maxHealth;
 		currentStamina = maxStamina;

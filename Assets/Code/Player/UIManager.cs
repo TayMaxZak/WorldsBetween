@@ -17,12 +17,16 @@ public class UIManager : MonoBehaviour
 
 	public UnityEngine.Rendering.Volume deathPostProcess;
 
+	public GameObject deathCanvas;
+
 	private void Awake()
 	{
 		if (!Instance)
 			Instance = this;
 		else
 			Destroy(gameObject);
+
+		SetDeathUI(false);
 	}
 
 	public static void SetWatchRaised(bool raised)
@@ -42,8 +46,13 @@ public class UIManager : MonoBehaviour
 		Instance.staminaSlider.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stamina * 100);
 	}
 
-	public static void SetDeath(float death)
+	public static void SetDeathPostProcess(float death)
 	{
 		Instance.deathPostProcess.weight = death;
+	}
+
+	public static void SetDeathUI(bool show)
+	{
+		Instance.deathCanvas.SetActive(show);
 	}
 }
