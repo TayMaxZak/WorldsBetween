@@ -231,9 +231,10 @@ public class Chunk
 			{
 				vertices = data.vertices,
 				normals = data.normals,
-				triangles = data.triangles,
-				uv = data.uv
+				uv = data.uv,
+				subMeshCount = 2
 			};
+			newMesh.SetTriangles(data.triangles, 0);
 
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
