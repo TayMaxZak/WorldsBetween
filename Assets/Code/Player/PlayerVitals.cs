@@ -70,6 +70,8 @@ public class PlayerVitals : MonoBehaviour
 		{
 			heartbeatLoop.volume = 0;
 			breathingLoop.volume = 0;
+
+			UIManager.SetDeath(1);
 		}
 		else
 		{
@@ -88,6 +90,11 @@ public class PlayerVitals : MonoBehaviour
 
 			breathingLoop.volume = breathingVolume * 0.25f;
 			breathingLoop.pitch = 1.0f + breathingPitch * 0.04f;
+
+			float nearDeath = (1 - currentHealth / maxHealth);
+			nearDeath = Mathf.Clamp01((nearDeath - 0.75f) * 4);
+			nearDeath *= nearDeath * nearDeath * nearDeath;
+			UIManager.SetDeath(0.7f * nearDeath);
 		}
 	}
 

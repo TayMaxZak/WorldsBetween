@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
 
 	public UnityEngine.UI.Image staminaSlider;
 
+	public UnityEngine.Rendering.Volume deathPostProcess;
+
 	private void Awake()
 	{
 		if (!Instance)
@@ -38,5 +40,10 @@ public class UIManager : MonoBehaviour
 	public static void SetCurrentStamina(float stamina)
 	{
 		Instance.staminaSlider.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stamina * 100);
+	}
+
+	public static void SetDeath(float death)
+	{
+		Instance.deathPostProcess.weight = death;
 	}
 }
