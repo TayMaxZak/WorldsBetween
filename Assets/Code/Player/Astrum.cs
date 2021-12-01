@@ -7,6 +7,7 @@ public class Astrum : MonoBehaviour
 	public PlayerVitals vitals;
 	public PlayerMover mover;
 	public MouseLook look;
+	public GrappleHook hook;
 
 	public Vector3 initPos;
 
@@ -39,6 +40,8 @@ public class Astrum : MonoBehaviour
 		mover.SetVelocity(Vector3.zero);
 
 		look.SetXRotation(0);
+
+		hook.ReleaseHook();
 	}
 }
 

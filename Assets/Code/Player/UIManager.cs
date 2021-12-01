@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
 
 	public UnityEngine.Rendering.Volume deathPostProcess;
 
+	public UnityEngine.Rendering.Volume damagePostProcess;
+
 	public GameObject deathCanvas;
 
 	private void Awake()
@@ -49,6 +51,11 @@ public class UIManager : MonoBehaviour
 	public static void SetDeathPostProcess(float death)
 	{
 		Instance.deathPostProcess.weight = death;
+	}
+
+	public static void SetDamagePostProcess(float damage)
+	{
+		Instance.damagePostProcess.weight = damage;
 	}
 
 	public static void SetDeathUI(bool show)

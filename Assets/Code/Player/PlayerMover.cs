@@ -10,6 +10,9 @@ public class PlayerMover : MonoBehaviour
 	public float gForceMult = 2;
 
 	public float swimmingCost = 2;
+	public float sprintingCost = 10;
+
+	public bool sprinting = false;
 
 	[SerializeField]
 	public Transform locator;
@@ -42,6 +45,8 @@ public class PlayerMover : MonoBehaviour
 	private float swimSpeed = 0.4f;
 	[SerializeField]
 	private float jumpSpeed = 10;
+	[SerializeField]
+	private float sprintSpeed = 1.2f;
 
 	[SerializeField]
 	private Timer moveTickTimer = new Timer(0.2f);
@@ -97,6 +102,14 @@ public class PlayerMover : MonoBehaviour
 
 		if (!vitals.dead && grounded && Input.GetButtonDown("Jump"))
 			Jump();
+
+		if (!vitals.dead && Input.GetButtonDown("Sprint"))
+		{
+			if (grounded)
+				sprinting = !sprinting;
+			else
+				sprinting = true;
+		}
 
 		ticking = false;
 
@@ -168,7 +181,7 @@ public class PlayerMover : MonoBehaviour
 
 		// Directional input
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
+		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? (sprinting ? sprintSpeed : walkSpeed) : swimSpeed);
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		if (!vitals.dead && (grounded || underWater))
@@ -178,6 +191,14 @@ public class PlayerMover : MonoBehaviour
 			// Applying input velocity
 			velocity += walkVelocity;
 		}
+
+		if (sprinting && walkVelocity == Vector3.zero || !realChunk || underWater)
+		{
+			sprinting = false;
+		}
+
+		if (sprinting && grounded)
+			sprinting &= vitals.UseStamina(sprintingCost * deltaTime, false);
 
 		if (realChunk && underWater && walkVelocity != Vector3.zero)
 		{
@@ -199,7 +220,7 @@ public class PlayerMover : MonoBehaviour
 
 		float gForceDamage = (prevVelocity - velocity).magnitude;
 		gForceDamage = Mathf.Max(0, gForceDamage - gForceLimit);
-		gForceDamage = gForceMult * (gForceDamage / gForceMult) * (gForceDamage / gForceMult);
+		gForceDamage = gForceMult * gForceDamage;
 		vitals.DealDamage(gForceDamage);
 	}
 

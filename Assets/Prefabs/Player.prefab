@@ -453,6 +453,8 @@ MonoBehaviour:
   gForceLimit: 10
   gForceMult: 2
   swimmingCost: 2
+  sprintingCost: 10
+  sprinting: 0
   locator: {fileID: 7832385438691284394}
   locatorBlock: {fileID: 7018331006766783025}
   body: {fileID: 8417224531880680243}
@@ -465,6 +467,7 @@ MonoBehaviour:
   walkSpeed: 0.79
   swimSpeed: 0.375
   jumpSpeed: 8
+  sprintSpeed: 1.5
   moveTickTimer:
     maxTime: 0.05
   underWater: 0
@@ -487,6 +490,7 @@ MonoBehaviour:
   vitals: {fileID: 6215269175067649699}
   mover: {fileID: 8417224532618400513}
   look: {fileID: 8417224531919593863}
+  hook: {fileID: 0}
   initPos: {x: 0, y: 0, z: 0}
   activate:
     maxTime: 1

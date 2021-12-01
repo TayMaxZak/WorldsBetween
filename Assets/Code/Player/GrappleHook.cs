@@ -100,7 +100,7 @@ public class GrappleHook : MonoBehaviour
 		isLocked = true;
 	}
 
-	private void ReleaseHook()
+	public void ReleaseHook()
 	{
 		ChangeAttached(false);
 		isLocked = false;
