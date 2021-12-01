@@ -34,11 +34,11 @@ public class PlayerMover : MonoBehaviour
 	private Vector3 velocity;
 
 	[SerializeField]
-	private float walkSpeed = 4.5f;
+	private float walkSpeed = 0.8f;
 	[SerializeField]
-	private float swimSpeed = 7;
-
-	private Vector3 walkVelocity = new Vector3();
+	private float swimSpeed = 0.4f;
+	[SerializeField]
+	private float jumpSpeed = 10;
 
 	[SerializeField]
 	private Timer moveTickTimer = new Timer(0.2f);
@@ -117,7 +117,7 @@ public class PlayerMover : MonoBehaviour
 
 	private void Jump()
 	{
-		jumpVel = Vector3.up * 7;
+		jumpVel = Vector3.up * jumpSpeed;
 		grounded = false;
 	}
 
@@ -136,44 +136,55 @@ public class PlayerMover : MonoBehaviour
 		// Apply water effects
 		bool newUnderWater = worldY - 0.4f < World.GetWaterHeight() || !realChunk;
 
-		if (realChunk && newUnderWater && !underWater && enterWaterSound)
-			AudioManager.PlaySound(enterWaterSound, transform.position);
+		if (realChunk && newUnderWater && !underWater)
+		{
+			if (enterWaterSound)
+				AudioManager.PlaySound(enterWaterSound, transform.position);
+
+			velocity *= 0.5f;
+		}
 
 		underWater = newUnderWater;
 
-		grounded = !World.GetBlockFor(worldX, Mathf.FloorToInt(locator.position.y - 0.45f), worldZ).IsAir() && !underWater;
+		//grounded = !World.GetBlockFor(worldX, Mathf.FloorToInt(locator.position.y - 0.45f), worldZ).IsAir() && !underWater;
 
-		// Directional input
-		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-		walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
-		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
-
-		// Applying input velocity
-		float smooth = 1 - (underWater ? 1 - deltaTime * 2 : 1 - deltaTime * 6);
-		velocity.x = Mathf.Lerp(velocity.x, walkVelocity.x, smooth);
-		if (underWater)
-			velocity.y = Mathf.Lerp(velocity.y, walkVelocity.y, smooth);
-		velocity.z = Mathf.Lerp(velocity.z, walkVelocity.z, smooth);
+		bool useFriction = false;
 
 		// Falling
-		Vector3 fallVelocity = (underWater ? 0.1f : 1) * gravity * deltaTime;
+		Vector3 fallVelocity = (underWater ? 0.08f : 1) * gravity * deltaTime;
 
-		Intersecting(deltaTime, ref fallVelocity);
+		grounded = Intersecting(deltaTime, ref fallVelocity);
+		useFriction |= grounded;
 
 		velocity += fallVelocity;
 
 		velocity += jumpVel;
 		jumpVel = Vector3.zero;
 
-		// Drag
-		if (underWater)
-			velocity *= 1f - deltaTime / 2;
-		//else
-		//	velocity *= 1f - deltaTime / 3;
+		// Directional input
+		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
+		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
-		Intersecting(deltaTime, ref velocity);
+		if (grounded || underWater)
+		{
+			Intersecting(deltaTime, ref walkVelocity);
+
+			// Applying input velocity
+			velocity += walkVelocity;
+		}
+
+		useFriction |= Intersecting(deltaTime, ref velocity);
 
 		Move(velocity * deltaTime);
+
+		float friction = useFriction ? 4.5f : 0;
+
+		// Drag
+		if (underWater)
+			velocity *= 1f - (friction * deltaTime + deltaTime * 1.8f);
+		else
+			velocity *= 1f - (friction * deltaTime + deltaTime * 0.2f);
 	}
 
 	private bool Intersecting(float deltaTime, ref Vector3 testVel)

@@ -64,10 +64,10 @@ public class GrappleHook : MonoBehaviour
 
 				if (dist > length)
 				{
-					mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist - length) * (dist - length) * strength * mover.tickingDelta);
+					mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist - length) * strength * mover.tickingDelta);
 				}
 				
-				mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist / length) * strength * 2 * mover.tickingDelta);
+				//mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist / length) * strength * 2 * mover.tickingDelta);
 			}
 		}
 		else
