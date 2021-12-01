@@ -75,15 +75,19 @@ public class PlayerVitals : MonoBehaviour
 		{
 			float heartbeatVolume = (1 - currentHealth / maxHealth);
 			heartbeatVolume = Mathf.Clamp01((heartbeatVolume - 0.5f) * 2);
+			float heartbeatPitch = heartbeatVolume * heartbeatVolume;
 			heartbeatVolume = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume);
 
 			heartbeatLoop.volume = heartbeatVolume * 0.4f;
+			heartbeatLoop.pitch = 0.99f + heartbeatPitch * 0.21f;
 
 			float breathingVolume = (1 - currentStamina / maxStamina);
 			breathingVolume = Mathf.Clamp01((breathingVolume - 0.5f) * 2);
+			float breathingPitch = breathingVolume * breathingVolume;
 			breathingVolume = 1 - (1 - breathingVolume) * (1 - breathingVolume);
 
 			breathingLoop.volume = breathingVolume * 0.25f;
+			breathingLoop.pitch = 1.0f + breathingPitch * 0.04f;
 		}
 	}
 
@@ -93,6 +97,8 @@ public class PlayerVitals : MonoBehaviour
 			return;
 
 		currentStamina -= amount / 2;
+		if (currentStamina < 0)
+			currentStamina = 0;
 
 		UpdateUIUX();
 
@@ -156,6 +162,8 @@ public class PlayerVitals : MonoBehaviour
 			return;
 
 		currentHealth -= amount;
+		if (currentHealth < 0)
+			currentHealth = 0;
 
 		UpdateUIUX();
 

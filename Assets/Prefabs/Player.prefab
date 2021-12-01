@@ -44,7 +44,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: c9a39d534676a5b478fc0d1521d71834, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0
-  m_Pitch: 1.1
+  m_Pitch: 1.04
   Loop: 1
   Mute: 0
   Spatialize: 0
@@ -368,7 +368,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8f7aba9411d08f478351c61b89b27dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vitals: {fileID: 6215269175067649699}
   mouseSensitivity: 250
+  deadMouseSensitivity: 80
   playerBody: {fileID: 8417224531880680243}
 --- !u!1 &8417224532618400519
 GameObject:
@@ -482,6 +484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff15c77c9ec4b4249824a7b553258ac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vitals: {fileID: 0}
   mover: {fileID: 8417224532618400513}
   initPos: {x: 0, y: 0, z: 0}
   activate:

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Astrum : MonoBehaviour
 {
+	public PlayerVitals vitals;
 	public PlayerMover mover;
 
 	public Vector3 initPos;
@@ -30,6 +31,9 @@ public class Astrum : MonoBehaviour
 
 	private void Use()
 	{
+		if (vitals.dead)
+			vitals.Respawn();
+
 		mover.locator.position = initPos;
 		mover.SetVelocity(Vector3.zero);
 	}

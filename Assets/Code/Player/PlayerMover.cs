@@ -176,7 +176,7 @@ public class PlayerMover : MonoBehaviour
 		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? walkSpeed : swimSpeed);
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
-		if (grounded || underWater)
+		if (!vitals.dead && (grounded || underWater))
 		{
 			Intersecting(deltaTime, ref walkVelocity);
 
