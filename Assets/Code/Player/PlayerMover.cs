@@ -54,6 +54,8 @@ public class PlayerMover : MonoBehaviour
 	public bool ticking = false;
 	public float tickingDelta;
 
+	public bool onRope;
+
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Awake()
@@ -179,6 +181,7 @@ public class PlayerMover : MonoBehaviour
 		Move(velocity * deltaTime);
 
 		float friction = useFriction ? 4.5f : 0;
+		friction += onRope ? 0.25f : 0;
 
 		// Drag
 		if (underWater)

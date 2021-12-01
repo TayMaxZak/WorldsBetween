@@ -83,7 +83,7 @@ public class GrappleHook : MonoBehaviour
 		attachBlock = hit.blockPos;
 		attachBlockPos = attachBlock + Vector3.one * 0.5f;
 
-		isAttached = true;
+		ChangeAttached(true);
 	}
 
 	private void LockHook()
@@ -95,8 +95,14 @@ public class GrappleHook : MonoBehaviour
 
 	private void ReleaseHook()
 	{
-		isAttached = false;
+		ChangeAttached(false);
 		isLocked = false;
+	}
+
+	private void ChangeAttached(bool val)
+	{
+		isAttached = val;
+		mover.onRope = val;
 	}
 
 	public BlockCastHit BlockCast()
