@@ -50,16 +50,24 @@ public class GrappleHook : MonoBehaviour
 			//if (Vector3.SqrMagnitude(body.position - attachBlockPos) > length * length)
 			//	body.position = attachBlockPos + (body.position - attachBlockPos).normalized * length;
 
+			float strength = 20;
+
 			if (isLocked && mover.ticking)
 			{
 				float dist = Vector3.Distance(mover.locator.position, attachBlockPos);
+
+				if (dist > length * 2)
+				{
+					ReleaseHook();
+					return;
+				}
+
 				if (dist > length)
 				{
-					mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist - length) * (dist - length) * 20 * mover.tickingDelta);
-
-					if (dist > length * 2)
-						ReleaseHook();
+					mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist - length) * (dist - length) * strength * mover.tickingDelta);
 				}
+				
+				mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist / length) * strength * 2 * mover.tickingDelta);
 			}
 		}
 		else
