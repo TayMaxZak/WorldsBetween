@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerVitals : MonoBehaviour
 {
+	public PlayerMover mover;
+
 	public bool dead = false;
 
 	public float currentHealth = 100;
@@ -40,12 +42,16 @@ public class PlayerVitals : MonoBehaviour
 
 	private void VitalsTick(float deltaTime)
 	{
-		// Stamina only regens up to current health or max stamina
-		float staminaCap = Mathf.Min(currentHealth, maxStamina);
-		if (currentStamina < staminaCap)
-			currentStamina += Mathf.Min(staminaRegen * deltaTime, staminaCap - currentStamina);
-		else if (currentStamina < maxStamina)
-			currentStamina += Mathf.Min(slowStaminaRegen * deltaTime, maxStamina - currentStamina);
+		// Stamina only regens when the player can breathe
+		if (!mover.underWater)
+		{
+			// Stamina only regens up to current health or max stamina
+			float staminaCap = Mathf.Min(currentHealth, maxStamina);
+			if (currentStamina < staminaCap)
+				currentStamina += Mathf.Min(staminaRegen * deltaTime, staminaCap - currentStamina);
+			else if (currentStamina < maxStamina)
+				currentStamina += Mathf.Min(slowStaminaRegen * deltaTime, maxStamina - currentStamina);
+		}
 
 		// Health only regens up to current stamina or max health
 		float healthCap = Mathf.Min(currentStamina, maxHealth);
@@ -88,9 +94,66 @@ public class PlayerVitals : MonoBehaviour
 
 		currentStamina -= amount / 2;
 
+		UpdateUIUX();
+
 		//// More damage if out of stamina
 		//if (currentStamina < 0)
 		//	amount -= currentStamina;
+
+		HurtHealth(amount);
+	}
+
+	public bool UseStamina(float amount, bool hurtWhenEmpty)
+	{
+		if (dead)
+			return false;
+
+		if (!hurtWhenEmpty)
+		{
+			if (currentStamina < amount)
+				return false;
+
+			currentStamina -= amount;
+
+			UpdateUIUX();
+
+			if (currentStamina > 0)
+			{
+				return true;
+			}
+			else
+			{
+				currentStamina = 0;
+
+				UpdateUIUX();
+				return false;
+			}
+		}
+		else
+		{
+			currentStamina -= amount;
+
+			// Leftover stamina
+			if (currentStamina < 0)
+			{
+				HurtHealth(-currentStamina);
+
+				currentStamina = 0;
+			}
+
+			UpdateUIUX();
+
+			if (currentStamina <= 0)
+				return false;
+			else
+				return true;
+		}
+	}
+
+	private void HurtHealth(float amount)
+	{
+		if (dead)
+			return;
 
 		currentHealth -= amount;
 
@@ -103,7 +166,10 @@ public class PlayerVitals : MonoBehaviour
 	private void Die()
 	{
 		AudioManager.PlaySound(deathSound, transform.position);
+
 		dead = true;
+
+		UpdateUIUX();
 	}
 
 	public void Respawn()

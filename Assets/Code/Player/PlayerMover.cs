@@ -9,6 +9,8 @@ public class PlayerMover : MonoBehaviour
 	public float gForceLimit = 10;
 	public float gForceMult = 2;
 
+	public float swimmingCost = 2;
+
 	[SerializeField]
 	public Transform locator;
 	[SerializeField]
@@ -47,7 +49,7 @@ public class PlayerMover : MonoBehaviour
 
 	private bool didInit = false;
 
-	private bool underWater;
+	public bool underWater;
 
 	private bool grounded = false;
 	private Vector3 jumpVel;
@@ -180,6 +182,11 @@ public class PlayerMover : MonoBehaviour
 
 			// Applying input velocity
 			velocity += walkVelocity;
+		}
+
+		if (realChunk && underWater && walkVelocity != Vector3.zero)
+		{
+			vitals.UseStamina(swimmingCost * deltaTime, true);
 		}
 
 		useFriction |= Intersecting(deltaTime, ref velocity);
