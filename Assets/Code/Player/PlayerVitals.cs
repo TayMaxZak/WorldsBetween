@@ -48,7 +48,7 @@ public class PlayerVitals : MonoBehaviour
 	private void VitalsTick(float deltaTime)
 	{
 		// Stamina only regens when the player can breathe
-		if (!mover.underWater)
+		if (!mover.underWater && !mover.sprinting)
 		{
 			// Stamina only regens up to current health or max stamina
 			float staminaCap = Mathf.Min(currentHealth, maxStamina);
@@ -78,6 +78,8 @@ public class PlayerVitals : MonoBehaviour
 
 			UIManager.SetDeathPostProcess(1);
 
+			UIManager.SetDamagePostProcess(1);
+
 			UIManager.SetWatchRaised(false);
 
 			UIManager.SetDeathUI(true);
@@ -87,18 +89,20 @@ public class PlayerVitals : MonoBehaviour
 			float heartbeatVolume = (1 - currentHealth / maxHealth);
 			heartbeatVolume = Mathf.Clamp01((heartbeatVolume - 0.5f) * 2);
 			float heartbeatPitch = heartbeatVolume * heartbeatVolume;
+			float damageAmount = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume) * (1 - heartbeatVolume);
 			heartbeatVolume = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume);
+
+			UIManager.SetDamagePostProcess(damageAmount);
 
 			heartbeatLoop.volume = heartbeatVolume * 0.4f;
 			heartbeatLoop.pitch = 0.99f + heartbeatPitch * 0.21f;
 
 			float breathingVolume = (1 - currentStamina / maxStamina);
-			breathingVolume = Mathf.Clamp01((breathingVolume - 0.5f) * 2);
-			float breathingPitch = breathingVolume * breathingVolume;
+			breathingVolume = Mathf.Clamp01((breathingVolume - 0.33f) * 1.5f);
 			breathingVolume = 1 - (1 - breathingVolume) * (1 - breathingVolume);
 
 			breathingLoop.volume = breathingVolume * 0.25f;
-			breathingLoop.pitch = 1.0f + breathingPitch * 0.04f;
+			breathingLoop.pitch = 1.04f;
 
 			float nearDeath = (1 - currentHealth / maxHealth);
 			nearDeath = Mathf.Clamp01((nearDeath - 0.75f) * 4);
