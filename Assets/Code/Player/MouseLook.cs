@@ -56,4 +56,9 @@ public class MouseLook : MonoBehaviour
 		playerBody.Rotate(Vector3.up, mouseH);
 		transform.rotation = Quaternion.Euler(xRotation, playerBody.rotation.eulerAngles.y, 0f);
 	}
+
+	public void SetXRotation(float value)
+	{
+		xRotation = value;
+	}
 }

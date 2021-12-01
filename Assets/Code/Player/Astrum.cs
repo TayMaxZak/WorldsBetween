@@ -6,6 +6,7 @@ public class Astrum : MonoBehaviour
 {
 	public PlayerVitals vitals;
 	public PlayerMover mover;
+	public MouseLook look;
 
 	public Vector3 initPos;
 
@@ -36,6 +37,8 @@ public class Astrum : MonoBehaviour
 
 		mover.locator.position = initPos;
 		mover.SetVelocity(Vector3.zero);
+
+		look.SetXRotation(0);
 	}
 }
 

@@ -87,14 +87,6 @@ public class PlayerMover : MonoBehaviour
 		if (Input.GetButtonDown("Quit"))
 			Application.Quit();
 
-		if (grounded && Input.GetButtonDown("Jump"))
-			Jump();
-
-		if (Input.GetButtonDown("Vitals"))
-			UIManager.SetWatchRaised(true);
-		else if (Input.GetButtonUp("Vitals"))
-			UIManager.SetWatchRaised(false);
-
 		MainUpdate();
 	}
 
@@ -102,6 +94,9 @@ public class PlayerMover : MonoBehaviour
 	{
 		if (!didInit)
 			return;
+
+		if (!vitals.dead && grounded && Input.GetButtonDown("Jump"))
+			Jump();
 
 		ticking = false;
 

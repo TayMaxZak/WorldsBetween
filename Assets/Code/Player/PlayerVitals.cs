@@ -31,6 +31,11 @@ public class PlayerVitals : MonoBehaviour
 		if (dead)
 			return;
 
+		if (Input.GetButtonDown("Vitals"))
+			UIManager.SetWatchRaised(true);
+		else if (Input.GetButtonUp("Vitals"))
+			UIManager.SetWatchRaised(false);
+
 		vitalsTimer.Increment(Time.deltaTime);
 		if (vitalsTimer.Expired())
 		{
@@ -72,6 +77,8 @@ public class PlayerVitals : MonoBehaviour
 			breathingLoop.volume = 0;
 
 			UIManager.SetDeath(1);
+
+			UIManager.SetWatchRaised(false);
 		}
 		else
 		{
