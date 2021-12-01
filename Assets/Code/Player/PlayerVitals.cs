@@ -21,6 +21,9 @@ public class PlayerVitals : MonoBehaviour
 
 	public Sound deathSound;
 
+	public AudioSource heartbeatLoop;
+	public AudioSource breathingLoop;
+
 	private void Update()
 	{
 		if (dead)
@@ -49,13 +52,33 @@ public class PlayerVitals : MonoBehaviour
 		if (currentHealth < healthCap)
 			currentHealth += Mathf.Min(healthRegen * deltaTime, healthCap - currentHealth);
 
-		UpdateUI();
+		UpdateUIUX();
 	}
 
-	private void UpdateUI()
+	private void UpdateUIUX()
 	{
 		UIManager.SetCurrentHealth(Mathf.RoundToInt(currentHealth));
 		UIManager.SetCurrentStamina(currentStamina / maxStamina);
+
+		if (dead)
+		{
+			heartbeatLoop.volume = 0;
+			breathingLoop.volume = 0;
+		}
+		else
+		{
+			float heartbeatVolume = (1 - currentHealth / maxHealth);
+			heartbeatVolume = Mathf.Clamp01((heartbeatVolume - 0.5f) * 2);
+			heartbeatVolume = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume);
+
+			heartbeatLoop.volume = heartbeatVolume * 0.4f;
+
+			float breathingVolume = (1 - currentStamina / maxStamina);
+			breathingVolume = Mathf.Clamp01((breathingVolume - 0.5f) * 2);
+			breathingVolume = 1 - (1 - breathingVolume) * (1 - breathingVolume);
+
+			breathingLoop.volume = breathingVolume * 0.25f;
+		}
 	}
 
 	public void DealDamage(float amount)
@@ -71,7 +94,7 @@ public class PlayerVitals : MonoBehaviour
 
 		currentHealth -= amount;
 
-		UpdateUI();
+		UpdateUIUX();
 
 		if (currentHealth <= 0)
 			Die();
