@@ -5,8 +5,9 @@ using UnityEngine;
 [SelectionBase]
 public class PlayerMover : MonoBehaviour
 {
-	[SerializeField]
-	private Sound enterWaterSound;
+	public PlayerVitals vitals;
+	public float gForceLimit = 10;
+	public float gForceMult = 2;
 
 	[SerializeField]
 	public Transform locator;
@@ -55,6 +56,9 @@ public class PlayerMover : MonoBehaviour
 	public float tickingDelta;
 
 	public bool onRope;
+
+	[SerializeField]
+	private Sound enterWaterSound;
 
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
@@ -125,6 +129,8 @@ public class PlayerMover : MonoBehaviour
 
 	private void MoveTick(float deltaTime)
 	{
+		Vector3 prevVelocity = velocity;
+
 		UpdatePosition();
 
 		bool realChunk = true;
@@ -188,6 +194,11 @@ public class PlayerMover : MonoBehaviour
 			velocity *= 1f - (friction * deltaTime + deltaTime * 1.8f);
 		else
 			velocity *= 1f - (friction * deltaTime + deltaTime * 0.2f);
+
+		float gForceDamage = (prevVelocity - velocity).magnitude;
+		gForceDamage = Mathf.Max(0, gForceDamage - gForceLimit);
+		gForceDamage = gForceMult * (gForceDamage / gForceMult) * (gForceDamage / gForceMult);
+		vitals.DealDamage(gForceDamage);
 	}
 
 	private bool Intersecting(float deltaTime, ref Vector3 testVel)
