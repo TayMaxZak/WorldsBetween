@@ -32,34 +32,42 @@ public class GrappleHook : MonoBehaviour
 				return;
 		}
 
-		if (Input.GetButtonDown("Fire1"))
+		bool lmb = Input.GetButtonDown("Use Item Main");
+		if (lmb || Input.GetButtonDown("Use Item Alt"))
 		{
 			if (!isAttached)
+			{
 				ShootHook();
-			else if (!isLocked)
 				LockHook();
-			else if (isLocked)
-				ReleaseHook();
+			}
+			else if (lmb)
+			{
+				if (isLocked)
+					UnLockHook();
+				else if (!isLocked)
+					LockHook();
+			}
 		}
-		if (isAttached && Input.GetButtonDown("Fire2"))
+		if (isAttached && Input.GetButtonUp("Use Item Alt"))
 		{
 			ReleaseHook();
 		}
 		if (isAttached && isLocked)
 		{
-			float direction = Input.GetAxis("Mouse ScrollWheel");
+			float direction = Input.GetAxisRaw("Mouse ScrollWheel");
 			if (direction > 0)
 				direction *= 2;
 
-			float simple = Input.GetMouseButton(2) ? -0.25f : 0;
+			bool rmb = Input.GetButton("Use Item Alt");
+			float simple = rmb ? -0.05f : (Input.GetButton("Use Item Scroll Click") ? -0.02f : 0);
 
-			float delta = (direction + simple) * Time.deltaTime * 10;
+			float speed = (direction + simple) * 100;
 
-			length += delta;
-			if (length <= 0.1f)
-				ReleaseHook();
+			length += speed * Time.deltaTime;
 
-			if (Mathf.Abs(delta) > 0.1f && scrollSound && SeedlessRandom.NextFloat() < 1f * Mathf.Lerp(Time.deltaTime, 1, 0.5f))
+			length = Mathf.Max(length, 0.5f);
+
+			if (Mathf.Abs(speed) > 0.02f && scrollSound && SeedlessRandom.NextFloat() < 10 * Time.deltaTime)
 				AudioManager.PlaySound(scrollSound, transform.position);
 		}
 
@@ -80,7 +88,7 @@ public class GrappleHook : MonoBehaviour
 			{
 				float dist = Vector3.Distance(mover.locator.position, attachBlockPos);
 
-				if (dist > length * 2)
+				if (dist > 200)
 				{
 					ReleaseHook();
 					return;
@@ -122,19 +130,29 @@ public class GrappleHook : MonoBehaviour
 	{
 		length = Vector3.Distance(mover.locator.position, attachBlockPos);
 
-		isLocked = true;
+		ChangeLocked(true);
+	}
+
+	private void UnLockHook()
+	{
+		ChangeLocked(false);
 	}
 
 	public void ReleaseHook()
 	{
 		ChangeAttached(false);
-		isLocked = false;
+		ChangeLocked(false);
 	}
 
 	private void ChangeAttached(bool val)
 	{
 		isAttached = val;
 		mover.onRope = val;
+	}
+
+	private void ChangeLocked(bool val)
+	{
+		isLocked = val && isAttached;
 	}
 
 	public BlockCastHit BlockCast()

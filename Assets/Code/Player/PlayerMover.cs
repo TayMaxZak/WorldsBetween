@@ -111,6 +111,12 @@ public class PlayerMover : MonoBehaviour
 				sprinting = true;
 		}
 
+		if (Input.GetKeyDown(KeyCode.H))
+		{
+			locator.position += new Vector3(SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10));
+			velocity = Vector3.zero;
+		}
+
 		ticking = false;
 
 		body.position = Vector3.up + Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime);

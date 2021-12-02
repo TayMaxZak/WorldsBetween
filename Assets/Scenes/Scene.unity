@@ -2119,6 +2119,10 @@ PrefabInstance:
       propertyPath: shootSound
       value: 
       objectReference: {fileID: 11400000, guid: a7aa44e7e65ffde4bbc3d98db0e46fce, type: 2}
+    - target: {fileID: 1335200601, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: scrollSound
+      value: 
+      objectReference: {fileID: 11400000, guid: 5970cbccf14105744836bfd9a913c67a, type: 2}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: gForceMult
       value: 8
@@ -4992,13 +4996,13 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.045
+    widthMultiplier: 0.04
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.67105293
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -5007,7 +5011,7 @@ LineRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.9342105
+        value: 0.55263203
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -5035,7 +5039,7 @@ LineRenderer:
       ctime5: 0
       ctime6: 0
       ctime7: 0
-      atime0: 0
+      atime0: 19468
       atime1: 65535
       atime2: 0
       atime3: 0
@@ -6024,7 +6028,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: seed
-      value: -1330000633
+      value: -194135891
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
@@ -6032,7 +6036,7 @@ PrefabInstance:
       objectReference: {fileID: 2035213415}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: waterHeight
-      value: -100
+      value: -60
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: waterSystem
