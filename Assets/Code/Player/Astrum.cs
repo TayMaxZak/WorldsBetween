@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Astrum : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Astrum : MonoBehaviour
 	public Vector3 initPos;
 
 	public Timer activate;
+	public Timer quit;
+	public Timer restart;
 
 	private void Awake()
 	{
@@ -29,6 +32,26 @@ public class Astrum : MonoBehaviour
 		}
 		else
 			activate.currentTime = activate.maxTime;
+
+		if (Input.GetButton("Quit"))
+		{
+			quit.Increment(Time.deltaTime);
+
+			if (quit.Expired())
+				Application.Quit();
+		}
+		else
+			quit.currentTime = activate.maxTime;
+
+		if (Input.GetButton("Restart"))
+		{
+			restart.Increment(Time.deltaTime);
+
+			if (restart.Expired())
+				SceneManager.LoadScene(0);
+		}
+		else
+			restart.currentTime = activate.maxTime;
 	}
 
 	private void Use()

@@ -24,13 +24,20 @@ public partial class GameManager : MonoBehaviour
 			Instance = this;
 	}
 
+	private void Update()
+	{
+		if (finishedLoading)
+		{
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
+	}
+
 	public void FinishLoading()
 	{
 		player.ActivatePlayer();
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
-
-		Cursor.lockState = CursorLockMode.Locked;
 
 		loadingScreen.Hide();
 

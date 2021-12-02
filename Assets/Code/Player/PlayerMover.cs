@@ -89,14 +89,6 @@ public class PlayerMover : MonoBehaviour
 
 	private void Update()
 	{
-		if (Input.GetButtonDown("Quit"))
-			Application.Quit();
-
-		MainUpdate();
-	}
-
-	private void MainUpdate()
-	{
 		if (!didInit)
 			return;
 

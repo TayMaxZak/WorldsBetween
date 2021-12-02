@@ -47,6 +47,10 @@ public class ChunkMesh
 		{
 			loopCounter++;
 
+			// Threading
+			if (sharedVertices == null)
+				return;
+
 			// Find actual block to sample for brightness
 			localVertPos = sharedVertices[i];
 			worldVertPos.x = Mathf.RoundToInt(localVertPos.x + chunk.position.x);

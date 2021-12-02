@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class SceneLoader : MonoBehaviour
 	private void Awake()
 	{
 		Random.InitState(System.Environment.TickCount);
+
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 	}
 
 	private void Update()
@@ -23,7 +27,7 @@ public class SceneLoader : MonoBehaviour
 		{
 			loaded = true;
 
-			UnityEngine.SceneManagement.SceneManager.LoadScene(sceneIndex);
+			SceneManager.LoadScene(sceneIndex);
 		}
 	}
 }
