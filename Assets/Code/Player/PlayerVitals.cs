@@ -98,10 +98,10 @@ public class PlayerVitals : MonoBehaviour
 			heartbeatLoop.pitch = 0.99f + heartbeatPitch * 0.21f;
 
 			float breathingVolume = (1 - currentStamina / maxStamina);
-			breathingVolume = Mathf.Clamp01((breathingVolume - 0.33f) * 1.5f);
+			breathingVolume = Mathf.Clamp01((breathingVolume - 0.5f) * 2f);
 			breathingVolume = 1 - (1 - breathingVolume) * (1 - breathingVolume);
 
-			breathingLoop.volume = breathingVolume * 0.25f;
+			breathingLoop.volume = breathingVolume * 0.2f;
 			breathingLoop.pitch = 1.04f;
 
 			float nearDeath = (1 - currentHealth / maxHealth);
