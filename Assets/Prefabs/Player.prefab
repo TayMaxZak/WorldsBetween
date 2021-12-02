@@ -381,6 +381,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8417224532618400518}
+  - component: {fileID: 6388750949980177594}
   - component: {fileID: 6215269175067649699}
   - component: {fileID: 8417224532618400513}
   - component: {fileID: 1335200600}
@@ -411,6 +412,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6388750949980177594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8417224532618400519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1379bd3aaf61d048be42ef076456074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toActivate:
+  - {fileID: 6215269175067649699}
+  - {fileID: 8417224532618400513}
+  - {fileID: 1335200600}
+  - {fileID: 1335200601}
+  - {fileID: 8417224531919593863}
 --- !u!114 &6215269175067649699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,6 +454,7 @@ MonoBehaviour:
   vitalsTimer:
     maxTime: 0.05
   deathSound: {fileID: 11400000, guid: eb68c2c4a78521c46bd95ba5f41f0cd0, type: 2}
+  show: 0
   heartbeatLoop: {fileID: 799638841425147642}
   breathingLoop: {fileID: 373308772415560396}
 --- !u!114 &8417224532618400513
@@ -514,6 +534,9 @@ MonoBehaviour:
   isLocked: 0
   length: 0
   line: {fileID: 0}
+  shootSound: {fileID: 0}
+  hitSound: {fileID: 0}
+  scrollSound: {fileID: 0}
 --- !u!1 &8503646745212854119
 GameObject:
   m_ObjectHideFlags: 0

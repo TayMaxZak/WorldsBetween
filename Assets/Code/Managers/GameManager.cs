@@ -8,6 +8,8 @@ public partial class GameManager : MonoBehaviour
 
 	public bool finishedLoading = false;
 
+	public PlayerLoader player;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -22,6 +24,8 @@ public partial class GameManager : MonoBehaviour
 
 	public void FinishLoading()
 	{
+		player.ActivatePlayer();
+
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
 
 		Cursor.lockState = CursorLockMode.Locked;
