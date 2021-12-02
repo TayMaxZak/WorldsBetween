@@ -280,7 +280,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8417224531919593864}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.015686275, g: 0.003921569, b: 0.007843138, a: 1}
@@ -370,6 +370,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vitals: {fileID: 6215269175067649699}
   mouseSensitivity: 250
+  mouseSensitivityMax: 250
+  mouseSensitivityMin: 50
   deadMouseSensitivity: 80
   playerBody: {fileID: 8417224531880680243}
 --- !u!1 &8417224532618400519
@@ -454,7 +456,8 @@ MonoBehaviour:
   vitalsTimer:
     maxTime: 0.05
   deathSound: {fileID: 11400000, guid: eb68c2c4a78521c46bd95ba5f41f0cd0, type: 2}
-  show: 0
+  nearDeathSound: {fileID: 11400000, guid: 8af0dd925ca7a334083d2b3c9bab26cb, type: 2}
+  showVitals: 0
   heartbeatLoop: {fileID: 799638841425147642}
   breathingLoop: {fileID: 373308772415560396}
 --- !u!114 &8417224532618400513
@@ -470,10 +473,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vitals: {fileID: 6215269175067649699}
-  gForceLimit: 10
-  gForceMult: 2
+  gForceLimit: 12
+  gForceMult: 8
   swimmingCost: 2
-  sprintingCost: 10
+  sprintingCost: 8
   sprinting: 0
   locator: {fileID: 7832385438691284394}
   locatorBlock: {fileID: 7018331006766783025}
@@ -510,10 +513,14 @@ MonoBehaviour:
   vitals: {fileID: 6215269175067649699}
   mover: {fileID: 8417224532618400513}
   look: {fileID: 8417224531919593863}
-  hook: {fileID: 0}
+  hook: {fileID: 1335200601}
   initPos: {x: 0, y: 0, z: 0}
   activate:
     maxTime: 1
+  quit:
+    maxTime: 0
+  restart:
+    maxTime: 0
 --- !u!114 &1335200601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -526,7 +533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d0c9bd6ee9ff6642979f476b0fd0f31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vitals: {fileID: 0}
+  vitals: {fileID: 6215269175067649699}
   mover: {fileID: 8417224532618400513}
   attachBlock: {x: 0, y: 0, z: 0}
   attachBlockPos: {x: 0, y: 0, z: 0}
@@ -534,9 +541,9 @@ MonoBehaviour:
   isLocked: 0
   length: 0
   line: {fileID: 0}
-  shootSound: {fileID: 0}
-  hitSound: {fileID: 0}
-  scrollSound: {fileID: 0}
+  shootSound: {fileID: 11400000, guid: a7aa44e7e65ffde4bbc3d98db0e46fce, type: 2}
+  hitSound: {fileID: 11400000, guid: b68f0add102f9e944a59e4904fbdea68, type: 2}
+  scrollSound: {fileID: 11400000, guid: 5970cbccf14105744836bfd9a913c67a, type: 2}
 --- !u!1 &8503646745212854119
 GameObject:
   m_ObjectHideFlags: 0

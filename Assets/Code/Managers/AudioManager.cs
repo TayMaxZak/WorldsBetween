@@ -125,6 +125,11 @@ public class AudioManager : MonoBehaviour
 			Instance.musicPlayer.Stop();
 	}
 
+	public static void StopMusicCue()
+	{
+		Instance.musicPlayer.Stop();
+	}
+
 	private IEnumerator RecycleAudio(AudioSource source)
 	{
 		yield return new WaitForSeconds(source.clip.length + 1);

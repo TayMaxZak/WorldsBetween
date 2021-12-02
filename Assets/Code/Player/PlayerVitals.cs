@@ -23,6 +23,8 @@ public class PlayerVitals : MonoBehaviour
 
 	public Sound deathSound;
 
+	public Sound nearDeathSound;
+
 	public bool showVitals;
 
 	public AudioSource heartbeatLoop;
@@ -85,6 +87,8 @@ public class PlayerVitals : MonoBehaviour
 			UIManager.SetWatchRaised(false);
 
 			UIManager.SetDeathUI(true);
+
+			AudioManager.StopMusicCue();
 		}
 		else
 		{
@@ -208,7 +212,8 @@ public class PlayerVitals : MonoBehaviour
 
 	private void Die()
 	{
-		AudioManager.PlaySound(deathSound, transform.position);
+		if (deathSound)
+			AudioManager.PlaySound(deathSound, transform.position);
 
 		dead = true;
 
@@ -217,6 +222,9 @@ public class PlayerVitals : MonoBehaviour
 
 	private void NearDie()
 	{
+		if (nearDeathSound)
+			AudioManager.PlaySound(nearDeathSound, transform.position);
+
 		currentHealth = 1;
 		currentStamina = 0;
 
