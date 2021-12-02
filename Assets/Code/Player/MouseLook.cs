@@ -28,8 +28,6 @@ public class MouseLook : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Cursor.lockState = CursorLockMode.Locked;
-
 		float mouseH;
 		float mouseV;
 
