@@ -799,6 +799,10 @@ PrefabInstance:
       propertyPath: scrollSound
       value: 
       objectReference: {fileID: 11400000, guid: 5970cbccf14105744836bfd9a913c67a, type: 2}
+    - target: {fileID: 8417224531919593866, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: gForceMult
       value: 8
@@ -2206,7 +2210,7 @@ PrefabInstance:
       objectReference: {fileID: 679059550}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.genRange
-      value: 9
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: modifiers.Array.size

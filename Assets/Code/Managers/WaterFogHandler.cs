@@ -32,14 +32,15 @@ public class WaterFogHandler : MonoBehaviour
 		}
 		else
 			Instance = this;
-
-		povCamera = Camera.main;
 	}
 
 	private void Update()
 	{
-		if (Application.isPlaying)
+		if (Application.isPlaying && GameManager.GetFinishedLoading())
 		{
+			if (povCamera == null)
+				povCamera = Camera.main;
+
 			SetSettings(InWater(povCamera, World.GetWaterHeight()));
 		}
 	}

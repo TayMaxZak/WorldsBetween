@@ -22,6 +22,8 @@ public partial class GameManager : MonoBehaviour
 
 	public void FinishLoading()
 	{
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
+
 		Cursor.lockState = CursorLockMode.Locked;
 
 		Instance.finishedLoading = true;
