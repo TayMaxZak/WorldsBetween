@@ -35,6 +35,8 @@ public class Chunk
 
 	public ChunkMesh chunkMesh = new ChunkMesh();
 
+	public ChunkGameObject go;
+
 
 	// Represents where each light reaches. true = light, false = shadow
 	private Dictionary<LightSource, ChunkBitArray> shadowBits = new Dictionary<LightSource, ChunkBitArray>();
@@ -241,6 +243,10 @@ public class Chunk
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
 
+			// TODO: Better way to do this?
+			if (go && go.transform)
+				go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(0, 360), SeedlessRandom.NextFloatInRange(0, 360), SeedlessRandom.NextFloatInRange(0, 360));
+
 			genStage = GenStage.CalcLight;
 			World.Generator.QueueNextStage(this);
 		});
@@ -351,7 +357,7 @@ public class Chunk
 
 					//colorTempOpac *= shadowedMult;
 
-					surface.colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 -  Mathf.Clamp01(bright / (oldBrightness + bright))));
+					surface.colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(bright / (oldBrightness + bright))));
 				}
 
 				ambientLight.Contribute(surface.normal, surface.brightness, surface.colorTemp);
@@ -442,7 +448,7 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = UpdateLightVisuals();
+			args.Result = UpdateLightVisuals(nextStage == GenStage.AmbientLight);
 		});
 
 		// What to do when worker completes its task
@@ -453,6 +459,10 @@ public class Chunk
 
 			chunkMesh.ApplyVertexColors((Color[])args.Result);
 
+			// TODO: Better way to do this?
+			if (go && go.transform)
+				go.transform.rotation = Quaternion.identity;
+
 			genStage = nextStage;
 			World.Generator.QueueNextStage(this);
 		});
@@ -460,7 +470,7 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private Color[] UpdateLightVisuals()
+	private Color[] UpdateLightVisuals(bool fakeBrightness)
 	{
 		// TODO: First surface of every chunk has broken vertex colors
 		foreach (LinkedList<BlockSurface> ls in surfaces)
@@ -470,7 +480,7 @@ public class Chunk
 
 			foreach (BlockSurface surf in ls)
 			{
-				chunkMesh.SetVertexColors(surf);
+				chunkMesh.SetVertexColors(surf, fakeBrightness);
 			}
 		}
 

@@ -36,7 +36,7 @@ public class ChunkMesh
 		return filter.sharedMesh;
 	}
 
-	public void SetVertexColors(BlockSurface surface)
+	public void SetVertexColors(BlockSurface surface, bool fakeBrightness)
 	{
 		Vector3 localVertPos;
 		Vector3Int worldVertPos = new Vector3Int();
@@ -64,7 +64,13 @@ public class ChunkMesh
 
 			float lastBright = Mathf.Lerp(surface.brightness, ls.brightness, sampleBlend);
 
+			if (fakeBrightness)
+				lastBright = 1 - (1 - lastBright) * (1 - lastBright);
+
 			float newBright = Mathf.Lerp(surface.brightness, ls.brightness, sampleBlend);
+
+			if (fakeBrightness)
+				newBright = 1 - (1 - newBright) * (1 - newBright);
 
 			float lastColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, sampleBlend) + 1) / 2f;
 

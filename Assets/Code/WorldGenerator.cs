@@ -119,6 +119,8 @@ public class WorldGenerator
 
 					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);
 
+					chunkGO.data.go = chunkGO;
+
 					World.GetChunks().Add(chunkPos, chunkGO.data);
 
 					// Add chunk to generator
