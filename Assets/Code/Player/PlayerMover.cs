@@ -67,6 +67,8 @@ public class PlayerMover : MonoBehaviour
 	[SerializeField]
 	private Sound enterWaterSound;
 
+	private Timer waterFollowTimer = new Timer(25);
+
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 
 	private void Awake()
@@ -112,6 +114,8 @@ public class PlayerMover : MonoBehaviour
 		ticking = false;
 
 		body.position = Vector3.up + Vector3.Lerp(lastActualPos, locator.position, 1 - moveTickTimer.currentTime / moveTickTimer.maxTime);
+
+		waterFollowTimer.Increment(Time.deltaTime);
 
 		moveTickTimer.Increment(Time.deltaTime);
 
@@ -290,7 +294,12 @@ public class PlayerMover : MonoBehaviour
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			// Dirty
+			if (waterFollowTimer.Expired())
+			{
+				waterFollowTimer.Reset();
+
+				World.WaterFollow(locatorBlock);
+			}
 		}
 
 		lastWorldX = worldX;
