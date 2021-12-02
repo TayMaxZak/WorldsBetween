@@ -19,8 +19,8 @@ public class GrappleHook : MonoBehaviour
 	public LineRenderer line;
 
 	public Sound shootSound;
-
 	public Sound hitSound;
+	public Sound scrollSound;
 
 	public void Update()
 	{
@@ -32,22 +32,35 @@ public class GrappleHook : MonoBehaviour
 				return;
 		}
 
-		if (!isAttached && Input.GetButtonDown("Equipment"))
+		if (Input.GetButtonDown("Fire1"))
 		{
-			ShootHook();
-		}
-		if (isAttached && Input.GetButtonUp("Equipment"))
-		{
-			if (!isLocked)
+			if (!isAttached)
+				ShootHook();
+			else if (!isLocked)
 				LockHook();
-			else
+			else if (isLocked)
 				ReleaseHook();
 		}
-		if (isAttached && isLocked && Input.GetButton("Equipment"))
+		if (isAttached && Input.GetButtonDown("Fire2"))
 		{
-			length -= Time.deltaTime * 2;
+			ReleaseHook();
+		}
+		if (isAttached && isLocked)
+		{
+			float direction = Input.GetAxis("Mouse ScrollWheel");
+			if (direction > 0)
+				direction *= 2;
+
+			float simple = Input.GetMouseButton(2) ? -0.25f : 0;
+
+			float delta = (direction + simple) * Time.deltaTime * 10;
+
+			length += delta;
 			if (length <= 0.1f)
 				ReleaseHook();
+
+			if (Mathf.Abs(delta) > 0.1f && scrollSound && SeedlessRandom.NextFloat() < 1f * Mathf.Lerp(Time.deltaTime, 1, 0.5f))
+				AudioManager.PlaySound(scrollSound, transform.position);
 		}
 
 		if (isAttached)
