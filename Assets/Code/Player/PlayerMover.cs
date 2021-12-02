@@ -99,10 +99,13 @@ public class PlayerMover : MonoBehaviour
 
 		if (!vitals.dead && Input.GetButtonDown("Sprint"))
 		{
-			if (grounded)
-				sprinting = !sprinting;
-			else
-				sprinting = true;
+			if (sprinting || vitals.currentStamina >= 20)
+			{
+				if (grounded)
+					sprinting = !sprinting;
+				else
+					sprinting = true;
+			}
 		}
 
 		//// TODO: Remove
