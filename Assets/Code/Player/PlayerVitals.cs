@@ -181,14 +181,27 @@ public class PlayerVitals : MonoBehaviour
 		if (dead)
 			return;
 
+		float initialHealth = currentHealth;
+
 		currentHealth -= amount;
+
+		float finalHealth = currentHealth;
+
 		if (currentHealth < 0)
 			currentHealth = 0;
 
 		UpdateUIUX();
 
 		if (currentHealth <= 0)
+			TryDie(initialHealth, finalHealth);
+	}
+
+	private void TryDie(float initialHealth, float finalHealth)
+	{
+		if (initialHealth <= 25 || finalHealth < -initialHealth)
 			Die();
+		else
+			NearDie();
 	}
 
 	private void Die()
@@ -196,6 +209,18 @@ public class PlayerVitals : MonoBehaviour
 		AudioManager.PlaySound(deathSound, transform.position);
 
 		dead = true;
+
+		UpdateUIUX();
+	}
+
+	private void NearDie()
+	{
+		//AudioManager.PlaySound(deathSound, transform.position);
+
+		//dead = true;
+
+		currentHealth = 1;
+		currentStamina = 0;
 
 		UpdateUIUX();
 	}

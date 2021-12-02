@@ -146,7 +146,7 @@ public class PlayerMover : MonoBehaviour
 		bool realChunk = true;
 
 		Chunk chunk;
-		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.Ready)
+		if ((chunk = World.GetChunkFor(worldX, worldY, worldZ)) != null && chunk.genStage >= Chunk.GenStage.CalcLight)
 			realChunk = true;
 		else
 			realChunk = false;
