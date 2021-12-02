@@ -105,11 +105,12 @@ public class PlayerMover : MonoBehaviour
 				sprinting = true;
 		}
 
-		if (Input.GetKeyDown(KeyCode.H))
-		{
-			locator.position += new Vector3(SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10));
-			velocity = Vector3.zero;
-		}
+		//// TODO: Remove
+		//if (Input.GetKeyDown(KeyCode.H))
+		//{
+		//	locator.position += new Vector3(SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10));
+		//	velocity = Vector3.zero;
+		//}
 
 		ticking = false;
 

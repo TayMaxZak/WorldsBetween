@@ -10,6 +10,9 @@ public class AudioManager : MonoBehaviour
 	[SerializeField]
 	private int poolSize = 20;
 
+	[SerializeField]
+	private AudioSource musicPlayer;
+
 	private List<GameObject> pooledObjects;
 
 	private AudioListener listener;
@@ -112,6 +115,14 @@ public class AudioManager : MonoBehaviour
 		Instance.StartCoroutine(Instance.RecycleAudio(source));
 
 		return source;
+	}
+
+	public static void PlayMusicCue()
+	{
+		if (!Instance.musicPlayer.isPlaying)
+			Instance.musicPlayer.Play();
+		else
+			Instance.musicPlayer.Stop();
 	}
 
 	private IEnumerator RecycleAudio(AudioSource source)

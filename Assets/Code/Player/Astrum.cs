@@ -52,6 +52,12 @@ public class Astrum : MonoBehaviour
 		}
 		else
 			restart.currentTime = activate.maxTime;
+
+		// TODO: Remove
+		if (Input.GetButtonDown("Music Cue"))
+		{
+			AudioManager.PlayMusicCue();
+		}
 	}
 
 	private void Use()
