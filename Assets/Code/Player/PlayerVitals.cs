@@ -23,7 +23,7 @@ public class PlayerVitals : MonoBehaviour
 
 	public Sound deathSound;
 
-	public bool show;
+	public bool showVitals;
 
 	public AudioSource heartbeatLoop;
 	public AudioSource breathingLoop;
@@ -34,9 +34,9 @@ public class PlayerVitals : MonoBehaviour
 			return;
 
 		if (Input.GetButtonDown("Vitals"))
-			show = !show;
+			showVitals = !showVitals;
 
-		UIManager.SetWatchRaised(show);
+		UIManager.SetWatchRaised(showVitals);
 
 		vitalsTimer.Increment(Time.deltaTime);
 		if (vitalsTimer.Expired())
@@ -230,6 +230,8 @@ public class PlayerVitals : MonoBehaviour
 	public void Respawn()
 	{
 		dead = false;
+
+		showVitals = false;
 
 		UIManager.SetDeathUI(false);
 

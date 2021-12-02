@@ -74,6 +74,9 @@ public class WorldGenerator
 
 			entry.Value.Generate();
 		}
+
+		if (Mathf.Approximately(GenProgress(), 1))
+			GameManager.Instance.FinishLoading();
 	}
 
 	public void CreateChunksNearPlayer(int range)

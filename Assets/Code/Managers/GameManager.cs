@@ -4,11 +4,13 @@ using UnityEngine;
 
 public partial class GameManager : MonoBehaviour
 {
-	private static GameManager Instance;
+	public static GameManager Instance;
 
 	public bool finishedLoading = false;
 
 	public PlayerLoader player;
+
+	public CanvasHider loadingScreen;
 
 	private void Awake()
 	{
@@ -30,7 +32,9 @@ public partial class GameManager : MonoBehaviour
 
 		Cursor.lockState = CursorLockMode.Locked;
 
-		Instance.finishedLoading = true;
+		loadingScreen.Hide();
+
+		finishedLoading = true;
 	}
 
 	public static bool GetFinishedLoading()
