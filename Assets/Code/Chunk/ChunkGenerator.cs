@@ -21,8 +21,9 @@ public class ChunkGenerator
 		Chunk.GenStage.Generate,
 		Chunk.GenStage.MakeSurface,
 		Chunk.GenStage.CalcLight,
+		Chunk.GenStage.ApplyVertexColorsA,
 		Chunk.GenStage.AmbientLight,
-		Chunk.GenStage.ApplyVertexColors
+		Chunk.GenStage.ApplyVertexColorsB
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -194,14 +195,19 @@ public class ChunkGenerator
 					chunk.AsyncCalcLight();
 				}
 				break;
+			case Chunk.GenStage.ApplyVertexColorsA: // Light visuals, spawn entities, and other stuff
+				{
+					chunk.AsyncLightVisuals(Chunk.GenStage.AmbientLight);
+				}
+				break;
 			case Chunk.GenStage.AmbientLight: // Light visuals, spawn entities, and other stuff
 				{
 					chunk.AsyncAmbientLight();
 				}
 				break;
-			case Chunk.GenStage.ApplyVertexColors: // Light visuals, spawn entities, and other stuff
+			case Chunk.GenStage.ApplyVertexColorsB: // Light visuals, spawn entities, and other stuff
 				{
-					chunk.AsyncLightVisuals();
+					chunk.AsyncLightVisuals(Chunk.GenStage.Ready);
 				}
 				break;
 		}

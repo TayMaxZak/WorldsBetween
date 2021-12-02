@@ -36,8 +36,9 @@ public class WorldGenerator
 			{ Chunk.GenStage.Generate, new ChunkGenerator(delay, queues) },
 			{ Chunk.GenStage.MakeSurface, new ChunkGenerator(delay, queues) },
 			{ Chunk.GenStage.CalcLight, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.ApplyVertexColorsA, new ChunkGenerator(delay, queues) },
 			{ Chunk.GenStage.AmbientLight, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.ApplyVertexColors, new ChunkGenerator(delay, queues) },
+			{ Chunk.GenStage.ApplyVertexColorsB, new ChunkGenerator(delay, queues) },
 		};
 
 		chunkGenTimer.Reset();

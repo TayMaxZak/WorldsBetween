@@ -172,23 +172,27 @@ public class ChunkMesh
 	{
 		public Vector3[] vertices;
 		public Vector3[] normals;
-		public int[] triangles;
 		public Vector2[] uv;
+
+		public Dictionary<int, int[]> triangles;
 
 		public MeshData(Mesh mesh)
 		{
 			vertices = mesh.vertices;
 			normals = mesh.normals;
-			triangles = mesh.triangles;
 			uv = mesh.uv;
+
+			triangles = new Dictionary<int, int[]>();
+			triangles[0] = mesh.triangles;
 		}
 
-		public MeshData(Vector3[] vertices, Vector3[] normals, int[] triangles, Vector2[] uv)
+		public MeshData(Vector3[] vertices, Vector3[] normals, Vector2[] uv, Dictionary<int, int[]> triangles)
 		{
 			this.vertices = vertices;
 			this.normals = normals;
-			this.triangles = triangles;
 			this.uv = uv;
+
+			this.triangles = triangles;
 		}
 	}
 
@@ -225,11 +229,11 @@ public class ChunkMesh
 					else if (block.maybeNearAir == 0)
 						continue;
 
-					MeshData blockMeshData = ModelsList.GetModelFor(0).faces[0].meshData;
-
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
+						MeshData blockMeshData = ModelsList.GetModelFor(0).faces[d].meshData;
+
 						faceOffset.x = chunk.position.x + x + directions[d].x;
 						faceOffset.y = chunk.position.y + y + directions[d].y;
 						faceOffset.z = chunk.position.z + z + directions[d].z;
@@ -272,9 +276,9 @@ public class ChunkMesh
 						}
 
 						// Add triangles
-						for (int i = 0; i < blockMeshData.triangles.Length; i++)
+						for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
 						{
-							triangles.Add(blockMeshData.triangles[i] + indexOffset);
+							triangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
 						}
 
 						// Add UVs
@@ -290,7 +294,7 @@ public class ChunkMesh
 			}
 		}
 
-		return new MeshData(vertices.ToArray(), normals.ToArray(), triangles.ToArray(), uv.ToArray());
+		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() } });
 	}
 
 	public void FinishMesh(Mesh newMesh)

@@ -12,8 +12,9 @@ public class Chunk
 		Generate,
 		MakeSurface,
 		CalcLight,
+		ApplyVertexColorsA,
 		AmbientLight,
-		ApplyVertexColors,
+		ApplyVertexColorsB,
 		Ready
 	}
 	public GenStage genStage = GenStage.Allocate;
@@ -234,7 +235,8 @@ public class Chunk
 				uv = data.uv,
 				subMeshCount = 2
 			};
-			newMesh.SetTriangles(data.triangles, 0);
+			newMesh.SetTriangles(data.triangles[0], 0);
+			//newMesh.SetTriangles(data.triangles[1], 1);
 
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
@@ -277,7 +279,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.AmbientLight;
+			genStage = GenStage.ApplyVertexColorsA;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -388,7 +390,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.ApplyVertexColors;
+			genStage = GenStage.ApplyVertexColorsB;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -425,12 +427,12 @@ public class Chunk
 	#endregion
 
 	#region Light Visuals
-	public void AsyncLightVisuals()
+	public void AsyncLightVisuals(GenStage nextStage)
 	{
-		BkgThreadLightVisuals(this, System.EventArgs.Empty);
+		BkgThreadLightVisuals(nextStage, this, System.EventArgs.Empty);
 	}
 
-	private void BkgThreadLightVisuals(object sender, System.EventArgs e)
+	private void BkgThreadLightVisuals(GenStage nextStage, object sender, System.EventArgs e)
 	{
 		isProcessing = true;
 
@@ -451,7 +453,7 @@ public class Chunk
 
 			chunkMesh.ApplyVertexColors((Color[])args.Result);
 
-			genStage = GenStage.Ready;
+			genStage = nextStage;
 			World.Generator.QueueNextStage(this);
 		});
 
