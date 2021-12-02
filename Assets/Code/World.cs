@@ -28,7 +28,6 @@ public partial class World : MonoBehaviour
 	public static WorldGenerator Generator;
 
 	[Header("General Settings")]
-	private bool setSeed = false;
 	[SerializeField]
 	private bool randomizeSeed = false;
 	[SerializeField]
@@ -41,13 +40,6 @@ public partial class World : MonoBehaviour
 	[Header("World Settings")]
 	[SerializeField]
 	private int waterHeight = 0;
-
-	private void OnDestroy()
-	{
-		// Rerandomize seed
-		if (setSeed)
-			Random.InitState(System.Environment.TickCount);
-	}
 
 	private void Awake()
 	{
@@ -64,8 +56,6 @@ public partial class World : MonoBehaviour
 		if (randomizeSeed)
 			seed = Random.Range(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
-
-		setSeed = true;
 
 		foreach (NoiseModifier mod in modifiers)
 			mod.Init();

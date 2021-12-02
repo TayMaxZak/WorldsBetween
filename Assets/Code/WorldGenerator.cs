@@ -151,7 +151,10 @@ public class WorldGenerator
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority (lower value)
-		float priority = (requeue ? -4 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - World.GetRelativeOrigin().position);
+		Transform origin = World.GetRelativeOrigin();
+		if (!origin)
+			return;
+		float priority = (requeue ? -4 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - origin.position);
 		generator.Enqueue(chunk, priority, multiQ);
 	}
 

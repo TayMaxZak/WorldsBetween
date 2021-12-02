@@ -9,6 +9,11 @@ public class SceneLoader : MonoBehaviour
 
 	private bool loaded = false;
 
+	private void Awake()
+	{
+		Random.InitState(System.Environment.TickCount);
+	}
+
 	private void Update()
 	{
 		if (loaded)
