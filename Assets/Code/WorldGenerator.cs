@@ -178,6 +178,12 @@ public class WorldGenerator
 		return generatorsUsed;
 	}
 
+	public float GenProgress()
+	{
+		int totalChunks = World.GetChunks().Count;
+		return (totalChunks - chunksToGen) / (float)totalChunks;
+	}
+
 	public Dictionary<Chunk.GenStage, ChunkGenerator> GetChunkGenerators()
 	{
 		return chunkGenerators;

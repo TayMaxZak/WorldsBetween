@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using ExtensionMethods;
+using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 public class UIManager : MonoBehaviour
 {
@@ -13,11 +14,11 @@ public class UIManager : MonoBehaviour
 
 	public TMPro.TextMeshProUGUI healthText;
 
-	public UnityEngine.UI.Image staminaSlider;
+	public Image staminaSlider;
 
-	public UnityEngine.Rendering.Volume deathPostProcess;
+	public Volume deathPostProcess;
 
-	public UnityEngine.Rendering.Volume damagePostProcess;
+	public Volume damagePostProcess;
 
 	public GameObject deathCanvas;
 
