@@ -33,6 +33,9 @@ public class Astrum : MonoBehaviour
 		else
 			activate.currentTime = activate.maxTime;
 
+		if (vitals.dead && Input.GetButtonDown("Quit"))
+			Use();
+
 		if (Input.GetButton("Quit"))
 		{
 			quit.Increment(Time.deltaTime);
