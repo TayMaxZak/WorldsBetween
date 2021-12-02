@@ -2111,6 +2111,14 @@ PrefabInstance:
       propertyPath: vitals
       value: 
       objectReference: {fileID: 1335200603}
+    - target: {fileID: 1335200601, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: hitSound
+      value: 
+      objectReference: {fileID: 11400000, guid: b68f0add102f9e944a59e4904fbdea68, type: 2}
+    - target: {fileID: 1335200601, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: shootSound
+      value: 
+      objectReference: {fileID: 11400000, guid: a7aa44e7e65ffde4bbc3d98db0e46fce, type: 2}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: gForceMult
       value: 8
@@ -4984,25 +4992,34 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.1
+    widthMultiplier: 0.045
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.67105293
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.9342105
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 2, g: 2, b: 2, a: 1}
+      key0: {r: 2, g: 2, b: 2, a: 0}
       key1: {r: 2, g: 2, b: 2, a: 1}
       key2: {r: 2, g: 2, b: 2, a: 0}
       key3: {r: 2, g: 2, b: 2, a: 0}

@@ -18,6 +18,10 @@ public class GrappleHook : MonoBehaviour
 
 	public LineRenderer line;
 
+	public Sound shootSound;
+
+	public Sound hitSound;
+
 	public void Update()
 	{
 		if (vitals.dead)
@@ -83,9 +87,17 @@ public class GrappleHook : MonoBehaviour
 
 	private void ShootHook()
 	{
+		if (shootSound)
+			AudioManager.PlaySound(shootSound, transform.position);
+
 		BlockCastHit hit = BlockCast();
 		if (!hit.hit)
+		{
+			ReleaseHook();
 			return;
+		}
+		if (hitSound)
+			AudioManager.PlaySound(hitSound, hit.blockPos);
 
 		attachBlock = hit.blockPos;
 		attachBlockPos = attachBlock + Vector3.one * 0.5f;
@@ -132,7 +144,6 @@ public class GrappleHook : MonoBehaviour
 				return new BlockCastHit(new Vector3Int((int)(blockPos.x + direction.x * i + adj), (int)(blockPos.y + direction.y * i + adj), (int)(blockPos.z + direction.z * i + adj)));
 		}
 
-		ReleaseHook();
 		return new BlockCastHit();
 	}
 }
