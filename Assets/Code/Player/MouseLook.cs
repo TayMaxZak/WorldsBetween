@@ -7,7 +7,11 @@ public class MouseLook : MonoBehaviour
 	public PlayerVitals vitals;
 
 	[SerializeField]
-	private float mouseSensitivity = 100;
+	private float mouseSensitivity = 250;
+	[SerializeField]
+	private float mouseSensitivityMax = 250;
+	[SerializeField]
+	private float mouseSensitivityMin = 50;
 
 	[SerializeField]
 	private float deadMouseSensitivity = 2;
@@ -53,6 +57,16 @@ public class MouseLook : MonoBehaviour
 
 		playerBody.Rotate(Vector3.up, mouseH);
 		transform.rotation = Quaternion.Euler(xRotation, playerBody.rotation.eulerAngles.y, 0f);
+
+		float step = 50;
+		if (Input.GetButtonDown("Increase Sens"))
+		{
+			mouseSensitivity = Mathf.Clamp(mouseSensitivity + step, mouseSensitivityMin, mouseSensitivityMax);
+		}
+		else if (Input.GetButtonDown("Decrease Sens"))
+		{
+			mouseSensitivity = Mathf.Clamp(mouseSensitivity - step, mouseSensitivityMin, mouseSensitivityMax);
+		}
 	}
 
 	public void SetXRotation(float value)

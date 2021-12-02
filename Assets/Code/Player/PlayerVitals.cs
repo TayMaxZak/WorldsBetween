@@ -217,10 +217,6 @@ public class PlayerVitals : MonoBehaviour
 
 	private void NearDie()
 	{
-		//AudioManager.PlaySound(deathSound, transform.position);
-
-		//dead = true;
-
 		currentHealth = 1;
 		currentStamina = 0;
 
@@ -237,5 +233,7 @@ public class PlayerVitals : MonoBehaviour
 
 		currentHealth = maxHealth;
 		currentStamina = maxStamina;
+
+		UpdateUIUX();
 	}
 }
