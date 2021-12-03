@@ -369,6 +369,14 @@ public class Chunk
 
 		return counter;
 	}
+
+	public LightingSample CalcLightAt(Vector3Int worldPos, Vector3 normal)
+	{
+		if (ambientLight == null)
+			return new LightingSample(0, 0);
+
+		return ambientLight.Retrieve(worldPos, normal);
+	}
 	#endregion
 
 	#region Ambient Light
