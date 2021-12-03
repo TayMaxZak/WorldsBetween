@@ -6,28 +6,56 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
+	private static SceneLoader Instance;
+
+	public bool immediate = false;
+
 	public int sceneIndex;
 
 	private bool loaded = false;
 
 	private void Awake()
 	{
+		if (!Instance)
+		{
+			if (!immediate)
+				Instance = this;
+		}
+		else
+		{
+			Destroy(gameObject);
+			return;
+		}
+
+		DontDestroyOnLoad(this);
+
 		Random.InitState(System.Environment.TickCount);
 
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
+
+		if (immediate)
+		{
+			Destroy(gameObject);
+			Load();
+		}
 	}
 
 	private void Update()
 	{
-		if (loaded)
+		if (loaded || immediate)
 			return;
 
 		if (Time.time > 0.1f)
 		{
-			loaded = true;
-
-			SceneManager.LoadScene(sceneIndex);
+			Load();
 		}
+	}
+
+	private void Load()
+	{
+		loaded = true;
+
+		SceneManager.LoadScene(sceneIndex);
 	}
 }
