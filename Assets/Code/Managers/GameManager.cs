@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Threading.Tasks;
 
 public partial class GameManager : MonoBehaviour
 {
@@ -55,7 +56,10 @@ public partial class GameManager : MonoBehaviour
 			}
 			panSpeed = Mathf.Lerp(panSpeed, newPanSpeed, Time.deltaTime);
 
-			player.transform.Rotate(Vector3.up * panSpeed * Time.deltaTime);
+
+			float fade = Mathf.Clamp01((1 - loadingScreen.GetDisplayProgress()) * 5);
+
+			player.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
 		}
 	}
 
@@ -64,10 +68,19 @@ public partial class GameManager : MonoBehaviour
 		loadingScreen.SeeThrough();
 	}
 
-	public void FinishLoading()
+	private void AlmostFinishLoading()
 	{
+		loadingScreen.AlmostDone();
+	}
+
+	public async void FinishLoading()
+	{
+		AlmostFinishLoading();
+
 		if (finishedLoading)
 			return;
+
+		await Task.Delay(1000);
 
 		DisableLoadingUX();
 

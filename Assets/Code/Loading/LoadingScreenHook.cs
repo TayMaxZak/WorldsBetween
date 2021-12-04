@@ -14,6 +14,10 @@ public class LoadingScreenHook : MonoBehaviour
 	}
 
 	[SerializeField]
+	private CanvasGroup group;
+
+	[Header("Main")]
+	[SerializeField]
 	private Image loadingBar;
 
 	[SerializeField]
@@ -60,6 +64,7 @@ public class LoadingScreenHook : MonoBehaviour
 	private float progressRaw;
 
 	private bool updateProgress = false;
+	private bool almostDone = false;
 
 	private void Awake()
 	{
@@ -84,19 +89,24 @@ public class LoadingScreenHook : MonoBehaviour
 		if (!updateProgress)
 			return;
 
-		// Retrieve raw progress
-		if (World.Generator.genStage >= WorldGenerator.GenStage.GenerateChunks)
-			progressRaw = Mathf.Clamp01(World.Generator.GenProgress() / 0.67f);
-		else
-			progressRaw = 0;
+		if (!almostDone)
+		{
+			// Retrieve raw progress
+			if (World.Generator.genStage >= WorldGenerator.GenStage.GenerateChunks)
+				progressRaw = Mathf.Clamp01(World.Generator.GenProgress() / 0.67f);
+			else
+				progressRaw = 0;
 
-		// Get display progress
-		progressDisplay = Mathf.Lerp(progressDisplay, progressRaw, Time.deltaTime);
+			// Get display progress
+			progressDisplay = Mathf.Lerp(progressDisplay, progressRaw, Time.deltaTime);
+		}
+		else
+			progressDisplay = Mathf.Clamp01(progressDisplay + Time.deltaTime * 0.05f);
 
 		UpdateProgress(progressDisplay);
 	}
 
-	public void UpdateProgress(float progress)
+	private void UpdateProgress(float progress)
 	{
 		// Loading bar
 		loadingBar.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, progress * 150);
@@ -110,18 +120,24 @@ public class LoadingScreenHook : MonoBehaviour
 		playButtonText.color = tooEarly ? fadedText : normalText;
 
 		// Spin the rings
-		float middleToEnd = Mathf.Clamp01(2 * progress);
+		float spinSpeed = Mathf.Clamp01(2 * progress) * (progress);
+		spinSpeed *= spinSpeed * spinSpeed;
 		foreach (SpinRing spin in ringsToSpin)
-			spin.toRotate.Rotate(Vector3.forward * overallSpinSpeed * spin.speedMult * middleToEnd * Time.deltaTime);
+			spin.toRotate.Rotate(Vector3.forward * overallSpinSpeed * spin.speedMult * spinSpeed * Time.deltaTime);
 
 		// Elevator music
 		UpdateMusic(progress);
+
+		// Group
+		float fade = Mathf.Clamp01((1 - progress) * 5);
+		group.alpha = fade;
+		if (updateProgress)
+			UIManager.SetDeathPostProcess(fade);
 	}
 
 	private void UpdateMusic(float progress)
 	{
 		float fade = Mathf.Clamp01((1 - progress) * 10);
-
 		melodyLayer.volume = (1 - progress) * overallVolume * fade;
 
 		float middleToEnd = Mathf.Clamp01(2 * progress);
@@ -149,18 +165,20 @@ public class LoadingScreenHook : MonoBehaviour
 		UpdateBackground(true);
 	}
 
-	public async void Hide()
+	public void AlmostDone()
+	{
+		almostDone = true;
+	}
+
+	public void Hide()
 	{
 		updateProgress = false;
 
-		UpdateMusic(0.99f);
-
-		await Task.Delay(10);
-
-		UpdateProgress(1);
-
-		await Task.Delay(10);
-
 		gameObject.SetActive(false);
+	}
+
+	public float GetDisplayProgress()
+	{
+		return progressDisplay;
 	}
 }

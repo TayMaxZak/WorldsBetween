@@ -73,14 +73,16 @@ public class PlayerMover : MonoBehaviour
 
 	private void Awake()
 	{
+		UpdatePosition();
 		epsilon = moveTickTimer.maxTime * 2;
 		tickingDelta = moveTickTimer.maxTime;
+
+		lastActualPos = new Vector3(locator.position.x, locator.position.y, locator.position.z);
+		body.position = Vector3.up + locator.position;
 	}
 
 	private void Start()
 	{
-		UpdatePosition();
-
 		eyeOffset = cam.transform.localPosition;
 
 		locator.parent = null;
