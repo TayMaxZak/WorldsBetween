@@ -125,8 +125,6 @@ public class AudioManager : MonoBehaviour
 	{
 		if (!Instance.musicPlayer.isPlaying)
 			Instance.musicPlayer.Play();
-		else
-			Instance.musicPlayer.Stop();
 	}
 
 	public static void StopMusicCue()

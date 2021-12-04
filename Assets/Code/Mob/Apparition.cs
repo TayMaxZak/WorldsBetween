@@ -9,6 +9,7 @@ public class Apparition : MonoBehaviour
 	{
 		public Vector3 targetPoint;
 		public Vector3 offsetDir;
+		public Vector3 offsetDir2;
 		public LineRenderer line;
 		public bool grabbing;
 	}
@@ -125,6 +126,8 @@ public class Apparition : MonoBehaviour
 					{
 						playerMover.grabbed = true;
 						playerMover.SetVelocity(Vector3.zero);
+
+						AudioManager.PlayMusicCue();
 					}
 				}
 				else
@@ -132,7 +135,12 @@ public class Apparition : MonoBehaviour
 
 				t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabRange);
 				t.offsetDir = SeedlessRandom.RandomPoint(4);
+				t.offsetDir2 = SeedlessRandom.RandomPoint(3);
 			}
+			else
+				t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDir2, Time.deltaTime);
+
+			float mult = Mathf.Clamp01(dashTimer.currentTime / dashTimer.maxTime);
 
 			if (t.grabbing)
 			{
@@ -140,9 +148,8 @@ public class Apparition : MonoBehaviour
 				{
 					float percent = (float)i / t.line.positionCount;
 					float mid = (1 - Mathf.Abs(2 * percent - 1));
-					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) + t.offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
+					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) * mult + t.offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
 				}
-
 			}
 			else
 			{
@@ -150,7 +157,7 @@ public class Apparition : MonoBehaviour
 				{
 					float percent = (float)i / t.line.positionCount;
 					float mid = (1 - Mathf.Abs(2 * percent - 1));
-					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) + t.offsetDir) * mid * mid + Vector3.Lerp(transform.position, t.targetPoint, percent));
+					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) * mult + t.offsetDir) * mid * mid + Vector3.Lerp(transform.position, t.targetPoint, percent));
 				}
 			}
 		}
