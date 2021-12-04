@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Incursometer : MonoBehaviour
 {
+	public bool held;
+
 	public Transform looker;
 
 	public Transform apparition;
@@ -16,28 +18,42 @@ public class Incursometer : MonoBehaviour
 	public AudioSource tickloopMed;
 	public AudioSource tickloopFast;
 
-	public float oneoverx;
-	public float linear;
+	private float oneoverx;
+	private float linear;
 
-	public float proximity;
-	public float dot;
-	public float intensity;
+	private float proximity;
+	private float dot;
+	private float intensity;
 
-	public float weightSlow;
-	public float weightMed;
-	public float weightFast;
+	private float weightSlow;
+	private float weightMed;
+	private float weightFast;
 
 	private void Update()
 	{
+		if (Input.GetButtonDown("Equipment"))
+			held = !held;
+
+		UIManager.SetMeterRaised(held);
+
+		if (!held)
+		{
+			tickloopSlow.volume = 0;
+			tickloopMed.volume = 0;
+			tickloopFast.volume = 0;
+
+			return;
+		}
+
 		float cutoff = 0.05f;
 		oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 5, 0)) - cutoff);
 		oneoverx = Mathf.Clamp01(oneoverx + cutoff * oneoverx);
 		linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 5, 0) / range) - cutoff);
 		linear = Mathf.Clamp01(linear + cutoff * linear);
-		proximity = Mathf.Lerp(oneoverx, linear, 0.4f);
+		proximity = Mathf.Lerp(oneoverx, linear, 0.5f);
 		dot = Mathf.Clamp01(Vector3.Dot(looker.forward, (apparition.position - looker.position).normalized));
 
-		intensity = Mathf.Clamp01(proximity * (1 + 0.67f * dot));
+		intensity = Mathf.Clamp01(proximity * (1 + 1 * dot));
 
 		weightSlow = (1 - intensity);
 		weightSlow = Mathf.Clamp01(2 * IncreaseContrast(weightSlow));

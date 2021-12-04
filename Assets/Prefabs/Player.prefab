@@ -877,21 +877,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a96e8a54576bdfa429ae6f5a6a18d52c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  held: 0
   looker: {fileID: 8417224531919593861}
   apparition: {fileID: 0}
-  range: 40
+  range: 80
   overallVolume: 0.3
   tickloopSlow: {fileID: 755635759338732674}
   tickloopMed: {fileID: 1606650926646575671}
   tickloopFast: {fileID: 4814147547945402058}
-  oneoverx: 0
-  linear: 0
-  proximity: 0
-  dot: 0
-  intensity: 0
-  weightSlow: 0
-  weightMed: 0
-  weightFast: 0
 --- !u!1 &8503646745212854119
 GameObject:
   m_ObjectHideFlags: 0

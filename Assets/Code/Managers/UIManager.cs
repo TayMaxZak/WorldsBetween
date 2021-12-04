@@ -12,6 +12,10 @@ public class UIManager : MonoBehaviour
 
 	public Animator watchAnim;
 
+	private bool meterRaised;
+
+	public Animator meterAnim;
+
 	public TMPro.TextMeshProUGUI healthText;
 
 	public Image staminaSlider;
@@ -36,7 +40,14 @@ public class UIManager : MonoBehaviour
 	{
 		Instance.watchRaised = raised;
 
-		Instance.watchAnim.SetBool("WatchRaised", raised);
+		Instance.watchAnim.SetBool("Raised", raised);
+	}
+
+	public static void SetMeterRaised(bool raised)
+	{
+		Instance.meterRaised = raised;
+
+		Instance.meterAnim.SetBool("Raised", raised);
 	}
 
 	public static void SetCurrentHealth(int health)
