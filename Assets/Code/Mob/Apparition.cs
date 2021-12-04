@@ -89,9 +89,12 @@ public class Apparition : MonoBehaviour
 			{
 				if (distance < grabRange)
 				{
-					t.grabbing = SeedlessRandom.NextFloat() < 0.2f;
+					t.grabbing = SeedlessRandom.NextFloat() < 0.15f;
 					if (t.grabbing)
+					{
 						playerMover.grabbed = true;
+						playerMover.SetVelocity(Vector3.zero);
+					}
 				}
 				else
 					t.grabbing = false;
@@ -99,15 +102,25 @@ public class Apparition : MonoBehaviour
 				t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabRange);
 			}
 
+			Vector3 offsetDir = SeedlessRandom.RandomPoint(2);
 			if (t.grabbing)
 			{
-				t.line.SetPosition(0, transform.position);
-				t.line.SetPosition(1, playerMover.body.transform.position - Vector3.down * 0.5f);
+				for (int i = 0; i < t.line.positionCount; i++)
+				{
+					float percent = (float)i / t.line.positionCount;
+					float mid = (1 - Mathf.Abs(2 * percent - 1));
+					t.line.SetPosition(i , (SeedlessRandom.RandomPoint(1) + offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
+				}
+
 			}
 			else
 			{
-				t.line.SetPosition(0, transform.position);
-				t.line.SetPosition(1, t.targetPoint);
+				for (int i = 0; i < t.line.positionCount; i++)
+				{
+					float percent = (float)i / t.line.positionCount;
+					float mid = (1 - Mathf.Abs(2 * percent - 1));
+					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(1) + offsetDir) * mid * mid + Vector3.Lerp(transform.position, t.targetPoint, percent));
+				}
 			}
 		}
 	}
