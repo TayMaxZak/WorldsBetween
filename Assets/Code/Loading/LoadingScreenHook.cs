@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 public class LoadingScreenHook : MonoBehaviour
 {
+	[System.Serializable]
+	public class SpinRing
+	{
+		public Transform toRotate;
+		public float speedMult;
+	}
+
 	[SerializeField]
 	private Image loadingBar;
 
@@ -26,6 +33,12 @@ public class LoadingScreenHook : MonoBehaviour
 	private Sprite opaqueBkg;
 	[SerializeField]
 	private Sprite transparentBkg;
+
+	[SerializeField]
+	private List<SpinRing> ringsToSpin;
+
+	[SerializeField]
+	private float overallSpinSpeed = 10;
 
 	[Header("Elevator Music")]
 	[SerializeField]
@@ -75,6 +88,11 @@ public class LoadingScreenHook : MonoBehaviour
 
 		playButtonText.text = progress < 0.5f ? (tooEarly ? "Not Ready" : "Early Play") : "Play";
 		playButtonText.color = tooEarly ? fadedText : normalText;
+
+		// Spin the rings
+		float middleToEnd = Mathf.Clamp01(2 * progress);
+		foreach (SpinRing spin in ringsToSpin)
+			spin.toRotate.Rotate(Vector3.forward * overallSpinSpeed * spin.speedMult * middleToEnd * Time.deltaTime);
 
 		// Elevator music
 		UpdateMusic(progress);
