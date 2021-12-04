@@ -18,6 +18,9 @@ public class LoadingScreenHook : MonoBehaviour
 
 	[Header("Main")]
 	[SerializeField]
+	private GameObject generatingUI;
+
+	[SerializeField]
 	private Image loadingBar;
 
 	[SerializeField]
@@ -68,6 +71,8 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private void Awake()
 	{
+		generatingUI.SetActive(false);
+
 		UpdateBackground(false);
 		UpdateProgress(0);
 
@@ -129,10 +134,13 @@ public class LoadingScreenHook : MonoBehaviour
 		UpdateMusic(progress);
 
 		// Group
-		float fade = Mathf.Clamp01((1 - progress) * 10);
+		float fade = Mathf.Clamp01((1 - progress) * 20);
 		group.alpha = fade;
 		if (updateProgress)
+		{
 			UIManager.SetDeathPostProcess(fade);
+			AudioManager.SetAmbientVolume(1 - fade);
+		}
 	}
 
 	private void UpdateMusic(float progress)
@@ -148,10 +156,11 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private void UpdateBackground(bool seeThrough)
 	{
-		background.sprite = seeThrough ? transparentBkg : opaqueBkg;
+		if (background)
+			background.sprite = seeThrough ? transparentBkg : opaqueBkg;
 	}
 
-	public async void Show()
+	public async void StartedGenerating()
 	{
 		UpdateProgress(0);
 
@@ -162,6 +171,8 @@ public class LoadingScreenHook : MonoBehaviour
 
 	public void SeeThrough()
 	{
+		generatingUI.SetActive(true);
+
 		UpdateBackground(true);
 	}
 
@@ -172,6 +183,8 @@ public class LoadingScreenHook : MonoBehaviour
 
 	public void Hide()
 	{
+		UpdateProgress(1);
+
 		updateProgress = false;
 
 		gameObject.SetActive(false);

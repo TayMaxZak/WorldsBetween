@@ -61,7 +61,8 @@ public class SceneLoader : MonoBehaviour
 
 	public static void Remove()
 	{
-		Instance.Kill();
+		if (Instance)
+			Instance.Kill();
 	}
 
 	private void Kill()

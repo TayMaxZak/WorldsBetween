@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using ExtensionMethods;
 
 public class AudioManager : MonoBehaviour
 {
 	private static AudioManager Instance;
+
+	[SerializeField]
+	private AudioMixer mixer;
 
 	[SerializeField]
 	private int poolSize = 20;
@@ -128,6 +132,16 @@ public class AudioManager : MonoBehaviour
 	public static void StopMusicCue()
 	{
 		Instance.musicPlayer.Stop();
+	}
+
+	public static void SetAmbientVolume(float volume)
+	{
+		Instance.mixer.SetFloat("AmbientVolume", PercentageToDb(volume));
+	}
+
+	static float PercentageToDb(float valueIn)
+	{
+		return Mathf.Clamp(10 * Mathf.Log10(valueIn), -80, 0);
 	}
 
 	private IEnumerator RecycleAudio(AudioSource source)

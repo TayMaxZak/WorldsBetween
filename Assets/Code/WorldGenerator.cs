@@ -161,7 +161,7 @@ public class WorldGenerator
 			chunksToQueue.Enqueue(entry);
 
 		// Then go through a few at a time
-		int taskSize = 32;
+		int taskSize = 64;
 		while (chunksToQueue.Count > 0)
 		{
 			for (int i = taskSize; i > 0 && chunksToQueue.Count > 0; i--)
