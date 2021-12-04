@@ -67,7 +67,7 @@ public class PlayerMover : MonoBehaviour
 	[SerializeField]
 	private Sound enterWaterSound;
 
-	private Timer waterFollowTimer = new Timer(25);
+	private Timer waterFollowTimer = new Timer(20);
 
 	//private PointLightSource flashlight = new PointLightSource(2.0f, 1.0f);
 

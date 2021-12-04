@@ -34,6 +34,7 @@ public class WorldGenerator
 
 	private GameObject chunkRoot;
 	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
+	private Queue<KeyValuePair<Vector3Int, Chunk>> chunksToQueue = new Queue<KeyValuePair<Vector3Int, Chunk>>();
 
 	public void Init()
 	{
@@ -66,23 +67,20 @@ public class WorldGenerator
 		await Task.Delay(1000);
 
 		// Enqueue all chunks afterwards
-		EnqueueAllChunks();
+		await EnqueueAllChunks();
 
 		genStage = GenStage.GenerateChunks;
-
-		await Task.Delay(1000);
 
 		GameManager.Instance.MidLoading();
 	}
 
 	public void ContinueGenerating()
 	{
-		if (genStage < GenStage.GenerateChunks || !active)
+		if (genStage < GenStage.EnqueueChunks || !active)
 			return;
 
 		chunksToGen = 0;
 		generatorsUsed = 0;
-
 
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
@@ -96,8 +94,11 @@ public class WorldGenerator
 		}
 
 		// Playable yet?
-		if (GenProgress() >= 0.67f || Mathf.Approximately(GenProgress(), 1))
-			GameManager.Instance.FinishLoading();
+		if (genStage >= GenStage.GenerateChunks)
+		{
+			if (GenProgress() >= 0.67f || Mathf.Approximately(GenProgress(), 1))
+				GameManager.Instance.FinishLoading();
+		}
 	}
 
 	public void CreateChunksNearPlayer(int range)
@@ -153,10 +154,21 @@ public class WorldGenerator
 		genStage = GenStage.EnqueueChunks;
 	}
 
-	public void EnqueueAllChunks()
+	private async Task EnqueueAllChunks()
 	{
-		foreach (KeyValuePair<Vector3Int, Chunk> entry in World.GetChunks())
-			QueueNextStage(entry.Value);
+		// First, get all chunks
+		foreach (var entry in World.GetChunks())
+			chunksToQueue.Enqueue(entry);
+
+		// Go through chunks of them at a time
+		int taskSize = 24;
+		while (chunksToQueue.Count > 0)
+		{
+			for (int i = taskSize; i > 0 && chunksToQueue.Count > 0; i--)
+				QueueNextStage(chunksToQueue.Dequeue().Value);
+
+			await Task.Delay(1);
+		}
 	}
 
 	private void UpdateChunkGameObjects()
