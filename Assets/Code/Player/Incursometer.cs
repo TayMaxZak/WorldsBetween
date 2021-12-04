@@ -12,8 +12,9 @@ public class Incursometer : MonoBehaviour
 	public float range = 40;
 
 	public float overallVolume = 0.5f;
-	public AudioSource tickloop1;
-	public AudioSource tickloop2;
+	public AudioSource tickloopSlow;
+	public AudioSource tickloopMed;
+	public AudioSource tickloopFast;
 
 	public float oneoverx;
 	public float linear;
@@ -21,6 +22,10 @@ public class Incursometer : MonoBehaviour
 	public float proximity;
 	public float dot;
 	public float intensity;
+
+	public float weightSlow;
+	public float weightMed;
+	public float weightFast;
 
 	private void Update()
 	{
@@ -32,11 +37,28 @@ public class Incursometer : MonoBehaviour
 		proximity = Mathf.Lerp(oneoverx, linear, 0.4f);
 		dot = Mathf.Clamp01(Vector3.Dot(looker.forward, (apparition.position - looker.position).normalized));
 
-		intensity = Mathf.Clamp01(proximity * (1 + dot));
-		intensity *= intensity;
+		intensity = Mathf.Clamp01(proximity * (1 + 0.67f * dot));
 
-		tickloop1.volume = intensity * overallVolume;
-		tickloop2.volume = 0;
+		weightSlow = (1 - intensity);
+		weightSlow = Mathf.Clamp01(2 * IncreaseContrast(weightSlow));
+		weightMed = (1 - Mathf.Abs(2 * intensity - 1));
+		weightMed = IncreaseContrast(weightMed);
+		weightFast = intensity;
+		weightFast = Mathf.Clamp01(2 * IncreaseContrast(weightFast));
+
+		tickloopSlow.volume = weightSlow * overallVolume;
+		tickloopMed.volume = weightMed * overallVolume;
+		tickloopFast.volume = weightFast * overallVolume;
+	}
+
+	private float IncreaseContrast(float input)
+	{
+		float output = input;
+		output -= 0.5f;
+		output *= 2;
+		output = Mathf.Clamp01(output);
+
+		return output;
 	}
 }
 
