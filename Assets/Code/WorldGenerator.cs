@@ -1,10 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 [System.Serializable]
 public class WorldGenerator
 {
+	public enum GenStage
+	{
+		AwaitInitialGen,
+		CreateChunks,
+		EnqueueChunks,
+		GenerateChunks,
+		Ready
+	}
+	public GenStage genStage = GenStage.AwaitInitialGen;
+
 	public bool active = true;
 	public bool multiQ = false;
 
@@ -17,8 +28,6 @@ public class WorldGenerator
 	private int genRange = 8;
 
 	private Timer chunkGenTimer = new Timer(1);
-
-	private bool awaitingInitalGen = true;
 
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
@@ -47,17 +56,24 @@ public class WorldGenerator
 		chunkRoot.name = "Chunks";
 	}
 
-	public void InitialGen()
+	public async void InitialGen()
 	{
-		awaitingInitalGen = false;
+		genStage = GenStage.CreateChunks;
 
 		// First batch of chunks
 		CreateChunksNearPlayer(genRange);
+
+		await Task.Delay(1000);
+
+		// Enqueue all chunks afterwards
+		EnqueueAllChunks();
+
+		genStage = GenStage.GenerateChunks;
 	}
 
 	public void ContinueGenerating()
 	{
-		if (awaitingInitalGen || !active)
+		if (genStage < GenStage.GenerateChunks || !active)
 			return;
 
 		chunksToGen = 0;
@@ -125,10 +141,18 @@ public class WorldGenerator
 					World.GetChunks().Add(chunkPos, chunkGO.data);
 
 					// Add chunk to generator
-					QueueNextStage(chunkGO.data);
+					//;
 				}
 			}
 		}
+
+		genStage = GenStage.EnqueueChunks;
+	}
+
+	public void EnqueueAllChunks()
+	{
+		foreach (KeyValuePair<Vector3Int, Chunk> entry in World.GetChunks())
+			QueueNextStage(entry.Value);
 	}
 
 	private void UpdateChunkGameObjects()
