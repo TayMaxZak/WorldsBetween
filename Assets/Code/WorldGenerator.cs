@@ -97,7 +97,7 @@ public class WorldGenerator
 		if (genStage >= GenStage.GenerateChunks)
 		{
 			if (GenProgress() >= 0.67f || Mathf.Approximately(GenProgress(), 1))
-				GameManager.Instance.FinishLoading();
+				GameManager.Instance.FinishLoading(1000);
 		}
 	}
 
@@ -156,12 +156,12 @@ public class WorldGenerator
 
 	private async Task EnqueueAllChunks()
 	{
-		// First, get all chunks
+		// First get all chunks
 		foreach (var entry in World.GetChunks())
 			chunksToQueue.Enqueue(entry);
 
-		// Go through chunks of them at a time
-		int taskSize = 24;
+		// Then go through a few at a time
+		int taskSize = 32;
 		while (chunksToQueue.Count > 0)
 		{
 			for (int i = taskSize; i > 0 && chunksToQueue.Count > 0; i--)

@@ -13,11 +13,6 @@ public class SeedlessRandom : MonoBehaviour
 	static readonly ThreadLocal<System.Random> random =
 		new ThreadLocal<System.Random>(() => new System.Random(Interlocked.Increment(ref seed)));
 
-	public static int Rand()
-	{
-		return random.Value.Next();
-	}
-
 	private void Awake()
 	{
 		// Ensure singleton

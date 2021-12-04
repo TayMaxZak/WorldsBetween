@@ -556,129 +556,9 @@ MonoBehaviour:
   padLayer: {fileID: 1586911891}
   bassLayer: {fileID: 4106651052702941529}
   overallVolume: 0.25
-  randomTip: {fileID: 8942086832227427965}
+  randomTip: {fileID: 4100367533965217396}
   randomTipTimer:
-    maxTime: 15
---- !u!1 &2271093100153635537
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5143948475417778711}
-  - component: {fileID: 5752823090502256703}
-  - component: {fileID: 3274138463450305742}
-  - component: {fileID: 2692619789469606730}
-  m_Layer: 5
-  m_Name: Test button
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &5143948475417778711
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2271093100153635537}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 7234063473246872239}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -100, y: 100}
-  m_SizeDelta: {x: 80, y: 80}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5752823090502256703
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2271093100153635537}
-  m_CullTransparentMesh: 1
---- !u!114 &3274138463450305742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2271093100153635537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!114 &2692619789469606730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2271093100153635537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
-    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
-    m_SelectedColor: {r: 0.68235296, g: 0.68235296, b: 0.68235296, a: 1}
-    m_DisabledColor: {r: 0.25, g: 0.25, b: 0.25, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 3274138463450305742}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
+    maxTime: 1
 --- !u!1 &2657685216325662431
 GameObject:
   m_ObjectHideFlags: 0
@@ -953,7 +833,7 @@ MonoBehaviour:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: FinishLoading
-        m_Mode: 1
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1134,7 +1014,6 @@ RectTransform:
   - {fileID: 145812168166538552}
   - {fileID: 6593969856912174078}
   - {fileID: 77366175642297635}
-  - {fileID: 5143948475417778711}
   m_Father: {fileID: 2042006525404040221}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1467,7 +1346,6 @@ GameObject:
   - component: {fileID: 6839599106107171354}
   - component: {fileID: 5223590527405028683}
   - component: {fileID: 2983495926286204600}
-  - component: {fileID: 8942086832227427965}
   m_Layer: 5
   m_Name: TipText
   m_TagString: Untagged
@@ -1595,35 +1473,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8942086832227427965
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7503743919695896098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef9cf46aed88649438e3735c9c42b7a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tips:
-  - HEY! YOU HAVE TO LISTEN TO ME! THIS THING TURNED ME INTO AN ABSTRACT IDEA, AND
-    NOW THIS IS THE ONLY WAY I CAN COMMUNICATE. YOU HAVE TO GET ME OUT OF HERE!
-  - 'Every field agent should remember the Three A''s for dealing with apparitions:
-    Avoid, Avoid, Avoid.'
-  - Cephalopaths are extradminensional entities that feed off your fear of the unkown.
-  - The Astrum was discovered in a warehouse by an anonymous individual. It has since
-    been relocated by Hierarchy to a secure location.
-  - Use your incursometer to detect nearby apparitions. It will click faster the
-    closer they get to you.
-  - 'Your grappling hook has two modes: the primary mode lets you attach the rope
-    to a fixed position, while its alternate mode lets you swing rapidly (and dangerously).'
-  - Food tubes can ferment anything with calories into an edible substance. Could
-    definitely taste better, though.
-  - If a Griever approaches you, it is pretty sure you're about to die. Stay alive
-    to spite it.
-  tipText: {fileID: 2983495926286204600}
 --- !u!1 &7817425211294084311
 GameObject:
   m_ObjectHideFlags: 0
@@ -1767,6 +1616,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 77366175642297635}
+  - component: {fileID: 4100367533965217396}
   m_Layer: 5
   m_Name: Tip
   m_TagString: Untagged
@@ -1795,6 +1645,36 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &4100367533965217396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7916733701393806494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef9cf46aed88649438e3735c9c42b7a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tips:
+  - HEY! YOU HAVE TO LISTEN TO ME! THIS THING TURNED ME INTO AN ABSTRACT IDEA, AND
+    NOW THIS IS THE ONLY WAY I CAN COMMUNICATE. YOU HAVE TO GET ME OUT OF HERE!
+  - 'Every field agent should remember the Three A''s for dealing with apparitions:
+    Avoid, Avoid, Avoid.'
+  - Cephalopaths are extradminensional entities that feed off your fear of the unkown.
+  - The Astrum was discovered in a warehouse by an anonymous individual. It has since
+    been relocated by Hierarchy to a secure location.
+  - Use your incursometer to detect nearby apparitions. It will click faster the
+    closer they get to you.
+  - 'Your grappling hook has two modes: the primary mode lets you attach the rope
+    to a fixed position, while its alternate mode lets you swing rapidly (and dangerously).'
+  - Food tubes can ferment anything with calories into an edible substance. Could
+    definitely taste better, though.
+  - If a Griever approaches you, it is pretty sure you're about to die. Stay alive
+    to spite it.
+  tipText: {fileID: 2983495926286204600}
+  usable: 
 --- !u!1 &8254200923754401297
 GameObject:
   m_ObjectHideFlags: 0

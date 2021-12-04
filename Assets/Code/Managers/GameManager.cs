@@ -73,14 +73,14 @@ public partial class GameManager : MonoBehaviour
 		loadingScreen.AlmostDone();
 	}
 
-	public async void FinishLoading()
+	public async void FinishLoading(int delay)
 	{
 		AlmostFinishLoading();
 
 		if (finishedLoading)
 			return;
 
-		await Task.Delay(1000);
+		await Task.Delay(delay);
 
 		DisableLoadingUX();
 
