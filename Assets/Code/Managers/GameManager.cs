@@ -82,6 +82,8 @@ public partial class GameManager : MonoBehaviour
 
 	private void EnableLoadingUX()
 	{
+		loadingScreen.Show();
+
 		deathPostProcess.weight = 1;
 	}
 

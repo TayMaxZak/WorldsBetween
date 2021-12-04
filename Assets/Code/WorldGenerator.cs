@@ -210,8 +210,10 @@ public class WorldGenerator
 
 	public float GenProgress()
 	{
-		int totalChunks = World.GetChunks().Count;
-		return (totalChunks - chunksToGen) / (float)totalChunks;
+		int totalChunks = Mathf.Max(World.GetChunks().Count, 1);
+		float progress = (totalChunks - chunksToGen) / (float)totalChunks;
+
+		return progress;
 	}
 
 	public Dictionary<Chunk.GenStage, ChunkGenerator> GetChunkGenerators()
