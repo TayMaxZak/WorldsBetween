@@ -41,6 +41,9 @@ public class Apparition : MonoBehaviour
 	private Timer dashTimer = new Timer(10f);
 
 	[SerializeField]
+	private Timer grabTimer = new Timer(10f);
+
+	[SerializeField]
 	private List<Tentacle> tentacles;
 
 	private void Awake()
@@ -103,14 +106,20 @@ public class Apparition : MonoBehaviour
 
 				transform.Translate(diff.normalized * dashSpeed);
 
-				moveTentacles = true;
-
-				playerMover.grabbed = false;
-
 				dashTimer.Reset(dashTimer.maxTime * (0.5f + Random.value));
 			}
 			else
 				transform.Translate(diff.normalized * speed * Time.deltaTime);
+
+			grabTimer.Increment(Time.deltaTime);
+			if (grabTimer.Expired())
+			{
+				moveTentacles = true;
+
+				playerMover.grabbed = false;
+
+				grabTimer.Reset(grabTimer.maxTime * (0.5f + Random.value));
+			}
 		}
 		else
 			transform.Translate(diff.normalized * dashSpeed * Time.deltaTime);
@@ -119,7 +128,7 @@ public class Apparition : MonoBehaviour
 		{
 			if (moveTentacles)
 			{
-				if (distance < grabRange)
+				if (!playerVitals.dead && distance < grabRange)
 				{
 					t.grabbing = SeedlessRandom.NextFloat() < 0.15f;
 					if (t.grabbing)
@@ -135,7 +144,7 @@ public class Apparition : MonoBehaviour
 
 				t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabRange);
 				t.offsetDir = SeedlessRandom.RandomPoint(4);
-				t.offsetDir2 = SeedlessRandom.RandomPoint(3);
+				t.offsetDir2 = SeedlessRandom.RandomPoint(7);
 			}
 			else
 				t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDir2, Time.deltaTime);

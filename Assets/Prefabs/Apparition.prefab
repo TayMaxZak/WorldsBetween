@@ -5146,9 +5146,9 @@ MonoBehaviour:
   dash: {fileID: 11400000, guid: 213e0b7fdfe1a4a41b9c5d50158faa9f, type: 2}
   playerVitals: {fileID: 0}
   playerMover: {fileID: 0}
-  speed: 1.5
+  speed: 2
   dashSpeed: 7
-  damage: 3
+  damage: 2
   damageRange: 24
   grabRange: 32
   maxDistance: 200
@@ -5156,26 +5156,33 @@ MonoBehaviour:
   damageTimer:
     maxTime: 0.06
   dashTimer:
-    maxTime: 7
+    maxTime: 9
+  grabTimer:
+    maxTime: 3
   tentacles:
   - targetPoint: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
+    offsetDir2: {x: 0, y: 0, z: 0}
     line: {fileID: 9004443761404406742}
     grabbing: 0
   - targetPoint: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
+    offsetDir2: {x: 0, y: 0, z: 0}
     line: {fileID: 94833203980676213}
     grabbing: 0
   - targetPoint: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
+    offsetDir2: {x: 0, y: 0, z: 0}
     line: {fileID: 5183032548939964340}
     grabbing: 0
   - targetPoint: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
+    offsetDir2: {x: 0, y: 0, z: 0}
     line: {fileID: 158206658688805905}
     grabbing: 0
   - targetPoint: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
+    offsetDir2: {x: 0, y: 0, z: 0}
     line: {fileID: 9081087223152265989}
     grabbing: 0
 --- !u!1 &9004443761857007517
