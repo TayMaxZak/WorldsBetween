@@ -61,6 +61,9 @@ public partial class GameManager : MonoBehaviour
 
 	public void FinishLoading()
 	{
+		if (finishedLoading)
+			return;
+
 		DisableLoadingUX();
 
 		player.ActivatePlayer();

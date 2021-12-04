@@ -75,7 +75,8 @@ public class WorldGenerator
 			entry.Value.Generate();
 		}
 
-		if (Mathf.Approximately(GenProgress(), 1))
+		// Playable yet?
+		if (GenProgress() >= 0.67f || Mathf.Approximately(GenProgress(), 1))
 			GameManager.Instance.FinishLoading();
 	}
 
