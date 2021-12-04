@@ -8,6 +8,7 @@ public class Apparition : MonoBehaviour
 	public class Tentacle
 	{
 		public Vector3 targetPoint;
+		public Vector3 offsetDir;
 		public LineRenderer line;
 		public bool grabbing;
 	}
@@ -130,16 +131,16 @@ public class Apparition : MonoBehaviour
 					t.grabbing = false;
 
 				t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabRange);
+				t.offsetDir = SeedlessRandom.RandomPoint(4);
 			}
 
-			Vector3 offsetDir = SeedlessRandom.RandomPoint(2);
 			if (t.grabbing)
 			{
 				for (int i = 0; i < t.line.positionCount; i++)
 				{
 					float percent = (float)i / t.line.positionCount;
 					float mid = (1 - Mathf.Abs(2 * percent - 1));
-					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(1) + offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
+					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) + t.offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
 				}
 
 			}
@@ -149,7 +150,7 @@ public class Apparition : MonoBehaviour
 				{
 					float percent = (float)i / t.line.positionCount;
 					float mid = (1 - Mathf.Abs(2 * percent - 1));
-					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(1) + offsetDir) * mid * mid + Vector3.Lerp(transform.position, t.targetPoint, percent));
+					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) + t.offsetDir) * mid * mid + Vector3.Lerp(transform.position, t.targetPoint, percent));
 				}
 			}
 		}

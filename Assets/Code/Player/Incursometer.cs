@@ -11,7 +11,7 @@ public class Incursometer : MonoBehaviour
 
 	public Transform looker;
 
-	public Transform apparition;
+	public Apparition[] apparitions;
 
 	public float range = 40;
 
@@ -30,6 +30,11 @@ public class Incursometer : MonoBehaviour
 	private float weightSlow;
 	private float weightMed;
 	private float weightFast;
+
+	private void Start()
+	{
+		apparitions = FindObjectsOfType<Apparition>();
+	}
 
 	private void Update()
 	{
@@ -56,15 +61,21 @@ public class Incursometer : MonoBehaviour
 			return;
 		}
 
-		float cutoff = 0.05f;
-		oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 8, 0)) - cutoff);
-		oneoverx = Mathf.Clamp01(oneoverx + cutoff * oneoverx);
-		linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 8, 0) / range) - cutoff);
-		linear = Mathf.Clamp01(linear + cutoff * linear);
-		proximity = Mathf.Lerp(oneoverx, linear, 0.5f);
-		dot = Mathf.Clamp01(Vector3.Dot(looker.forward, (apparition.position - looker.position).normalized));
+		intensity = 0;
 
-		intensity = Mathf.Clamp01(proximity * (1 + 1 * dot));
+		float cutoff = 0.05f;
+		foreach (Apparition apparition in apparitions)
+		{
+			oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.transform.position - looker.position) - 8, 0)) - cutoff);
+			oneoverx = Mathf.Clamp01(oneoverx + cutoff * oneoverx);
+			linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.transform.position - looker.position) - 8, 0) / range) - cutoff);
+			linear = Mathf.Clamp01(linear + cutoff * linear);
+			proximity = Mathf.Lerp(oneoverx, linear, 0.5f);
+			dot = Mathf.Clamp01(Vector3.Dot(looker.forward, (apparition.transform.position - looker.position).normalized));
+
+			float toAdd = Mathf.Clamp01(proximity * (1 + 1 * dot));
+			intensity = 1 - (1 - intensity) * (1 - toAdd);
+		}
 
 		weightSlow = (1 - intensity);
 		weightSlow = Mathf.Clamp01(2 * IncreaseContrast(weightSlow));
