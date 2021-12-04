@@ -44,4 +44,9 @@ public class SeedlessRandom : MonoBehaviour
 	{
 		return min + (max - min) * (float)random.Value.NextDouble();
 	}
+
+	public static int NextIntInRange(float min, float max)
+	{
+		return (int)NextFloatInRange(min, max);
+	}
 }

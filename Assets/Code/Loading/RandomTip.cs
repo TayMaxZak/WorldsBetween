@@ -10,8 +10,8 @@ public class RandomTip : MonoBehaviour
 	[SerializeField]
 	private TMPro.TextMeshProUGUI tipText;
 
-	private void Start()
+	public void Randomize()
 	{
-		tipText.text = tips[Random.Range(0, tips.Length)];
+		tipText.text = tips[SeedlessRandom.NextIntInRange(0, tips.Length)];
 	}
 }

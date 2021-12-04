@@ -50,8 +50,14 @@ public class LoadingScreenHook : MonoBehaviour
 	[SerializeField]
 	private float overallVolume = 0.25f;
 
-	private float progress;
-	private float newProgress;
+	[Header("Random Tips")]
+	[SerializeField]
+	private RandomTip randomTip;
+	[SerializeField]
+	private Timer randomTipTimer = new Timer(10);
+
+	private float progressDisplay;
+	private float progressRaw;
 
 	private bool updateProgress = false;
 
@@ -59,21 +65,35 @@ public class LoadingScreenHook : MonoBehaviour
 	{
 		UpdateBackground(false);
 		UpdateProgress(0);
+
+		randomTip.Randomize();
+		randomTipTimer.Reset();
 	}
 
 	private void Update()
 	{
+		// Pick a new random tip
+		randomTipTimer.Increment(Time.deltaTime);
+		if (randomTipTimer.Expired())
+		{
+			randomTip.Randomize();
+
+			randomTipTimer.Reset();
+		}
+
 		if (!updateProgress)
 			return;
 
+		// Retrieve raw progress
 		if (World.Generator.genStage >= WorldGenerator.GenStage.GenerateChunks)
-			newProgress = Mathf.Clamp01(World.Generator.GenProgress() / 0.67f);
+			progressRaw = Mathf.Clamp01(World.Generator.GenProgress() / 0.67f);
 		else
-			newProgress = 0;
+			progressRaw = 0;
 
-		progress = Mathf.Lerp(progress, newProgress, Time.deltaTime);
+		// Get display progress
+		progressDisplay = Mathf.Lerp(progressDisplay, progressRaw, Time.deltaTime);
 
-		UpdateProgress(progress);
+		UpdateProgress(progressDisplay);
 	}
 
 	public void UpdateProgress(float progress)

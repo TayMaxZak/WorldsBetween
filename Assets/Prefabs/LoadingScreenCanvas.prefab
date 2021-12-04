@@ -555,6 +555,9 @@ MonoBehaviour:
   padLayer: {fileID: 1586911891}
   bassLayer: {fileID: 4106651052702941529}
   overallVolume: 0.25
+  randomTip: {fileID: 8942086832227427965}
+  randomTipTimer:
+    maxTime: 15
 --- !u!1 &2657685216325662431
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,7 +663,7 @@ RectTransform:
   m_LocalScale: {x: 1.13, y: 1.13, z: 1.13}
   m_Children: []
   m_Father: {fileID: 7234063473246872239}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -737,11 +740,11 @@ RectTransform:
   m_Children:
   - {fileID: 1253864671391413483}
   m_Father: {fileID: 7234063473246872239}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 120}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -101.93}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7725913615993214332
@@ -807,7 +810,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 0.68235296, g: 0.68235296, b: 0.68235296, a: 1}
     m_SelectedColor: {r: 0.68235296, g: 0.68235296, b: 0.68235296, a: 1}
-    m_DisabledColor: {r: 0.27058825, g: 0.27058825, b: 0.27058825, a: 0.25490198}
+    m_DisabledColor: {r: 0.25, g: 0.25, b: 0.25, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -1006,10 +1009,10 @@ RectTransform:
   - {fileID: 6515504506574358196}
   - {fileID: 2344085060743186698}
   - {fileID: 6728374203743189529}
-  - {fileID: 6593969856912174078}
-  - {fileID: 77366175642297635}
   - {fileID: 2541446060415580042}
   - {fileID: 145812168166538552}
+  - {fileID: 6593969856912174078}
+  - {fileID: 77366175642297635}
   m_Father: {fileID: 2042006525404040221}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1196,7 +1199,7 @@ RectTransform:
   m_LocalScale: {x: 1.13, y: 1.13, z: 1.13}
   m_Children: []
   m_Father: {fileID: 7234063473246872239}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -22.5}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1485,7 +1488,7 @@ MonoBehaviour:
   tips:
   - HEY! YOU HAVE TO LISTEN TO ME! THIS THING TURNED ME INTO AN ABSTRACT IDEA, AND
     NOW THIS IS THE ONLY WAY I CAN COMMUNICATE. YOU HAVE TO GET ME OUT OF HERE!
-  - 'Every field agent should remember the Three A''''s for dealing with apparitions:
+  - 'Every field agent should remember the Three A''s for dealing with apparitions:
     Avoid, Avoid, Avoid.'
   - Cephalopaths are extradminensional entities that feed off your fear of the unkown.
   - The Astrum was discovered in a warehouse by an anonymous individual. It has since
@@ -1494,9 +1497,9 @@ MonoBehaviour:
     closer they are to you.
   - 'Your grappling hook has two modes: the primary mode lets you attach the rope
     to a fixed position, while its alternate mode lets you swing rapidly (and dangerously).'
-  - Food tubes can ferment any biomatter with calories into an edible substance.
-    Could definitely taste better, though.
-  - 'NOTE TO SELF: Thank Agnes for making those delicious cookies last week'
+  - Food tubes can ferment anything with calories into an edible substance. Could
+    definitely taste better, though.
+  - 'NOTE TO SELF: Thank Agnes for making those delicious cookies last week.'
   tipText: {fileID: 2983495926286204600}
 --- !u!1 &7817425211294084311
 GameObject:
@@ -1662,7 +1665,7 @@ RectTransform:
   - {fileID: 4534196064242526863}
   - {fileID: 6839599106107171354}
   m_Father: {fileID: 7234063473246872239}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
