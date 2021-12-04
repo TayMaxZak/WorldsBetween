@@ -244,8 +244,9 @@ public class Chunk
 			chunkMesh.FinishMesh(newMesh);
 
 			// TODO: Better way to do this?
+			float random = 45;
 			if (go && go.transform)
-				go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(0, 360), SeedlessRandom.NextFloatInRange(0, 360), SeedlessRandom.NextFloatInRange(0, 360));
+				go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random));
 
 			genStage = GenStage.CalcLight;
 			World.Generator.QueueNextStage(this);
