@@ -377,6 +377,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoadingScreenCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5208456445699275972, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
+      propertyPath: tips.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6292042239984558405, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -832,4 +836,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3e3f749caac47a46a30fb49351662fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  immediate: 0
   sceneIndex: 1
