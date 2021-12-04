@@ -34,6 +34,9 @@ public class Apparition : MonoBehaviour
 
 	private float intensity;
 
+	public Vector3 randomMoveDir;
+	public Vector3 randomMoveDir2;
+
 	[SerializeField]
 	private Timer damageTimer = new Timer(0.1f);
 
@@ -80,7 +83,7 @@ public class Apparition : MonoBehaviour
 		damageTimer.Increment(Time.deltaTime);
 		if (damageTimer.Expired())
 		{
-			playerVitals.DealDamage(damage * intensity);
+			playerVitals.DealDamage(damage * intensity * intensity);
 
 			damageTimer.Reset();
 		}
@@ -106,10 +109,17 @@ public class Apparition : MonoBehaviour
 
 				transform.Translate(diff.normalized * dashSpeed);
 
+				randomMoveDir = SeedlessRandom.RandomPoint(1);
+				randomMoveDir2 = SeedlessRandom.RandomPoint(1);
+
 				dashTimer.Reset(dashTimer.maxTime * (0.5f + Random.value));
 			}
 			else
-				transform.Translate(diff.normalized * speed * Time.deltaTime);
+			{
+				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDir2, Time.deltaTime);
+
+				transform.Translate((diff.normalized + randomMoveDir / 2) * speed * Time.deltaTime);
+			}
 
 			grabTimer.Increment(Time.deltaTime);
 			if (grabTimer.Expired())
@@ -130,7 +140,7 @@ public class Apparition : MonoBehaviour
 			{
 				if (!playerVitals.dead && distance < grabRange)
 				{
-					t.grabbing = SeedlessRandom.NextFloat() < 0.15f;
+					t.grabbing |= SeedlessRandom.NextFloat() < 1f / tentacles.Count;
 					if (t.grabbing)
 					{
 						playerMover.grabbed = true;
@@ -157,7 +167,7 @@ public class Apparition : MonoBehaviour
 				{
 					float percent = (float)i / t.line.positionCount;
 					float mid = (1 - Mathf.Abs(2 * percent - 1));
-					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) * mult + t.offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
+					t.line.SetPosition(i, Vector3.Lerp(transform.position, diff.normalized * 3 + playerMover.body.transform.position - Vector3.up, percent));
 				}
 			}
 			else
