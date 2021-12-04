@@ -57,9 +57,9 @@ public class Incursometer : MonoBehaviour
 		}
 
 		float cutoff = 0.05f;
-		oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 5, 0)) - cutoff);
+		oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 8, 0)) - cutoff);
 		oneoverx = Mathf.Clamp01(oneoverx + cutoff * oneoverx);
-		linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 5, 0) / range) - cutoff);
+		linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.position - looker.position) - 8, 0) / range) - cutoff);
 		linear = Mathf.Clamp01(linear + cutoff * linear);
 		proximity = Mathf.Lerp(oneoverx, linear, 0.5f);
 		dot = Mathf.Clamp01(Vector3.Dot(looker.forward, (apparition.position - looker.position).normalized));

@@ -12,6 +12,10 @@ public class Apparition : MonoBehaviour
 		public bool grabbing;
 	}
 
+	public AudioSource grabLoop;
+	public AudioSource damageLoop;
+	public Sound dash;
+
 	public PlayerVitals playerVitals;
 	public PlayerMover playerMover;
 
@@ -23,7 +27,8 @@ public class Apparition : MonoBehaviour
 	public float damageRange = 16;
 	public float grabRange = 32;
 
-	public float maxDistance = 160;
+	public float maxDistance = 200;
+	public float permaDashDistance = 120;
 
 	private float intensity;
 
@@ -38,9 +43,16 @@ public class Apparition : MonoBehaviour
 
 	private void Awake()
 	{
+		grabLoop.volume = 0;
+		damageLoop.volume = 0;
 		foreach (Tentacle t in tentacles)
 		{
 			t.targetPoint = transform.position;
+			for (int i = 0; i < t.line.positionCount; i++)
+			{
+				float percent = (float)i / t.line.positionCount;
+				t.line.SetPosition(i, Vector3.Lerp(transform.position, t.targetPoint, percent));
+			}
 		}
 	}
 
@@ -53,6 +65,10 @@ public class Apparition : MonoBehaviour
 
 		Vector3 diff = playerMover.locator.transform.position - transform.position;
 		float distance = diff.magnitude;
+
+		if (distance > maxDistance)
+			return;
+
 		intensity = Mathf.Clamp01(1 - Mathf.Max(distance - 2, 0) / damageRange);
 		intensity *= intensity;
 
@@ -64,11 +80,25 @@ public class Apparition : MonoBehaviour
 			damageTimer.Reset();
 		}
 
-		if (distance <= maxDistance)
+		if (!playerVitals.dead)
+		{
+			grabLoop.volume = (1 - distance / grabRange) * 0.5f;
+			damageLoop.volume = intensity * 0.5f;
+		}
+		else
+		{
+			grabLoop.volume = 0;
+			damageLoop.volume = 0;
+		}
+
+
+		if (distance <= permaDashDistance)
 		{
 			dashTimer.Increment(Time.deltaTime);
 			if (dashTimer.Expired())
 			{
+				AudioManager.PlaySound(dash, transform.position);
+
 				transform.Translate(diff.normalized * dashSpeed);
 
 				moveTentacles = true;
@@ -109,7 +139,7 @@ public class Apparition : MonoBehaviour
 				{
 					float percent = (float)i / t.line.positionCount;
 					float mid = (1 - Mathf.Abs(2 * percent - 1));
-					t.line.SetPosition(i , (SeedlessRandom.RandomPoint(1) + offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
+					t.line.SetPosition(i, (SeedlessRandom.RandomPoint(1) + offsetDir) * mid + Vector3.Lerp(transform.position, playerMover.body.transform.position - Vector3.down, percent));
 				}
 
 			}
