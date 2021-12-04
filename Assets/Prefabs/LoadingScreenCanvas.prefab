@@ -551,7 +551,7 @@ MonoBehaviour:
     speedMult: 1
   - toRotate: {fileID: 2541446060415580042}
     speedMult: -1
-  overallSpinSpeed: 90
+  overallSpinSpeed: 60
   melodyLayer: {fileID: 606334750}
   padLayer: {fileID: 1586911891}
   bassLayer: {fileID: 4106651052702941529}
@@ -1495,12 +1495,13 @@ MonoBehaviour:
   - The Astrum was discovered in a warehouse by an anonymous individual. It has since
     been relocated by Hierarchy to a secure location.
   - Use your incursometer to detect nearby apparitions. It will click faster the
-    closer they are to you.
+    closer they get to you.
   - 'Your grappling hook has two modes: the primary mode lets you attach the rope
     to a fixed position, while its alternate mode lets you swing rapidly (and dangerously).'
   - Food tubes can ferment anything with calories into an edible substance. Could
     definitely taste better, though.
-  - 'NOTE TO SELF: Thank Agnes for making those delicious cookies last week.'
+  - If you see a Griever, it's almost certain that you're about to die. Stay alive
+    out of spite.
   tipText: {fileID: 2983495926286204600}
 --- !u!1 &7817425211294084311
 GameObject:

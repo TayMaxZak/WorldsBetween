@@ -36,7 +36,7 @@ public class WaterFogHandler : MonoBehaviour
 
 	private void Update()
 	{
-		if (Application.isPlaying && GameManager.GetFinishedLoading())
+		if (Application.isPlaying)
 		{
 			if (povCamera == null)
 				povCamera = Camera.main;

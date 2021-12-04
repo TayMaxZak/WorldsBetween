@@ -51,7 +51,10 @@ public class Astrum : MonoBehaviour
 			restart.Increment(Time.deltaTime);
 
 			if (restart.Expired())
+			{
+				SceneLoader.Remove();
 				SceneManager.LoadScene(0);
+			}
 		}
 		else
 			restart.currentTime = activate.maxTime;
@@ -70,6 +73,8 @@ public class Astrum : MonoBehaviour
 
 		mover.locator.position = initPos;
 		mover.SetVelocity(Vector3.zero);
+
+		World.WaterFollow(mover.locatorBlock);
 
 		look.SetXRotation(0);
 

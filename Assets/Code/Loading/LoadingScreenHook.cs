@@ -129,7 +129,7 @@ public class LoadingScreenHook : MonoBehaviour
 		UpdateMusic(progress);
 
 		// Group
-		float fade = Mathf.Clamp01((1 - progress) * 5);
+		float fade = Mathf.Clamp01((1 - progress) * 10);
 		group.alpha = fade;
 		if (updateProgress)
 			UIManager.SetDeathPostProcess(fade);

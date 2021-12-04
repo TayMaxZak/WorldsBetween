@@ -27,7 +27,7 @@ public class SceneLoader : MonoBehaviour
 			return;
 		}
 
-		DontDestroyOnLoad(this);
+		DontDestroyOnLoad(gameObject);
 
 		Random.InitState(System.Environment.TickCount);
 
@@ -57,5 +57,16 @@ public class SceneLoader : MonoBehaviour
 		loaded = true;
 
 		SceneManager.LoadScene(sceneIndex);
+	}
+
+	public static void Remove()
+	{
+		Instance.Kill();
+	}
+
+	private void Kill()
+	{
+		Destroy(gameObject);
+		Instance = null;
 	}
 }
