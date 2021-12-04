@@ -69,6 +69,10 @@ public class WorldGenerator
 		EnqueueAllChunks();
 
 		genStage = GenStage.GenerateChunks;
+
+		await Task.Delay(1000);
+
+		GameManager.Instance.MidLoading();
 	}
 
 	public void ContinueGenerating()

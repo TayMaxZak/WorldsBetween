@@ -18,6 +18,15 @@ public class LoadingScreenHook : MonoBehaviour
 	private Color normalText = Color.white;
 	private Color fadedText = new Color(1, 1, 1, 0.25f);
 
+	[Header("Background")]
+	[SerializeField]
+	private Image background;
+
+	[SerializeField]
+	private Sprite opaqueBkg;
+	[SerializeField]
+	private Sprite transparentBkg;
+
 	[Header("Elevator Music")]
 	[SerializeField]
 	private AudioSource melodyLayer;
@@ -35,6 +44,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private void Awake()
 	{
+		UpdateBackground(false);
 		UpdateProgress(0);
 	}
 
@@ -82,6 +92,11 @@ public class LoadingScreenHook : MonoBehaviour
 		bassLayer.volume = progress * progress * progress * overallVolume * fade;
 	}
 
+	private void UpdateBackground(bool seeThrough)
+	{
+		background.sprite = seeThrough ? transparentBkg : opaqueBkg;
+	}
+
 	public async void Show()
 	{
 		UpdateProgress(0);
@@ -89,6 +104,11 @@ public class LoadingScreenHook : MonoBehaviour
 		await Task.Delay(10);
 
 		updateProgress = true;
+	}
+
+	public void SeeThrough()
+	{
+		UpdateBackground(true);
 	}
 
 	public async void Hide()

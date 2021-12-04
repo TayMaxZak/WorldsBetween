@@ -542,6 +542,9 @@ MonoBehaviour:
   loadingBar: {fileID: 7663699399765847584}
   playButton: {fileID: 1146505472039045843}
   playButtonText: {fileID: 2368538492816228585}
+  background: {fileID: 4683012757953871367}
+  opaqueBkg: {fileID: 21300000, guid: 74b4601a99a70844393eac4fdf42dd50, type: 3}
+  transparentBkg: {fileID: 21300000, guid: fb7657ae16788944eb4cabbac1c7c599, type: 3}
   melodyLayer: {fileID: 606334750}
   padLayer: {fileID: 1586911891}
   bassLayer: {fileID: 4106651052702941529}
@@ -730,9 +733,9 @@ RectTransform:
   m_Father: {fileID: 7234063473246872239}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -80}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 120}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7725913615993214332
@@ -896,8 +899,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Play
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4d03a9a231b690e449782f9481b77f0a, type: 2}
-  m_sharedMaterial: {fileID: -153992981986409614, guid: 4d03a9a231b690e449782f9481b77f0a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fa06b86a9572871459c2fa1d6e6a232c, type: 2}
+  m_sharedMaterial: {fileID: 5729663558461628225, guid: fa06b86a9572871459c2fa1d6e6a232c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -921,8 +924,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1410,7 +1413,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fb7657ae16788944eb4cabbac1c7c599, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 74b4601a99a70844393eac4fdf42dd50, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1627,8 +1630,7 @@ MonoBehaviour:
     NOW THIS IS THE ONLY WAY I CAN COMMUNICATE. YOU HAVE TO GET ME OUT OF HERE!
   - 'Every field agent should remember the Three A''''s for dealing with apparitions:
     Avoid, Avoid, Avoid.'
-  - Cephalopaths are frightening extradminensional entities that feed on sentient
-    beings' fear of the unkown.
+  - Cephalopaths are extradminensional entities that feed off your fear of the unkown.
   - The Astrum was discovered in a warehouse by an anonymous individual. It has since
     been relocated by Hierarchy to a secure location.
   - Use your incursometer to detect nearby apparitions. It will click faster the

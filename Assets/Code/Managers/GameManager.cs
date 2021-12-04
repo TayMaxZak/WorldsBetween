@@ -59,6 +59,11 @@ public partial class GameManager : MonoBehaviour
 		}
 	}
 
+	public void MidLoading()
+	{
+		loadingScreen.SeeThrough();
+	}
+
 	public void FinishLoading()
 	{
 		if (finishedLoading)
