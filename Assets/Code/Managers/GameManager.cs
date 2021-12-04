@@ -11,7 +11,7 @@ public partial class GameManager : MonoBehaviour
 
 	public PlayerLoader player;
 
-	public CanvasHider loadingScreen;
+	public LoadingScreenHook loadingScreen;
 
 	public Volume deathPostProcess;
 	private float panSpeed;
