@@ -64,6 +64,8 @@ public class PlayerMover : MonoBehaviour
 
 	public bool onRope;
 
+	public bool grabbed;
+
 	[SerializeField]
 	private Sound enterWaterSound;
 
@@ -141,6 +143,9 @@ public class PlayerMover : MonoBehaviour
 
 	private void Jump()
 	{
+		if (grabbed)
+			return;
+
 		jumpVel = Vector3.up * jumpSpeed;
 		grounded = false;
 	}
@@ -222,6 +227,7 @@ public class PlayerMover : MonoBehaviour
 
 		float friction = useFriction ? 4.5f : 0;
 		friction += onRope ? 0.25f : 0;
+		friction += grabbed ? 2f : 0;
 
 		// Drag
 		if (underWater)

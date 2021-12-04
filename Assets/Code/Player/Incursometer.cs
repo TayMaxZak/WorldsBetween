@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Incursometer : MonoBehaviour
 {
+	public PlayerVitals vitals;
+
 	public bool held;
 
 	public Transform looker;
@@ -31,6 +33,15 @@ public class Incursometer : MonoBehaviour
 
 	private void Update()
 	{
+		if (vitals.dead)
+		{
+			tickloopSlow.volume = 0;
+			tickloopMed.volume = 0;
+			tickloopFast.volume = 0;
+
+			return;
+		}
+
 		if (Input.GetButtonDown("Equipment"))
 			held = !held;
 

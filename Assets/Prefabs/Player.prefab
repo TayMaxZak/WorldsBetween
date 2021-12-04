@@ -818,6 +818,7 @@ MonoBehaviour:
   ticking: 0
   tickingDelta: 0
   onRope: 0
+  grabbed: 0
   enterWaterSound: {fileID: 11400000, guid: d0557916523330f4eb4952a01ec240c9, type: 2}
 --- !u!114 &1335200600
 MonoBehaviour:
@@ -877,6 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a96e8a54576bdfa429ae6f5a6a18d52c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vitals: {fileID: 6215269175067649699}
   held: 0
   looker: {fileID: 8417224531919593861}
   apparition: {fileID: 0}
