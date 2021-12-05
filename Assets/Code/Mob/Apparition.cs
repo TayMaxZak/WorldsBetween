@@ -68,6 +68,8 @@ public class Apparition : MonoBehaviour
 	private Vector3 smoothDir;
 	private Vector3 lookDir;
 
+	private float vibrateMult;
+
 	[Header("Timings")]
 	[SerializeField]
 	private Timer damageTimer = new Timer(0.1f);
@@ -112,14 +114,15 @@ public class Apparition : MonoBehaviour
 
 			// Manually fully lerp over to the new target point
 			t.targetPoint = t.targetPointNew;
-			t.curveTipPoint = t.targetPoint + SeedlessRandom.RandomPoint(2);
+			// Is not working, fix!
+			t.curveTipPoint = t.targetPoint;
 
 			RenderTentacle(t);
 		}
 
 		// Reset all timers
-		dashTimer.Reset(SeedlessRandom.NextFloat() * dashTimer.maxTime);
-		reconfigureTimer.Reset(SeedlessRandom.NextFloat() * reconfigureTimer.maxTime);
+		dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
+		reconfigureTimer.Reset(1 + SeedlessRandom.NextFloat() * reconfigureTimer.maxTime);
 	}
 
 	// TODO: Add "split" move, where it becomes smaller and makes copies of itself!
@@ -311,6 +314,11 @@ public class Apparition : MonoBehaviour
 		bool wasGrabbed = playerMover.grabbed;
 		bool nowNotGrabbed = true;
 
+		// Vibrate when about to dash
+		float newVibrateMult = 1 - Mathf.Clamp01(dashTimer.currentTime / dashMaxTime);
+		newVibrateMult *= newVibrateMult;
+		vibrateMult = Mathf.Lerp(vibrateMult, newVibrateMult, Time.deltaTime * 3);
+
 		// Handle all tentacles
 		for (int i = 0; i < tentacles.Count; i++)
 		{
@@ -375,7 +383,7 @@ public class Apparition : MonoBehaviour
 			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, Time.deltaTime);
 
 
-			RenderTentacle(t, dir, smoothDir, 1 - closeOrFar);
+			RenderTentacle(t, dir, smoothDir, (1 - closeOrFar) * (1 - closeOrFar));
 		}
 
 
@@ -438,11 +446,8 @@ public class Apparition : MonoBehaviour
 
 	private void RenderTentacle(Tentacle t, Vector3 dir, Vector3 smoothDir, float sharpness)
 	{
-		//float vibrateMult = 1 - Mathf.Abs(2 * Mathf.Clamp01(dashTimer.currentTime / dashMax) - 1);
-		float vibrateMult = 0;
-
 		// Perpindicular to dir
-		Vector3 waveyDir = Vector3.Cross(dir, (t.targetPoint - transform.position).normalized);
+		Vector3 perpin = Vector3.Cross(dir, (t.targetPoint - transform.position).normalized);
 
 		for (int i = 0; i < t.line.positionCount; i++)
 		{
@@ -450,7 +455,7 @@ public class Apparition : MonoBehaviour
 
 			float kneeStrength = (1 - Mathf.Abs(2 * percent - 1)) * sharpness;
 			float curveStrength = percent * percent;
-			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - Time.time * (4f + vibrateMult * 1.5f));
+			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - Time.time * (4.25f + vibrateMult * 0.75f));
 
 			Vector3 surfacePoint = transform.position + (t.targetPoint - transform.position).normalized * 0.5f;
 
@@ -461,21 +466,20 @@ public class Apparition : MonoBehaviour
 
 				Vector3 baseShape = Vector3.Lerp(surfacePoint, playerMover.body.transform.position - Vector3.up * 0.75f + smoothDir, percent);
 
-				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + (1 - percent) * waveyStrength * waveyDir + kneeStrength * curveStrength * waveyDir);
+				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + (1 - percent) * waveyStrength * perpin + kneeStrength * curveStrength * perpin);
 			}
 			// Attach to world position
 			else
 			{
 				t.line.widthMultiplier = t.width;
 
-				//Vector3 vibrate = Mathf.Clamp01(dashTimer.currentTime / dashMaxTime) * (SeedlessRandom.RandomPoint(0.3f) * vibrateMult * vibrateMult + t.offsetDir) * mid * mid;
-				Vector3 vibrate = Vector3.zero;
-				//Vector3 curve = t.curveDir.normalized * curveStrength;
+				Vector3 vibrate = 0.1f * sharpness * vibrateMult * vibrateMult * SeedlessRandom.NextFloatInRange(-1, 1) * perpin;
+
 				Vector3 actualTip = Vector3.Lerp(t.targetPoint, t.curveTipPoint, curveStrength);
 
 				Vector3 baseShape = Vector3.Lerp(surfacePoint, actualTip, percent);
 
-				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * waveyDir + vibrate);
+				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * perpin + vibrate);
 			}
 		}
 	}

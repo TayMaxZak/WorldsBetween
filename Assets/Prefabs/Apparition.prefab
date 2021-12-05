@@ -20398,12 +20398,12 @@ MonoBehaviour:
   speed: 3
   dashSpeed: 40
   damage: 5
-  knockbackReelYankSpeeds: {x: 4, y: 4, z: 4}
+  knockbackReelYankSpeeds: {x: 4, y: 5, z: 6}
   maxDistance: 160
   engageDistance: 80
   grabDistance: 30
-  damageDistance: 20
-  stopDistance: 1
+  damageDistance: 16
+  stopDistance: 1.5
   damageTimer:
     maxTime: 0.05
   dashTimer:
