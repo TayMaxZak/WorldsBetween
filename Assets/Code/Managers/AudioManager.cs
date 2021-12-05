@@ -108,7 +108,7 @@ public class AudioManager : MonoBehaviour
 		// Override existing audio source
 		AudioSource source = pooledObject.AddComponent(toPlay.preset);
 
-		float randomPitch = Random.Range(toPlay.pitchRange.min, toPlay.pitchRange.max);
+		float randomPitch = SeedlessRandom.NextFloatInRange(toPlay.pitchRange.min, toPlay.pitchRange.max);
 		source.pitch *= randomPitch;
 
 		source.clip = toPlay.clip;

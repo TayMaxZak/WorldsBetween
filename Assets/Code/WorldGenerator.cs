@@ -25,6 +25,7 @@ public class WorldGenerator
 
 	[Header("Generation")]
 	[SerializeField]
+	[Range(0, 15)]
 	private int genRange = 8;
 
 	private Timer chunkGenTimer = new Timer(1);
