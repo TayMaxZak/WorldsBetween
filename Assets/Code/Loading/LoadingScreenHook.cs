@@ -171,7 +171,8 @@ public class LoadingScreenHook : MonoBehaviour
 
 	public void SeeThrough()
 	{
-		generatingUI.SetActive(true);
+		if (generatingUI)
+			generatingUI.SetActive(true);
 
 		UpdateBackground(true);
 	}

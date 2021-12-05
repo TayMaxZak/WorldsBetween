@@ -7,7 +7,11 @@ public class Incursometer : MonoBehaviour
 {
 	public PlayerVitals vitals;
 
+	public GameObject flashlight;
+
 	public bool held;
+
+	public bool flashlightOn;
 
 	public Transform looker;
 
@@ -44,11 +48,19 @@ public class Incursometer : MonoBehaviour
 			tickloopMed.volume = 0;
 			tickloopFast.volume = 0;
 
+			flashlightOn = false;
+
 			return;
 		}
 
 		if (Input.GetButtonDown("Equipment"))
 			held = !held;
+
+		if (Input.GetButtonDown("Flashlight"))
+		{
+			flashlightOn = !flashlightOn;
+			flashlight.SetActive(flashlightOn);
+		}
 
 		UIManager.SetMeterRaised(held);
 
