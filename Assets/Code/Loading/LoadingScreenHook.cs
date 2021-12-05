@@ -98,7 +98,7 @@ public class LoadingScreenHook : MonoBehaviour
 		{
 			// Retrieve raw progress
 			if (World.Generator.genStage >= WorldGenerator.GenStage.GenerateChunks)
-				progressRaw = Mathf.Clamp01(World.Generator.GenProgress() / 0.67f);
+				progressRaw = Mathf.Clamp01(World.Generator.GenProgress() / World.Generator.targetProgress);
 			else
 				progressRaw = 0;
 

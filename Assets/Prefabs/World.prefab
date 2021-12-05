@@ -83,10 +83,12 @@ MonoBehaviour:
     cutoff: 0
     ribbon: 0
   generator:
+    genStage: 0
     active: 1
     multiQ: 1
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
-    genRange: 5
+    genRange: 11
+    targetProgress: 0.8
   randomizeSeed: 0
   seed: -1739373185
   chunkSize: 16

@@ -55,11 +55,16 @@ public class Apparition : MonoBehaviour
 		damageLoop.volume = 0;
 		foreach (Tentacle t in tentacles)
 		{
-			t.targetPoint = transform.position;
+			float mult = 1;
+			t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabRange);
+			t.offsetDir = SeedlessRandom.RandomPoint(4);
+			t.offsetDir2 = SeedlessRandom.RandomPoint(7);
+
 			for (int i = 0; i < t.line.positionCount; i++)
 			{
 				float percent = (float)i / t.line.positionCount;
-				t.line.SetPosition(i, Vector3.Lerp(transform.position, t.targetPoint, percent));
+				float mid = (1 - Mathf.Abs(2 * percent - 1));
+				t.line.SetPosition(i, (SeedlessRandom.RandomPoint(0.5f) * mult + t.offsetDir) * mid * mid + Vector3.Lerp(transform.position, t.targetPoint, percent));
 			}
 		}
 	}
@@ -91,6 +96,7 @@ public class Apparition : MonoBehaviour
 		if (!playerVitals.dead)
 		{
 			grabLoop.volume = (1 - distance / grabRange) * 0.5f;
+			grabLoop.pitch = 1 + intensity * 0.2f;
 			damageLoop.volume = intensity * 0.5f;
 		}
 		else

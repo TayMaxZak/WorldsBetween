@@ -29,6 +29,8 @@ public class WorldGenerator
 
 	private Timer chunkGenTimer = new Timer(1);
 
+	public float targetProgress = 0.67f;
+
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
 
@@ -96,7 +98,7 @@ public class WorldGenerator
 		// Playable yet?
 		if (genStage >= GenStage.GenerateChunks)
 		{
-			if (GenProgress() >= 0.67f || Mathf.Approximately(GenProgress(), 1))
+			if (GenProgress() >= targetProgress || Mathf.Approximately(GenProgress(), 1))
 				GameManager.Instance.FinishLoading(1000);
 		}
 	}
