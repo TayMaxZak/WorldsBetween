@@ -143,7 +143,7 @@ public class PlayerMover : MonoBehaviour
 
 	private void Jump()
 	{
-		jumpVel = Vector3.up * jumpSpeed * (grabbed ? 0.5f : 1);
+		jumpVel = Vector3.up * jumpSpeed;
 		grounded = false;
 	}
 
