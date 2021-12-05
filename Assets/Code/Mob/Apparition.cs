@@ -258,9 +258,6 @@ public class Apparition : MonoBehaviour
 				// Normal movement
 				//if (!playerMover.grabbed)
 				transform.position += (Mathf.Clamp01(distance) * smoothDir * slowDownMult * speed * Time.deltaTime);
-				//// Orbit player
-				//else
-				//	transform.position += (Mathf.Clamp01(distance) * Vector3.Lerp(smoothDir, Vector3.Cross(smoothDir, Vector3.up), 0.5f) * slowDownMult * speed * Time.deltaTime);
 
 				// Use up dash
 				curDashFuel -= Time.deltaTime * fuelConsume;
