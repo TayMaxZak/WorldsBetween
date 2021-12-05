@@ -2192,19 +2192,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_RootOrder
-      value: 24
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -200
+      value: -129.91
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 110
+      value: 84.19
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 30
+      value: 63.4
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2236,7 +2236,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_Name
-      value: Apparition (2)
+      value: Middle
+      objectReference: {fileID: 0}
+    - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
+      propertyPath: maxDistance
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: playerMover
@@ -2246,6 +2250,10 @@ PrefabInstance:
       propertyPath: playerVitals
       value: 
       objectReference: {fileID: 1970799355}
+    - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
+      propertyPath: engageDistance
+      value: 400
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
 --- !u!114 &1970799354 stripped
@@ -2417,7 +2425,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_RootOrder
-      value: 23
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121360, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2461,7 +2469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_Name
-      value: Apparition (1)
+      value: Water
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: playerMover
@@ -2593,6 +2601,10 @@ PrefabInstance:
       propertyPath: relativeOrigin
       value: 
       objectReference: {fileID: 679059550}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: generator.genRange
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: modifiers.Array.size
       value: 4
@@ -3244,7 +3256,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_Name
-      value: Apparition
+      value: Sky
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: playerMover

@@ -112,10 +112,10 @@ public class PlayerMover : MonoBehaviour
 			}
 		}
 
-		//// TODO: Remove
+		//// TODO: Improve (blockcast downwards) and do on game start
 		//if (Input.GetKeyDown(KeyCode.H))
 		//{
-		//	locator.position += new Vector3(SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10));
+		//	locator.position += new Vector3(SeedlessRandom.NextFloatInRange(-40, 40), SeedlessRandom.NextFloatInRange(-10, 10), SeedlessRandom.NextFloatInRange(-10, 10));
 		//	velocity = Vector3.zero;
 		//}
 
@@ -143,10 +143,7 @@ public class PlayerMover : MonoBehaviour
 
 	private void Jump()
 	{
-		if (grabbed)
-			return;
-
-		jumpVel = Vector3.up * jumpSpeed;
+		jumpVel = Vector3.up * jumpSpeed * (grabbed ? 0.5f : 1);
 		grounded = false;
 	}
 
@@ -193,6 +190,8 @@ public class PlayerMover : MonoBehaviour
 		jumpVel = Vector3.zero;
 
 		// Directional input
+		sprinting &= !grabbed;
+
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!underWater ? ((sprinting && grounded) ? sprintSpeed : walkSpeed) : swimSpeed);
 		walkVelocity = !underWater ? body.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
@@ -227,7 +226,7 @@ public class PlayerMover : MonoBehaviour
 
 		float friction = useFriction ? 4.5f : 0;
 		friction += onRope ? 0.25f : 0;
-		friction += grabbed ? 2f : 0;
+		friction += grabbed ? 1f : 0;
 
 		// Drag
 		if (underWater)

@@ -5149,80 +5149,103 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grabLoop: {fileID: 3301212293627015285}
   damageLoop: {fileID: 6647928587239408168}
-  dash: {fileID: 11400000, guid: 213e0b7fdfe1a4a41b9c5d50158faa9f, type: 2}
+  dashSound: {fileID: 11400000, guid: 213e0b7fdfe1a4a41b9c5d50158faa9f, type: 2}
   playerVitals: {fileID: 0}
   playerMover: {fileID: 0}
   speed: 3
-  dashSpeed: 8
+  dashSpeed: 16
+  slowSpeed: 1
   damage: 5
   damageRange: 25
   grabRange: 35
-  maxDistance: 160
-  permaDashDistance: 80
+  maxDistance: 200
+  engageDistance: 100
   randomMoveDir: {x: 0, y: 0, z: 0}
-  randomMoveDir2: {x: 0, y: 0, z: 0}
+  randomMoveDirNew: {x: 0, y: 0, z: 0}
   damageTimer:
-    maxTime: 0.06
+    maxTime: 0.1
   dashTimer:
     maxTime: 11
-  grabTimer:
-    maxTime: 3
+  reconfigureTent:
+    maxTime: 5
   tentacles:
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 9004443761404406742}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 94833203980676213}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 5183032548939964340}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 158206658688805905}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 9081087223152265989}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 2034694624836248431}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 7114705901753573282}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 2131068801000794797}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 8862490418015978565}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 387800708794957840}
     grabbing: 0
+    movedOutOfSyc: 0
   - targetPoint: {x: 0, y: 0, z: 0}
+    targetPointNew: {x: 0, y: 0, z: 0}
     offsetDir: {x: 0, y: 0, z: 0}
-    offsetDir2: {x: 0, y: 0, z: 0}
+    offsetDirNew: {x: 0, y: 0, z: 0}
     line: {fileID: 6558485712390994662}
     grabbing: 0
+    movedOutOfSyc: 0
 --- !u!1 &9004443761857007517
 GameObject:
   m_ObjectHideFlags: 0
