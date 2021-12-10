@@ -21,6 +21,8 @@ public class ChunkMesh
 	private static readonly Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
 													new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
 
+	private static readonly Vector3Int[] grassRotations = new Vector3Int[] { new Vector3Int(0, 45, 0), new Vector3Int(0, -45, 0) };
+
 	public void Init(Chunk chunk, MeshFilter filter)
 	{
 		this.chunk = chunk;
@@ -59,6 +61,37 @@ public class ChunkMesh
 
 			// Surfaces closest to this actual vertex
 			LightingSample ls = SampleLightingAt(worldVertPos, surface);
+
+			float sampleBlend = 1f;
+
+			float lastBright = Mathf.Lerp(surface.brightness, ls.brightness, sampleBlend);
+
+			if (fakeBrightness)
+				lastBright = 1 - (1 - lastBright) * (1 - lastBright);
+
+			float newBright = Mathf.Lerp(surface.brightness, ls.brightness, sampleBlend);
+
+			if (fakeBrightness)
+				newBright = 1 - (1 - newBright) * (1 - newBright);
+
+			float lastColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, sampleBlend) + 1) / 2f;
+
+			float newColorTemp = (Mathf.Lerp(surface.colorTemp, ls.colorTemp, sampleBlend) + 1) / 2f;
+
+			// Assign lighting data: new brightness, last brightness, new hue, last hue
+			vertexColors[i] = new Color(lastBright, newBright, lastColorTemp, newColorTemp);
+		}
+
+		for (int i = surface.startVegIndex; i < surface.endVegIndex; i++)
+		{
+			loopCounter++;
+
+			// Threading
+			if (sharedVertices == null)
+				return;
+
+			// Surfaces closest to this actual vertex
+			LightingSample ls = SampleLightingAt(surface.GetAdjBlockWorldCoord(), surface);
 
 			float sampleBlend = 1f;
 
@@ -212,6 +245,7 @@ public class ChunkMesh
 
 		List<Vector3> vertices = new List<Vector3>();
 		List<int> triangles = new List<int>();
+		List<int> vegTriangles = new List<int>();
 		List<Vector3> normals = new List<Vector3>();
 		List<Vector2> uv = new List<Vector2>();
 
@@ -242,6 +276,8 @@ public class ChunkMesh
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
+						bool addGrass = d == 2;
+
 						MeshData blockMeshData = ModelsList.GetModelFor(0).faces[d].meshData;
 
 						faceOffset.x = chunk.position.x + x + directions[d].x;
@@ -256,6 +292,14 @@ public class ChunkMesh
 						//Vector3 randomNormal = new Vector3(SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1));
 						BlockSurface surface = new BlockSurface(chunk, block, directions[d], new Vector3(directions[d].x * 0.5f, directions[d].y * 0.5f, directions[d].z * 0.5f));
 
+						// Remember this surface
+						if (surfaces[x, y, z] == null)
+							surfaces[x, y, z] = new LinkedList<BlockSurface>();
+						surfaces[x, y, z].AddLast(surface);
+
+						if (surfaces[x, y, z].Count > 6)
+							Debug.LogError("Too many surfaces on one block");
+
 						int indexOffset = vertices.Count;
 						// Remember which vertex index this surface starts at
 						surface.startIndex = indexOffset;
@@ -268,16 +312,8 @@ public class ChunkMesh
 							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
 						}
 
-						// Remember which vertex index this surface starts at
+						// Remember which vertex index this surface ends at
 						surface.endIndex = vertices.Count;
-
-						// Remember this surface
-						if (surfaces[x, y, z] == null)
-							surfaces[x, y, z] = new LinkedList<BlockSurface>();
-						surfaces[x, y, z].AddLast(surface);
-
-						if (surfaces[x, y, z].Count > 6)
-							Debug.LogError("Too many surfaces on one block");
 
 						// Add normals
 						for (int i = 0; i < blockMeshData.normals.Length; i++)
@@ -296,6 +332,47 @@ public class ChunkMesh
 						{
 							uv.Add(blockMeshData.uv[i]);
 						}
+
+						// Add geometry for grass
+						if (addGrass)
+						{
+							// Remember which vertex index the grass starts at
+							surface.startVegIndex = vertices.Count;
+
+							for (int r = 0; r < grassRotations.Length; r++)
+							{
+								int grassOffset = vertices.Count;
+
+								// Add vertices
+								for (int i = 0; i < blockMeshData.vertices.Length; i++)
+								{
+									vert = Quaternion.Euler(grassRotations[r]) * (blockMeshData.vertices[i]);
+
+									vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 1.5f + y, vert.z + 0.5f + z));
+								}
+
+								// Add normals
+								for (int i = 0; i < blockMeshData.normals.Length; i++)
+								{
+									normals.Add(Quaternion.Euler(grassRotations[r]) * blockMeshData.normals[i]);
+								}
+
+								// Add triangles
+								for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
+								{
+									vegTriangles.Add((blockMeshData.triangles[0])[i] + grassOffset);
+								}
+
+								// Add UVs
+								for (int i = 0; i < blockMeshData.uv.Length; i++)
+								{
+									uv.Add(blockMeshData.uv[i]);
+								}
+							}
+
+							// Remember which vertex index the grass ends at
+							surface.endVegIndex = vertices.Count;
+						}
 					}
 					// No surfaces created, not actually near air
 					if (surfacesAdded == 0)
@@ -304,7 +381,7 @@ public class ChunkMesh
 			}
 		}
 
-		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() } });
+		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
 	}
 
 	public void FinishMesh(Mesh newMesh)

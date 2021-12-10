@@ -12,6 +12,8 @@ public class BlockSurface
 	// Which vertices are associated with the mesh of this surface?
 	public int startIndex, endIndex;
 
+	public int startVegIndex, endVegIndex;
+
 	public float brightness; // How bright is this surface (0 is complete darkness, 1 is fully bright)
 	public float lastBrightness; // How bright was this surface at the last light update
 

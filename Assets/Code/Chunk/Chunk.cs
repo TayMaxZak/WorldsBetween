@@ -238,7 +238,7 @@ public class Chunk
 				subMeshCount = 2
 			};
 			newMesh.SetTriangles(data.triangles[0], 0);
-			//newMesh.SetTriangles(data.triangles[1], 1);
+			newMesh.SetTriangles(data.triangles[1], 1);
 
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);

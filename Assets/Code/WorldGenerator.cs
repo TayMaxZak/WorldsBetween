@@ -28,6 +28,10 @@ public class WorldGenerator
 	[Range(0, 15)]
 	private int genRange = 8;
 
+	[SerializeField]
+	[Range(0, 10)]
+	private int spawnGenRange = 3;
+
 	private Timer chunkGenTimer = new Timer(1);
 
 	public float targetProgress = 0.67f;
@@ -42,7 +46,7 @@ public class WorldGenerator
 	public void Init()
 	{
 		float delay = 0f;
-		int queues = 16;
+		int queues = 32;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Allocate, new ChunkGenerator(0, 1) },
@@ -87,13 +91,16 @@ public class WorldGenerator
 
 		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
 		{
+			chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
+
 			chunksToGen += entry.Value.GetSize();
 
 			bool empty = entry.Key == Chunk.GenStage.Allocate;
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
-			entry.Value.Generate();
+			if (empty || (entry.Value.GetSize() >= spawnGenRange * spawnGenRange * spawnGenRange))
+				entry.Value.Generate();
 		}
 
 		// Playable yet?
