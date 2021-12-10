@@ -276,7 +276,7 @@ public class ChunkMesh
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
-						bool addGrass = d == 2;
+						//bool addGrass = d == 2;
 
 						MeshData blockMeshData = ModelsList.GetModelFor(0).faces[d].meshData;
 
@@ -333,46 +333,46 @@ public class ChunkMesh
 							uv.Add(blockMeshData.uv[i]);
 						}
 
-						// Add geometry for grass
-						if (addGrass)
-						{
-							// Remember which vertex index the grass starts at
-							surface.startVegIndex = vertices.Count;
+						//// Add geometry for grass
+						//if (addGrass)
+						//{
+						//	// Remember which vertex index the grass starts at
+						//	surface.startVegIndex = vertices.Count;
 
-							for (int r = 0; r < grassRotations.Length; r++)
-							{
-								int grassOffset = vertices.Count;
+						//	for (int r = 0; r < grassRotations.Length; r++)
+						//	{
+						//		int grassOffset = vertices.Count;
 
-								// Add vertices
-								for (int i = 0; i < blockMeshData.vertices.Length; i++)
-								{
-									vert = Quaternion.Euler(grassRotations[r]) * (blockMeshData.vertices[i]);
+						//		// Add vertices
+						//		for (int i = 0; i < blockMeshData.vertices.Length; i++)
+						//		{
+						//			vert = Quaternion.Euler(grassRotations[r]) * (blockMeshData.vertices[i]);
 
-									vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 1.5f + y, vert.z + 0.5f + z));
-								}
+						//			vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 1.5f + y, vert.z + 0.5f + z));
+						//		}
 
-								// Add normals
-								for (int i = 0; i < blockMeshData.normals.Length; i++)
-								{
-									normals.Add(Quaternion.Euler(grassRotations[r]) * blockMeshData.normals[i]);
-								}
+						//		// Add normals
+						//		for (int i = 0; i < blockMeshData.normals.Length; i++)
+						//		{
+						//			normals.Add(Quaternion.Euler(grassRotations[r]) * blockMeshData.normals[i]);
+						//		}
 
-								// Add triangles
-								for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
-								{
-									vegTriangles.Add((blockMeshData.triangles[0])[i] + grassOffset);
-								}
+						//		// Add triangles
+						//		for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
+						//		{
+						//			vegTriangles.Add((blockMeshData.triangles[0])[i] + grassOffset);
+						//		}
 
-								// Add UVs
-								for (int i = 0; i < blockMeshData.uv.Length; i++)
-								{
-									uv.Add(blockMeshData.uv[i]);
-								}
-							}
+						//		// Add UVs
+						//		for (int i = 0; i < blockMeshData.uv.Length; i++)
+						//		{
+						//			uv.Add(blockMeshData.uv[i]);
+						//		}
+						//	}
 
-							// Remember which vertex index the grass ends at
-							surface.endVegIndex = vertices.Count;
-						}
+						//	// Remember which vertex index the grass ends at
+						//	surface.endVegIndex = vertices.Count;
+						//}
 					}
 					// No surfaces created, not actually near air
 					if (surfacesAdded == 0)
