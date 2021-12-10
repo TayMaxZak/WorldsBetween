@@ -13,7 +13,6 @@ public class Astrum : MonoBehaviour
 	public Vector3 initPos;
 
 	public Timer activate;
-	public Timer quit;
 	public Timer restart;
 
 	private void Awake()
@@ -36,16 +35,6 @@ public class Astrum : MonoBehaviour
 		if (vitals.dead && Input.GetButtonDown("Quit"))
 			Use();
 
-		if (Input.GetButton("Quit"))
-		{
-			quit.Increment(Time.deltaTime);
-
-			if (quit.Expired())
-				Application.Quit();
-		}
-		else
-			quit.currentTime = activate.maxTime;
-
 		if (Input.GetButton("Restart"))
 		{
 			restart.Increment(Time.deltaTime);
@@ -57,7 +46,7 @@ public class Astrum : MonoBehaviour
 			}
 		}
 		else
-			restart.currentTime = activate.maxTime;
+			restart.currentTime = restart.maxTime;
 	}
 
 	private void Use()
