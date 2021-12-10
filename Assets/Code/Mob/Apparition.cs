@@ -61,15 +61,6 @@ public class Apparition : MonoBehaviour
 
 	private float intensity;
 
-	// For dashing or wandering randomly
-	private Vector3 randomMoveDir;
-	private Vector3 randomMoveDirNew;
-
-	private Vector3 smoothDir;
-	private Vector3 lookDir;
-
-	private float vibrateMult;
-
 	[Header("Timings")]
 	[SerializeField]
 	private Timer damageTimer = new Timer(0.1f);
@@ -83,6 +74,21 @@ public class Apparition : MonoBehaviour
 	[SerializeField]
 	private Timer soonestGrabTimer = new Timer(3f);
 
+	[Header("Tweaks")]
+	[SerializeField]
+	private float dashVibrate = 0.12f;
+	[SerializeField]
+	private float tentacleWaveSpeed = 2.5f;
+
+	// For dashing or wandering randomly
+	private Vector3 randomMoveDir;
+	private Vector3 randomMoveDirNew;
+
+	private Vector3 smoothDir;
+	private Vector3 lookDir;
+
+	private float vibrateMult;
+
 	// Handles smooth dashing
 	private float curDashFuel = 0;
 	private float backdashFuel = 0;
@@ -94,6 +100,7 @@ public class Apparition : MonoBehaviour
 
 	private float slowDownMult = 1; // Goes into effect when it gets close to the player
 
+	// State //
 	private Vector3 initPosition; // Where did it start? Returns here after killing the player
 
 	private bool playerDeadReset = true;
@@ -202,11 +209,6 @@ public class Apparition : MonoBehaviour
 		{
 			if (distance <= engageDistance)
 			{
-				// Dash twice as far if perpindicular to dir
-				Vector3 dashDir = (dir + randomMoveDir * 2).normalized;
-				float strafe = 1 - Mathf.Abs(Vector3.Dot(dashDir, dir));
-				float dashMult = Mathf.Lerp(strafe, 1, 0.5f);
-
 				// Use dash move
 				dashTimer.Increment(Time.deltaTime);
 				if (dashTimer.Expired())
@@ -220,11 +222,23 @@ public class Apparition : MonoBehaviour
 
 					randomMoveDirNew = SeedlessRandom.RandomPoint(1).normalized;
 
-					dashMaxTime = dashTimer.maxTime * (0.5f + SeedlessRandom.NextFloat());
+					// Double dash!
+					if (dashMaxTime >= 0.99f && !playerMover.grabbed && SeedlessRandom.NextFloat() < 0.1f)
+						dashMaxTime = 0.9f;
+					// Normal dashing
+					else
+						dashMaxTime = dashTimer.maxTime * (0.5f + SeedlessRandom.NextFloat());
 					dashTimer.Reset(dashMaxTime);
 				}
 
-				// Smoothly wander
+				// Which way to dash
+				Vector3 dashDir = dashMaxTime >= 0.99f ? (dir + randomMoveDir * 2).normalized : randomMoveDir;
+
+				// Dash twice as far if perpindicular to dir
+				float strafe = 1 - Mathf.Abs(Vector3.Dot(dashDir, dir));
+				float dashMult = Mathf.Lerp(strafe, 1, 0.5f);
+
+				// Smoothly change random dash direction
 				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDirNew, Time.deltaTime).normalized;
 
 				float fuelConsume = 1f;
@@ -312,7 +326,7 @@ public class Apparition : MonoBehaviour
 		bool nowNotGrabbed = true;
 
 		// Vibrate when about to dash
-		float newVibrateMult = 1 - Mathf.Clamp01(dashTimer.currentTime / dashMaxTime);
+		float newVibrateMult = distance <= engageDistance ? 1 - Mathf.Clamp01(dashTimer.currentTime / dashMaxTime) : 0;
 		newVibrateMult *= newVibrateMult;
 		vibrateMult = Mathf.Lerp(vibrateMult, newVibrateMult, Time.deltaTime * 3);
 
@@ -452,7 +466,7 @@ public class Apparition : MonoBehaviour
 
 			float kneeStrength = (1 - Mathf.Abs(2 * percent - 1)) * sharpness;
 			float curveStrength = percent * percent;
-			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - Time.time * (4.25f + vibrateMult * 0.75f));
+			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - Time.time * (tentacleWaveSpeed));
 
 			Vector3 surfacePoint = transform.position + (t.targetPoint - transform.position).normalized * 0.5f;
 
@@ -470,7 +484,7 @@ public class Apparition : MonoBehaviour
 			{
 				t.line.widthMultiplier = t.width;
 
-				Vector3 vibrate = 0.1f * sharpness * vibrateMult * vibrateMult * SeedlessRandom.NextFloatInRange(-1, 1) * perpin;
+				Vector3 vibrate = dashVibrate * sharpness * vibrateMult * vibrateMult * SeedlessRandom.NextFloatInRange(-1, 1) * perpin;
 
 				Vector3 actualTip = Vector3.Lerp(t.targetPoint, t.curveTipPoint, curveStrength);
 

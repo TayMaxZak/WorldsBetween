@@ -231,6 +231,8 @@ MonoBehaviour:
   player: {fileID: 206889555}
   loadingScreen: {fileID: 6292042240279805736}
   deathPostProcess: {fileID: 2719366234491939709}
+  quit:
+    maxTime: 1
 --- !u!4 &173910858
 Transform:
   m_ObjectHideFlags: 0
@@ -492,6 +494,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &331600466 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+  m_PrefabInstance: {fileID: 805622447}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &428019557
 GameObject:
   m_ObjectHideFlags: 0
@@ -2592,7 +2599,7 @@ PrefabInstance:
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: relativeOrigin
       value: 
-      objectReference: {fileID: 679059550}
+      objectReference: {fileID: 331600466}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.genRange
       value: 11
