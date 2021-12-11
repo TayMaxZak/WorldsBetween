@@ -347,7 +347,7 @@ public class ChunkMesh
 							//	norm = directions[d];
 
 							//normals.Add(directions[d]);
-							normals.Add(Vector3.Lerp(directions[d], norm, 0.5f).normalized);
+							normals.Add(Vector3.Lerp(directions[d], norm, 0.67f).normalized);
 						}
 
 						// Remember which vertex index this surface ends at

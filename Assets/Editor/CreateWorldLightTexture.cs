@@ -56,15 +56,16 @@ public class CreateWorldLightTexture : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					float i = xNoise.StrengthAt(x, y, z);
-					float j = yNoise.StrengthAt(x, y, z);
-					float k = zNoise.StrengthAt(x, y, z);
+					//float i = xNoise.StrengthAt(x, y, z);
+					//float j = yNoise.StrengthAt(x, y, z);
+					//float k = zNoise.StrengthAt(x, y, z);
 
-					float mult = 15;
-					colors[x + yOffset + zOffset] = new Color(mult * Mathf.Pow(i, 12), mult * Mathf.Pow(j, 12), mult * Mathf.Pow(k, 12));
+					//float mult = 15;
+					//colors[x + yOffset + zOffset] = new Color(mult * Mathf.Pow(i, 12), mult * Mathf.Pow(j, 12), mult * Mathf.Pow(k, 12));
 					//colors[x + yOffset + zOffset] = new Color(0.5f, 0.5f, 0.5f);
 
-					//colors[x + yOffset + zOffset] = new Color(1 - y * inverseResolution,0,0);
+					float inv = y * inverseResolution;
+					colors[x + yOffset + zOffset] = new Color(0, 2, 1);
 				}
 			}
 		}
