@@ -45,10 +45,10 @@ public class CreateWorldLightTexture : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					float brightness = Mathf.Abs(brightnessNoise.StrengthAt(x, y, z));
-					float temperature = Mathf.Abs(temperatureNoise.StrengthAt(x, y, z));
+					//float brightness = Mathf.Abs(brightnessNoise.StrengthAt(x, y, z));
+					//float temperature = Mathf.Abs(temperatureNoise.StrengthAt(x, y, z));
 
-					colors[x + yOffset + zOffset] = new Color(brightness, temperature, 0);
+					colors[x + yOffset + zOffset] = new Color(0.3f, 0.8f, 0);
 				}
 			}
 		}

@@ -253,6 +253,10 @@ public class ChunkMesh
 
 		Vector3 vert;
 
+		Vector3 norm;
+
+		List<int> airDirections = new List<int>();
+
 		int chunkSize = World.GetChunkSize();
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -269,15 +273,31 @@ public class ChunkMesh
 						block.maybeNearAir = 0;
 						continue;
 					}
-					// 
+					// Not near air
 					else if (block.maybeNearAir == 0)
+						continue;
+
+					// Useful to predict which directions will require a surface
+					airDirections.Clear();
+
+					for (int d = 0; d < directions.Length; d++)
+					{
+						faceOffset.x = chunk.position.x + x + directions[d].x;
+						faceOffset.y = chunk.position.y + y + directions[d].y;
+						faceOffset.z = chunk.position.z + z + directions[d].z;
+
+						if (!World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).IsAir())
+							continue;
+						airDirections.Add(d);
+					}
+
+					// No air in any direction
+					if (airDirections.Count == 0)
 						continue;
 
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
-						//bool addGrass = d == 2;
-
 						MeshData blockMeshData = ModelsList.GetModelFor(0).faces[d].meshData;
 
 						faceOffset.x = chunk.position.x + x + directions[d].x;
@@ -285,7 +305,7 @@ public class ChunkMesh
 						faceOffset.z = chunk.position.z + z + directions[d].z;
 
 						// Should a surface be made in this direction
-						if (!World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).IsAir())
+						if (!airDirections.Contains(d))
 							continue;
 						surfacesAdded++;
 
@@ -310,15 +330,33 @@ public class ChunkMesh
 							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[i] + Vector3.forward * 0.5f);
 
 							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
+
+							norm = Vector3.zero;
+							int smoothingDirs = 0;
+							for (int j = 0; j < airDirections.Count; j++)
+							{
+								if (Vector3.Dot(vert.normalized, directions[airDirections[j]]) < -0.01)
+									continue;
+
+								smoothingDirs++;
+								norm += directions[airDirections[j]];
+							}
+							//if (smoothingDirs > 0)
+							//	norm /= smoothingDirs;
+							//else
+							//	norm = directions[d];
+
+							//normals.Add(directions[d]);
+							normals.Add(norm.normalized);
 						}
 
 						// Remember which vertex index this surface ends at
 						surface.endIndex = vertices.Count;
 
 						// Add normals
-						for (int i = 0; i < blockMeshData.normals.Length; i++)
+						for (int i = 0; i < blockMeshData.vertices.Length; i++)
 						{
-							normals.Add(Quaternion.Euler(rotations[d]) * blockMeshData.normals[i]);
+
 						}
 
 						// Add triangles
@@ -332,47 +370,6 @@ public class ChunkMesh
 						{
 							uv.Add(blockMeshData.uv[i]);
 						}
-
-						//// Add geometry for grass
-						//if (addGrass)
-						//{
-						//	// Remember which vertex index the grass starts at
-						//	surface.startVegIndex = vertices.Count;
-
-						//	for (int r = 0; r < grassRotations.Length; r++)
-						//	{
-						//		int grassOffset = vertices.Count;
-
-						//		// Add vertices
-						//		for (int i = 0; i < blockMeshData.vertices.Length; i++)
-						//		{
-						//			vert = Quaternion.Euler(grassRotations[r]) * (blockMeshData.vertices[i]);
-
-						//			vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 1.5f + y, vert.z + 0.5f + z));
-						//		}
-
-						//		// Add normals
-						//		for (int i = 0; i < blockMeshData.normals.Length; i++)
-						//		{
-						//			normals.Add(Quaternion.Euler(grassRotations[r]) * blockMeshData.normals[i]);
-						//		}
-
-						//		// Add triangles
-						//		for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
-						//		{
-						//			vegTriangles.Add((blockMeshData.triangles[0])[i] + grassOffset);
-						//		}
-
-						//		// Add UVs
-						//		for (int i = 0; i < blockMeshData.uv.Length; i++)
-						//		{
-						//			uv.Add(blockMeshData.uv[i]);
-						//		}
-						//	}
-
-						//	// Remember which vertex index the grass ends at
-						//	surface.endVegIndex = vertices.Count;
-						//}
 					}
 					// No surfaces created, not actually near air
 					if (surfacesAdded == 0)

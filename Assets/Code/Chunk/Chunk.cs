@@ -243,10 +243,10 @@ public class Chunk
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
 
-			// TODO: Better way to do this?
-			float random = 45 + (SeedlessRandom.NextFloat() < 0.2f ? 45 : 0);
-			if (go && go.transform)
-				go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random));
+			//// TODO: Better way to do this?
+			//float random = 45 + (SeedlessRandom.NextFloat() < 0.2f ? 45 : 0);
+			//if (go && go.transform)
+			//	go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random));
 
 			genStage = GenStage.CalcLight;
 			World.Generator.QueueNextStage(this);
@@ -468,9 +468,9 @@ public class Chunk
 
 			chunkMesh.ApplyVertexColors((Color[])args.Result);
 
-			// TODO: Better way to do this?
-			if (go && go.transform)
-				go.transform.rotation = Quaternion.identity;
+			//// TODO: Better way to do this?
+			//if (go && go.transform)
+			//	go.transform.rotation = Quaternion.identity;
 
 			genStage = nextStage;
 			World.Generator.QueueNextStage(this);
