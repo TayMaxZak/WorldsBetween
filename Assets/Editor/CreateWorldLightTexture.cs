@@ -3,28 +3,39 @@ using UnityEngine;
 
 public class CreateWorldLightTexture : MonoBehaviour
 {
-	private static NoiseModifier brightnessNoise;
-	private static NoiseModifier temperatureNoise;
+	private static NoiseModifier xNoise;
+	private static NoiseModifier yNoise;
+	private static NoiseModifier zNoise;
 
 	[MenuItem("WorldLighting/Create Test 3D Texture")]
 	static void CreateTexture3D()
 	{
-		brightnessNoise = new NoiseModifier()
+		xNoise = new NoiseModifier()
 		{
 			scale = Vector3.one * 0.06f,
-			offset = 2444.0424f
+			offset = 2444.0424f,
+			strength = 1
 		};
-		brightnessNoise.Init();
+		xNoise.Init();
 
-		temperatureNoise = new NoiseModifier()
+		yNoise = new NoiseModifier()
 		{
-			scale = Vector3.one * 0.025f,
-			offset = 2444.0424f
+			scale = Vector3.one * 0.06f,
+			offset = 2144.0424f,
+			strength = 1
 		};
-		temperatureNoise.Init();
+		yNoise.Init();
+
+		zNoise = new NoiseModifier()
+		{
+			scale = Vector3.one * 0.06f,
+			offset = 28744.0424f,
+			strength = 1
+		};
+		zNoise.Init();
 
 		// Configure the texture
-		int size = 128;
+		int size = 16;
 		TextureFormat format = TextureFormat.RGBAHalf;
 		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 
@@ -45,10 +56,12 @@ public class CreateWorldLightTexture : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					//float brightness = Mathf.Abs(brightnessNoise.StrengthAt(x, y, z));
-					//float temperature = Mathf.Abs(temperatureNoise.StrengthAt(x, y, z));
+					float i = xNoise.StrengthAt(x, y, z);
+					float j = yNoise.StrengthAt(x, y, z);
+					float k = zNoise.StrengthAt(x, y, z);
 
-					colors[x + yOffset + zOffset] = new Color(0.3f, 0.8f, 0);
+					//colors[x + yOffset + zOffset] = new Color(1.33f * Mathf.Pow(i, 5), 1.33f * Mathf.Pow(j, 5), 1.33f * Mathf.Pow(k, 5));
+					colors[x + yOffset + zOffset] = new Color(0.5f, 0.5f, 0.5f);
 				}
 			}
 		}
