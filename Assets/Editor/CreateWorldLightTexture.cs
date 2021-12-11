@@ -9,7 +9,8 @@ public class CreateWorldLightTexture : MonoBehaviour
 	[MenuItem("WorldLighting/Create Test 3D Texture")]
 	static void CreateTexture3D()
 	{
-		brightnessNoise = new NoiseModifier() {
+		brightnessNoise = new NoiseModifier()
+		{
 			scale = Vector3.one * 0.06f,
 			offset = 2444.0424f
 		};
@@ -59,6 +60,10 @@ public class CreateWorldLightTexture : MonoBehaviour
 		texture.Apply();
 
 		// Save the texture to your Unity Project
-		AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/TestLightMap.asset");
+		int existing = AssetDatabase.FindAssets("TestLightMap").Length;
+		if (existing == 0)
+			AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/TestLightMap.asset");
+		else
+			AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/TestLightMap " + existing + ".asset");
 	}
 }
