@@ -35,7 +35,7 @@ public class CreateWorldLightTexture : MonoBehaviour
 		zNoise.Init();
 
 		// Configure the texture
-		int size = 16;
+		int size = 32;
 		TextureFormat format = TextureFormat.RGBAHalf;
 		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 
@@ -60,8 +60,11 @@ public class CreateWorldLightTexture : MonoBehaviour
 					float j = yNoise.StrengthAt(x, y, z);
 					float k = zNoise.StrengthAt(x, y, z);
 
-					//colors[x + yOffset + zOffset] = new Color(1.33f * Mathf.Pow(i, 5), 1.33f * Mathf.Pow(j, 5), 1.33f * Mathf.Pow(k, 5));
-					colors[x + yOffset + zOffset] = new Color(0.5f, 0.5f, 0.5f);
+					float mult = 15;
+					colors[x + yOffset + zOffset] = new Color(mult * Mathf.Pow(i, 12), mult * Mathf.Pow(j, 12), mult * Mathf.Pow(k, 12));
+					//colors[x + yOffset + zOffset] = new Color(0.5f, 0.5f, 0.5f);
+
+					//colors[x + yOffset + zOffset] = new Color(1 - y * inverseResolution,0,0);
 				}
 			}
 		}

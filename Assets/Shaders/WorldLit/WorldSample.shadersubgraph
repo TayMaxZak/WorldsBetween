@@ -54,7 +54,11 @@
             "m_Id": "1efb8984af71487fa6917ce79378b1a0"
         }
     ],
-    "m_StickyNoteDatas": [],
+    "m_StickyNoteDatas": [
+        {
+            "m_Id": "626ab563b8e949cf9a2f4e5b5492a047"
+        }
+    ],
     "m_Edges": [
         {
             "m_OutputSlot": {
@@ -592,6 +596,26 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "626ab563b8e949cf9a2f4e5b5492a047",
+    "m_Title": "TODO:",
+    "m_Content": "Change Y to 0.5\n",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": -1715.0,
+        "y": -50.0,
+        "width": 200.0,
+        "height": 100.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "650d712c44ac4645b402613b5e03444b",
     "m_Id": 0,
@@ -959,10 +983,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1464.6666259765625,
-            "y": 28.000036239624025,
-            "width": 128.6666259765625,
-            "height": 124.66667175292969
+            "x": -1462.0001220703125,
+            "y": 46.99999237060547,
+            "width": 128.0,
+            "height": 125.00000762939453
         }
     },
     "m_Slots": [
