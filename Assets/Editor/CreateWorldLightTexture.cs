@@ -3,11 +3,27 @@ using UnityEngine;
 
 public class CreateWorldLightTexture : MonoBehaviour
 {
+	private static NoiseModifier brightnessNoise;
+	private static NoiseModifier temperatureNoise;
+
 	[MenuItem("WorldLighting/Create Test 3D Texture")]
 	static void CreateTexture3D()
 	{
+		brightnessNoise = new NoiseModifier() {
+			scale = Vector3.one * 0.06f,
+			offset = 2444.0424f
+		};
+		brightnessNoise.Init();
+
+		temperatureNoise = new NoiseModifier()
+		{
+			scale = Vector3.one * 0.025f,
+			offset = 2444.0424f
+		};
+		temperatureNoise.Init();
+
 		// Configure the texture
-		int size = 32;
+		int size = 128;
 		TextureFormat format = TextureFormat.RGBAHalf;
 		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 
@@ -28,8 +44,10 @@ public class CreateWorldLightTexture : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					colors[x + yOffset + zOffset] = new Color(x * inverseResolution,
-						y * inverseResolution, z * inverseResolution, 1.0f);
+					float brightness = Mathf.Abs(brightnessNoise.StrengthAt(x, y, z));
+					float temperature = Mathf.Abs(temperatureNoise.StrengthAt(x, y, z));
+
+					colors[x + yOffset + zOffset] = new Color(brightness, temperature, 0);
 				}
 			}
 		}
@@ -41,6 +59,6 @@ public class CreateWorldLightTexture : MonoBehaviour
 		texture.Apply();
 
 		// Save the texture to your Unity Project
-		AssetDatabase.CreateAsset(texture, "Assets/WorldLightAtlas/TestLightMap.asset");
+		AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/TestLightMap.asset");
 	}
 }
