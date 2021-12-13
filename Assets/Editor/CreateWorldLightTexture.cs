@@ -35,7 +35,7 @@ public class CreateWorldLightTexture : MonoBehaviour
 		zNoise.Init();
 
 		// Configure the texture
-		int size = 32;
+		int size = 128;
 		TextureFormat format = TextureFormat.RGBAHalf;
 		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 
@@ -48,6 +48,9 @@ public class CreateWorldLightTexture : MonoBehaviour
 
 		// Populate the array so that the x, y, and z values of the texture will map to red, blue, and green colors
 		float inverseResolution = 1.0f / (size - 1.0f);
+
+		Vector3 middle = Vector3.one * size / 2;
+
 		for (int z = 0; z < size; z++)
 		{
 			int zOffset = z * size * size;
@@ -56,16 +59,19 @@ public class CreateWorldLightTexture : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
+					Vector3 here = new Vector3(x, y, z);
+
 					//float i = xNoise.StrengthAt(x, y, z);
 					//float j = yNoise.StrengthAt(x, y, z);
 					//float k = zNoise.StrengthAt(x, y, z);
 
-					//float mult = 15;
-					//colors[x + yOffset + zOffset] = new Color(mult * Mathf.Pow(i, 12), mult * Mathf.Pow(j, 12), mult * Mathf.Pow(k, 12));
 					//colors[x + yOffset + zOffset] = new Color(0.5f, 0.5f, 0.5f);
 
-					float inv = y * inverseResolution;
-					colors[x + yOffset + zOffset] = new Color(0, 2, 1);
+					float dist = Vector3.SqrMagnitude(middle - here) * (2.0f / size) * (2.0f / size);
+					dist = 1 - dist;
+					//dist *= dist;
+
+					colors[x + yOffset + zOffset] = new Color(dist, dist, dist);
 				}
 			}
 		}

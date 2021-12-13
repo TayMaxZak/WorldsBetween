@@ -5383,8 +5383,8 @@
     },
     "m_Name": "NegLigthtMap",
     "m_DefaultReferenceName": "Texture3D_49b5df18ce31440699941ee3eece237f",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_OverrideReferenceName": "NegLightMap",
+    "m_GeneratePropertyBlock": false,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -5429,9 +5429,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1796.0,
-            "y": 4328.6669921875,
-            "width": 139.333251953125,
+            "x": 1804.0001220703125,
+            "y": 4327.33349609375,
+            "width": 129.333251953125,
             "height": 34.0
         }
     },
@@ -9394,6 +9394,9 @@
         },
         {
             "m_Id": "aeb5616be04b46ee9fe32519f4fa787a"
+        },
+        {
+            "m_Id": "b4ee28d5026340649344353dc4d256e4"
         }
     ],
     "synonyms": [],
@@ -10275,8 +10278,8 @@
     },
     "m_Name": "TempMap",
     "m_DefaultReferenceName": "Texture3D_ab34bdfa221d49e1ad9c9cabf0700ae9",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_OverrideReferenceName": "TempMap",
+    "m_GeneratePropertyBlock": false,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -10827,6 +10830,21 @@
         "x": 0.009999999776482582,
         "y": 300.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "b4ee28d5026340649344353dc4d256e4",
+    "m_Id": 2,
+    "m_DisplayName": "Brightness",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Brightness",
+    "m_StageCapability": 2,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
 }
 
 {
@@ -13732,8 +13750,8 @@
     },
     "m_Name": "PosLightMap",
     "m_DefaultReferenceName": "Texture3D_fc389966e9734ecb8afe3a1b179e2ba9",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_OverrideReferenceName": "PosLightMap",
+    "m_GeneratePropertyBlock": false,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
