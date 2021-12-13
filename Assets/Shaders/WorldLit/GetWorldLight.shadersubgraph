@@ -614,6 +614,20 @@
             },
             "m_InputSlot": {
                 "m_Node": {
+                    "m_Id": "2a2c0a16769e4c499d609b81dfa10ac1"
+                },
+                "m_SlotId": 2
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "6729b9198259459eae50477f962db821"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
                     "m_Id": "bc102063d44e4f25b921ccf3db38a6dc"
                 },
                 "m_SlotId": 0
@@ -2217,6 +2231,9 @@
     "m_Slots": [
         {
             "m_Id": "7d3f942de93f47b7b3fc5dd8c7d281ac"
+        },
+        {
+            "m_Id": "508d29b3ee8f49d2bb0ad0a63a88f513"
         }
     ],
     "synonyms": [],
@@ -3118,6 +3135,21 @@
         "e32": 0.0,
         "e33": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "508d29b3ee8f49d2bb0ad0a63a88f513",
+    "m_Id": 2,
+    "m_DisplayName": "Brightness",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Brightness",
+    "m_StageCapability": 2,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
 }
 
 {
