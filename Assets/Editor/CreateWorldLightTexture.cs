@@ -1,13 +1,42 @@
 using UnityEditor;
 using UnityEngine;
 
-public class CreateWorldLightTexture : MonoBehaviour
+public class CreateWorldLightTexture : ScriptableWizard
 {
 	private static NoiseModifier xNoise;
 	private static NoiseModifier yNoise;
 	private static NoiseModifier zNoise;
 
-	[MenuItem("WorldLighting/Create Test 3D Texture")]
+	//public float range = 500;
+	//public Color color = Color.red;
+
+	[MenuItem("WorldLighting/Create LightMaps")]
+	static void CreateWizard()
+	{
+		//DisplayWizard<CreateWorldLightTexture>("Create Lightmaps", "Create", "Apply");
+		//If you don't want to use the secondary button simply leave it out:
+		DisplayWizard<CreateWorldLightTexture>("Create Lightmaps", "Create");
+	}
+
+	void OnWizardCreate()
+	{
+		CreateTexture3D();
+	}
+
+	// When the user presses the "Apply" button OnWizardOtherButton is called.
+	void OnWizardOtherButton()
+	{
+		if (Selection.activeTransform != null)
+		{
+			Light lt = Selection.activeTransform.GetComponent<Light>();
+
+			if (lt != null)
+			{
+				lt.color = Color.red;
+			}
+		}
+	}
+
 	static void CreateTexture3D()
 	{
 		xNoise = new NoiseModifier()
