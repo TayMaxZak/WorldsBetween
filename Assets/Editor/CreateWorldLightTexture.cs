@@ -7,70 +7,86 @@ public class CreateWorldLightTexture : ScriptableWizard
 	private static NoiseModifier yNoise;
 	private static NoiseModifier zNoise;
 
-	//public float range = 500;
-	//public Color color = Color.red;
+	public enum LightMapStyle
+	{
+		Flat,
+		Point,
+		Perlin,
 
-	[MenuItem("WorldLighting/Create LightMaps")]
+	}
+	public LightMapStyle style = LightMapStyle.Perlin;
+
+	[Range(4, 512)]
+	public int size = 128;
+
+	[Range(0, 5)]
+	public float maxBrightness = 1;
+	[Range(0, 5)]
+	public float maxWarm = 0;
+	[Range(0, 5)]
+	public float maxCool = 0;
+
+	[Header("")]
+	[Range(0, 1)]
+	public float randomDither = 0;
+
+	[Header("")]
+	[Range(-5, 5)]
+	public float modBrightness = 1;
+	[Range(-5, 5)]
+	public float modWarm = 1;
+	[Range(-5, 5)]
+	public float modCool = 1;
+
+	[MenuItem("WorldLighting/Create Lightmap")]
 	static void CreateWizard()
 	{
-		//DisplayWizard<CreateWorldLightTexture>("Create Lightmaps", "Create", "Apply");
-		//If you don't want to use the secondary button simply leave it out:
 		DisplayWizard<CreateWorldLightTexture>("Create Lightmaps", "Create");
 	}
 
 	void OnWizardCreate()
 	{
-		CreateTexture3D();
+		CreateTexture3D(size, style, maxBrightness, maxWarm, maxCool, randomDither, modBrightness, modWarm, modCool);
 	}
 
-	// When the user presses the "Apply" button OnWizardOtherButton is called.
-	void OnWizardOtherButton()
+	static void CreateTexture3D(int size, LightMapStyle style, float maxBrightness, float maxWarm, float maxCool, float randomDither, float modBrightness, float modWarm, float modCool)
 	{
-		if (Selection.activeTransform != null)
+		if (style == LightMapStyle.Perlin)
 		{
-			Light lt = Selection.activeTransform.GetComponent<Light>();
-
-			if (lt != null)
+			xNoise = new NoiseModifier()
 			{
-				lt.color = Color.red;
-			}
+				scale = Vector3.one * 0.05f,
+				offset = 2444.0424f,
+				strength = 1
+			};
+			xNoise.Init();
+
+			yNoise = new NoiseModifier()
+			{
+				scale = Vector3.one * 0.05f,
+				offset = 2144.0424f,
+				strength = 1
+			};
+			yNoise.Init();
+
+			zNoise = new NoiseModifier()
+			{
+				scale = Vector3.one * 0.05f,
+				offset = 28744.0424f,
+				strength = 1
+			};
+			zNoise.Init();
 		}
-	}
-
-	static void CreateTexture3D()
-	{
-		xNoise = new NoiseModifier()
-		{
-			scale = Vector3.one * 0.06f,
-			offset = 2444.0424f,
-			strength = 1
-		};
-		xNoise.Init();
-
-		yNoise = new NoiseModifier()
-		{
-			scale = Vector3.one * 0.06f,
-			offset = 2144.0424f,
-			strength = 1
-		};
-		yNoise.Init();
-
-		zNoise = new NoiseModifier()
-		{
-			scale = Vector3.one * 0.06f,
-			offset = 28744.0424f,
-			strength = 1
-		};
-		zNoise.Init();
 
 		// Configure the texture
-		int size = 128;
 		TextureFormat format = TextureFormat.RGBAHalf;
-		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
+		TextureWrapMode wrapMode = TextureWrapMode.Mirror;
+		FilterMode filterMode = FilterMode.Bilinear;
 
 		// Create the texture and apply the configuration
 		Texture3D texture = new Texture3D(size, size, size, format, false);
 		texture.wrapMode = wrapMode;
+		texture.filterMode = filterMode;
 
 		// Create a 3-dimensional array to store color data
 		Color[] colors = new Color[size * size * size];
@@ -88,19 +104,40 @@ public class CreateWorldLightTexture : ScriptableWizard
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					Vector3 here = new Vector3(x, y, z);
+					float r = 0, g = 0, b = 0;
 
-					//float i = xNoise.StrengthAt(x, y, z);
-					//float j = yNoise.StrengthAt(x, y, z);
-					//float k = zNoise.StrengthAt(x, y, z);
+					switch (style)
+					{
+						case LightMapStyle.Flat:
+							{
+								r = maxBrightness;
+								g = maxWarm;
+								b = maxCool;
+							}
+							break;
+						case LightMapStyle.Point:
+							{
+								Vector3 here = new Vector3(x, y, z);
+								float dist = Vector3.SqrMagnitude(middle - here) * (2.0f / size) * (2.0f / size);
+								dist = 1 - Mathf.Clamp01(dist);
 
-					//colors[x + yOffset + zOffset] = new Color(0.5f, 0.5f, 0.5f);
+								r = dist * maxBrightness;
+								g = dist * maxWarm;
+								b = dist * maxCool;
+							}
+							break;
+						case LightMapStyle.Perlin:
+							{
+								r = xNoise.StrengthAt(x * modBrightness, y * modBrightness, z * modBrightness) * maxBrightness;
+								g = yNoise.StrengthAt(x * modWarm, y * modWarm, z * modWarm) * maxWarm;
+								b = zNoise.StrengthAt(x * modCool, y * modCool, z * modCool) * maxCool;
+							}
+							break;
+						default:
+							break;
+					}
 
-					float dist = Vector3.SqrMagnitude(middle - here) * (2.0f / size) * (2.0f / size);
-					dist = 1 - dist;
-					//dist *= dist;
-
-					colors[x + yOffset + zOffset] = new Color(dist, dist, dist);
+					colors[x + yOffset + zOffset] = new Color(Mathf.Max(0, r + Dither(randomDither) * r), Mathf.Max(0, g + Dither(randomDither) * g), Mathf.Max(0, b + Dither(randomDither) * b));
 				}
 			}
 		}
@@ -112,10 +149,16 @@ public class CreateWorldLightTexture : ScriptableWizard
 		texture.Apply();
 
 		// Save the texture to your Unity Project
-		int existing = AssetDatabase.FindAssets("TestLightMap").Length;
+		string nameToUse = "LightMap";
+		int existing = AssetDatabase.FindAssets(nameToUse).Length;
 		if (existing == 0)
-			AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/TestLightMap.asset");
+			AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/" + nameToUse + ".asset");
 		else
-			AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/TestLightMap " + existing + ".asset");
+			AssetDatabase.CreateAsset(texture, "Assets/CustomAssets/WorldLightAtlas/" + nameToUse + " " + existing + ".asset");
+	}
+
+	private static float Dither(float mult)
+	{
+		return SeedlessRandom.NextFloatInRange(-1, 1) * mult;
 	}
 }
