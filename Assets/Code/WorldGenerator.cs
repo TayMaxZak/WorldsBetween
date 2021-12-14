@@ -64,7 +64,7 @@ public class WorldGenerator
 		chunkRoot.name = "Chunks";
 	}
 
-	public async void InitialGen()
+	public async void StartGen()
 	{
 		genStage = GenStage.CreateChunks;
 
@@ -79,6 +79,17 @@ public class WorldGenerator
 		genStage = GenStage.GenerateChunks;
 
 		GameManager.Instance.MidLoading();
+	}
+
+	public async void StopGen()
+	{
+		Debug.Log("Cancel start");
+
+		active = false;
+
+		while (GeneratorsBusy() > 0) await Task.Delay(100);
+
+		Debug.Log("Cancel complete");
 	}
 
 	public void ContinueGenerating()
@@ -113,8 +124,6 @@ public class WorldGenerator
 
 	public void CreateChunksNearPlayer(int range)
 	{
-		// TODO: Reuse grid of chunks instead of instantiating new ones
-
 		// Change range to actual distance
 		int chunkSize = World.GetChunkSize();
 		range *= chunkSize;
@@ -154,9 +163,6 @@ public class WorldGenerator
 					chunkGO.data.go = chunkGO;
 
 					World.GetChunks().Add(chunkPos, chunkGO.data);
-
-					// Add chunk to generator
-					//;
 				}
 			}
 		}
@@ -183,6 +189,8 @@ public class WorldGenerator
 
 	private void UpdateChunkGameObjects()
 	{
+		// TODO: Reuse grid of chunks instead of instantiating new ones
+
 		if (!World.IsInfinite())
 			return;
 
@@ -232,6 +240,19 @@ public class WorldGenerator
 	public int GeneratorsUsed()
 	{
 		return generatorsUsed;
+	}
+
+	private int GeneratorsBusy()
+	{
+		int busy = 0;
+
+		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
+		{
+			if (entry.Value.IsBusy())
+				busy++;
+		}
+
+		return busy;
 	}
 
 	public float GenProgress()

@@ -52,16 +52,21 @@ public partial class World : MonoBehaviour
 		else
 			Instance = this;
 
+		Generator = generator;
+		Generator.Init();
+
+		WorldInit();
+	}
+
+	private void WorldInit()
+	{
 		// Pick a seed, then use it to initialize RNG
 		if (randomizeSeed)
-			seed = Random.Range(int.MinValue, int.MaxValue);
+			seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
 		foreach (NoiseModifier mod in modifiers)
 			mod.Init();
-
-		Generator = generator;
-		Generator.Init();
 
 		// Scene objects
 		if (relativeOrigin)
@@ -77,12 +82,29 @@ public partial class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		Generator.InitialGen();
+		Generator.StartGen();
 	}
 
 	private void Update()
 	{
 		Generator.ContinueGenerating();
+	}
+
+	[ContextMenu("Restart Gen")]
+	public void RestartGen()
+	{
+		lightSources.Clear();
+		chunks.Clear();
+
+		WorldInit();
+
+		Generator.StartGen();
+	}
+
+	[ContextMenu("Cancel Gen")]
+	public void CancelGen()
+	{
+		Generator.StopGen();
 	}
 
 	public static void RegisterModifier(NoiseModifier modifier)

@@ -73,23 +73,26 @@ public class ChunkGenerator
 		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
 		{
 			if (!busy[spq])
-				BackgroundIterate(spq);
+				BackgroundIterate(spq, 32);
 		}
 
 		while (reQueue.Count > 0)
 			World.Generator.QueueNextStage(reQueue.Dequeue(), true);
 	}
 
-	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue)
+	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue, int taskSize)
 	{
 		busy[queue] = true;
 
-		while (GetSize() > 0)
+		int t = taskSize;
+		while (GetSize() > 0 && t > 0)
 		{
 			await Task.Delay(Mathf.CeilToInt(cycleDelay * 1000));
 
 			if (queue.Count <= 0)
 				break;
+
+			t--;
 
 			Chunk chunk = queue.Dequeue();
 
