@@ -96,6 +96,7 @@ public partial class World : MonoBehaviour
 		lightSources.Clear();
 		chunks.Clear();
 
+		randomizeSeed = true;
 		WorldInit();
 
 		Generator.StartGen();

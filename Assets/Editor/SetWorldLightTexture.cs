@@ -3,10 +3,6 @@ using UnityEngine;
 
 public class SetWorldLightTexture : MonoBehaviour
 {
-	private static NoiseModifier xNoise;
-	private static NoiseModifier yNoise;
-	private static NoiseModifier zNoise;
-
 	[MenuItem("WorldLighting/Apply Lightmap")]
 	static void ApplyLightTexture()
 	{
