@@ -10,11 +10,8 @@ public class Block
 
 	public byte opacity; // How full is this block (0 is empty air, 15 is completely solid)
 
-	// TODO: Make into a flags enum; mor eclear what each value means, more memory efficient, etc.
+	// TODO: Make into a flags enum; more clear what each value means, more memory efficient, etc.
 	public byte maybeNearAir; // Is this block visible to the player
-	public byte needsUpdate; // nonzero = light changed and should be updated
-	public byte updatePending; // nonzero = update in progress, do not touch
-	public byte postUpdate; // nonzero = needs to finalize update
 
 	public byte blockType; // 0 = normal block, 1 = grass
 
@@ -26,10 +23,6 @@ public class Block
 
 		maybeNearAir = 0;
 
-		needsUpdate = 0;
-		updatePending = 0;
-		postUpdate = 0;
-
 		this.opacity = opacity;
 	}
 
@@ -40,10 +33,6 @@ public class Block
 		this.localZ = localZ;
 
 		maybeNearAir = nearAir;
-
-		needsUpdate = 0;
-		updatePending = 0;
-		postUpdate = 0;
 
 		this.opacity = opacity;
 	}

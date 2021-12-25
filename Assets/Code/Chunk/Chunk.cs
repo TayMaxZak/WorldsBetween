@@ -31,6 +31,8 @@ public class Chunk
 
 	private Block[,,] blocks;
 
+	private ChunkBitArray verticesFilled;
+
 	private LinkedList<BlockSurface>[,,] surfaces;
 
 	public ChunkMesh chunkMesh = new ChunkMesh();
@@ -72,6 +74,8 @@ public class Chunk
 		}
 
 		surfaces = new LinkedList<BlockSurface>[chunkSize, chunkSize, chunkSize];
+
+		verticesFilled = new ChunkBitArray(chunkSize, false);
 
 		ambientLight = new AmbientLightNode(new Vector3Int(position.x + chunkSize / 2, position.y + chunkSize / 2, position.z + chunkSize / 2), chunkSize);
 	}
@@ -152,9 +156,6 @@ public class Chunk
 					{
 						continue;
 					}
-
-					// TODO: ???????????????
-					//blocks[x, y, z].maybeNearAir = 255;
 
 					// Handle adjacent blocks for this block
 					FlagAdjacentsAsMaybeNearAir(x, y, z);

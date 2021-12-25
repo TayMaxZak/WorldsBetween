@@ -331,6 +331,7 @@ public class ChunkMesh
 
 							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
 
+							// Add normals
 							norm = Vector3.zero;
 							int smoothingDirs = 0;
 							for (int j = 0; j < airDirections.Count; j++)
@@ -341,23 +342,12 @@ public class ChunkMesh
 								smoothingDirs++;
 								norm += directions[airDirections[j]];
 							}
-							//if (smoothingDirs > 0)
-							//	norm /= smoothingDirs;
-							//else
-							//	norm = directions[d];
 
-							//normals.Add(directions[d]);
 							normals.Add(Vector3.Lerp(directions[d], norm, 0.67f).normalized);
 						}
 
 						// Remember which vertex index this surface ends at
 						surface.endIndex = vertices.Count;
-
-						// Add normals
-						for (int i = 0; i < blockMeshData.vertices.Length; i++)
-						{
-
-						}
 
 						// Add triangles
 						for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
@@ -371,6 +361,7 @@ public class ChunkMesh
 							uv.Add(blockMeshData.uv[i]);
 						}
 					}
+
 					// No surfaces created, not actually near air
 					if (surfacesAdded == 0)
 						block.maybeNearAir = 0;
