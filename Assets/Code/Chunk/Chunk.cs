@@ -339,6 +339,17 @@ public class Chunk
 					if (bits == null)
 					{
 						shadowBits.Add(light, bits = new ChunkBitArray(World.GetChunkSize(), true));
+
+						for (int x = 0; x < chunkSize; x++)
+						{
+							for (int y = 0; y < chunkSize; y++)
+							{
+								for (int z = 0; z < chunkSize; z++)
+								{
+									bits.Set(blocks[x, y, z].IsAir(), x, y, z);
+								}
+							}
+						}
 					}
 
 					// First time calculating for this block
@@ -361,7 +372,7 @@ public class Chunk
 					surface.colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(bright / (oldBrightness + bright))));
 				}
 
-				ambientLight.Contribute(surface.normal, surface.brightness, surface.colorTemp);
+				ambientLight.Contribute(surface.brightness, surface.colorTemp);
 			}
 		}
 

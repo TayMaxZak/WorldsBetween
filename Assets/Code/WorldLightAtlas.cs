@@ -18,7 +18,7 @@ public class WorldLightAtlas : MonoBehaviour
 	public Texture3D defaultLightmap;
 	public Texture3D liveLightmap;
 
-	private int size = 128;
+	private int size = 256;
 
 	public Color randomColor = Color.white;
 
@@ -60,7 +60,7 @@ public class WorldLightAtlas : MonoBehaviour
 		// Create the texture and apply the configuration
 		liveLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
 
-		liveLightmap.wrapMode = TextureWrapMode.Clamp;
+		liveLightmap.wrapMode = TextureWrapMode.Repeat;
 		liveLightmap.filterMode = FilterMode.Bilinear;
 
 		Color[] colors = new Color[size * size * size];
