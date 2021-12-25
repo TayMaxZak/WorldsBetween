@@ -48,11 +48,12 @@ public class DirectionalLightSource : LightSource
 		return Mathf.Max(0, World.GetWaterHeight() - blockPos.y);
 	}
 
-	public override float GetBrightnessAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
+	public override float GetBrightnessAt(Chunk chunk, Vector3 pos, float distance)
 	{
-		float dotMult = Mathf.Clamp01(Mathf.Ceil(Vector3.Dot(direction, -surface.normal) - 0.1f));
+		//float dotMult = Mathf.Clamp01(Mathf.Ceil(Vector3.Dot(direction, -surface.normal) - 0.1f));
+		float dotMult = 1;
 
-		if (!inWater)
+		if (World.GetWaterHeight() > pos.y)
 			return Mathf.Clamp01(brightness * dotMult);
 
 		float falloff = 1f - distance * (1f / (waterFalloffFactor * SeedlessRandom.NextFloatInRange(0.64f, 1)));
@@ -66,9 +67,9 @@ public class DirectionalLightSource : LightSource
 		return 0.7f * dotMult * falloff * brightness;
 	}
 
-	public override float GetColorOpacityAt(Chunk chunk, BlockSurface surface, float distance, bool inWater)
+	public override float GetColorOpacityAt(Chunk chunk, Vector3 pos, float distance)
 	{
-		if (!inWater)
+		if (World.GetWaterHeight() > pos.y)
 			return Mathf.Clamp01(1);
 
 		distance = Mathf.Max(0, distance - 1);

@@ -277,7 +277,7 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			CalcLight();
+			CalcLightSurfaces();
 		});
 
 		// What to do when worker completes its task
@@ -293,7 +293,7 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private int CalcLight()
+	private int CalcLightSurfaces()
 	{
 		LinkedList<LightSource> lights = World.GetLightsFor(this);
 		if (lights == null)
@@ -327,7 +327,7 @@ public class Chunk
 					float dist = light.GetDistanceTo(worldPos);
 
 					// However bright should this position be relative to the light, added and blended into existing lights
-					float bright = light.GetBrightnessAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
+					float bright = light.GetBrightnessAt(this, surface.GetAdjBlockWorldCoord(), dist);
 
 					//if (bright <= 0.01f)
 					//	continue;
@@ -354,7 +354,7 @@ public class Chunk
 					surface.brightness = 1 - (1 - surface.brightness) * (1 - bright);
 
 					// Like opacity for a Color layer
-					float colorTempOpac = light.GetColorOpacityAt(this, surface, dist, worldPos.y < World.GetWaterHeight());
+					float colorTempOpac = light.GetColorOpacityAt(this, surface.GetAdjBlockWorldCoord(), dist);
 
 					//colorTempOpac *= shadowedMult;
 
@@ -371,12 +371,56 @@ public class Chunk
 		return counter;
 	}
 
-	public LightingSample CalcLightAt(Vector3Int worldPos, Vector3 normal)
+	public LightingSample SampleLightAt(bool skipAmbient, Vector3Int worldPos)
 	{
-		if (ambientLight == null)
+		LinkedList<LightSource> lights = World.GetLightsFor(this);
+		if (lights == null)
 			return new LightingSample(0, 0);
 
-		return ambientLight.Retrieve(worldPos, normal);
+		float brightness = 0;
+		float colorTemp = 0;
+
+		Vector3Int localPos = worldPos - position;
+
+		foreach (LightSource light in lights)
+		{
+			float dist = light.GetDistanceTo(worldPos);
+
+			// However bright should this position be relative to the light, added and blended into existing lights
+			float bright = light.GetBrightnessAt(this, worldPos, dist);
+
+			// Apply shadows
+			shadowBits.TryGetValue(light, out ChunkBitArray bits);
+
+			// Get and apply shadows
+			float shadowedMult = bits == null ? 1 : (bits.Get(localPos.x, localPos.y, localPos.z) ? 1 : 0);
+
+			bright *= shadowedMult;
+
+			float oldBrightness = brightness;
+			brightness += bright;
+
+			// TODO: Double check this bs
+			float colorTempOpac = light.GetColorOpacityAt(this, worldPos, dist);
+			colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(bright / (oldBrightness + bright))));
+		}
+
+		if (!skipAmbient)
+		{
+			Chunk startChunk = World.GetChunkFor(worldPos);
+
+			if (startChunk != null)
+			{
+				LightingSample sample = startChunk.ambientLight.Retrieve(worldPos);
+
+				if (sample.brightness > 0)
+				{
+					brightness += sample.brightness;
+				}
+			}
+		}
+
+		return new LightingSample(brightness, colorTemp);
 	}
 	#endregion
 
@@ -457,8 +501,10 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = UpdateLightVisuals(nextStage == GenStage.AmbientLight);
+
 		});
+
+		UpdateLightVisuals(nextStage == GenStage.AmbientLight);
 
 		// What to do when worker completes its task
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
@@ -466,7 +512,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			chunkMesh.ApplyVertexColors((Color[])args.Result);
+			//chunkMesh.ApplyVertexColors((Color[])args.Result);
 
 			//// TODO: Better way to do this?
 			//if (go && go.transform)
@@ -479,21 +525,32 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private Color[] UpdateLightVisuals(bool fakeBrightness)
+	private void UpdateLightVisuals(bool fakeBrightness)
 	{
-		// TODO: First surface of every chunk has broken vertex colors
-		foreach (LinkedList<BlockSurface> ls in surfaces)
-		{
-			if (ls == null)
-				continue;
+		//// TODO: First surface of every chunk has broken vertex colors
+		//foreach (LinkedList<BlockSurface> ls in surfaces)
+		//{
+		//	if (ls == null)
+		//		continue;
 
-			foreach (BlockSurface surf in ls)
+		//	foreach (BlockSurface surf in ls)
+		//	{
+		//		chunkMesh.SetVertexColors(surf, fakeBrightness);
+		//	}
+		//}
+
+		for (int x = 0; x < chunkSize; x++)
+		{
+			for (int y = 0; y < chunkSize; y++)
 			{
-				chunkMesh.SetVertexColors(surf, fakeBrightness);
+				for (int z = 0; z < chunkSize; z++)
+				{
+					Vector3Int localPos = new Vector3Int(x, y, z);
+					LightingSample ls = SampleLightAt(fakeBrightness, localPos + position);
+					WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, localPos + position, new Color(ls.brightness, Mathf.Max(0, ls.colorTemp), Mathf.Max(0, -ls.colorTemp)));
+				}
 			}
 		}
-
-		return chunkMesh.GetVertexColors();
 	}
 	#endregion
 

@@ -7,12 +7,22 @@ using System.Threading.Tasks;
 [ExecuteInEditMode]
 public class WorldLightAtlas : MonoBehaviour
 {
+	public enum LightMapSpace
+	{
+		TexSpace,
+		WorldSpace
+	}
+
+	public static WorldLightAtlas Instance;
+
 	public Texture3D defaultLightmap;
 	public Texture3D liveLightmap;
 
-	private int size = 32;
+	private int size = 128;
 
 	public Color randomColor = Color.white;
+
+	private static int changeCount = 0;
 
 	private void OnEnable()
 	{
@@ -24,6 +34,8 @@ public class WorldLightAtlas : MonoBehaviour
 		{
 			CreateLightmap();
 			ApplyTexture(liveLightmap);
+
+			Instance = this;
 		}
 	}
 
@@ -60,9 +72,9 @@ public class WorldLightAtlas : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					RandomColor();
+					RandomizeColor();
 
-					colors[x + yOffset + zOffset] = randomColor;
+					colors[x + yOffset + zOffset] = Color.black;
 				}
 			}
 		}
@@ -74,12 +86,17 @@ public class WorldLightAtlas : MonoBehaviour
 		liveLightmap.Apply();
 	}
 
-	private void WriteToLightmap(Vector3Int pos, Color value)
+	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color value)
 	{
-		for (int j = 0; j < liveLightmap.width; j++)
-		{
-			liveLightmap.SetPixel(pos.x, pos.y, pos.z, value);
-		}
+		if (texSpace == LightMapSpace.WorldSpace)
+			pos = WorldToTex(pos);
+
+		if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= size || pos.y >= size || pos.z >= size)
+			return;
+
+		liveLightmap.SetPixel(pos.x, pos.y, pos.z, value);
+
+		changeCount++;
 	}
 
 	private void Update()
@@ -87,24 +104,22 @@ public class WorldLightAtlas : MonoBehaviour
 		if (!Application.isPlaying)
 			return;
 
-		if (SeedlessRandom.NextFloat() < 0.05f)
-		{
-			RandomColor();
-		}
-
-		int count = SeedlessRandom.NextFloat() < 0.2f ? SeedlessRandom.NextIntInRange(size, size * 2) : 0;
-		for (int i = 0; i < count; i++)
-			WriteToLightmap(
-				new Vector3Int(SeedlessRandom.NextIntInRange(0, size),
-				SeedlessRandom.NextIntInRange(0, size),
-				SeedlessRandom.NextIntInRange(0, size)),
-				randomColor);
-
-		if (count > 0)
+		if (changeCount > 0)
 			liveLightmap.Apply();
+		changeCount = 0;
 	}
 
-	private void RandomColor()
+	private Vector3Int TexToWorld(Vector3Int tex)
+	{
+		return 2 * tex - Vector3Int.one * size;
+	}
+
+	private Vector3Int WorldToTex(Vector3Int wrld)
+	{
+		return wrld + (Vector3Int.one * size) / 2;
+	}
+
+	private void RandomizeColor()
 	{
 		float mult = 1.5f;
 

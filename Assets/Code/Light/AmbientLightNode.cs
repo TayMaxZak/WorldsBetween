@@ -70,6 +70,11 @@ public class AmbientLightNode
 		}
 	}
 
+	public LightingSample Retrieve(Vector3Int position)
+	{
+		return Retrieve(position, Vector3Int.one);
+	}
+
 	public LightingSample Retrieve(Vector3Int position, Vector3 normal)
 	{
 		float dotFactor = 0.0f;
@@ -115,7 +120,6 @@ public class AmbientLightNode
 						float dotMult = Mathf.Clamp01(Vector3.Dot(-point.direction, normal));
 
 						brightness += Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.brightness;
-						//colorTemp -= Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.colorTemp;
 					}
 				}
 			}
