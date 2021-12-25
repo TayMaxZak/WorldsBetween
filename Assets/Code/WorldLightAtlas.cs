@@ -119,6 +119,25 @@ public class WorldLightAtlas : MonoBehaviour
 		return wrld + (Vector3Int.one * size) / 2;
 	}
 
+	public static void CalculateShadowsFor(ChunkBitArray vertexBit, ChunkBitArray shadowBit, int chunkSize)
+	{
+		// Calculate shadows
+		for (int x = 0; x < chunkSize; x++)
+		{
+			for (int y = 0; y < chunkSize; y++)
+			{
+				for (int z = 0; z < chunkSize; z++)
+				{
+					shadowBit.Set(!vertexBit.Get(x,y,z), x, y, z);
+				}
+			}
+		}
+
+		//// First time calculating for this block
+		//if (shadowBit.needsCalc)
+		//	shadowBit.needsCalc = shadowBit.needsCalc;
+	}
+
 	private void RandomizeColor()
 	{
 		float mult = 1.5f;
