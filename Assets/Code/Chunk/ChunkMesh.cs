@@ -148,7 +148,7 @@ public class ChunkMesh
 					// Solid
 					else
 					{
-						corners.Set(true, x, y, z);
+						FlagAllCorners(corners, x, y, z);
 
 						// Not near air
 						if (block.maybeNearAir == 0)
@@ -248,6 +248,48 @@ public class ChunkMesh
 		}
 
 		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
+	}
+
+	// TODO: Handle chunk borders
+	private void FlagAllCorners(ChunkBitArray corners, int x, int y, int z)
+	{
+		//Block block;
+
+		int chunkSize = World.GetChunkSize();
+
+		bool doX = false, doY = false, doZ = false;
+
+		// X-axis
+		if (x < chunkSize - 1)
+			doX = true;
+
+		// Y-axis
+		if (y < chunkSize - 1)
+			doY = true;
+
+		// Z-axis
+		if (z < chunkSize - 1)
+			doZ = true;
+
+		// Apply
+		corners.Set(true, x, y, z);
+
+		if (doX)
+			corners.Set(true, x + 1, y, z);
+		if (doY)
+			corners.Set(true, x, y + 1, z);
+		if (doZ)
+			corners.Set(true, x, y, z + 1);
+
+		if (doX && doY)
+			corners.Set(true, x + 1, y + 1, z);
+		if (doY && doZ)
+			corners.Set(true, x, y + 1, z + 1);
+		if (doZ && doX)
+			corners.Set(true, x + 1, y, z + 1);
+
+		if (doX && doY && doZ)
+			corners.Set(true, x + 1, y + 1, z + 1);
 	}
 
 	public void FinishMesh(Mesh newMesh)

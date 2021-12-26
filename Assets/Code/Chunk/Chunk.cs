@@ -140,7 +140,7 @@ public class Chunk
 
 					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
 
-					if (lastPass && Mathf.Abs(y + position.y - 0) < 4)
+					if (lastPass && Mathf.Abs(y + position.y - 30) < 4)
 						blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 8, 0, 255);
 				}
 			}
@@ -342,7 +342,7 @@ public class Chunk
 			{
 				lightToShadowMap.Add(light, shadowBits = new ChunkBitArray(World.GetChunkSize(), true));
 
-				WorldLightAtlas.CalculateShadowsFor(corners, shadowBits, chunkSize);
+				WorldLightAtlas.CalculateShadowsFor(corners, shadowBits);
 			}
 
 			// Get and apply shadows
