@@ -32,6 +32,8 @@ public class WorldLightAtlas : MonoBehaviour
 		}
 		else
 		{
+			size = World.GetChunkSize() * (1 + World.Generator.GetGenRange() * 2);
+
 			CreateLightmap();
 			ApplyTexture(liveLightmap);
 
@@ -119,25 +121,35 @@ public class WorldLightAtlas : MonoBehaviour
 		return wrld + (Vector3Int.one * size) / 2;
 	}
 
-	public static void CalculateShadowsFor(ChunkBitArray vertexBit, ChunkBitArray shadowBit)
+	public static void CalculateShadowsFor(ChunkBitArray cornerBit, ChunkBitArray shadowBit)
 	{
 		int chunkSize = World.GetChunkSize();
 
-		// Calculate shadows
+		// Cast light rays down
 		for (int x = 0; x < chunkSize; x++)
 		{
-			for (int y = 0; y < chunkSize; y++)
+			for (int z = 0; z < chunkSize; z++)
 			{
-				for (int z = 0; z < chunkSize; z++)
-				{
-					shadowBit.Set(!vertexBit.Get(x, y, z), x, y, z);
-				}
-			}
-		}
+				int y = chunkSize - 1;
 
-		//// First time calculating for this block
-		//if (shadowBit.needsCalc)
-		//	shadowBit.needsCalc = shadowBit.needsCalc;
+				// Light starting inside corner
+				if (cornerBit.Get(x, y, z))
+					continue;
+
+				while (y > 0)
+				{
+					shadowBit.Set(true, x, y, z);
+
+					// Should block light?
+					bool occupied = cornerBit.Get(x, y, z);
+
+					if (occupied)
+						break;
+
+					y--;
+				} // y
+			} // z
+		} // x
 	}
 
 	private void RandomizeColor()

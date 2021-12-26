@@ -298,7 +298,7 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private void CalcLightAllBlocks(bool noAmbient)
+	private void CalcLightAllBlocks(bool preAmbient)
 	{
 		for (int x = 0; x < chunkSize; x++)
 		{
@@ -307,8 +307,12 @@ public class Chunk
 				for (int z = 0; z < chunkSize; z++)
 				{
 					Vector3Int localPos = new Vector3Int(x, y, z);
-					LightingSample ls = SampleLightAt(noAmbient, localPos + position);
+					LightingSample ls = SampleLightAt(preAmbient, localPos + position);
+
 					lightCache[x * chunkSize * chunkSize + y * chunkSize + z] = new Color(ls.brightness, Mathf.Max(0, ls.colorTemp), Mathf.Max(0, -ls.colorTemp));
+
+					if (preAmbient && !corners.Get(x,y,z))
+						ambientLight.Contribute(ls.brightness, ls.colorTemp);
 				}
 			}
 		}
@@ -317,7 +321,7 @@ public class Chunk
 			entry.Value.needsCalc = false;
 	}
 
-	public LightingSample SampleLightAt(bool noAmbient, Vector3Int worldPos)
+	public LightingSample SampleLightAt(bool preAmbient, Vector3Int worldPos)
 	{
 		LinkedList<LightSource> lights = World.GetLightsFor(this);
 		if (lights == null)
@@ -340,7 +344,7 @@ public class Chunk
 
 			if (shadowBits == null)
 			{
-				lightToShadowMap.Add(light, shadowBits = new ChunkBitArray(World.GetChunkSize(), true));
+				lightToShadowMap.Add(light, shadowBits = new ChunkBitArray(World.GetChunkSize(), false));
 
 				WorldLightAtlas.CalculateShadowsFor(corners, shadowBits);
 			}
@@ -358,7 +362,7 @@ public class Chunk
 			colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(bright / (oldBrightness + bright))));
 		}
 
-		if (!noAmbient)
+		if (!preAmbient)
 		{
 			Chunk startChunk = World.GetChunkFor(worldPos);
 
@@ -480,7 +484,7 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private void UpdateLightVisuals(bool noAmbient)
+	private void UpdateLightVisuals(bool preAmbient)
 	{
 		for (int x = 0; x < chunkSize; x++)
 		{

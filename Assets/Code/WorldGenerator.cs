@@ -222,9 +222,14 @@ public class WorldGenerator
 		generator.Enqueue(chunk, priority, multiQ);
 	}
 
-	public int GetRange()
+	public int GetGenRange()
 	{
 		return genRange;
+	}
+
+	public int GetSpawnGenRange()
+	{
+		return spawnGenRange;
 	}
 
 	public bool IsGenerating()
