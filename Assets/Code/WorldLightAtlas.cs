@@ -90,6 +90,9 @@ public class WorldLightAtlas : MonoBehaviour
 
 	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color value)
 	{
+		if (liveLightmap == null)
+			return;
+
 		if (texSpace == LightMapSpace.WorldSpace)
 			pos = WorldToTex(pos);
 
