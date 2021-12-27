@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CephaWhite2
+  m_Name: CephaEye
   m_Shader: {fileID: -6465566751694194690, guid: 9d89833b6aa75dd4b9100692a45b9450, type: 3}
   m_ShaderKeywords: UNITY_APPLY_FOG
   m_LightmapFlags: 4
@@ -19,7 +19,15 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - LightMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - Texture2D_ac66aaa89d0641beabae4a819486c0bb:
+        m_Texture: {fileID: 2800000, guid: e36c650c0bf25224392c7440dde735de, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_ac66aaa89d0641beabae4a819486c0bb_1:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -97,9 +105,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PartialTime: 0
-    - Vector1_1: 25
-    - Vector1_2: 2.5
-    - Vector1_574f165a08e64ce4b3fa8b641bd0295a: 0.4
+    - Vector1_1: 15
+    - Vector1_2: 2
+    - Vector1_574f165a08e64ce4b3fa8b641bd0295a: 0.1
     - Vector1_71e33091fc0c45659ab3642a9e395069: 1
     - Vector1_BE32BCCB: 0
     - Vector1_d9826dcd5d17494dacf7b71823ce7854: 0
@@ -126,7 +134,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_1105c7c00bfd4ea28cad78509821a90d: {r: 0.3490566, g: 0.2716714, b: 0.32116872, a: 1}
+    - Color_1105c7c00bfd4ea28cad78509821a90d: {r: 0.88113207, g: 1, b: 0.9667793, a: 1}
     - Vector2_f5c2fe79f1ba4c93a1d8dda69b22bff3: {r: -1, g: 0.5, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
