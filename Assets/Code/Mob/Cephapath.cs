@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Apparition : MonoBehaviour
+public class Cephapath : MonoBehaviour
 {
 	[System.Serializable]
 	public class Tentacle

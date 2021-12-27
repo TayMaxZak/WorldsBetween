@@ -18,6 +18,7 @@ public class WorldGenerator
 
 	public bool active = true;
 	public bool multiQ = false;
+	public int queues = 32;
 
 	[Header("References")]
 	[SerializeField]
@@ -46,7 +47,6 @@ public class WorldGenerator
 	public void Init()
 	{
 		float delay = 0f;
-		int queues = 32;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Allocate, new ChunkGenerator(0, 1) },

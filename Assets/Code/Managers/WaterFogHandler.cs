@@ -50,9 +50,10 @@ public class WaterFogHandler : MonoBehaviour
 		return test.transform.position.y <= waterHeight + 0.9f;
 	}
 
-	public static void SetSettings(WaterFogHandler handler, bool inWater)
+	[ContextMenu("Apply Default")]
+	private void DefaultSettings()
 	{
-		FogSettings settings = inWater ? handler.underwater : handler.init;
+		FogSettings settings = init;
 
 		RenderSettings.fogColor = settings.fogColor;
 		RenderSettings.fogStartDistance = settings.start;
