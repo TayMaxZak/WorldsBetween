@@ -26,6 +26,8 @@ public class AmbientLightNode
 
 	private readonly int volume;
 
+	private readonly float mult = 0.5f;
+
 	private Vector3Int centerPos;
 
 	private AmbientLightNode[,,] neighborArray;
@@ -50,12 +52,8 @@ public class AmbientLightNode
 
 	public void Contribute(float brightness, float colorTemp)
 	{
-		// TODO: Instead of using surface normal as input, look at the difference in positions between the input surface and the ambient point (avoid obvious backlighting)
-		//float dotMult = Mathf.Clamp01(Vector3.Dot(point.direction, normal));
-		float dotMult = 1;
-
-		point.brightness = 1 - (1 - point.brightness) * (1 - dotMult * brightness / surfaceArea);
-		point.colorTemp += dotMult * colorTemp / surfaceArea;
+		point.brightness += mult * (brightness / surfaceArea);
+		point.colorTemp += mult * (colorTemp / surfaceArea);
 	}
 
 	public LightingSample Retrieve(Vector3Int position)

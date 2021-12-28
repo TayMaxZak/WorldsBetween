@@ -110,6 +110,10 @@ public class ChunkGenerator
 					Chunk adj = World.GetChunkFor(adjPos);
 					if (adj == null || adj.genStage < chunk.genStage /*|| adj.isProcessing*/)
 					{
+						// Wait for threaded processing
+						while (adj != null && adj.isProcessing)
+							await Task.Delay(10);
+
 						if (adj != null || World.IsInfinite())
 						{
 							validAdj = false;
@@ -120,10 +124,6 @@ public class ChunkGenerator
 							continue;
 						}
 					}
-
-					// Wait for threaded processing
-					while (adj.isProcessing)
-						await Task.Delay(100);
 				}
 			}
 
