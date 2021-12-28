@@ -126,18 +126,18 @@ public class Cephapath : MonoBehaviour
 	private void InitTentacle(Tentacle t)
 	{
 		// Initialize previous values manually
-		t.targetPointNew = transform.position;
+		t.targetPointNew = transform.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
 		t.offsetDirNew = SeedlessRandom.RandomPoint(6);
 
 		t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
-		t.curveTipPoint = transform.position + ((t.targetPoint - transform.position) / 2) + SeedlessRandom.RandomPoint(grabDistance).normalized;
+		t.curveTipPoint = transform.position + SeedlessRandom.RandomPoint(grabDistance);
 
 		MoveTentacle(t);
 
 		// Manually lerp over to the new target point
-		t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, 0.67f);
+		t.targetPoint = t.targetPointNew;
 		// Same for curve
-		t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, 0.33f);
+		t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, 0.4f);
 
 		RenderTentacle(t);
 	}
