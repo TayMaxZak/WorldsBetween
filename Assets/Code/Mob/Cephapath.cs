@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Apparition : MonoBehaviour
+public class Cephapath : MonoBehaviour
 {
 	[System.Serializable]
 	public class Tentacle
@@ -11,22 +11,22 @@ public class Apparition : MonoBehaviour
 
 		public float width = 1;
 
-		[HideInInspector]
+		[System.NonSerialized]
 		public Vector3 targetPoint;
-		[HideInInspector]
+		[System.NonSerialized]
 		public Vector3 targetPointNew;
 
-		[HideInInspector]
+		[System.NonSerialized]
 		public Vector3 offsetDir;
-		[HideInInspector]
+		[System.NonSerialized]
 		public Vector3 offsetDirNew;
 
-		[HideInInspector]
+		[System.NonSerialized]
 		public Vector3 curveTipPoint;
 
-		[HideInInspector]
+		[System.NonSerialized]
 		public bool grabbing;
-		[HideInInspector]
+		[System.NonSerialized]
 		public bool movedOutOfSync;
 	}
 
@@ -113,23 +113,42 @@ public class Apparition : MonoBehaviour
 		damageLoop.volume = 0;
 		foreach (Tentacle t in tentacles)
 		{
-			// Initialize previous values manually
-			t.targetPointNew = transform.position;
-			t.offsetDirNew = SeedlessRandom.RandomPoint(6);
+			t.width = SeedlessRandom.NextFloatInRange(0.4f, 0.8f);
 
-			MoveTentacle(t);
-
-			// Manually fully lerp over to the new target point
-			t.targetPoint = t.targetPointNew;
-			// Is not working, fix!
-			t.curveTipPoint = t.targetPoint;
-
-			RenderTentacle(t);
+			InitTentacle(t);
 		}
 
 		// Reset all timers
 		dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
 		reconfigureTimer.Reset(1 + SeedlessRandom.NextFloat() * reconfigureTimer.maxTime);
+	}
+
+	private void InitTentacle(Tentacle t)
+	{
+		// Initialize previous values manually
+		t.targetPointNew = transform.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
+		t.offsetDirNew = SeedlessRandom.RandomPoint(6);
+
+		t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
+		t.curveTipPoint = transform.position + SeedlessRandom.RandomPoint(grabDistance);
+
+		MoveTentacle(t);
+
+		// Manually lerp over to the new target point
+		t.targetPoint = t.targetPointNew;
+		// Same for curve
+		t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, 0.4f);
+
+		RenderTentacle(t);
+	}
+
+	[ContextMenu("Position Tentacles")]
+	private void SceneInitTentacles()
+	{
+		foreach (Tentacle t in tentacles)
+		{
+			InitTentacle(t);
+		}
 	}
 
 	// TODO: Add "split" move, where it becomes smaller and makes copies of itself!

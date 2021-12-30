@@ -96,6 +96,7 @@ public partial class World : MonoBehaviour
 		lightSources.Clear();
 		chunks.Clear();
 
+		randomizeSeed = true;
 		WorldInit();
 
 		Generator.StartGen();
@@ -327,6 +328,6 @@ public partial class World : MonoBehaviour
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
-		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + generator.GetRange() * 2) * chunkSize);
+		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + generator.GetGenRange() * 2) * chunkSize);
 	}
 }

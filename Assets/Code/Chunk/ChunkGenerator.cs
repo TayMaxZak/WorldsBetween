@@ -8,7 +8,7 @@ using System.Linq;
 public class ChunkGenerator
 {
 	private readonly List<SimplePriorityQueue<Chunk>> chunkQueues = new List<SimplePriorityQueue<Chunk>>();
-	private readonly Dictionary<SimplePriorityQueue<Chunk>,bool> busy = new Dictionary<SimplePriorityQueue<Chunk>, bool>();
+	private readonly Dictionary<SimplePriorityQueue<Chunk>, bool> busy = new Dictionary<SimplePriorityQueue<Chunk>, bool>();
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
@@ -48,6 +48,7 @@ public class ChunkGenerator
 		}
 	}
 
+	// Fix extra queues not being used
 	public void Enqueue(Chunk chunk, float priority, bool useMultiQueue)
 	{
 		foreach (int i in Enumerable.Range(0, useMultiQueue ? chunkQueues.Count : 1).OrderBy(x => SeedlessRandom.NextInt()))
@@ -107,8 +108,12 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage || chunk.isProcessing)
+					if (adj == null || adj.genStage < chunk.genStage /*|| adj.isProcessing*/)
 					{
+						// Wait for threaded processing
+						while (adj != null && adj.isProcessing)
+							await Task.Delay(10);
+
 						if (adj != null || World.IsInfinite())
 						{
 							validAdj = false;

@@ -8,20 +8,17 @@ public class AmbientLightNode
 	[System.Serializable]
 	public class AmbientPoint
 	{
-		public Vector3 direction;
+		//public Vector3 direction;
 		public float brightness;
 		public float colorTemp;
 
-		public AmbientPoint(Vector3 direction)
-		{
-			this.direction = direction;
-			brightness = 0;
-			colorTemp = 0;
-		}
+		//public AmbientPoint(Vector3 direction)
+		//{
+		//	this.direction = direction;
+		//	brightness = 0;
+		//	colorTemp = 0;
+		//}
 	}
-
-	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
-													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};
 
 	private readonly int nodeSize;
 
@@ -29,45 +26,39 @@ public class AmbientLightNode
 
 	private readonly int volume;
 
+	private readonly float mult = 0.5f;
+
 	private Vector3Int centerPos;
 
 	private AmbientLightNode[,,] neighborArray;
 
 	[SerializeField]
-	private List<AmbientPoint> points;
+	private AmbientPoint point;
 
 	public AmbientLightNode(Vector3Int center, int dimension)
 	{
 		nodeSize = dimension;
 
-		surfaceArea = nodeSize * nodeSize;
+		surfaceArea = nodeSize * nodeSize * 6;
 
 		volume = nodeSize * nodeSize * nodeSize;
 
-		points = new List<AmbientPoint> {
-			new AmbientPoint(directions[0]),
-			new AmbientPoint(directions[1]),
-			new AmbientPoint(directions[2]),
-			new AmbientPoint(directions[3]),
-			new AmbientPoint(directions[4]),
-			new AmbientPoint(directions[5])
-		};
+		point = new AmbientPoint();
 
 		centerPos = center;
 
 		neighborArray = new AmbientLightNode[3, 3, 3];
 	}
 
-	public void Contribute(Vector3 normal, float brightness, float colorTemp)
+	public void Contribute(float brightness, float colorTemp)
 	{
-		foreach (AmbientPoint point in points)
-		{
-			// TODO: Instead of using surface normal as input, look at the difference in positions between the input surface and the ambient point (avoid obvious backlighting)
-			float dotMult = Mathf.Clamp01(Vector3.Dot(point.direction, normal));
+		point.brightness += mult * (brightness / surfaceArea);
+		point.colorTemp += mult * (colorTemp / surfaceArea);
+	}
 
-			point.brightness = 1 - (1 - point.brightness) * (1 - dotMult * brightness / surfaceArea);
-			point.colorTemp += dotMult * colorTemp / surfaceArea;
-		}
+	public LightingSample Retrieve(Vector3Int position)
+	{
+		return Retrieve(position, Vector3Int.one);
 	}
 
 	public LightingSample Retrieve(Vector3Int position, Vector3 normal)
@@ -110,13 +101,10 @@ public class AmbientLightNode
 					if (contribution <= 0)
 						continue;
 
-					foreach (AmbientPoint point in amb.points)
-					{
-						float dotMult = Mathf.Clamp01(Vector3.Dot(-point.direction, normal));
+					//float dotMult = Mathf.Clamp01(Vector3.Dot(-amb.point.direction, normal));
+					float dotMult = 1;
 
-						brightness += Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.brightness;
-						//colorTemp -= Mathf.Lerp(1, dotMult, dotFactor) * contribution * point.colorTemp;
-					}
+					brightness += Mathf.Lerp(1, dotMult, dotFactor) * contribution * amb.point.brightness;
 				}
 			}
 		}

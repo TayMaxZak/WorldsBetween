@@ -15,7 +15,7 @@ public class Incursometer : MonoBehaviour
 
 	public Transform looker;
 
-	public Apparition[] apparitions;
+	public Cephapath[] apparitions;
 
 	public float range = 40;
 
@@ -37,7 +37,7 @@ public class Incursometer : MonoBehaviour
 
 	private void Start()
 	{
-		apparitions = FindObjectsOfType<Apparition>();
+		apparitions = FindObjectsOfType<Cephapath>();
 	}
 
 	private void Update()
@@ -76,7 +76,7 @@ public class Incursometer : MonoBehaviour
 		intensity = 0;
 
 		float cutoff = 0.05f;
-		foreach (Apparition apparition in apparitions)
+		foreach (Cephapath apparition in apparitions)
 		{
 			oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.transform.position - looker.position) - 8, 0)) - cutoff);
 			oneoverx = Mathf.Clamp01(oneoverx + cutoff * oneoverx);
