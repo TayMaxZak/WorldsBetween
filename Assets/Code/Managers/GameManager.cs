@@ -98,6 +98,8 @@ public partial class GameManager : MonoBehaviour
 
 		DisableLoadingUX();
 
+		PhysicsManager.Instance.Activate();
+
 		player.ActivatePlayer();
 
 		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;

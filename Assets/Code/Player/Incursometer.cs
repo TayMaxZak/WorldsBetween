@@ -37,7 +37,7 @@ public class Incursometer : MonoBehaviour
 
 	private void Start()
 	{
-		apparitions = FindObjectsOfType<Cephapath>();
+		apparitions = FindObjectsOfType<Cephapath>(true);
 	}
 
 	private void Update()
