@@ -12,7 +12,7 @@ public class Actor : MonoBehaviour
 
 	// Velocity
 	[SerializeField]
-	private Vector3 velocity;
+	protected Vector3 velocity;
 	[SerializeField]
 	private Vector3 input;
 
@@ -22,9 +22,9 @@ public class Actor : MonoBehaviour
 
 	public bool inWater;
 
-	private bool grounded = false;
+	protected bool grounded = false;
 
-	private bool didInit = false;
+	protected bool didInit = false;
 
 	public bool dead = false;
 
@@ -41,12 +41,12 @@ public class Actor : MonoBehaviour
 		PhysicsManager.Instance.Register(this);
 	}
 
-	public void Init()
+	public virtual void Init()
 	{
 		didInit = true;
 	}
 
-	public void Tick(float deltaTime, float partialTime, bool physicsTick)
+	public virtual void Tick(float deltaTime, float partialTime, bool physicsTick)
 	{
 		if (!didInit)
 			return;
@@ -66,7 +66,7 @@ public class Actor : MonoBehaviour
 		UpdatePosition();
 	}
 
-	public void PhysicsTick(float deltaTime, float partialTime)
+	public virtual void PhysicsTick(float deltaTime, float partialTime)
 	{
 		Vector3 prevVelocity = velocity;
 
@@ -100,7 +100,7 @@ public class Actor : MonoBehaviour
 
 		velocity += fallVelocity;
 
-		Vector3 walkVelocity = input;
+		Vector3 walkVelocity = GetWalkVelocity();
 		if (!dead)
 		{
 			Intersecting(deltaTime, ref walkVelocity);
@@ -122,7 +122,12 @@ public class Actor : MonoBehaviour
 			velocity *= 1f - (friction * deltaTime + deltaTime * 0.2f);
 	}
 
-	private bool Intersecting(float deltaTime, ref Vector3 testVel)
+	protected virtual Vector3 GetWalkVelocity()
+	{
+		return input;
+	}
+
+	protected bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
 		Block checkBlock;
 
@@ -147,22 +152,19 @@ public class Actor : MonoBehaviour
 
 		if (intersected)
 		{
-			if (testVel.sqrMagnitude * deltaTime > PhysicsManager.Instance.epsilon)
-				testVel += Vector3.Scale(testVel, -1.05f * normal);
-			else
-				testVel += Vector3.Scale(testVel, -normal);
+			testVel += Vector3.Scale(testVel, -normal);
 		}
 
 		return intersected;
 	}
 
-	private void Move(Vector3 delta)
+	protected void Move(Vector3 delta)
 	{
 		position += delta;
 		UpdatePosition();
 	}
 
-	private void UpdatePosition()
+	protected void UpdatePosition()
 	{
 		blockPosition = new Vector3Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y), Mathf.FloorToInt(position.z));
 

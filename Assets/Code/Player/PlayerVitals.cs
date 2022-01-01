@@ -52,7 +52,7 @@ public class PlayerVitals : MonoBehaviour
 	private void VitalsTick(float deltaTime)
 	{
 		// Stamina only regens when the player can breathe
-		if (!mover.underWater && !mover.sprinting)
+		if (!mover.inWater && !mover.sprinting)
 		{
 			// Stamina only regens up to current health or max stamina
 			float staminaCap = Mathf.Min(currentHealth, maxStamina);

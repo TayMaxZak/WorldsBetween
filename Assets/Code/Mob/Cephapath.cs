@@ -160,7 +160,7 @@ public class Cephapath : MonoBehaviour
 		bool moveTentacles = false;
 
 		// Vector towards player
-		Vector3 diff = playerMover.locator.transform.position - transform.position;
+		Vector3 diff = playerMover.position - transform.position;
 		float distance = diff.magnitude;
 		Vector3 dir = diff.normalized;
 		if (smoothDir == Vector3.zero)
@@ -183,11 +183,11 @@ public class Cephapath : MonoBehaviour
 		if (!playerVitals.dead)
 		{
 			// Then, gradually reel them in
-			if (playerMover.grabbed && playerMover.ticking)
+			if (playerMover.grabbed && PhysicsManager.Instance.physicsTicking)
 			{
-				playerMover.AddVelocity(-dir * knockbackReelYankSpeeds.y * Mathf.Lerp(0.5f + reelStrength, 1, 0.5f) * playerMover.tickingDelta);
+				playerMover.AddVelocity(-dir * knockbackReelYankSpeeds.y * Mathf.Lerp(0.5f + reelStrength, 1, 0.5f) * PhysicsManager.Instance.tickingDelta);
 				// Reel less over time
-				reelStrength = Mathf.Lerp(reelStrength, 0, playerMover.tickingDelta / 2);
+				reelStrength = Mathf.Lerp(reelStrength, 0, PhysicsManager.Instance.tickingDelta / 2);
 			}
 
 			// Update audio
@@ -214,7 +214,7 @@ public class Cephapath : MonoBehaviour
 				MoveTentacle(t);
 
 			// Recalc vectors after reset
-			diff = playerMover.locator.transform.position - transform.position;
+			diff = playerMover.position - transform.position;
 			distance = diff.magnitude;
 			dir = diff.normalized;
 		}
@@ -494,7 +494,7 @@ public class Cephapath : MonoBehaviour
 			{
 				t.line.widthMultiplier = 0.6f * t.width;
 
-				Vector3 baseShape = Vector3.Lerp(surfacePoint, playerMover.body.transform.position - Vector3.up * 0.75f + smoothDir, percent);
+				Vector3 baseShape = Vector3.Lerp(surfacePoint, playerMover.transform.position - Vector3.up * 0.75f + smoothDir, percent);
 
 				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + (1 - percent) * waveyStrength * perpin + kneeStrength * curveStrength * perpin);
 			}

@@ -1941,9 +1941,9 @@ MonoBehaviour:
   physicsTickTimer:
     maxTime: 0.05
   epsilon: 0
-  physicsTick: 0
+  physicsTicking: 0
   tickingDelta: 0
-  gravity: {x: 0, y: 0, z: 0}
+  gravity: {x: 0, y: -20, z: 0}
 --- !u!1001 &805622447
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1965,7 +1965,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 60
+      value: 60.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.z

@@ -70,7 +70,7 @@ public partial class World : MonoBehaviour
 
 		// Scene objects
 		if (relativeOrigin)
-			WaterFollow(relativeOrigin);
+			WaterFollow(relativeOrigin.position);
 
 		if (sunObject)
 		{
@@ -123,9 +123,9 @@ public partial class World : MonoBehaviour
 		return Instance.modifiers;
 	}
 
-	public static void WaterFollow(Transform t)
+	public static void WaterFollow(Vector3 pos)
 	{
-		Instance.waterSystem.transform.position = new Vector3(t.position.x, Instance.waterHeight, t.position.z);
+		Instance.waterSystem.transform.position = new Vector3(pos.x, Instance.waterHeight, pos.z);
 	}
 
 	public static void RegisterLight(LightSource light)

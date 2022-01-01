@@ -54,10 +54,10 @@ public class Astrum : MonoBehaviour
 		if (vitals.dead)
 			vitals.Respawn();
 
-		mover.locator.position = initPos;
+		mover.position = initPos;
 		mover.SetVelocity(Vector3.zero);
 
-		World.WaterFollow(mover.locatorBlock);
+		World.WaterFollow(mover.blockPosition);
 
 		look.SetXRotation(0);
 

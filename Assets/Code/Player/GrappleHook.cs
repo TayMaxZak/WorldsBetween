@@ -73,10 +73,10 @@ public class GrappleHook : MonoBehaviour
 
 		if (isAttached)
 		{
-			Debug.DrawLine(mover.locator.position, attachBlockPos);
+			Debug.DrawLine(mover.position, attachBlockPos);
 
 			line.gameObject.SetActive(true);
-			line.SetPosition(0, mover.body.position);
+			line.SetPosition(0, mover.transform.position);
 			line.SetPosition(1, attachBlockPos);
 
 			//if (Vector3.SqrMagnitude(body.position - attachBlockPos) > length * length)
@@ -84,9 +84,9 @@ public class GrappleHook : MonoBehaviour
 
 			float strength = 20;
 
-			if (isLocked && mover.ticking)
+			if (isLocked && PhysicsManager.Instance.physicsTicking)
 			{
-				float dist = Vector3.Distance(mover.locator.position, attachBlockPos);
+				float dist = Vector3.Distance(mover.position, attachBlockPos);
 
 				if (dist > 200)
 				{
@@ -96,10 +96,8 @@ public class GrappleHook : MonoBehaviour
 
 				if (dist > length)
 				{
-					mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist - length) * strength * mover.tickingDelta);
+					mover.AddVelocity(-(mover.position - attachBlockPos).normalized * (dist - length) * strength * PhysicsManager.Instance.tickingDelta);
 				}
-				
-				//mover.AddVelocity(-(mover.locator.position - attachBlockPos).normalized * (dist / length) * strength * 2 * mover.tickingDelta);
 			}
 		}
 		else
@@ -128,7 +126,7 @@ public class GrappleHook : MonoBehaviour
 
 	private void LockHook()
 	{
-		length = Vector3.Distance(mover.locator.position, attachBlockPos);
+		length = Vector3.Distance(mover.position, attachBlockPos);
 
 		ChangeLocked(true);
 	}

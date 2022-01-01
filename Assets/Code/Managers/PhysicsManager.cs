@@ -14,7 +14,7 @@ public partial class PhysicsManager : MonoBehaviour
 	private Timer physicsTickTimer = new Timer(0.2f);
 	public float epsilon = 0.1f;
 
-	public bool physicsTick = false;
+	public bool physicsTicking = false;
 	public float tickingDelta;
 
 	public Vector3 gravity = new Vector3(0, -20, 0);
@@ -33,19 +33,19 @@ public partial class PhysicsManager : MonoBehaviour
 
 	private void Update()
 	{
-		physicsTick = false;
+		physicsTicking = false;
 
 		physicsTickTimer.Increment(Time.deltaTime);
 
 		if (physicsTickTimer.Expired())
 		{
-			physicsTick = true;
+			physicsTicking = true;
 
 			physicsTickTimer.Reset();
 		}
 
 		foreach (Actor actor in actors)
-			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, physicsTick);
+			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, physicsTicking);
 	}
 
 	public void Register(Actor actor)
