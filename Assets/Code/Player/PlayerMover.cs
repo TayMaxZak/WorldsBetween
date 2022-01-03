@@ -26,8 +26,6 @@ public class PlayerMover : Actor
 	[SerializeField]
 	private float sprintSpeed = 1.2f;
 
-	private Vector3 jumpVel;
-
 	public bool onRope;
 
 	public bool grabbed;
@@ -63,19 +61,19 @@ public class PlayerMover : Actor
 
 	private void Jump()
 	{
-		jumpVel = Vector3.up * jumpSpeed;
+		velocity += Vector3.up * jumpSpeed;
 		grounded = false;
 	}
 
 	protected override Vector3 GetWalkVelocity()
 	{
+		if (!grounded)
+			return Vector3.zero;
+
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
 		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!inWater ? ((sprinting && grounded) ? sprintSpeed : walkSpeed) : swimSpeed);
 		walkVelocity = !inWater ? transform.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
-
-		walkVelocity += jumpVel;
-		jumpVel = Vector3.zero;
 
 		return walkVelocity;
 	}

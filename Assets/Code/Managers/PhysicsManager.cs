@@ -55,6 +55,8 @@ public partial class PhysicsManager : MonoBehaviour
 
 	public void Activate()
 	{
+		Debug.Log("Activating all");
+
 		foreach (Actor actor in actors)
 			actor.Init();
 	}

@@ -33,7 +33,7 @@ public class Chunk
 
 	private ChunkBitArray corners;
 
-	private LinkedList<BlockSurface>[,,] surfaces;
+	private HashSet<BlockSurface> surfaces;
 
 	private Color[] lightCache;
 
@@ -75,7 +75,7 @@ public class Chunk
 			}
 		}
 
-		surfaces = new LinkedList<BlockSurface>[chunkSize, chunkSize, chunkSize];
+		surfaces = new HashSet<BlockSurface>();
 
 		corners = new ChunkBitArray(chunkSize, false);
 
@@ -311,7 +311,7 @@ public class Chunk
 
 					lightCache[x * chunkSize * chunkSize + y * chunkSize + z] = new Color(ls.brightness, Mathf.Max(0, ls.colorTemp), Mathf.Max(0, -ls.colorTemp));
 
-					if (preAmbient && !corners.Get(x,y,z))
+					if (preAmbient && !corners.Get(x, y, z))
 						ambientLight.Contribute(ls.brightness, ls.colorTemp);
 				}
 			}
@@ -397,8 +397,6 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			AmbientLight();
-
 			CalcLightAllBlocks(false);
 		});
 
@@ -413,34 +411,6 @@ public class Chunk
 		});
 
 		bw.RunWorkerAsync();
-	}
-
-	private void AmbientLight()
-	{
-		Chunk startChunk;
-		Vector3Int coord;
-
-		// Ambient light retrieval
-		foreach (LinkedList<BlockSurface> ls in surfaces)
-		{
-			if (ls == null)
-				continue;
-
-			foreach (BlockSurface surface in ls)
-			{
-				coord = surface.GetAdjBlockWorldCoord();
-
-				startChunk = World.GetChunkFor(coord);
-
-				if (startChunk == null)
-					continue;
-				LightingSample sample = startChunk.ambientLight.Retrieve(coord, surface.normal);
-
-				float oldBrightness = surface.brightness;
-				surface.brightness = 1 - (1 - surface.brightness) * (1 - sample.brightness);
-				//surface.colorTemp = Mathf.Lerp(sample.colorTemp, surface.colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(sample.brightness / (oldBrightness + sample.brightness))));
-			}
-		}
 	}
 	#endregion
 
@@ -534,9 +504,9 @@ public class Chunk
 		return blocks[x, y, z];
 	}
 
-	public LinkedList<BlockSurface> GetSurfaces(int x, int y, int z)
+	public HashSet<BlockSurface> GetSurfaces()
 	{
-		return surfaces[x, y, z];
+		return surfaces;
 	}
 
 	public AmbientLightNode GetAmbientLightNode()

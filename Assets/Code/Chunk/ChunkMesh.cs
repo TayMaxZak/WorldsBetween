@@ -111,7 +111,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData MakeSurfaceAndMesh(Block[,,] blocks, LinkedList<BlockSurface>[,,] surfaces, ChunkBitArray corners)
+	public MeshData MakeSurfaceAndMesh(Block[,,] blocks, HashSet<BlockSurface> surfaces, ChunkBitArray corners)
 	{
 		Block block;
 
@@ -128,6 +128,8 @@ public class ChunkMesh
 		Vector3 norm;
 
 		List<int> airDirections = new List<int>();
+
+		surfaces.Clear();
 
 		int chunkSize = World.GetChunkSize();
 		for (byte x = 0; x < chunkSize; x++)
@@ -191,12 +193,7 @@ public class ChunkMesh
 						BlockSurface surface = new BlockSurface(chunk, block, directions[d], new Vector3(directions[d].x * 0.5f, directions[d].y * 0.5f, directions[d].z * 0.5f));
 
 						// Remember this surface
-						if (surfaces[x, y, z] == null)
-							surfaces[x, y, z] = new LinkedList<BlockSurface>();
-						surfaces[x, y, z].AddLast(surface);
-
-						if (surfaces[x, y, z].Count > 6)
-							Debug.LogError("Too many surfaces on one block");
+						surfaces.Add(surface);
 
 						int indexOffset = vertices.Count;
 						// Remember which vertex index this surface starts at

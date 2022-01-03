@@ -56,6 +56,7 @@ public class Astrum : MonoBehaviour
 
 		mover.position = initPos;
 		mover.SetVelocity(Vector3.zero);
+		mover.UpdateBlockPosition();
 
 		World.WaterFollow(mover.blockPosition);
 

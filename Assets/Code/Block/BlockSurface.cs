@@ -63,4 +63,10 @@ public class BlockSurface
 	{
 		return block.GetLocalPosVector() + chunk.position;
 	}
+
+	public override int GetHashCode()
+	{
+		int chunkSize = World.GetChunkSize();
+		return block.localX * chunkSize * chunkSize + block.localY * chunkSize + block.localZ;
+	}
 }

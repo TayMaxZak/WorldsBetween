@@ -270,25 +270,6 @@ public partial class World : MonoBehaviour
 		);
 	}
 
-	public static LinkedList<BlockSurface> GetSurfacesFor(Vector3Int pos)
-	{
-		return GetSurfacesFor(pos.x, pos.y, pos.z);
-	}
-
-	public static LinkedList<BlockSurface> GetSurfacesFor(int x, int y, int z)
-	{
-		Chunk chunk = GetChunkFor(x, y, z);
-
-		if (chunk == null || chunk.genStage == Chunk.GenStage.Allocate)
-			return null;
-
-		return chunk.GetSurfaces(
-			x - chunk.position.x,
-			y - chunk.position.y,
-			z - chunk.position.z
-		);
-	}
-
 	public static Block GetBlockFor(Vector3Int pos)
 	{
 		return GetBlockFor(pos.x, pos.y, pos.z);

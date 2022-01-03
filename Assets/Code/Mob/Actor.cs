@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Actor : MonoBehaviour
@@ -22,6 +23,7 @@ public class Actor : MonoBehaviour
 
 	public bool inWater;
 
+	[SerializeField]
 	protected bool grounded = false;
 
 	protected bool didInit = false;
@@ -32,8 +34,6 @@ public class Actor : MonoBehaviour
 	{
 		position = transform.position;
 		prevPosition = new Vector3(position.x, position.y, position.z);
-
-		UpdatePosition();
 	}
 
 	private void Start()
@@ -43,6 +43,10 @@ public class Actor : MonoBehaviour
 
 	public virtual void Init()
 	{
+		Debug.Log(name + " init");
+
+		UpdateBlockPosition();
+
 		didInit = true;
 	}
 
@@ -51,39 +55,38 @@ public class Actor : MonoBehaviour
 		if (!didInit)
 			return;
 
+		// Update prev position for lerping
 		if (physicsTick)
 			prevPosition = new Vector3(position.x, position.y, position.z);
 
+		// Lerp logic position and visual position
 		transform.position = Vector3.Lerp(prevPosition, position, 1 - (partialTime / deltaTime));
 
-		if (!physicsTick)
-			return;
+		// Physics stuff
+		if (physicsTick)
+		{
+			PhysicsTick(deltaTime, partialTime);
 
-		prevPosition = new Vector3(position.x, position.y, position.z);
-
-		PhysicsTick(deltaTime, partialTime);
-
-		UpdatePosition();
+			UpdateBlockPosition();
+		}
 	}
 
 	public virtual void PhysicsTick(float deltaTime, float partialTime)
 	{
 		Vector3 prevVelocity = velocity;
 
-		UpdatePosition();
-
-		bool realChunk = true;
+		UpdateBlockPosition();
 
 		Chunk chunk;
-		if ((chunk = World.GetChunkFor(blockPosition.x, blockPosition.y, blockPosition.z)) != null && chunk.genStage >= Chunk.GenStage.CalcLight)
-			realChunk = true;
-		else
-			realChunk = false;
+		bool realChunk =
+			(chunk = World.GetChunkFor(blockPosition.x, blockPosition.y, blockPosition.z)) != null
+			&& chunk.genStage >= Chunk.GenStage.MakeSurface;
 
-		// Apply water effects
+		// Apply water physics
 		bool newInWater = blockPosition.y - 0.4f < World.GetWaterHeight() && realChunk;
+		//bool newInWater = true;
 
-		// Enter water
+		// Entered water, break velocity on impact
 		if (newInWater && !inWater)
 		{
 			velocity *= 0.5f;
@@ -129,62 +132,121 @@ public class Actor : MonoBehaviour
 
 	protected bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
-		Block checkBlock;
+		// Predict next position
+		Vector3 testPosition = new Vector3(
+			(position.x + testVel.x * deltaTime),
+			(position.y + testVel.y * deltaTime),
+			(position.z + testVel.z * deltaTime)
+		);
 
-		bool intersected = false;
+		Vector3Int testBlockPosition = new Vector3Int(
+			(int)(testPosition.x),
+			(int)(testPosition.y),
+			(int)(testPosition.z)
+		);
 
-		// Intersection with surface
-		Vector3Int checkPos = new Vector3Int(Mathf.FloorToInt(position.x + testVel.x * deltaTime),
-			Mathf.FloorToInt(position.y + testVel.y * deltaTime),
-			Mathf.FloorToInt(position.z + testVel.z * deltaTime));
-		checkBlock = World.GetBlockFor(checkPos);
+		// Get surfaces
+		Chunk chunkA = World.GetChunkFor(blockPosition);
+		Chunk chunkB = World.GetChunkFor(testBlockPosition);
 
-		bool realChunk = checkBlock != Block.empty;
+		HashSet<BlockSurface> surfs = new HashSet<BlockSurface>();
+		if (chunkA != null)
+			surfs.UnionWith(chunkA.GetSurfaces());
+		if (chunkB != null)
+			surfs.UnionWith(chunkB.GetSurfaces());
 
-		if (!checkBlock.IsAir() && realChunk)
+		// Test surfaces
+		List<BlockSurface> impacted = new List<BlockSurface>();
+
+		float size = Mathf.Max(0.5f, testVel.magnitude * deltaTime);
+		foreach (BlockSurface surf in surfs)
 		{
-			intersected = true;
+			float closeness = 1 / (position - surf.GetWorldPosition()).magnitude;
+			float length = 0.1f + closeness * 0.3321f;
+
+			// Only consider surfaces that face towards velocity
+			float normDot = Vector3.Dot(-surf.normal, testVel.normalized);
+
+			if (normDot < 0)
+			{
+				Debug.DrawRay(surf.GetWorldPosition(), surf.normal * length + SeedlessRandom.RandomPoint(0.01f), Color.red, deltaTime);
+				continue;
+			}
+
+			Vector3 posAtoSurf = (position - surf.GetWorldPosition());
+
+			Vector3 posAtoBlock = (position - surf.GetBlockWorldPosition());
+
+			Vector3 posBtoSurf = (testPosition - surf.GetWorldPosition());
+
+			Vector3 posAtoPosB = (testPosition - position);
+
+			// Only consider surfaces that face towards us
+			float difDotA = Vector3.Dot(posAtoSurf.normalized, surf.normal);
+			float difDotB = Vector3.Dot(posBtoSurf.normalized, surf.normal);
+
+			if (Vector3.Dot(posAtoBlock.normalized, surf.normal) < 0)
+			{
+				Debug.DrawRay(surf.GetWorldPosition(), surf.normal * length + SeedlessRandom.RandomPoint(0.01f), Color.magenta, deltaTime);
+				continue;
+			}
+
+			float blockSize = 0.5f;
+			if (posAtoSurf.sqrMagnitude > size * size && Mathf.Max(Mathf.Abs(posAtoBlock.x), Mathf.Abs(posAtoBlock.y), Mathf.Abs(posAtoBlock.z)) > blockSize + size)
+			{
+				Debug.DrawRay(surf.GetWorldPosition(), surf.normal * length + SeedlessRandom.RandomPoint(0.01f), Color.gray, deltaTime);
+				continue;
+			}
+
+			impacted.Add(surf);
+
+			Debug.DrawRay(surf.GetWorldPosition(), surf.normal * length + SeedlessRandom.RandomPoint(0.01f), Color.cyan, deltaTime * 2);
 		}
 
-		// Repel
-		Vector3 normal = blockPosition - checkPos;
-		normal = new Vector3(Mathf.Abs(normal.x), Mathf.Abs(normal.y), Mathf.Abs(normal.z));
+		// Sort impacts
+		impacted = impacted.OrderBy(
+			x => Vector3.SqrMagnitude(x.GetWorldPosition() - position)
+		).ToList();
 
-		if (intersected)
+		foreach (BlockSurface surf in impacted)
 		{
-			testVel += Vector3.Scale(testVel, -normal);
+			Vector3 reflected = Vector3.Reflect(testVel, surf.normal);
+			reflected.Scale(new Vector3(Mathf.Abs(surf.normal.x), Mathf.Abs(surf.normal.y), Mathf.Abs(surf.normal.z)));
+
+			testVel += reflected * 1.1f;
+
+			Debug.DrawRay(surf.GetWorldPosition(), surf.normal * (0.5321f + SeedlessRandom.NextFloat() * 0.2f) + SeedlessRandom.RandomPoint(0.04f), Color.white, deltaTime * 2);
+
+			return true;
 		}
 
-		return intersected;
+		return false;
 	}
 
 	protected void Move(Vector3 delta)
 	{
 		position += delta;
-		UpdatePosition();
+		UpdateBlockPosition();
 	}
 
-	protected void UpdatePosition()
+	public void UpdateBlockPosition()
 	{
 		blockPosition = new Vector3Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y), Mathf.FloorToInt(position.z));
 
 		if (!blockPosition.Equals(prevBlockPosition))
 		{
-			// Dirty
+
 		}
 
 		prevBlockPosition = new Vector3Int(blockPosition.x, blockPosition.y, blockPosition.z);
 	}
 
-	private void OnDrawGizmos()
+	protected void OnDrawGizmos()
 	{
 		Gizmos.color = Utils.colorYellow;
 		Gizmos.DrawWireCube(blockPosition + Vector3.one * 0.5f, Vector3.one);
 
 		Gizmos.color = Utils.colorOrange;
 		Gizmos.DrawWireSphere(position, 0.9f);
-
-		Gizmos.color = Utils.colorBlue;
-		Gizmos.DrawRay(transform.position - Vector3.up, Vector3.up * 1.5f);
 	}
 }
