@@ -22,6 +22,12 @@ public class Utils
 	{
 		return Mathf.Abs(xa - xb) + Mathf.Abs(ya - yb) + Mathf.Abs(za - zb);
 	}
+
+	public static Vector3 Scale(Vector3 a, Vector3 b)
+	{
+		a.Scale(b);
+		return a;
+	}
 }
 
 namespace ExtensionMethods

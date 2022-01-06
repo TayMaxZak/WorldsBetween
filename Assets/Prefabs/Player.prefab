@@ -647,6 +647,7 @@ GameObject:
   - component: {fileID: 1335200600}
   - component: {fileID: 1335200601}
   - component: {fileID: 7475139066928018488}
+  - component: {fileID: 731691462813523884}
   m_Layer: 15
   m_Name: Player
   m_TagString: Untagged
@@ -734,8 +735,9 @@ MonoBehaviour:
   blockPosition: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
   input: {x: 0, y: 0, z: 0}
-  hitbox: {fileID: 0}
+  hitbox: {fileID: 731691462813523884}
   inWater: 0
+  grounded: 0
   dead: 0
   vitals: {fileID: 6215269175067649699}
   gForceLimit: 12
@@ -817,6 +819,19 @@ MonoBehaviour:
   tickloopSlow: {fileID: 755635759338732674}
   tickloopMed: {fileID: 1606650926646575671}
   tickloopFast: {fileID: 4814147547945402058}
+--- !u!65 &731691462813523884
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8417224532618400519}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8667887551928177456
 GameObject:
   m_ObjectHideFlags: 0
