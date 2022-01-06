@@ -109,7 +109,7 @@ public class GrappleHook : MonoBehaviour
 		if (shootSound)
 			AudioManager.PlaySound(shootSound, transform.position);
 
-		BlockCastHit hit = BlockCast();
+		BlockCastHit hit = PhysicsManager.BlockCast(mover.cam.transform.position, mover.cam.transform.forward, 16);
 		if (!hit.hit)
 		{
 			ReleaseHook();
@@ -151,40 +151,5 @@ public class GrappleHook : MonoBehaviour
 	private void ChangeLocked(bool val)
 	{
 		isLocked = val && isAttached;
-	}
-
-	public BlockCastHit BlockCast()
-	{
-		Transform camTran = mover.cam.transform;
-		Vector3Int blockPos = new Vector3Int(Mathf.FloorToInt(camTran.position.x), Mathf.FloorToInt(camTran.position.y), Mathf.FloorToInt(camTran.position.z));
-		Vector3 direction = camTran.forward;
-
-		float adj = 0.5f;
-
-		for (int i = 1; i <= 16; i++)
-		{
-			bool occluded = !World.GetBlockFor(
-				(int)(blockPos.x + direction.x * i + adj),
-				(int)(blockPos.y + direction.y * i + adj),
-				(int)(blockPos.z + direction.z * i + adj)
-			).IsAir();
-
-			if (occluded)
-				return new BlockCastHit(new Vector3Int((int)(blockPos.x + direction.x * i + adj), (int)(blockPos.y + direction.y * i + adj), (int)(blockPos.z + direction.z * i + adj)));
-		}
-
-		return new BlockCastHit();
-	}
-}
-
-public struct BlockCastHit
-{
-	public Vector3Int blockPos;
-	public bool hit;
-
-	public BlockCastHit(Vector3Int blockPos)
-	{
-		this.blockPos = blockPos;
-		hit = true;
 	}
 }

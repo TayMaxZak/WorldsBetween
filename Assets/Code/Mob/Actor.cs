@@ -153,16 +153,16 @@ public class Actor : MonoBehaviour
 
 		Debug.DrawLine(edgePos, testPosition, Color.green, 0.1f);
 		Debug.DrawLine(position, testPosition, Color.magenta, 0.1f);
-		Debug.DrawLine(edgePos, testBlockPosition, Color.cyan, 0.1f);
+		Debug.DrawLine(edgePos, testBlockPosition + Vector3.one * 0.5f, Color.cyan, 0.1f);
 		Debug.DrawLine(testPosition, testBlockPosition + Vector3.one * 0.5f, Color.blue, 0.1f);
 
 		if (!World.GetBlockFor(testBlockPosition).IsAir())
 		{
-			Vector3 normal = testVel.normalized * -1;
+			Vector3 normal = Vector3.Normalize(blockPosition - testBlockPosition);
 			Vector3 reflected = Vector3.Reflect(testVel, normal);
 			reflected.Scale(new Vector3(Mathf.Abs(normal.x), Mathf.Abs(normal.y), Mathf.Abs(normal.z)));
 
-			testVel += reflected * 1.1f;
+			testVel += reflected * 1f;
 
 			return true;
 		}
