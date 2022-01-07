@@ -14,6 +14,8 @@ public class GrappleHook : MonoBehaviour
 
 	public bool isLocked = false;
 
+	public float maxLength = 20;
+	[System.NonSerialized]
 	public float length;
 
 	public LineRenderer line;
@@ -109,7 +111,7 @@ public class GrappleHook : MonoBehaviour
 		if (shootSound)
 			AudioManager.PlaySound(shootSound, transform.position);
 
-		BlockCastHit hit = PhysicsManager.BlockCast(mover.cam.transform.position, mover.cam.transform.forward, 16);
+		BlockCastHit hit = PhysicsManager.BlockCastAxial(mover.cam.transform.position, mover.cam.transform.position + mover.cam.transform.forward * maxLength);
 		if (!hit.hit)
 		{
 			ReleaseHook();

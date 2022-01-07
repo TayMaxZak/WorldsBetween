@@ -28,6 +28,11 @@ public class Utils
 		a.Scale(b);
 		return a;
 	}
+
+	public static float SoftSign(float val)
+	{
+		return Mathf.Clamp(val * 10000, -1, 1);
+	}
 }
 
 namespace ExtensionMethods

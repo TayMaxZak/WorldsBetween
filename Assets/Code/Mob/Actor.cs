@@ -133,9 +133,9 @@ public class Actor : MonoBehaviour
 	protected bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
 		Vector3 edgeOffset = new Vector3(
-			SoftAbs(testVel.x) * (hitbox.size.x / 2),
-			SoftAbs(testVel.y) * (hitbox.size.y / 2),
-			SoftAbs(testVel.z) * (hitbox.size.z / 2)
+			Utils.SoftSign(testVel.x) * (hitbox.size.x / 2),
+			Utils.SoftSign(testVel.y) * (hitbox.size.y / 2),
+			Utils.SoftSign(testVel.z) * (hitbox.size.z / 2)
 		);
 
 		Debug.DrawRay(position, edgeOffset, Color.red, 0.1f);
@@ -186,11 +186,6 @@ public class Actor : MonoBehaviour
 		}
 
 		prevBlockPosition = new Vector3Int(blockPosition.x, blockPosition.y, blockPosition.z);
-	}
-
-	private float SoftAbs(float val)
-	{
-		return Mathf.Clamp(val * 100, -1, 1);
 	}
 
 	protected void OnDrawGizmos()
