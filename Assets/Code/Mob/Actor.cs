@@ -132,41 +132,35 @@ public class Actor : MonoBehaviour
 
 	protected bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
-		Vector3 edgeOffset = new Vector3(
-			Utils.SoftSign(testVel.x) * (hitbox.size.x / 2),
-			Utils.SoftSign(testVel.y) * (hitbox.size.y / 2),
-			Utils.SoftSign(testVel.z) * (hitbox.size.z / 2)
-		);
+		Vector3 offset = Vector3.one * 0.5f;
+		Vector3 offsetActual = position - blockPosition;
+		//float eps = 0.001f;
 
-		Debug.DrawRay(position, edgeOffset, Color.red, 0.1f);
-
-		Vector3 edgePos = position + edgeOffset;
-
-		// Predict next position
-		Vector3 testPosition = new Vector3(
-			(edgePos.x + testVel.x * deltaTime),
-			(edgePos.y + testVel.y * deltaTime),
-			(edgePos.z + testVel.z * deltaTime)
-		);
-
-		Vector3Int testBlockPosition = new Vector3Int(Mathf.FloorToInt(testPosition.x), Mathf.FloorToInt(testPosition.y), Mathf.FloorToInt(testPosition.z));
-
-		Debug.DrawLine(edgePos, testPosition, Color.green, 0.1f);
-		Debug.DrawLine(position, testPosition, Color.magenta, 0.1f);
-		Debug.DrawLine(edgePos, testBlockPosition + Vector3.one * 0.5f, Color.cyan, 0.1f);
-		Debug.DrawLine(testPosition, testBlockPosition + Vector3.one * 0.5f, Color.blue, 0.1f);
-
-		if (!World.GetBlockFor(testBlockPosition).IsAir())
+		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2); x++)
 		{
-			Vector3 normal = Vector3.Normalize(blockPosition - testBlockPosition);
-			Vector3 reflected = Vector3.Reflect(testVel, normal);
-			reflected.Scale(new Vector3(Mathf.Abs(normal.x), Mathf.Abs(normal.y), Mathf.Abs(normal.z)));
+			for (float y = Utils.IntVal(position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2); y++)
+			{
+				for (float z = Utils.IntVal(position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2); z++)
+				{
+					float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
+					float ty = Mathf.Clamp(y, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
+					float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
 
-			testVel += reflected * 1f;
+					Vector3 startPos = new Vector3(Utils.IntVal(tx), Utils.IntVal(ty), Utils.IntVal(tz)) + offset;
 
-			return true;
+					Vector3 testPos = new Vector3((tx), (ty), (tz));
+
+					BlockCastHit hit = PhysicsManager.BlockCastAxial(testPos, testPos + testVel * deltaTime);
+
+					Vector3 reflected = Vector3.Reflect(testVel, hit.normal);
+					reflected.Scale(new Vector3(Mathf.Abs(hit.normal.x), Mathf.Abs(hit.normal.y), Mathf.Abs(hit.normal.z)));
+					testVel += reflected;
+
+					if (hit.hit)
+						return true;
+				}
+			}
 		}
-
 		return false;
 	}
 
@@ -190,10 +184,25 @@ public class Actor : MonoBehaviour
 
 	protected void OnDrawGizmos()
 	{
-		Gizmos.color = Utils.colorDarkGrayBlue;
+		Vector3 offset = Vector3.one * 0.5f;
+		Vector3 offsetActual = position - blockPosition;
+		//float eps = 0.001f;
+
+		Gizmos.color = Utils.colorBlue;
 		Gizmos.DrawWireCube(position, hitbox.size);
 
-		Gizmos.color = Utils.colorOrange;
-		Gizmos.DrawWireSphere(position, 0.1f);
+		for (float x = Utils.IntVal(position.x - hitbox.size.x / 2); x < (position.x + hitbox.size.x / 2); x++)
+		{
+			for (float y = Utils.IntVal(position.y - hitbox.size.y / 2); y < (position.y + hitbox.size.y / 2); y++)
+			{
+				for (float z = Utils.IntVal(position.z - hitbox.size.z / 2); z < (position.z + hitbox.size.z / 2); z++)
+				{
+					Vector3 startPos = new Vector3(x, y, z) + offset;
+
+					Gizmos.color = Utils.colorOrange;
+					Gizmos.DrawWireCube(startPos, Vector3.one * 0.95f);
+				}
+			}
+		}
 	}
 }

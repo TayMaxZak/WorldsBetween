@@ -33,6 +33,11 @@ public class Utils
 	{
 		return Mathf.Clamp(val * 10000, -1, 1);
 	}
+
+	public static int IntVal(float val)
+	{
+		return Mathf.FloorToInt(val);
+	}
 }
 
 namespace ExtensionMethods

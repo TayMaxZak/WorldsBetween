@@ -108,82 +108,129 @@ public partial class PhysicsManager : MonoBehaviour
 		return new BlockCastHit();
 	}
 
+	private enum AxialOrder
+	{
+		None,
+		XYZ,
+		XZY,
+		YXZ,
+		YZX,
+		ZXY,
+		ZYX
+	}
+
 	public static BlockCastHit BlockCastAxial(Vector3 a, Vector3 b)
 	{
 		// Find both ends of check
 		Vector3Int blockPosA = new Vector3Int(Mathf.FloorToInt(a.x), Mathf.FloorToInt(a.y), Mathf.FloorToInt(a.z));
 		Vector3Int blockPosB = new Vector3Int(Mathf.FloorToInt(b.x), Mathf.FloorToInt(b.y), Mathf.FloorToInt(b.z));
-		Vector3 diff = (blockPosB - blockPosA);
+		Vector3 diff = (b - a);
+
+		AxialOrder order = FindAxialOrder(diff);
 
 		// Cursor
 		Vector3 testPos = a;
 		Vector3Int testBlockPos = blockPosA;
 
-		// How many times to move the cursor for each axis on each step
-		Vector3 stepsByAxis = diff / (float)Mathf.Max(1, Mathf.Min(Mathf.Abs(diff.x), Mathf.Abs(diff.y), Mathf.Abs(diff.z)));
-		stepsByAxis = new Vector3(Mathf.Abs(stepsByAxis.x), Mathf.Abs(stepsByAxis.y), Mathf.Abs(stepsByAxis.z));
-		Vector3 curSteps = stepsByAxis;
+		// How to move the cursor for each axis on each step
+		Vector3 stepsByAxis = diff.Equals(Vector3.zero) ? Vector3.zero : (new Vector3(diff.x, diff.y, diff.z) / Mathf.Max(1, Mathf.Abs(diff.x), Mathf.Abs(diff.y), Mathf.Abs(diff.z)));
 
 		float i = 0;
 
-		Debug.DrawLine(a, b, Color.magenta, 10);
+		Vector3 lastDir = Vector3.zero;
+
+		Debug.DrawLine(a, b, Color.magenta, 0.1f);
 		while (i < 100)
 		{
-			// Reset
-			if (curSteps.x <= 0 && curSteps.y <= 0 && curSteps.z <= 0)
-			{
-				curSteps += stepsByAxis;
-			}
-			Debug.Log("i " + i + ": " + stepsByAxis);
-
-			Vector3 oldTP = testPos;
-			Vector3 oldTBP = testBlockPos;
-
-			// Move the test pos over
-			float max = Mathf.Max(curSteps.x, curSteps.y, curSteps.z);
-			if (curSteps.x == max)
-			{
-				curSteps.x -= 1;
-				testPos.x += Utils.SoftSign(diff.x);
-			}
-			else if (curSteps.y == max)
-			{
-				curSteps.y -= 1;
-				testPos.y += Utils.SoftSign(diff.y);
-			}
-			else if (curSteps.z == max)
-			{
-				curSteps.z -= 1;
-				testPos.z += Utils.SoftSign(diff.z);
-			}
+			string strOrder = System.Enum.GetName(typeof(AxialOrder), order);
 
 			i++;
 
-			testBlockPos = new Vector3Int(
-				Mathf.FloorToInt(testPos.x),
-				Mathf.FloorToInt(testPos.y),
-				Mathf.FloorToInt(testPos.z)
-			);
-			if (i < 200)
+			for (int j = 0; j < 3; j++)
 			{
-				Debug.DrawLine(oldTP, testPos, Color.cyan, 10);
-				Debug.DrawLine(oldTBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, Utils.colorBlue, 10);
+				char toCmp = strOrder[j];
+
+				if (toCmp == 'X')
+				{
+					testPos.x += stepsByAxis.x;
+					lastDir = new Vector3(Utils.SoftSign(stepsByAxis.x), 0, 0);
+				}
+				else if (toCmp == 'Y')
+				{
+					testPos.y += stepsByAxis.y;
+					lastDir = new Vector3(0, Utils.SoftSign(stepsByAxis.y), 0);
+				}
+				else if (toCmp == 'Z')
+				{
+					testPos.z += stepsByAxis.z;
+					lastDir = new Vector3(0, 0, Utils.SoftSign(stepsByAxis.z));
+				}
+
+				Vector3 oldBP = testBlockPos;
+				testBlockPos = new Vector3Int(
+					Mathf.FloorToInt(testPos.x),
+					Mathf.FloorToInt(testPos.y),
+					Mathf.FloorToInt(testPos.z)
+				);
+
+				bool occluded = !World.GetBlockFor(testBlockPos).IsAir();
+
+				Debug.DrawLine(oldBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, occluded ? Color.green : Color.gray, 1f);
+
+				if (occluded)
+				{
+					Debug.Log(i + " hit");
+					return new BlockCastHit(testBlockPos, -lastDir);
+				}
+
+				if (testBlockPos.Equals(blockPosB))
+				{
+					Debug.Log(i + " miss");
+					return new BlockCastHit();
+				}
 			}
-
-			bool occluded = !World.GetBlockFor(testBlockPos).IsAir();
-
-			if (occluded)
-			{
-				Debug.Log(i);
-				return new BlockCastHit(testBlockPos);
-			}
-
-			if (testBlockPos.Equals(blockPosB))
-				break;
 		}
 
-		Debug.Log(i);
+		Debug.Log(i + " miss");
 		return new BlockCastHit();
+	}
+
+	private static AxialOrder FindAxialOrder(Vector3 diff)
+	{
+		Vector3 abs = new Vector3(Mathf.Abs(diff.x), Mathf.Abs(diff.y), Mathf.Abs(diff.z));
+
+		float xGy = abs.x.CompareTo(abs.y);
+		float xGz = abs.x.CompareTo(abs.z);
+
+		float yGx = abs.y.CompareTo(abs.x);
+		float yGz = abs.y.CompareTo(abs.z);
+
+		float zGx = abs.z.CompareTo(abs.x);
+		float zGy = abs.z.CompareTo(abs.y);
+
+		if (xGy > 0 && xGz > 0)
+		{
+			if (yGz > 0)
+				return AxialOrder.XYZ;
+			else
+				return AxialOrder.XZY;
+		}
+		else if (yGx > 0 && yGz > 0)
+		{
+			if (xGz > 0)
+				return AxialOrder.YXZ;
+			else
+				return AxialOrder.YZX;
+		}
+		else if (zGx > 0 && zGy > 0)
+		{
+			if (xGy > 0)
+				return AxialOrder.ZXY;
+			else
+				return AxialOrder.ZYX;
+		}
+
+		return AxialOrder.None;
 	}
 }
 
@@ -199,6 +246,14 @@ public struct BlockCastHit
 		this.blockPos = blockPos;
 		this.worldPos = blockPos;
 		this.normal = Vector3.one;
+		hit = true;
+	}
+
+	public BlockCastHit(Vector3Int blockPos, Vector3 normal)
+	{
+		this.blockPos = blockPos;
+		this.worldPos = blockPos;
+		this.normal = normal;
 		hit = true;
 	}
 }
