@@ -137,9 +137,11 @@ public partial class PhysicsManager : MonoBehaviour
 
 		float i = 0;
 
-		Vector3 lastDir = Vector3.zero;
+		Vector3 lastDir = Vector3.one;
 
+		Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.1f), Color.yellow, 0.04f);
 		Debug.DrawLine(a, b, Color.magenta, 0.1f);
+
 		while (i < 100)
 		{
 			string strOrder = System.Enum.GetName(typeof(AxialOrder), order);
@@ -179,19 +181,16 @@ public partial class PhysicsManager : MonoBehaviour
 
 				if (occluded)
 				{
-					Debug.Log(i + " hit");
 					return new BlockCastHit(testBlockPos, -lastDir);
 				}
 
 				if (testBlockPos.Equals(blockPosB))
 				{
-					Debug.Log(i + " miss");
 					return new BlockCastHit();
 				}
 			}
 		}
 
-		Debug.Log(i + " miss");
 		return new BlockCastHit();
 	}
 

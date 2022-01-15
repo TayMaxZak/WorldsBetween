@@ -475,7 +475,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 7e6055f1362e0074e83e5654b786975c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -746,7 +746,7 @@ MonoBehaviour:
   sprintingCost: 8
   sprinting: 0
   cam: {fileID: 8417224531919593866}
-  walkSpeed: 0.79
+  walkSpeed: 0.8
   swimSpeed: 0.375
   jumpSpeed: 8
   sprintSpeed: 1.5
@@ -791,7 +791,7 @@ MonoBehaviour:
   attachBlockPos: {x: 0, y: 0, z: 0}
   isAttached: 0
   isLocked: 0
-  length: 0
+  maxLength: 20
   line: {fileID: 0}
   shootSound: {fileID: 11400000, guid: a7aa44e7e65ffde4bbc3d98db0e46fce, type: 2}
   hitSound: {fileID: 11400000, guid: b68f0add102f9e944a59e4904fbdea68, type: 2}
@@ -830,7 +830,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.6, z: 1}
+  m_Size: {x: 0.7, y: 1.6, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8667887551928177456
 GameObject:

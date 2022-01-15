@@ -1924,6 +1924,10 @@ PrefabInstance:
       propertyPath: line
       value: 
       objectReference: {fileID: 1832004583}
+    - target: {fileID: 8417224531919593866, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: near clip plane
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: position.x
       value: 0.5
@@ -3415,14 +3419,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
-      propertyPath: speed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
-      propertyPath: farSpeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: playerMover
       value: 
       objectReference: {fileID: 1970799354}
@@ -3430,10 +3426,6 @@ PrefabInstance:
       propertyPath: playerVitals
       value: 
       objectReference: {fileID: 1970799355}
-    - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
-      propertyPath: dashTimer.maxTime
-      value: 110
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
 --- !u!4 &1375446207 stripped

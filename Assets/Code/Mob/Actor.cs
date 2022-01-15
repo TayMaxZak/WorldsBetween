@@ -132,21 +132,19 @@ public class Actor : MonoBehaviour
 
 	protected bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
-		Vector3 offset = Vector3.one * 0.5f;
+		float offset = 0.5f;
 		Vector3 offsetActual = position - blockPosition;
 		//float eps = 0.001f;
 
 		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2); x++)
 		{
-			for (float y = Utils.IntVal(position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2); y++)
+			for (float y = (position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2); y++)
 			{
-				for (float z = Utils.IntVal(position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2); z++)
+				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2); z++)
 				{
-					float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
-					float ty = Mathf.Clamp(y, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
-					float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
-
-					Vector3 startPos = new Vector3(Utils.IntVal(tx), Utils.IntVal(ty), Utils.IntVal(tz)) + offset;
+					float tx = Mathf.Clamp(x + offset, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
+					float ty = Mathf.Clamp(y + offset, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
+					float tz = Mathf.Clamp(z + offset, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
 
 					Vector3 testPos = new Vector3((tx), (ty), (tz));
 
@@ -184,23 +182,27 @@ public class Actor : MonoBehaviour
 
 	protected void OnDrawGizmos()
 	{
-		Vector3 offset = Vector3.one * 0.5f;
+		float offset = 0.5f;
 		Vector3 offsetActual = position - blockPosition;
 		//float eps = 0.001f;
 
 		Gizmos.color = Utils.colorBlue;
 		Gizmos.DrawWireCube(position, hitbox.size);
 
-		for (float x = Utils.IntVal(position.x - hitbox.size.x / 2); x < (position.x + hitbox.size.x / 2); x++)
+		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2); x++)
 		{
-			for (float y = Utils.IntVal(position.y - hitbox.size.y / 2); y < (position.y + hitbox.size.y / 2); y++)
+			for (float y = (position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2); y++)
 			{
-				for (float z = Utils.IntVal(position.z - hitbox.size.z / 2); z < (position.z + hitbox.size.z / 2); z++)
+				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2); z++)
 				{
-					Vector3 startPos = new Vector3(x, y, z) + offset;
+					float tx = Mathf.Clamp(x + offset, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
+					float ty = Mathf.Clamp(y + offset, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
+					float tz = Mathf.Clamp(z + offset, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
+
+					Vector3 testPos = new Vector3((tx), (ty), (tz));
 
 					Gizmos.color = Utils.colorOrange;
-					Gizmos.DrawWireCube(startPos, Vector3.one * 0.95f);
+					Gizmos.DrawWireCube(testPos, Vector3.one * 0.95f);
 				}
 			}
 		}
