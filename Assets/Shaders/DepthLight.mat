@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WorldLitParticle
-  m_Shader: {fileID: -6465566751694194690, guid: 894e37a156ffd884fbd49378d963dd52, type: 3}
+  m_Name: DepthLight
+  m_Shader: {fileID: -6465566751694194690, guid: 3233a8a32f027f9489bf74117a885f23, type: 3}
   m_ShaderKeywords: UNITY_APPLY_FOG
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,10 +19,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - Texture2D_7706432e2a42464aa6614f342b427dcc:
-        m_Texture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - Texture3D_1:
         m_Texture: {fileID: 11700000, guid: 13d9074a20d03724b9d3caa3967e2cdd, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -85,6 +81,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DLOD_730a6391492a4f6682bd8d306e71d579_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DLOD_f62039a495424a7db2e3765df5ba8261_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DLOD_fcebe0b5df23449c878c22ed03f01cb4_Texture_1:
+        m_Texture: {fileID: 2800000, guid: e857766248345d846a1dd40de51ec3cf, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_365163be33854b1396800d8d093b1476_Texture_1:
@@ -159,9 +167,23 @@ Material:
     - BOOLEAN_C331D87F5A164EEB9FD460118FA5D42A: 0
     - Boolean_fda4ec78a2894e6f8c8409c530765bc7: 0
     - PartialTime: 0
+    - Vector1_1: 0.265
+    - Vector1_1eb5716a7cd44c968e783273a667b780: 9.8
     - Vector1_2c9480dfdb7c4d51bc7a92fc48b9eae3: 0
+    - Vector1_82648bf1266f40a6b3d102de9b1f946b: 0.256
     - Vector1_BE32BCCB: 0
+    - Vector1_a6011146fee84023ae2d22184638e49c: 2.7
+    - Vector1_a6011146fee84023ae2d22184638e49c_1: 1.12
+    - Vector1_a6011146fee84023ae2d22184638e49c_2: 0.047
+    - Vector1_a6011146fee84023ae2d22184638e49c_3: 77.8
+    - Vector1_a6011146fee84023ae2d22184638e49c_4: 0
+    - Vector1_a6011146fee84023ae2d22184638e49c_5: 100
+    - Vector1_a6011146fee84023ae2d22184638e49c_6: 0
+    - Vector1_b4c3679be03544d2a3a84aec81500dfc: 177
+    - Vector1_d492e16333d1444b95e43b53d221e6bd: 1
+    - Vector1_d492e16333d1444b95e43b53d221e6bd_1: 4
     - Vector1_d6259a37a26e4a8ca7bd46b1db4055e6: 128
+    - Vector1_f06813e71cfd45d896e41834f89c4ace: 0
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -184,6 +206,10 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
+    - Color_7b83442e480847ab8819d34ecaeee29c: {r: 0.10844337, g: 0.10786756, b: 0.22641507, a: 1}
+    - Color_b3292922cb3b463ca09e901ebfb97e46: {r: 0.41037738, g: 0.923823, b: 1, a: 1}
+    - Color_b3292922cb3b463ca09e901ebfb97e46_1: {r: 0.74056596, g: 0.9999998, b: 1, a: 1}
+    - Color_b3292922cb3b463ca09e901ebfb97e46_2: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
