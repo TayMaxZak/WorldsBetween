@@ -56,7 +56,17 @@ public class PlayerMover : Actor
 			}
 		}
 
+		Vector3 prevVel = velocity;
+
 		base.Tick(deltaTime, partialTime, physicsTick);
+
+		Vector3 newVel = velocity;
+
+		// Velocity damage
+		// TODO: Don't deal damage for increasing speed, only for rapidly decreasing
+		float velDif = (newVel - prevVel).magnitude;
+		float velDmg = Mathf.Max(0, velDif - gForceLimit) * gForceMult;
+		vitals.DealDamage(velDmg);
 	}
 
 	private void Jump()

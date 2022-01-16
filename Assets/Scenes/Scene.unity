@@ -1626,7 +1626,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 1a0981d39c4a483418c9afcaae4fa9af, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.25
+  m_Volume: 0
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1913,6 +1913,7 @@ MonoBehaviour:
   epsilon: 0.02
   physicsTicking: 0
   gravity: {x: 0, y: -16, z: 0}
+  randomColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &805622447
 PrefabInstance:
   m_ObjectHideFlags: 0

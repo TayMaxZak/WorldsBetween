@@ -35,6 +35,11 @@ public class SeedlessRandom : MonoBehaviour
 		return (float)random.Value.NextDouble();
 	}
 
+	public static float NextFloat(float mult)
+	{
+		return (float)random.Value.NextDouble() * mult;
+	}
+
 	public static int NextIntInRange(int min, int max)
 	{
 		return (int)NextFloatInRange(min, max);

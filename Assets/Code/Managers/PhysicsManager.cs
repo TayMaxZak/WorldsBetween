@@ -20,6 +20,8 @@ public partial class PhysicsManager : MonoBehaviour
 
 	public Vector3 gravity = new Vector3(0, -20, 0);
 
+	public Color randomColor = new Color(1, 1, 1, 1);
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -46,6 +48,9 @@ public partial class PhysicsManager : MonoBehaviour
 
 			physicsTickTimer.Reset();
 		}
+
+		
+		randomColor = Color.HSVToRGB(SeedlessRandom.NextFloat(), 1, 1);
 
 		foreach (Actor actor in actors)
 			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, physicsTicking);
@@ -139,8 +144,8 @@ public partial class PhysicsManager : MonoBehaviour
 
 		Vector3 lastDir = Vector3.one;
 
-		Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.1f), Color.yellow, 0.04f);
-		Debug.DrawLine(a, b, Color.magenta, 0.1f);
+		Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.08f), Instance.randomColor, 10f);
+		Debug.DrawLine(a, b, Instance.randomColor, 10f);
 
 		while (i < 100)
 		{
@@ -177,14 +182,14 @@ public partial class PhysicsManager : MonoBehaviour
 
 				bool occluded = !World.GetBlockFor(testBlockPos).IsAir();
 
-				Debug.DrawLine(oldBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, occluded ? Color.green : Color.gray, 1f);
+				Debug.DrawLine(oldBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, occluded ? Color.green : Instance.randomColor, occluded ? 20f : 10f);
 
 				if (occluded)
 				{
 					return new BlockCastHit(testBlockPos, -lastDir);
 				}
 
-				if (testBlockPos.Equals(blockPosB))
+				if (Vector3.SqrMagnitude(blockPosA - testBlockPos) >= Vector3.SqrMagnitude(blockPosA - blockPosB))
 				{
 					return new BlockCastHit();
 				}

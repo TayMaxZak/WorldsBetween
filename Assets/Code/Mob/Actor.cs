@@ -73,8 +73,6 @@ public class Actor : MonoBehaviour
 
 	public virtual void PhysicsTick(float deltaTime, float partialTime)
 	{
-		Vector3 prevVelocity = velocity;
-
 		UpdateBlockPosition();
 
 		Chunk chunk;
