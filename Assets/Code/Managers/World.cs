@@ -8,7 +8,7 @@ public partial class World : MonoBehaviour
 
 	[Header("References")]
 	[SerializeField]
-	private Transform relativeOrigin;
+	private Vector3Int relativeOrigin;
 
 	[SerializeField]
 	private GameObject waterSystem;
@@ -68,9 +68,8 @@ public partial class World : MonoBehaviour
 		foreach (NoiseModifier mod in modifiers)
 			mod.Init();
 
-		// Scene objects
-		if (relativeOrigin)
-			WaterFollow(relativeOrigin.position);
+		// Scene setup
+		WaterFollow(relativeOrigin);
 
 		if (sunObject)
 		{
@@ -280,7 +279,7 @@ public partial class World : MonoBehaviour
 		return Instance.chunkSize;
 	}
 
-	public static Transform GetRelativeOrigin()
+	public static Vector3Int GetRelativeOrigin()
 	{
 		return Instance.relativeOrigin;
 	}

@@ -108,21 +108,11 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage /*|| adj.isProcessing*/)
+					if (adj == null || adj.genStage < chunk.genStage || adj.isProcessing)
 					{
 						// Wait for threaded processing
-						while (adj != null && adj.isProcessing)
+						while (adj != null && (adj.isProcessing || adj.genStage < chunk.genStage))
 							await Task.Delay(10);
-
-						if (adj != null || World.IsInfinite())
-						{
-							validAdj = false;
-							break;
-						}
-						else
-						{
-							continue;
-						}
 					}
 				}
 			}

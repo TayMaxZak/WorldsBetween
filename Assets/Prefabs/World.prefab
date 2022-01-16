@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbc28df5073d7d47b394f4db71171fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  relativeOrigin: {fileID: 0}
+  relativeOrigin: {x: 0, y: 0, z: 0}
   waterSystem: {fileID: 0}
   sunObject: {fileID: 0}
   modifiers:
@@ -86,8 +86,10 @@ MonoBehaviour:
     genStage: 0
     active: 1
     multiQ: 1
+    queues: 32
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
     genRange: 11
+    spawnGenRange: 3
     targetProgress: 0.8
   randomizeSeed: 0
   seed: -1739373185

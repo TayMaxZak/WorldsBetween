@@ -8,6 +8,7 @@ public partial class PhysicsManager : MonoBehaviour
 {
 	public static PhysicsManager Instance;
 
+	[SerializeField]
 	private List<Actor> actors = new List<Actor>();
 
 	[SerializeField]

@@ -46,7 +46,7 @@ public class WorldGenerator
 
 	public void Init()
 	{
-		float delay = 0f;
+		float delay = 0.05f;
 		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
 		{
 			{ Chunk.GenStage.Allocate, new ChunkGenerator(0, 1) },
@@ -110,7 +110,7 @@ public class WorldGenerator
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
-			if (empty || (entry.Value.GetSize() >= spawnGenRange * spawnGenRange * spawnGenRange))
+			if (empty || (entry.Value.GetSize() >= prev.GetSize()))
 				entry.Value.Generate();
 		}
 
@@ -128,13 +128,13 @@ public class WorldGenerator
 		int chunkSize = World.GetChunkSize();
 		range *= chunkSize;
 
-		Transform origin = World.GetRelativeOrigin();
+		Vector3Int origin = World.GetRelativeOrigin();
 
 		// Start pos in chunk coordinates
 		Vector3Int startPos = new Vector3Int(
-			Mathf.FloorToInt(origin.position.x / chunkSize) * chunkSize,
-			Mathf.FloorToInt(origin.position.y / chunkSize) * chunkSize,
-			Mathf.FloorToInt(origin.position.z / chunkSize) * chunkSize
+			Mathf.FloorToInt(origin.x / chunkSize) * chunkSize,
+			Mathf.FloorToInt(origin.y / chunkSize) * chunkSize,
+			Mathf.FloorToInt(origin.z / chunkSize) * chunkSize
 		);
 
 		// Go through all nearby chunk positions
@@ -215,10 +215,8 @@ public class WorldGenerator
 			return;
 
 		// Add to appropriate queue. Closer chunks have higher priority (lower value)
-		Transform origin = World.GetRelativeOrigin();
-		if (!origin)
-			return;
-		float priority = (requeue ? -4 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - origin.position);
+		Vector3Int origin = World.GetRelativeOrigin();
+		float priority = (requeue ? -4 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - origin);
 		generator.Enqueue(chunk, priority, multiQ);
 	}
 
