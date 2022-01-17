@@ -56,16 +56,6 @@ public class PointLightSource : LightSource
 		return oldAffectedChunks;
 	}
 
-	protected override void OnDirty()
-	{
-		Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
-
-		if (chunk != null && !chunk.isProcessing && chunk.procStage > Chunk.ProcStage.CalcLight)
-		{
-			World.UpdateLight(this, true);
-		}
-	}
-
 	public override float GetBrightnessAt(Chunk chunk, Vector3 pos, float distance)
 	{
 		float falloff = 1f - distance * (1f / (falloffFactor * brightness));

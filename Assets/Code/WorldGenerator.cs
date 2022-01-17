@@ -51,9 +51,7 @@ public class WorldGenerator
 		{
 			{ Chunk.ProcStage.Allocate, new ChunkGenerator(0, 1) },
 			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues) },
-			{ Chunk.ProcStage.MakeSurface, new ChunkGenerator(delay, queues) },
-			{ Chunk.ProcStage.CalcLight, new ChunkGenerator(delay, queues) },
-			{ Chunk.ProcStage.AmbientLight, new ChunkGenerator(delay, queues) },
+			{ Chunk.ProcStage.MakeSurface, new ChunkGenerator(delay, queues) }
 		};
 
 		chunkGenTimer.Reset();

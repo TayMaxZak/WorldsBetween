@@ -33,16 +33,6 @@ public class DirectionalLightSource : LightSource
 		return null;
 	}
 
-	protected override void OnDirty()
-	{
-		Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
-
-		if (chunk != null && !chunk.isProcessing && chunk.procStage > Chunk.ProcStage.CalcLight)
-		{
-			World.UpdateLight(this, true);
-		}
-	}
-
 	public override float GetDistanceTo(Vector3Int blockPos)
 	{
 		return Mathf.Max(0, World.GetWaterHeight() - blockPos.y);
@@ -81,24 +71,5 @@ public class DirectionalLightSource : LightSource
 			falloff *= falloff;
 
 		return 0.75f * falloff * 1;
-	}
-
-	public override bool IsShadowed(Vector3Int blockPos)
-	{
-		float adj = 0.5f;
-
-		for (int i = 1; i <= 16; i++)
-		{
-			bool occluded = !World.GetBlockFor(
-				(int)(blockPos.x + -direction.x * i + adj),
-				(int)(blockPos.y + -direction.y * i + adj),
-				(int)(blockPos.z + -direction.z * i + adj)
-			).IsAir();
-
-			if (occluded)
-				return true;
-		}
-
-		return false;
 	}
 }

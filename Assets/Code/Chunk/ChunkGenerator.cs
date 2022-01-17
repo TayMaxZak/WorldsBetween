@@ -20,8 +20,6 @@ public class ChunkGenerator
 	private static readonly List<Chunk.ProcStage> requireAdjacents = new List<Chunk.ProcStage> {
 		Chunk.ProcStage.Generate,
 		Chunk.ProcStage.MakeSurface,
-		Chunk.ProcStage.CalcLight,
-		Chunk.ProcStage.AmbientLight
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -182,18 +180,6 @@ public class ChunkGenerator
 			case Chunk.ProcStage.MakeSurface: // Cache data and build mesh
 				{
 					chunk.AsyncMakeMesh();
-				}
-				break;
-			case Chunk.ProcStage.CalcLight: // Calculate lights
-				{
-					World.AddSunlight(chunk);
-
-					chunk.AsyncCalcLight();
-				}
-				break;
-			case Chunk.ProcStage.AmbientLight: // Light visuals, spawn entities, and other stuff
-				{
-					chunk.AsyncAmbientLight();
 				}
 				break;
 		}

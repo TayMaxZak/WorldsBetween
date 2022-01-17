@@ -42,15 +42,13 @@ public abstract class LightSource
 
 		if (worldX != lastWorldX || worldY != lastWorldY || worldZ != lastWorldZ)
 		{
-			OnDirty();
+			
 		}
 
 		lastWorldX = worldX;
 		lastWorldY = worldY;
 		lastWorldZ = worldZ;
 	}
-
-	protected abstract void OnDirty();
 
 	public virtual float GetDistanceTo(Vector3Int blockPos)
 	{

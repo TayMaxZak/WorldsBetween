@@ -11,8 +11,6 @@ public class Chunk
 		Allocate,
 		Generate,
 		MakeSurface,
-		CalcLight,
-		AmbientLight,
 		Done
 	}
 	public ProcStage procStage = ProcStage.Allocate;
@@ -260,8 +258,11 @@ public class Chunk
 			//if (go && go.transform)
 			//	go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random));
 
-			procStage = ProcStage.CalcLight;
+			procStage = ProcStage.Done;
+			lightStage = LightStage.DirectLight;
 			World.Generator.QueueNextStage(this);
+
+			AsyncCalcLight();
 		});
 
 		bw.RunWorkerAsync();
@@ -276,6 +277,7 @@ public class Chunk
 	#region Light Calc
 	public void AsyncCalcLight()
 	{
+		World.AddSunlight(this);
 		BkgThreadCalcLight(this, System.EventArgs.Empty);
 	}
 
@@ -298,7 +300,9 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			BakeLight(ProcStage.AmbientLight);
+			BakeLight(ProcStage.Done);
+
+			//AsyncAmbientLight();
 		});
 
 		bw.RunWorkerAsync();
@@ -364,8 +368,7 @@ public class Chunk
 			brightness += bright;
 
 			// TODO: Double check this bs
-			float colorTempOpac = light.GetColorOpacityAt(this, worldPos, dist);
-			colorTemp = Mathf.Lerp(colorTempOpac * light.colorTemp, colorTemp, Mathf.Approximately(oldBrightness, 0) ? 0 : (1 - Mathf.Clamp01(bright / (oldBrightness + bright))));
+			colorTemp = 0;
 		}
 
 		if (!preAmbient)
@@ -422,7 +425,7 @@ public class Chunk
 	#region Light Visuals
 	private void BakeLight(ProcStage nextStage)
 	{
-		UpdateLightVisuals(nextStage == ProcStage.AmbientLight);
+		UpdateLightVisuals(lightStage < LightStage.AmbientLight);
 
 		procStage = nextStage;
 		World.Generator.QueueNextStage(this);
@@ -446,16 +449,15 @@ public class Chunk
 
 	public void QueueLightUpdate()
 	{
-		if (isProcessing || procStage < ProcStage.CalcLight)
+		if (isProcessing || procStage < ProcStage.MakeSurface)
 			return;
 
-		procStage = ProcStage.CalcLight;
-		World.Generator.QueueNextStage(this, false);
+		lightStage = LightStage.DirectLight;
 	}
 
 	public void NeedsLightDataRecalc(LightSource light)
 	{
-		if (isProcessing || procStage < ProcStage.CalcLight)
+		if (isProcessing || procStage < ProcStage.MakeSurface)
 			return;
 
 		lightToShadowMap.TryGetValue(light, out ChunkBitArray bits);
