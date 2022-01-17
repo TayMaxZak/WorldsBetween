@@ -59,7 +59,7 @@ public class WorldEditor : Editor
 
 		var generators = World.Generator.GetChunkGenerators();
 
-		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in generators)
+		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in generators)
 		{
 			EditorGUILayout.LabelField(entry.Key.ToString(), entry.Value.GetSize() + " active chunks (" + entry.Value.GetEdgeChunks() + " edge chunks)");
 		}

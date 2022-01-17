@@ -16,10 +16,10 @@ class ChunkGameObjectEditor : Editor
 			return;
 		}
 
-		style.normal.textColor = script.data.atEdge ? Color.red : ((script.data.genStage == Chunk.GenStage.Allocate || script.data.genStage == Chunk.GenStage.Ready) ? Color.white : Utils.colorBlue);
+		style.normal.textColor = script.data.atEdge ? Color.red : ((script.data.procStage == Chunk.ProcStage.Allocate || script.data.procStage == Chunk.ProcStage.Done) ? Color.white : Utils.colorBlue);
 		Handles.Label(script.transform.position + Vector3.one * World.GetChunkSize() / 2 + Vector3.up * 2,
 			script.transform.position.ToString() + 
-			"\ngenStage: " + script.data.genStage.ToString() + 
+			"\ngenStage: " + script.data.procStage.ToString() + 
 			"\natEdge: " + script.data.atEdge.ToString() +
 			"\nisProcessing: " + script.data.isProcessing.ToString(),
 		style);

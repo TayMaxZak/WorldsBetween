@@ -41,21 +41,19 @@ public class WorldGenerator
 	private int chunksToGen = 0;
 
 	private GameObject chunkRoot;
-	private Dictionary<Chunk.GenStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>();
+	private Dictionary<Chunk.ProcStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>();
 	private Queue<KeyValuePair<Vector3Int, Chunk>> chunksToQueue = new Queue<KeyValuePair<Vector3Int, Chunk>>();
 
 	public void Init()
 	{
 		float delay = 0.05f;
-		chunkGenerators = new Dictionary<Chunk.GenStage, ChunkGenerator>()
+		chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
 		{
-			{ Chunk.GenStage.Allocate, new ChunkGenerator(0, 1) },
-			{ Chunk.GenStage.Generate, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.MakeSurface, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.CalcLight, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.ApplyVertexColorsA, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.AmbientLight, new ChunkGenerator(delay, queues) },
-			{ Chunk.GenStage.ApplyVertexColorsB, new ChunkGenerator(delay, queues) },
+			{ Chunk.ProcStage.Allocate, new ChunkGenerator(0, 1) },
+			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues) },
+			{ Chunk.ProcStage.MakeSurface, new ChunkGenerator(delay, queues) },
+			{ Chunk.ProcStage.CalcLight, new ChunkGenerator(delay, queues) },
+			{ Chunk.ProcStage.AmbientLight, new ChunkGenerator(delay, queues) },
 		};
 
 		chunkGenTimer.Reset();
@@ -100,13 +98,13 @@ public class WorldGenerator
 		chunksToGen = 0;
 		generatorsUsed = 0;
 
-		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
+		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
 			chunksToGen += entry.Value.GetSize();
 
-			bool empty = entry.Key == Chunk.GenStage.Allocate;
+			bool empty = entry.Key == Chunk.ProcStage.Allocate;
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
@@ -209,7 +207,7 @@ public class WorldGenerator
 
 	public void QueueNextStage(Chunk chunk, bool requeue)
 	{
-		chunkGenerators.TryGetValue(chunk.genStage, out ChunkGenerator generator);
+		chunkGenerators.TryGetValue(chunk.procStage, out ChunkGenerator generator);
 
 		if (generator == null)
 			return;
@@ -249,7 +247,7 @@ public class WorldGenerator
 	{
 		int busy = 0;
 
-		foreach (KeyValuePair<Chunk.GenStage, ChunkGenerator> entry in chunkGenerators)
+		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			if (entry.Value.IsBusy())
 				busy++;
@@ -266,7 +264,7 @@ public class WorldGenerator
 		return progress;
 	}
 
-	public Dictionary<Chunk.GenStage, ChunkGenerator> GetChunkGenerators()
+	public Dictionary<Chunk.ProcStage, ChunkGenerator> GetChunkGenerators()
 	{
 		return chunkGenerators;
 	}

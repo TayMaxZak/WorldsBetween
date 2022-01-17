@@ -60,7 +60,7 @@ public class PointLightSource : LightSource
 	{
 		Chunk chunk = World.GetChunkFor(worldX, worldY, worldZ);
 
-		if (chunk != null && !chunk.isProcessing && chunk.genStage > Chunk.GenStage.CalcLight)
+		if (chunk != null && !chunk.isProcessing && chunk.procStage > Chunk.ProcStage.CalcLight)
 		{
 			World.UpdateLight(this, true);
 		}

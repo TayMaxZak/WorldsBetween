@@ -17,13 +17,11 @@ public class ChunkGenerator
 
 	private int edgeChunks = 0;
 
-	private static readonly List<Chunk.GenStage> requireAdjacents = new List<Chunk.GenStage> {
-		Chunk.GenStage.Generate,
-		Chunk.GenStage.MakeSurface,
-		Chunk.GenStage.CalcLight,
-		Chunk.GenStage.ApplyVertexColorsA,
-		Chunk.GenStage.AmbientLight,
-		Chunk.GenStage.ApplyVertexColorsB
+	private static readonly List<Chunk.ProcStage> requireAdjacents = new List<Chunk.ProcStage> {
+		Chunk.ProcStage.Generate,
+		Chunk.ProcStage.MakeSurface,
+		Chunk.ProcStage.CalcLight,
+		Chunk.ProcStage.AmbientLight
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -98,7 +96,7 @@ public class ChunkGenerator
 			Chunk chunk = queue.Dequeue();
 
 			bool validAdj = true;
-			bool requiresAdj = requireAdjacents.Contains(chunk.genStage);
+			bool requiresAdj = requireAdjacents.Contains(chunk.procStage);
 
 			// Check if neighboring chunks are ready yet
 			if (requiresAdj)
@@ -108,10 +106,10 @@ public class ChunkGenerator
 					// Try every orthagonal direction
 					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
 					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.genStage < chunk.genStage || adj.isProcessing)
+					if (adj == null || adj.procStage < chunk.procStage || adj.isProcessing)
 					{
 						// Wait for threaded processing
-						while (adj != null && (adj.isProcessing || adj.genStage < chunk.genStage))
+						while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
 							await Task.Delay(10);
 					}
 				}
@@ -166,46 +164,36 @@ public class ChunkGenerator
 
 	private void ProcessChunk(Chunk chunk)
 	{
-		switch (chunk.genStage)
+		switch (chunk.procStage)
 		{
-			case Chunk.GenStage.Allocate: // Create blocks
+			case Chunk.ProcStage.Allocate: // Create blocks
 				{
 					chunk.Init(World.GetChunkSize());
 
-					chunk.genStage = Chunk.GenStage.Generate;
+					chunk.procStage = Chunk.ProcStage.Generate;
 					World.Generator.QueueNextStage(chunk);
 				}
 				break;
-			case Chunk.GenStage.Generate: // Generate terrain
+			case Chunk.ProcStage.Generate: // Generate terrain
 				{
 					chunk.AsyncGenerate();
 				}
 				break;
-			case Chunk.GenStage.MakeSurface: // Cache data and build mesh
+			case Chunk.ProcStage.MakeSurface: // Cache data and build mesh
 				{
 					chunk.AsyncMakeMesh();
 				}
 				break;
-			case Chunk.GenStage.CalcLight: // Calculate lights
+			case Chunk.ProcStage.CalcLight: // Calculate lights
 				{
 					World.AddSunlight(chunk);
 
 					chunk.AsyncCalcLight();
 				}
 				break;
-			case Chunk.GenStage.ApplyVertexColorsA: // Light visuals, spawn entities, and other stuff
-				{
-					chunk.AsyncLightVisuals(Chunk.GenStage.AmbientLight);
-				}
-				break;
-			case Chunk.GenStage.AmbientLight: // Light visuals, spawn entities, and other stuff
+			case Chunk.ProcStage.AmbientLight: // Light visuals, spawn entities, and other stuff
 				{
 					chunk.AsyncAmbientLight();
-				}
-				break;
-			case Chunk.GenStage.ApplyVertexColorsB: // Light visuals, spawn entities, and other stuff
-				{
-					chunk.AsyncLightVisuals(Chunk.GenStage.Ready);
 				}
 				break;
 		}

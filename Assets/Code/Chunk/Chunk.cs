@@ -6,18 +6,25 @@ using System.ComponentModel;
 [System.Serializable]
 public class Chunk
 {
-	public enum GenStage
+	public enum ProcStage
 	{
 		Allocate,
 		Generate,
 		MakeSurface,
 		CalcLight,
-		ApplyVertexColorsA,
 		AmbientLight,
-		ApplyVertexColorsB,
-		Ready
+		Done
 	}
-	public GenStage genStage = GenStage.Allocate;
+	public ProcStage procStage = ProcStage.Allocate;
+
+	public enum LightStage
+	{
+		Await,
+		DirectLight,
+		AmbientLight,
+		Done
+	}
+	public LightStage lightStage = LightStage.Await;
 
 
 	public Vector3Int position; // Coordinates of chunk
@@ -111,7 +118,7 @@ public class Chunk
 
 			CacheMaybeFlags();
 
-			genStage = GenStage.MakeSurface;
+			procStage = ProcStage.MakeSurface;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -253,7 +260,7 @@ public class Chunk
 			//if (go && go.transform)
 			//	go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random));
 
-			genStage = GenStage.CalcLight;
+			procStage = ProcStage.CalcLight;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -291,8 +298,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.ApplyVertexColorsA;
-			World.Generator.QueueNextStage(this);
+			BakeLight(ProcStage.AmbientLight);
 		});
 
 		bw.RunWorkerAsync();
@@ -406,8 +412,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			genStage = GenStage.ApplyVertexColorsB;
-			World.Generator.QueueNextStage(this);
+			BakeLight(ProcStage.Done);
 		});
 
 		bw.RunWorkerAsync();
@@ -415,43 +420,12 @@ public class Chunk
 	#endregion
 
 	#region Light Visuals
-	public void AsyncLightVisuals(GenStage nextStage)
+	private void BakeLight(ProcStage nextStage)
 	{
-		BkgThreadLightVisuals(nextStage, this, System.EventArgs.Empty);
-	}
+		UpdateLightVisuals(nextStage == ProcStage.AmbientLight);
 
-	private void BkgThreadLightVisuals(GenStage nextStage, object sender, System.EventArgs e)
-	{
-		isProcessing = true;
-
-		BackgroundWorker bw = new BackgroundWorker();
-
-		// What to do in the background thread
-		bw.DoWork += new DoWorkEventHandler(
-		delegate (object o, DoWorkEventArgs args)
-		{
-
-		});
-
-		UpdateLightVisuals(nextStage == GenStage.AmbientLight);
-
-		// What to do when worker completes its task
-		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
-		delegate (object o, RunWorkerCompletedEventArgs args)
-		{
-			isProcessing = false;
-
-			//chunkMesh.ApplyVertexColors((Color[])args.Result);
-
-			//// TODO: Better way to do this?
-			//if (go && go.transform)
-			//	go.transform.rotation = Quaternion.identity;
-
-			genStage = nextStage;
-			World.Generator.QueueNextStage(this);
-		});
-
-		bw.RunWorkerAsync();
+		procStage = nextStage;
+		World.Generator.QueueNextStage(this);
 	}
 
 	private void UpdateLightVisuals(bool preAmbient)
@@ -472,20 +446,16 @@ public class Chunk
 
 	public void QueueLightUpdate()
 	{
-		if (isProcessing || genStage < GenStage.CalcLight)
+		if (isProcessing || procStage < ProcStage.CalcLight)
 			return;
 
-		// TODO: Clear dictionaries if unused?
-
-		//chunkMesh.ResetColors();
-
-		genStage = GenStage.CalcLight;
+		procStage = ProcStage.CalcLight;
 		World.Generator.QueueNextStage(this, false);
 	}
 
 	public void NeedsLightDataRecalc(LightSource light)
 	{
-		if (isProcessing || genStage < GenStage.CalcLight)
+		if (isProcessing || procStage < ProcStage.CalcLight)
 			return;
 
 		lightToShadowMap.TryGetValue(light, out ChunkBitArray bits);

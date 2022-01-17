@@ -259,7 +259,7 @@ public partial class World : MonoBehaviour
 	{
 		Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.genStage == Chunk.GenStage.Allocate)
+		if (chunk == null || chunk.procStage == Chunk.ProcStage.Allocate)
 			return Block.empty;
 
 		return chunk.GetBlock(
