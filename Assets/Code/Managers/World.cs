@@ -27,6 +27,10 @@ public partial class World : MonoBehaviour
 	private WorldGenerator generator;
 	public static WorldGenerator Generator;
 
+	[SerializeField]
+	private LightEngine lighter;
+	public static LightEngine Lighter;
+
 	[Header("General Settings")]
 	[SerializeField]
 	private bool randomizeSeed = false;
@@ -56,6 +60,9 @@ public partial class World : MonoBehaviour
 		Generator.Init();
 
 		WorldInit();
+
+		Lighter = lighter;
+		Lighter.Init(sunObject.transform);
 	}
 
 	private void WorldInit()
@@ -87,6 +94,7 @@ public partial class World : MonoBehaviour
 	private void Update()
 	{
 		Generator.ContinueGenerating();
+		Lighter.Iterate(Time.deltaTime);
 	}
 
 	[ContextMenu("Restart Gen")]

@@ -46,7 +46,7 @@ public class WorldGenerator
 
 	public void Init()
 	{
-		float delay = 0.05f;
+		float delay = 0.0f;
 		chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
 		{
 			{ Chunk.ProcStage.Allocate, new ChunkGenerator(0, 1) },

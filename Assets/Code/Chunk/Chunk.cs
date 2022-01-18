@@ -48,7 +48,7 @@ public class Chunk
 
 
 	// Represents where each light reaches. true = light, false = shadow
-	private Dictionary<LightSource, ChunkBitArray> lightToShadowMap = new Dictionary<LightSource, ChunkBitArray>();
+	private Dictionary<LightSource, ChunkBitArray> lightToMaskMap = new Dictionary<LightSource, ChunkBitArray>();
 
 	[SerializeField]
 	private AmbientLightNode ambientLight;
@@ -262,7 +262,7 @@ public class Chunk
 			lightStage = LightStage.DirectLight;
 			World.Generator.QueueNextStage(this);
 
-			AsyncCalcLight();
+			//AsyncCalcLight();
 		});
 
 		bw.RunWorkerAsync();
@@ -327,7 +327,7 @@ public class Chunk
 			}
 		}
 
-		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in lightToShadowMap)
+		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in lightToMaskMap)
 			entry.Value.needsCalc = false;
 	}
 
@@ -350,25 +350,24 @@ public class Chunk
 			float bright = light.GetBrightnessAt(this, worldPos, dist);
 
 			// Apply shadows
-			lightToShadowMap.TryGetValue(light, out ChunkBitArray shadowBits);
+			lightToMaskMap.TryGetValue(light, out ChunkBitArray maskBits);
 
-			if (shadowBits == null)
+			if (maskBits == null)
 			{
-				lightToShadowMap.Add(light, shadowBits = new ChunkBitArray(World.GetChunkSize(), false));
+				lightToMaskMap.Add(light, maskBits = new ChunkBitArray(World.GetChunkSize(), false));
 
-				WorldLightAtlas.CalculateShadowsFor(corners, shadowBits);
+				World.Lighter.CalcMaskFor(corners, maskBits);
 			}
 
 			// Get and apply shadows
-			float shadowedMult = shadowBits.Get(localPos.x, localPos.y, localPos.z) ? 1 : 0;
+			float maskMult = maskBits.Get(localPos.x, localPos.y, localPos.z) ? 1 : 0;
 
-			bright *= shadowedMult;
+			bright *= maskMult;
 
 			float oldBrightness = brightness;
 			brightness += bright;
 
-			// TODO: Double check this bs
-			colorTemp = 0;
+			colorTemp += light.colorTemp * maskMult;
 		}
 
 		if (!preAmbient)
@@ -460,7 +459,9 @@ public class Chunk
 		if (isProcessing || procStage < ProcStage.MakeSurface)
 			return;
 
-		lightToShadowMap.TryGetValue(light, out ChunkBitArray bits);
+		lightStage = LightStage.DirectLight;
+
+		lightToMaskMap.TryGetValue(light, out ChunkBitArray bits);
 		if (bits != null)
 			bits.needsCalc = false;
 	}
@@ -479,6 +480,11 @@ public class Chunk
 	public HashSet<BlockSurface> GetSurfaces()
 	{
 		return surfaces;
+	}
+
+	public ChunkBitArray GetCorners()
+	{
+		return corners;
 	}
 
 	public AmbientLightNode GetAmbientLightNode()
