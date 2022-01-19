@@ -62,7 +62,7 @@ public partial class World : MonoBehaviour
 		WorldInit();
 
 		Lighter = lighter;
-		Lighter.Init(sunObject.transform);
+		Lighter.Init(sunObject);
 	}
 
 	private void WorldInit()

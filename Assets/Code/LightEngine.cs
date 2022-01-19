@@ -15,13 +15,26 @@ public class LightEngine
 
 	private readonly SimplePriorityQueue<Vector3Int> sourceQueues = new SimplePriorityQueue<Vector3Int>();
 
-	private Transform toUse;
+	private Sun sun;
 
 	private Timer iterateTimer = new Timer(0.2f);
 
-	public void Init(Transform toUse)
+	public void Init(Sun sun)
 	{
-		this.toUse = toUse;
+		this.sun = sun;
+
+		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x++)
+		{
+			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y++)
+			{
+				for (int z = Utils.ToInt(sun.sourcePoints.min.z); z < Utils.ToInt(sun.sourcePoints.max.z); z++)
+				{
+					Vector3Int pos = new Vector3Int(x, y, z);
+					sourceQueues.Enqueue(pos, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
+				}
+			}
+		}
+		Debug.Log(sourceQueues.Count + " light rays to be cast");
 	}
 
 	public void Iterate(float deltaTime)
@@ -32,8 +45,6 @@ public class LightEngine
 			return;
 
 		iterateTimer.Reset();
-
-		sourceQueues.Enqueue(new Vector3Int(Utils.IntVal(toUse.position.x + SeedlessRandom.NextFloatInRange(-16,16)), Utils.IntVal(toUse.position.y), Utils.IntVal(toUse.position.z + SeedlessRandom.NextFloatInRange(-16, 16))), 0.5f);
 
 		if (sourceQueues.Count == 0)
 			return;
@@ -90,6 +101,7 @@ public class LightEngine
 			cur.y -= 1;
 		} // y
 
+		Debug.DrawLine(source, cur, Utils.colorYellow, 1);
 		return results;
 	}
 

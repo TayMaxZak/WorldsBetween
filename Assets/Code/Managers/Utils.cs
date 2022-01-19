@@ -34,7 +34,7 @@ public class Utils
 		return Mathf.Clamp(val * 10000, -1, 1);
 	}
 
-	public static int IntVal(float val)
+	public static int ToInt(float val)
 	{
 		return Mathf.FloorToInt(val);
 	}
