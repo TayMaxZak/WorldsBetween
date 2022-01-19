@@ -50,7 +50,7 @@ public partial class PhysicsManager : MonoBehaviour
 			physicsTickTimer.Reset();
 		}
 
-		
+
 		randomColor = Color.HSVToRGB(SeedlessRandom.NextFloat(), 1, 1);
 
 		foreach (Actor actor in actors)
@@ -175,11 +175,7 @@ public partial class PhysicsManager : MonoBehaviour
 				}
 
 				Vector3 oldBP = testBlockPos;
-				testBlockPos = new Vector3Int(
-					Mathf.FloorToInt(testPos.x),
-					Mathf.FloorToInt(testPos.y),
-					Mathf.FloorToInt(testPos.z)
-				);
+				testBlockPos = new Vector3Int(Utils.ToInt(testPos.x), Utils.ToInt(testPos.y), Utils.ToInt(testPos.z));
 
 				bool occluded = !World.GetBlockFor(testBlockPos).IsAir();
 
