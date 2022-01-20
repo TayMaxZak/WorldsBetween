@@ -23,6 +23,7 @@ public class LightEngine
 	{
 		this.sun = sun;
 
+		sourceQueues.Clear();
 		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x++)
 		{
 			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y++)
@@ -55,7 +56,7 @@ public class LightEngine
 
 		foreach (Tuple t in results)
 		{
-			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? Color.yellow : Color.magenta);
+			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.magenta);
 		}
 	}
 
@@ -101,7 +102,7 @@ public class LightEngine
 			cur.y -= 1;
 		} // y
 
-		Debug.DrawLine(source, cur, Utils.colorYellow, 1);
+		Debug.DrawLine(source, cur, sun.lightColor, 1);
 		return results;
 	}
 

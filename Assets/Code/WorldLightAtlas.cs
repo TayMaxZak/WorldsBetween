@@ -144,6 +144,7 @@ public class WorldLightAtlas : MonoBehaviour
 		Color oldAmbValue = ambientLightmap.GetPixel(pos.x, pos.y, pos.z);
 		Color newAmbValue = oldAmbValue + (value - oldValue) * changeFraction;
 		ambientLightmap.SetPixel(pos.x / chunkSize, pos.y / chunkSize, pos.z / chunkSize, newAmbValue);
+		ambientLightmap.Apply();
 
 		changeCount++;
 	}
@@ -156,7 +157,7 @@ public class WorldLightAtlas : MonoBehaviour
 		if (changeCount > 0)
 		{
 			directLightmap.Apply();
-			ambientLightmap.Apply();
+			//ambientLightmap.Apply();
 		}
 		changeCount = 0;
 	}

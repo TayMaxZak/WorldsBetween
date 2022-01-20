@@ -48,10 +48,7 @@ public class Chunk
 
 
 	// Represents where each light reaches. true = light, false = shadow
-	private Dictionary<LightSource, ChunkBitArray> lightToMaskMap = new Dictionary<LightSource, ChunkBitArray>();
-
-	[SerializeField]
-	private AmbientLightNode ambientLight;
+	//private Dictionary<LightSource, ChunkBitArray> lightToMaskMap = new Dictionary<LightSource, ChunkBitArray>();
 
 	public void Init(int chunkSize)
 	{
@@ -85,8 +82,6 @@ public class Chunk
 		corners = new ChunkBitArray(chunkSize, false);
 
 		lightCache = new Color[chunkSize * chunkSize * chunkSize];
-
-		ambientLight = new AmbientLightNode(new Vector3Int(position.x + chunkSize / 2, position.y + chunkSize / 2, position.z + chunkSize / 2), chunkSize);
 	}
 
 	#region Generate
@@ -274,198 +269,6 @@ public class Chunk
 	}
 	#endregion
 
-	#region Light Calc
-	public void AsyncCalcLight()
-	{
-		World.AddSunlight(this);
-		BkgThreadCalcLight(this, System.EventArgs.Empty);
-	}
-
-	private void BkgThreadCalcLight(object sender, System.EventArgs e)
-	{
-		isProcessing = true;
-
-		BackgroundWorker bw = new BackgroundWorker();
-
-		// What to do in the background thread
-		bw.DoWork += new DoWorkEventHandler(
-		delegate (object o, DoWorkEventArgs args)
-		{
-			CalcLightAllBlocks(true);
-		});
-
-		// What to do when worker completes its task
-		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
-		delegate (object o, RunWorkerCompletedEventArgs args)
-		{
-			isProcessing = false;
-
-			BakeLight(ProcStage.Done);
-
-			//AsyncAmbientLight();
-		});
-
-		bw.RunWorkerAsync();
-	}
-
-	private void CalcLightAllBlocks(bool preAmbient)
-	{
-		for (int x = 0; x < chunkSize; x++)
-		{
-			for (int y = 0; y < chunkSize; y++)
-			{
-				for (int z = 0; z < chunkSize; z++)
-				{
-					Vector3Int localPos = new Vector3Int(x, y, z);
-					LightingSample ls = SampleLightAt(preAmbient, localPos + position);
-
-					lightCache[x * chunkSize * chunkSize + y * chunkSize + z] = new Color(ls.brightness, Mathf.Max(0, ls.colorTemp), Mathf.Max(0, -ls.colorTemp));
-
-					if (preAmbient && !corners.Get(x, y, z))
-						ambientLight.Contribute(ls.brightness, ls.colorTemp);
-				}
-			}
-		}
-
-		foreach (KeyValuePair<LightSource, ChunkBitArray> entry in lightToMaskMap)
-			entry.Value.needsCalc = false;
-	}
-
-	public LightingSample SampleLightAt(bool preAmbient, Vector3Int worldPos)
-	{
-		LinkedList<LightSource> lights = World.GetLightsFor(this);
-		if (lights == null)
-			return new LightingSample(0.5f, -1f);
-
-		float brightness = 0;
-		float colorTemp = 0;
-
-		Vector3Int localPos = worldPos - position;
-
-		foreach (LightSource light in lights)
-		{
-			float dist = light.GetDistanceTo(worldPos);
-
-			// However bright should this position be relative to the light, added and blended into existing lights
-			float bright = light.GetBrightnessAt(this, worldPos, dist);
-
-			// Apply shadows
-			lightToMaskMap.TryGetValue(light, out ChunkBitArray maskBits);
-
-			if (maskBits == null)
-			{
-				lightToMaskMap.Add(light, maskBits = new ChunkBitArray(World.GetChunkSize(), false));
-
-				World.Lighter.CalcMaskFor(corners, maskBits);
-			}
-
-			// Get and apply shadows
-			float maskMult = maskBits.Get(localPos.x, localPos.y, localPos.z) ? 1 : 0;
-
-			bright *= maskMult;
-
-			float oldBrightness = brightness;
-			brightness += bright;
-
-			colorTemp += light.colorTemp * maskMult;
-		}
-
-		if (!preAmbient)
-		{
-			Chunk startChunk = World.GetChunkFor(worldPos);
-
-			if (startChunk != null)
-			{
-				LightingSample sample = startChunk.ambientLight.Retrieve(worldPos);
-
-				if (sample.brightness > 0)
-				{
-					brightness += sample.brightness;
-				}
-			}
-		}
-
-		return new LightingSample(brightness, colorTemp);
-	}
-	#endregion
-
-	#region Ambient Light
-	public void AsyncAmbientLight()
-	{
-		BkgThreadAmbientLight(this, System.EventArgs.Empty);
-	}
-
-	private void BkgThreadAmbientLight(object sender, System.EventArgs e)
-	{
-		isProcessing = true;
-
-		BackgroundWorker bw = new BackgroundWorker();
-
-		// What to do in the background thread
-		bw.DoWork += new DoWorkEventHandler(
-		delegate (object o, DoWorkEventArgs args)
-		{
-			CalcLightAllBlocks(false);
-		});
-
-		// What to do when worker completes its task
-		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
-		delegate (object o, RunWorkerCompletedEventArgs args)
-		{
-			isProcessing = false;
-
-			BakeLight(ProcStage.Done);
-		});
-
-		bw.RunWorkerAsync();
-	}
-	#endregion
-
-	#region Light Visuals
-	private void BakeLight(ProcStage nextStage)
-	{
-		UpdateLightVisuals(lightStage < LightStage.AmbientLight);
-
-		procStage = nextStage;
-		World.Generator.QueueNextStage(this);
-	}
-
-	private void UpdateLightVisuals(bool preAmbient)
-	{
-		for (int x = 0; x < chunkSize; x++)
-		{
-			for (int y = 0; y < chunkSize; y++)
-			{
-				for (int z = 0; z < chunkSize; z++)
-				{
-					Vector3Int localPos = new Vector3Int(x, y, z);
-					WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, localPos + position, lightCache[x * chunkSize * chunkSize + y * chunkSize + z]);
-				}
-			}
-		}
-	}
-	#endregion
-
-	public void QueueLightUpdate()
-	{
-		if (isProcessing || procStage < ProcStage.MakeSurface)
-			return;
-
-		lightStage = LightStage.DirectLight;
-	}
-
-	public void NeedsLightDataRecalc(LightSource light)
-	{
-		if (isProcessing || procStage < ProcStage.MakeSurface)
-			return;
-
-		lightStage = LightStage.DirectLight;
-
-		lightToMaskMap.TryGetValue(light, out ChunkBitArray bits);
-		if (bits != null)
-			bits.needsCalc = false;
-	}
-
 	// Utility
 	public bool ContainsPos(int x, int y, int z)
 	{
@@ -485,10 +288,5 @@ public class Chunk
 	public ChunkBitArray GetCorners()
 	{
 		return corners;
-	}
-
-	public AmbientLightNode GetAmbientLightNode()
-	{
-		return ambientLight;
 	}
 }

@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class Sun : MonoBehaviour
 {
-	public DirectionalLightSource lightSource;
+	[ColorUsageAttribute(false, true)]
+	public Color lightColor = Color.white;
 
 	public Bounds sourcePoints;
 
-	public void Init()
+	[ContextMenu("Recalculate Light")]
+	public void Recalc()
 	{
-		lightSource = new DirectionalLightSource(lightSource.brightness, lightSource.colorTemp, transform.forward);
+		World.Lighter.Init(this);
 	}
 
 	private void OnDrawGizmos()
 	{
-		Gizmos.color = Utils.colorYellow;
+		Gizmos.color = lightColor;
 		Gizmos.DrawWireCube(sourcePoints.center, sourcePoints.size);
 	}
 }
