@@ -17,7 +17,7 @@ public class LightEngine
 
 	private Sun sun;
 
-	private Timer iterateTimer = new Timer(0.2f);
+	private Timer iterateTimer = new Timer(0.005f);
 
 	public void Init(Sun sun)
 	{
