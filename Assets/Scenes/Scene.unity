@@ -153,7 +153,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultLightmap: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
-  liveLightmap: {fileID: 0}
+  defaultLightmap2: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
+  directLightmap: {fileID: 0}
+  ambientLightmap: {fileID: 0}
   randomColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &29660105
 Transform:
@@ -5216,7 +5218,7 @@ MonoBehaviour:
     worldY: 0
     worldZ: 0
     brightness: 0.7
-    colorTemp: 0.33
+    colorTemp: 0
   sourcePoints:
     m_Center: {x: -7, y: 111, z: -63.66}
     m_Extent: {x: 50, y: 0.5, z: 50}
