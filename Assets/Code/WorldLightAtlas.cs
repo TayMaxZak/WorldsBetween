@@ -24,7 +24,7 @@ public class WorldLightAtlas : MonoBehaviour
 	private int size = 256;
 	private int ambientSize = 8;
 
-	private Timer applyTimer = new Timer(0.05f);
+	private Timer applyTimer = new Timer(0.1f);
 	private static int changeCount = 0;
 
 	private void OnEnable()
@@ -140,7 +140,7 @@ public class WorldLightAtlas : MonoBehaviour
 		// To work around float color precision limits
 		float ambChangeStrength = 1 / 4f;
 
-		// TODO: Offset from pos to simulate bounce light
+		// TODO: Offset ambPos from pos to simulate bounce light
 		Color oldAmbValue = ambientLightmap.GetPixel(pos.x / ambientSize, pos.y / ambientSize, pos.z / ambientSize);
 		Color newAmbValue = oldAmbValue + (value - oldValue) * ambChangeStrength;
 		ambientLightmap.SetPixel(pos.x / ambientSize, pos.y / ambientSize, pos.z / ambientSize, newAmbValue);
@@ -169,13 +169,8 @@ public class WorldLightAtlas : MonoBehaviour
 		changeCount = 0;
 	}
 
-	private Vector3Int TexToWorld(Vector3Int tex)
-	{
-		return 2 * tex - Vector3Int.one * size;
-	}
-
 	private Vector3Int WorldToTex(Vector3Int wrld)
 	{
-		return wrld + (Vector3Int.one * size) / 2;
+		return wrld + Vector3Int.one * (size / 2 - World.GetChunkSize() / 2);
 	}
 }
