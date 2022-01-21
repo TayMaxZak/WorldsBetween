@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using Priority_Queue;
+using System.ComponentModel;
 
 [System.Serializable]
 public class LightEngine
@@ -48,17 +49,46 @@ public class LightEngine
 
 		iterateTimer.Reset();
 
-		if (sourceQueues.Count == 0)
-			return;
-
-		Vector3Int source = sourceQueues.Dequeue();
-
-		LinkedList<LightRayResult> results = SendLightRay(source);
-
-		foreach (LightRayResult t in results)
+		for (int i = 0; i < 10; i++)
 		{
-			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.magenta, t.airLight);
+			if (sourceQueues.Count == 0)
+				break;
+
+			Vector3Int source = sourceQueues.Dequeue();
+
+			AsyncLightRay(source);
 		}
+	}
+
+	public void AsyncLightRay(Vector3Int source)
+	{
+		BkgThreadLightRay(this, System.EventArgs.Empty, source);
+	}
+
+	private void BkgThreadLightRay(object sender, System.EventArgs e, Vector3Int source)
+	{
+		BackgroundWorker bw = new BackgroundWorker();
+
+		// What to do in the background thread
+		bw.DoWork += new DoWorkEventHandler(
+		delegate (object o, DoWorkEventArgs args)
+		{
+			args.Result = SendLightRay(source);
+		});
+
+		// What to do when worker completes its task
+		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+		delegate (object o, RunWorkerCompletedEventArgs args)
+		{
+			LinkedList<LightRayResult> results = (LinkedList<LightRayResult>)args.Result;
+
+			foreach (LightRayResult t in results)
+			{
+				WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.magenta, t.airLight);
+			}
+		});
+
+		bw.RunWorkerAsync();
 	}
 
 	private LinkedList<LightRayResult> SendLightRay(Vector3Int source)

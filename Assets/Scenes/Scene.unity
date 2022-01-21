@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.225
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.11370837, g: 0.15435772, b: 0.22390142, a: 0.225}
+  m_IndirectSpecularColor: {r: 0.078826904, g: 0.13238528, b: 0.17874774, a: 0.225}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2056,15 +2056,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 87.5
+      value: 25.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 89.5
+      value: 27.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 93.5
+      value: 91.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5273,7 +5273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339e35b12209a3f478b2b07db09bebe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightColor: {r: 2, g: 1.1815236, b: 0.5943396, a: 1}
+  lightColor: {r: 1.4142135, g: 1.4142135, b: 1.4142135, a: 1}
   sourcePoints:
     m_Center: {x: 8, y: 111.5, z: 8}
     m_Extent: {x: 104, y: 0.5, z: 104}
@@ -5459,7 +5459,7 @@ PrefabInstance:
     - target: {fileID: 265787124417406026, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7e6055f1362e0074e83e5654b786975c, type: 2}
+      objectReference: {fileID: 2100000, guid: a0ac746ef2bba404389dbea6b49ce765, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
 --- !u!1001 &593485741701486191

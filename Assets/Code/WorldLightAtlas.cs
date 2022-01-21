@@ -68,7 +68,7 @@ public class WorldLightAtlas : MonoBehaviour
 		directLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
 
 		directLightmap.wrapMode = TextureWrapMode.Clamp;
-		directLightmap.filterMode = FilterMode.Point;
+		directLightmap.filterMode = FilterMode.Bilinear;
 
 		Color[] colors = new Color[size * size * size];
 		for (int z = 0; z < size; z++)
@@ -100,7 +100,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
 
 		ambientLightmap.wrapMode = TextureWrapMode.Clamp;
-		ambientLightmap.filterMode = FilterMode.Point;
+		ambientLightmap.filterMode = FilterMode.Bilinear;
 
 		Color[] colors = new Color[size * size * size];
 		for (int z = 0; z < size; z++)
