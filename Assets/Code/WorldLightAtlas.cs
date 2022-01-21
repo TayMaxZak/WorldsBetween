@@ -97,7 +97,7 @@ public class WorldLightAtlas : MonoBehaviour
 		int size = this.size / ambientSize;
 
 		// Create the texture and apply the configuration
-		ambientLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
+		ambientLightmap = new Texture3D(size, size, size, TextureFormat.RGBAFloat, false);
 
 		ambientLightmap.wrapMode = TextureWrapMode.Clamp;
 		ambientLightmap.filterMode = FilterMode.Bilinear;
@@ -153,7 +153,7 @@ public class WorldLightAtlas : MonoBehaviour
 		Color newAmbValue = oldAmbValue + (value - oldValue) * ambChangeStrength;
 
 		ambientLightmap.SetPixel(ambPos.x, ambPos.y, ambPos.z, newAmbValue);
-		ambientLightmap.Apply();
+		//ambientLightmap.Apply();
 	}
 
 	private void Update()
@@ -171,7 +171,7 @@ public class WorldLightAtlas : MonoBehaviour
 		if (changeCount > 0)
 		{
 			directLightmap.Apply();
-			//ambientLightmap.Apply();
+			ambientLightmap.Apply();
 		}
 		changeCount = 0;
 	}

@@ -15,17 +15,24 @@ public class LightEngine
 		public bool airLight;
 	}
 
-	private readonly SimplePriorityQueue<Vector3Int> sourceQueues = new SimplePriorityQueue<Vector3Int>();
+	private readonly SimplePriorityQueue<Vector3Int> sourceQueue = new SimplePriorityQueue<Vector3Int>();
 
 	private Sun sun;
 
-	private Timer iterateTimer = new Timer(0.001f);
+	[SerializeField]
+	private Timer iterateTimer = new Timer(0.01f);
+
+	[SerializeField]
+	private int raysPerStep = 30;
 
 	public void Init(Sun sun)
 	{
 		this.sun = sun;
+	}
 
-		sourceQueues.Clear();
+	public void Begin()
+	{
+		sourceQueue.Clear();
 		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x++)
 		{
 			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y++)
@@ -33,11 +40,11 @@ public class LightEngine
 				for (int z = Utils.ToInt(sun.sourcePoints.min.z); z < Utils.ToInt(sun.sourcePoints.max.z); z++)
 				{
 					Vector3Int pos = new Vector3Int(x, y, z);
-					sourceQueues.Enqueue(pos, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
+					sourceQueue.Enqueue(pos, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
 				}
 			}
 		}
-		Debug.Log(sourceQueues.Count + " light rays to be cast");
+		Debug.Log(sourceQueue.Count + " light rays to be cast");
 	}
 
 	public void Iterate(float deltaTime)
@@ -49,12 +56,12 @@ public class LightEngine
 
 		iterateTimer.Reset();
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < raysPerStep; i++)
 		{
-			if (sourceQueues.Count == 0)
+			if (sourceQueue.Count == 0)
 				break;
 
-			Vector3Int source = sourceQueues.Dequeue();
+			Vector3Int source = sourceQueue.Dequeue();
 
 			AsyncLightRay(source);
 		}
@@ -100,8 +107,11 @@ public class LightEngine
 		int chunkSize = World.GetChunkSize();
 
 		bool firstPass = true;
-		while (cur.y > -300)
+		int steps = 0;
+		while (steps < 1000)
 		{
+			steps++;
+
 			// Get chunk info
 			Chunk chunk = World.GetChunkFor(cur);
 			if (chunk == null || chunk.procStage < Chunk.ProcStage.Done)

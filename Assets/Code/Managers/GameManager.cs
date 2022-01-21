@@ -8,6 +8,7 @@ public partial class GameManager : MonoBehaviour
 {
 	public static GameManager Instance;
 
+	public bool startedLoading = false;
 	public bool finishedLoading = false;
 
 	public PlayerLoader player;
@@ -89,14 +90,18 @@ public partial class GameManager : MonoBehaviour
 
 	public async void FinishLoading(int delay)
 	{
-		AlmostFinishLoading();
-
-		if (finishedLoading)
+		if (startedLoading || finishedLoading)
 			return;
+
+		startedLoading = true;
+
+		AlmostFinishLoading();
 
 		await Task.Delay(delay);
 
 		DisableLoadingUX();
+
+		World.Lighter.Begin();
 
 		PhysicsManager.Instance.Activate();
 

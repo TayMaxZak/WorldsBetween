@@ -185,7 +185,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &59901292
 Transform:
   m_ObjectHideFlags: 0
@@ -426,6 +426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5424adbd39d017245b08acd2bc2aeeef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startedLoading: 0
   finishedLoading: 0
   player: {fileID: 206889555}
   loadingScreen: {fileID: 6292042240279805736}
@@ -4567,7 +4568,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1822971190
 Transform:
   m_ObjectHideFlags: 0
@@ -5273,7 +5274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339e35b12209a3f478b2b07db09bebe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightColor: {r: 1.4142135, g: 1.4142135, b: 1.4142135, a: 1}
+  lightColor: {r: 2.027743, g: 1.3307378, b: 0.8130102, a: 1}
   sourcePoints:
     m_Center: {x: 8, y: 111.5, z: 8}
     m_Extent: {x: 104, y: 0.5, z: 104}
@@ -5540,6 +5541,10 @@ PrefabInstance:
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.genRange
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: lighter.raysPerStep
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: modifiers.Array.size
