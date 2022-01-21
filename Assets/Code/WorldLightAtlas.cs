@@ -22,9 +22,9 @@ public class WorldLightAtlas : MonoBehaviour
 	public Texture3D ambientLightmap;
 
 	private int size = 256;
+	private int ambientSize = 8;
 
-	public Color randomColor = Color.white;
-
+	private Timer applyTimer = new Timer(0.05f);
 	private static int changeCount = 0;
 
 	private void OnEnable()
@@ -60,7 +60,6 @@ public class WorldLightAtlas : MonoBehaviour
 		Shader.SetGlobalTexture("LightMap", texture);
 		Shader.SetGlobalTexture("LightMap2", texture2);
 		Shader.SetGlobalFloat("LightMapScale", texture.width);
-		Shader.SetGlobalFloat("LightMapScale2", texture2.width);
 	}
 
 	private void CreateDirectLightmap()
@@ -95,7 +94,7 @@ public class WorldLightAtlas : MonoBehaviour
 	private void CreateAmbientLightmap()
 	{
 		// One pixel per chunk
-		int size = this.size / 16;
+		int size = this.size / ambientSize;
 
 		// Create the texture and apply the configuration
 		ambientLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
@@ -138,12 +137,13 @@ public class WorldLightAtlas : MonoBehaviour
 		Color oldValue = directLightmap.GetPixel(pos.x, pos.y, pos.z);
 		directLightmap.SetPixel(pos.x, pos.y, pos.z, value);
 
-		int chunkSize = World.GetChunkSize();
-		float changeFraction = 1f / (chunkSize);
+		// To work around float color precision limits
+		float ambChangeStrength = 1 / 4f;
 
-		Color oldAmbValue = ambientLightmap.GetPixel(pos.x, pos.y, pos.z);
-		Color newAmbValue = oldAmbValue + (value - oldValue) * changeFraction;
-		ambientLightmap.SetPixel(pos.x / chunkSize, pos.y / chunkSize, pos.z / chunkSize, newAmbValue);
+		// TODO: Offset from pos to simulate bounce light
+		Color oldAmbValue = ambientLightmap.GetPixel(pos.x / ambientSize, pos.y / ambientSize, pos.z / ambientSize);
+		Color newAmbValue = oldAmbValue + (value - oldValue) * ambChangeStrength;
+		ambientLightmap.SetPixel(pos.x / ambientSize, pos.y / ambientSize, pos.z / ambientSize, newAmbValue);
 		ambientLightmap.Apply();
 
 		changeCount++;
@@ -153,6 +153,13 @@ public class WorldLightAtlas : MonoBehaviour
 	{
 		if (!Application.isPlaying)
 			return;
+
+		applyTimer.Increment(Time.deltaTime);
+
+		if (!applyTimer.Expired())
+			return;
+
+		applyTimer.Reset();
 
 		if (changeCount > 0)
 		{
@@ -170,20 +177,5 @@ public class WorldLightAtlas : MonoBehaviour
 	private Vector3Int WorldToTex(Vector3Int wrld)
 	{
 		return wrld + (Vector3Int.one * size) / 2;
-	}
-
-	private void RandomizeColor()
-	{
-		float mult = 1.5f;
-
-		randomColor.r = mult * SeedlessRandom.NextFloat();
-		randomColor.r *= randomColor.r;
-		randomColor.r *= SeedlessRandom.NextFloat();
-
-		randomColor.g = SeedlessRandom.NextFloat() * SeedlessRandom.NextFloat() * SeedlessRandom.NextFloat();
-
-		randomColor.b = 1;
-
-		randomColor.a = 0;
 	}
 }

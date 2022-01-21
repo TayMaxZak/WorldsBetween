@@ -73,7 +73,7 @@ public class LightEngine
 		{
 			// Get chunk info
 			Chunk chunk = World.GetChunkFor(cur);
-			if (chunk == null)
+			if (chunk == null || chunk.procStage < Chunk.ProcStage.Done)
 				return results;
 
 			ChunkBitArray cornerBit = chunk.GetCorners();
@@ -104,36 +104,5 @@ public class LightEngine
 
 		Debug.DrawLine(source, cur, sun.lightColor, 1);
 		return results;
-	}
-
-	public void CalcMaskFor(ChunkBitArray cornerBit, ChunkBitArray shadowBit)
-	{
-		int chunkSize = World.GetChunkSize();
-
-		// Cast light rays down
-		for (int x = 0; x < chunkSize; x++)
-		{
-			for (int z = 0; z < chunkSize; z++)
-			{
-				int y = chunkSize - 1;
-
-				// Light starting inside corner
-				if (cornerBit.Get(x, y, z))
-					continue;
-
-				while (y > 0)
-				{
-					shadowBit.Set(true, x, y, z);
-
-					// Should block light?
-					bool occupied = cornerBit.Get(x, y, z);
-
-					if (occupied)
-						break;
-
-					y--;
-				} // y
-			} // z
-		} // x
 	}
 }

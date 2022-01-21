@@ -156,7 +156,6 @@ MonoBehaviour:
   defaultLightmap2: {fileID: 11700000, guid: 26acadac59916044da368f6731224b38, type: 2}
   directLightmap: {fileID: 0}
   ambientLightmap: {fileID: 0}
-  randomColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &29660105
 Transform:
   m_ObjectHideFlags: 0
@@ -5117,7 +5116,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035213411}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -7, y: 110, z: -57}
+  m_LocalPosition: {x: 0, y: 110, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1283293935}
@@ -5138,7 +5137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightColor: {r: 1, g: 1, b: 1, a: 1}
   sourcePoints:
-    m_Center: {x: -7, y: 111, z: -63.66}
+    m_Center: {x: 0, y: 110, z: 0}
     m_Extent: {x: 50, y: 0.5, z: 50}
 --- !u!114 &2056025807 stripped
 MonoBehaviour:
@@ -5470,7 +5469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: seed
-      value: 1199464960
+      value: -1343597056
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
