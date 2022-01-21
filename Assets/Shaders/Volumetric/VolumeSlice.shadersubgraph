@@ -98,6 +98,9 @@
         },
         {
             "m_Id": "0498da37e23b47ccbfff855d52353fcd"
+        },
+        {
+            "m_Id": "b6fb958470424aef844c2793921ed3a9"
         }
     ],
     "m_GroupDatas": [
@@ -341,6 +344,20 @@
                     "m_Id": "d2997d9112814598ad513f8cf5401969"
                 },
                 "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "b6fb958470424aef844c2793921ed3a9"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "47e7dcb053cb48d5865d777091612e8d"
+                },
+                "m_SlotId": 618959861
             }
         },
         {
@@ -1616,6 +1633,19 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Texture3DMaterialSlot",
+    "m_ObjectId": "663469d44cca4170b71f7ccf4edef8ad",
+    "m_Id": 0,
+    "m_DisplayName": "LightMap2",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_BareResource": false
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.MultiplyNode",
     "m_ObjectId": "66a2c55f64774dc1883b6fd07ca0d3e9",
     "m_Group": {
@@ -2707,6 +2737,41 @@
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
+    }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "b6fb958470424aef844c2793921ed3a9",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 1596.0001220703125,
+            "y": 795.0000610351563,
+            "width": 142.0,
+            "height": 34.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "663469d44cca4170b71f7ccf4edef8ad"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "99757ce44a674a9e8e08f75f926e0b27"
     }
 }
 

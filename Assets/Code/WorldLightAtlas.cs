@@ -22,7 +22,7 @@ public class WorldLightAtlas : MonoBehaviour
 	public Texture3D ambientLightmap;
 
 	private int size = 256;
-	private int ambientSize = 8;
+	private int ambientSize = 16;
 
 	private Timer applyTimer = new Timer(0.1f);
 	private static int changeCount = 0;
@@ -67,8 +67,8 @@ public class WorldLightAtlas : MonoBehaviour
 		// Create the texture and apply the configuration
 		directLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
 
-		directLightmap.wrapMode = TextureWrapMode.Repeat;
-		directLightmap.filterMode = FilterMode.Bilinear;
+		directLightmap.wrapMode = TextureWrapMode.Clamp;
+		directLightmap.filterMode = FilterMode.Point;
 
 		Color[] colors = new Color[size * size * size];
 		for (int z = 0; z < size; z++)
@@ -99,8 +99,8 @@ public class WorldLightAtlas : MonoBehaviour
 		// Create the texture and apply the configuration
 		ambientLightmap = new Texture3D(size, size, size, TextureFormat.RGBAHalf, false);
 
-		ambientLightmap.wrapMode = TextureWrapMode.Repeat;
-		ambientLightmap.filterMode = FilterMode.Bilinear;
+		ambientLightmap.wrapMode = TextureWrapMode.Clamp;
+		ambientLightmap.filterMode = FilterMode.Point;
 
 		Color[] colors = new Color[size * size * size];
 		for (int z = 0; z < size; z++)
@@ -123,7 +123,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientLightmap.Apply();
 	}
 
-	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color value)
+	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color value, bool airLight)
 	{
 		if (directLightmap == null)
 			return;
@@ -134,19 +134,26 @@ public class WorldLightAtlas : MonoBehaviour
 		if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= size || pos.y >= size || pos.z >= size)
 			return;
 
+		changeCount++;
+
 		Color oldValue = directLightmap.GetPixel(pos.x, pos.y, pos.z);
 		directLightmap.SetPixel(pos.x, pos.y, pos.z, value);
+
+		// Add to ambient
+		if (!airLight)
+			return;
 
 		// To work around float color precision limits
 		float ambChangeStrength = 1 / 4f;
 
-		// TODO: Offset ambPos from pos to simulate bounce light
-		Color oldAmbValue = ambientLightmap.GetPixel(pos.x / ambientSize, pos.y / ambientSize, pos.z / ambientSize);
-		Color newAmbValue = oldAmbValue + (value - oldValue) * ambChangeStrength;
-		ambientLightmap.SetPixel(pos.x / ambientSize, pos.y / ambientSize, pos.z / ambientSize, newAmbValue);
-		ambientLightmap.Apply();
+		// TODO: You can offset ambPos from pos to simulate diffuse bounce light
+		Vector3Int ambPos = new Vector3Int((pos.x) / ambientSize, (pos.y) / ambientSize, (pos.z ) / ambientSize);
 
-		changeCount++;
+		Color oldAmbValue = ambientLightmap.GetPixel(ambPos.x, ambPos.y, ambPos.z);
+		Color newAmbValue = oldAmbValue + (value - oldValue) * ambChangeStrength;
+
+		ambientLightmap.SetPixel(ambPos.x, ambPos.y, ambPos.z, newAmbValue);
+		ambientLightmap.Apply();
 	}
 
 	private void Update()

@@ -7,17 +7,18 @@ using Priority_Queue;
 [System.Serializable]
 public class LightEngine
 {
-	public struct Tuple
+	public struct LightRayResult
 	{
 		public Vector3Int coord;
 		public bool value;
+		public bool airLight;
 	}
 
 	private readonly SimplePriorityQueue<Vector3Int> sourceQueues = new SimplePriorityQueue<Vector3Int>();
 
 	private Sun sun;
 
-	private Timer iterateTimer = new Timer(0.005f);
+	private Timer iterateTimer = new Timer(0.001f);
 
 	public void Init(Sun sun)
 	{
@@ -52,19 +53,19 @@ public class LightEngine
 
 		Vector3Int source = sourceQueues.Dequeue();
 
-		LinkedList<Tuple> results = SendLightRay(source);
+		LinkedList<LightRayResult> results = SendLightRay(source);
 
-		foreach (Tuple t in results)
+		foreach (LightRayResult t in results)
 		{
-			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.magenta);
+			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.magenta, t.airLight);
 		}
 	}
 
-	private LinkedList<Tuple> SendLightRay(Vector3Int source)
+	private LinkedList<LightRayResult> SendLightRay(Vector3Int source)
 	{
 		Vector3Int cur = source;
 
-		LinkedList<Tuple> results = new LinkedList<Tuple>();
+		LinkedList<LightRayResult> results = new LinkedList<LightRayResult>();
 
 		int chunkSize = World.GetChunkSize();
 
@@ -94,7 +95,7 @@ public class LightEngine
 			firstPass = false;
 
 			// Remember this result
-			results.AddLast(new Tuple() { coord = cur, value = true });
+			results.AddLast(new LightRayResult() { coord = cur, value = true, airLight = !occupied });
 
 			if (occupied)
 				break;

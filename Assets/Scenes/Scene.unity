@@ -2018,6 +2018,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1335200600, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: initPos.x
+      value: 87.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335200600, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: initPos.y
+      value: 89.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335200600, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: initPos.z
+      value: 93.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1335200601, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: line
       value: 
@@ -2028,15 +2040,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: position.x
-      value: 0.5
+      value: 87.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: position.y
-      value: 0.5
+      value: 89.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: position.z
-      value: 0.5
+      value: 93.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
@@ -2044,15 +2056,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 46.5
+      value: 87.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 61.5
+      value: 89.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.5
+      value: 93.5
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5444,6 +5456,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WaterSystem
       objectReference: {fileID: 0}
+    - target: {fileID: 265787124417406026, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7e6055f1362e0074e83e5654b786975c, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5112f5c48a6ca849863f6aa83cc6f19, type: 3}
 --- !u!1001 &593485741701486191
