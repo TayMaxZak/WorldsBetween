@@ -78,7 +78,7 @@ public class Actor : MonoBehaviour
 		Chunk chunk;
 		bool realChunk =
 			(chunk = World.GetChunkFor(blockPosition.x, blockPosition.y, blockPosition.z)) != null
-			&& chunk.procStage >= Chunk.ProcStage.MakeSurface;
+			&& chunk.procStage >= Chunk.ProcStage.MakeMesh;
 
 		// Apply water physics
 		bool newInWater = blockPosition.y - 0.4f < World.GetWaterHeight() && realChunk;

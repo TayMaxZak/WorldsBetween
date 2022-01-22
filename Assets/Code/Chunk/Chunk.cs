@@ -10,7 +10,7 @@ public class Chunk
 	{
 		Allocate,
 		Generate,
-		MakeSurface,
+		MakeMesh,
 		Done
 	}
 	public ProcStage procStage = ProcStage.Allocate;
@@ -37,10 +37,6 @@ public class Chunk
 	private Block[,,] blocks;
 
 	private ChunkBitArray corners;
-
-	private HashSet<BlockSurface> surfaces;
-
-	private Color[] lightCache;
 
 	public ChunkMesh chunkMesh = new ChunkMesh();
 
@@ -77,11 +73,7 @@ public class Chunk
 			}
 		}
 
-		surfaces = new HashSet<BlockSurface>();
-
 		corners = new ChunkBitArray(chunkSize, false);
-
-		lightCache = new Color[chunkSize * chunkSize * chunkSize];
 	}
 
 	#region Generate
@@ -111,7 +103,7 @@ public class Chunk
 
 			CacheMaybeFlags();
 
-			procStage = ProcStage.MakeSurface;
+			procStage = ProcStage.MakeMesh;
 			World.Generator.QueueNextStage(this);
 		});
 
@@ -265,7 +257,7 @@ public class Chunk
 
 	private ChunkMesh.MeshData MakeMesh()
 	{
-		return chunkMesh.MakeSurfaceAndMesh(blocks, surfaces, corners);
+		return chunkMesh.MakeSurfaceAndMesh(blocks, corners);
 	}
 	#endregion
 
@@ -278,11 +270,6 @@ public class Chunk
 	public Block GetBlock(int x, int y, int z)
 	{
 		return blocks[x, y, z];
-	}
-
-	public HashSet<BlockSurface> GetSurfaces()
-	{
-		return surfaces;
 	}
 
 	public ChunkBitArray GetCorners()

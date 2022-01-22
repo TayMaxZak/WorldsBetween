@@ -19,7 +19,7 @@ public class ChunkGenerator
 
 	private static readonly List<Chunk.ProcStage> requireAdjacents = new List<Chunk.ProcStage> {
 		Chunk.ProcStage.Generate,
-		Chunk.ProcStage.MakeSurface,
+		Chunk.ProcStage.MakeMesh,
 	};
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] {
@@ -177,7 +177,7 @@ public class ChunkGenerator
 					chunk.AsyncGenerate();
 				}
 				break;
-			case Chunk.ProcStage.MakeSurface: // Cache data and build mesh
+			case Chunk.ProcStage.MakeMesh: // Cache data and build mesh
 				{
 					chunk.AsyncMakeMesh();
 				}

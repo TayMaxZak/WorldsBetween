@@ -38,50 +38,50 @@ public class ChunkMesh
 		return filter.sharedMesh;
 	}
 
-	// TODO: Repurpose for textures
-	public void SetVertexColors(BlockSurface surface)
-	{
-		Vector3 localVertPos;
-		Vector3Int worldVertPos = new Vector3Int();
+	//// TODO: Repurpose for textures
+	//public void SetVertexColors(BlockSurface surface)
+	//{
+	//	Vector3 localVertPos;
+	//	Vector3Int worldVertPos = new Vector3Int();
 
-		// Loop through all vertices needed
-		int loopCounter = 0;
-		for (int i = surface.startIndex; i < surface.endIndex; i++)
-		{
-			loopCounter++;
+	//	// Loop through all vertices needed
+	//	int loopCounter = 0;
+	//	for (int i = surface.startIndex; i < surface.endIndex; i++)
+	//	{
+	//		loopCounter++;
 
-			// Threading
-			if (sharedVertices == null)
-				return;
+	//		// Threading
+	//		if (sharedVertices == null)
+	//			return;
 
-			// Find actual block to sample for brightness
-			localVertPos = sharedVertices[i];
-			worldVertPos.x = Mathf.RoundToInt(localVertPos.x + chunk.position.x);
-			worldVertPos.y = Mathf.RoundToInt(localVertPos.y + chunk.position.y);
-			worldVertPos.z = Mathf.RoundToInt(localVertPos.z + chunk.position.z);
+	//		// Find actual block to sample for brightness
+	//		localVertPos = sharedVertices[i];
+	//		worldVertPos.x = Mathf.RoundToInt(localVertPos.x + chunk.position.x);
+	//		worldVertPos.y = Mathf.RoundToInt(localVertPos.y + chunk.position.y);
+	//		worldVertPos.z = Mathf.RoundToInt(localVertPos.z + chunk.position.z);
 
-			// Assign lighting data: new brightness, last brightness, new hue, last hue
-			vertexColors[i] = new Color(0, 0, 0, 0);
-		}
-	}
+	//		// Assign lighting data: new brightness, last brightness, new hue, last hue
+	//		vertexColors[i] = new Color(0, 0, 0, 0);
+	//	}
+	//}
 
-	public Color[] GetVertexColors()
-	{
-		return vertexColors;
-	}
+	//public Color[] GetVertexColors()
+	//{
+	//	return vertexColors;
+	//}
 
-	public void ApplyVertexColors(Color[] newColors)
-	{
-		vertexColors = newColors;
+	//public void ApplyVertexColors(Color[] newColors)
+	//{
+	//	vertexColors = newColors;
 
-		// Can happen if thread finishes after games ends
-		if (filter == null)
-			return;
+	//	// Can happen if thread finishes after games ends
+	//	if (filter == null)
+	//		return;
 
-		// Apply vertex colors
-		Mesh mesh = filter.sharedMesh;
-		mesh.colors = vertexColors;
-	}
+	//	// Apply vertex colors
+	//	Mesh mesh = filter.sharedMesh;
+	//	mesh.colors = vertexColors;
+	//}
 
 	public struct MeshData
 	{
@@ -111,7 +111,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData MakeSurfaceAndMesh(Block[,,] blocks, HashSet<BlockSurface> surfaces, ChunkBitArray corners)
+	public MeshData MakeSurfaceAndMesh(Block[,,] blocks, ChunkBitArray corners)
 	{
 		Block block;
 
@@ -128,8 +128,6 @@ public class ChunkMesh
 		Vector3 norm;
 
 		List<int> airDirections = new List<int>();
-
-		surfaces.Clear();
 
 		int chunkSize = World.GetChunkSize();
 		for (byte x = 0; x < chunkSize; x++)
@@ -190,14 +188,9 @@ public class ChunkMesh
 						surfacesAdded++;
 
 						//Vector3 randomNormal = new Vector3(SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1));
-						BlockSurface surface = new BlockSurface(chunk, block, directions[d], new Vector3(directions[d].x * 0.5f, directions[d].y * 0.5f, directions[d].z * 0.5f));
 
-						// Remember this surface
-						surfaces.Add(surface);
-
+						// What index are we starting this face from
 						int indexOffset = vertices.Count;
-						// Remember which vertex index this surface starts at
-						surface.startIndex = indexOffset;
 
 						// Add vertices
 						for (int i = 0; i < blockMeshData.vertices.Length; i++)
@@ -218,11 +211,8 @@ public class ChunkMesh
 								norm += directions[airDirections[j]];
 							}
 
-							normals.Add(Vector3.Lerp(directions[d], norm, 0.67f).normalized);
+							normals.Add(norm.normalized);
 						}
-
-						// Remember which vertex index this surface ends at
-						surface.endIndex = vertices.Count;
 
 						// Add triangles
 						for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
@@ -303,17 +293,6 @@ public class ChunkMesh
 		for (int i = 0; i < vertexColors.Length; i++)
 			vertexColors[i] = borderColor;
 
-		ApplyVertexColors(vertexColors);
-	}
-
-	public void ResetColors()
-	{
-		if (vertexColors == null)
-			return;
-
-		for (int i = 0; i < vertexColors.Length; i++)
-			vertexColors[i] = resetColor;
-
-		ApplyVertexColors(vertexColors);
+		//ApplyVertexColors(vertexColors);
 	}
 }
