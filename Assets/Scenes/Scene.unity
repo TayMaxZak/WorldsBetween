@@ -5259,7 +5259,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035213411}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 110, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1283293935}
@@ -5278,10 +5278,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339e35b12209a3f478b2b07db09bebe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightColor: {r: 2.027743, g: 2.0161815, b: 2.0074656, a: 1}
+  lightColor: {r: 2.3241024, g: 1.7966088, b: 1.2168651, a: 1}
   sourcePoints:
-    m_Center: {x: 8, y: 111.5, z: 8}
-    m_Extent: {x: 104, y: 0.5, z: 104}
+    m_Center: {x: 8, y: 15.5, z: 8}
+    m_Extent: {x: 8, y: 0.5, z: 8}
 --- !u!114 &2056025807 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6576889597697053752, guid: ebcbb3229181918489f3e7fc0f6b155b, type: 3}
@@ -5544,7 +5544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.genRange
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lighter.raysPerStep

@@ -15,7 +15,7 @@ public class Sun : MonoBehaviour
 		World.Lighter.Begin();
 	}
 
-	private void OnDrawGizmos()
+	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = lightColor;
 		Gizmos.DrawWireCube(sourcePoints.center, sourcePoints.size);

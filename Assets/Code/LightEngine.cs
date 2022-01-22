@@ -91,7 +91,7 @@ public class LightEngine
 
 			foreach (LightRayResult t in results)
 			{
-				WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.magenta, t.airLight);
+				WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.black, t.airLight);
 			}
 		});
 
@@ -118,9 +118,6 @@ public class LightEngine
 				return results;
 
 			ChunkBitArray cornerBit = chunk.GetCorners();
-
-			if (cornerBit == null)
-				return results;
 
 			// Should block light?
 			Vector3Int adjPos = cur - chunk.position;

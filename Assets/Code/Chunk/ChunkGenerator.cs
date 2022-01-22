@@ -22,15 +22,6 @@ public class ChunkGenerator
 		Chunk.ProcStage.MakeMesh,
 	};
 
-	private static readonly Vector3Int[] directions = new Vector3Int[] {
-		new Vector3Int(1, 0, 0),
-		new Vector3Int(-1, 0, 0),
-		new Vector3Int(0, 1, 0),
-		new Vector3Int(0, -1, 0),
-		new Vector3Int(0, 0, 1),
-		new Vector3Int(0, 0, -1)
-	};
-
 	public ChunkGenerator(float cycleDelay, int queueCount)
 	{
 		this.cycleDelay = cycleDelay;
@@ -99,16 +90,28 @@ public class ChunkGenerator
 			// Check if neighboring chunks are ready yet
 			if (requiresAdj)
 			{
-				for (int d = 0; d < directions.Length; d++)
+				for (int i = -1; i <= 1; i++)
 				{
-					// Try every orthagonal direction
-					Vector3Int adjPos = chunk.position + directions[d] * World.GetChunkSize();
-					Chunk adj = World.GetChunkFor(adjPos);
-					if (adj == null || adj.procStage < chunk.procStage || adj.isProcessing)
+					for (int j = -1; j <= 1; j++)
 					{
-						// Wait for threaded processing
-						while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
-							await Task.Delay(10);
+						for (int k = -1; k <= 1; k++)
+						{
+							if (i == 0 && j == 0 && k == 0)
+								continue;
+
+							//if (Mathf.Abs(i) != Mathf.Abs(j) || Mathf.Abs(j) != Mathf.Abs(k) || Mathf.Abs(k) != Mathf.Abs(i))
+							//	continue;
+
+							// Try every orthagonal and diagonal direction
+							Vector3Int adjPos = chunk.position + new Vector3Int(i, j, k) * World.GetChunkSize();
+							Chunk adj = World.GetChunkFor(adjPos);
+							if (adj == null || adj.procStage < chunk.procStage || adj.isProcessing)
+							{
+								// Wait for threaded processing
+								while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
+									await Task.Delay(10);
+							}
+						}
 					}
 				}
 			}

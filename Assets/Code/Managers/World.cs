@@ -62,6 +62,8 @@ public partial class World : MonoBehaviour
 		WorldInit();
 
 		Lighter = lighter;
+		sunObject.sourcePoints.center = new Vector3(chunkSize / 2, chunkSize * (1 + generator.GetGenRange()) - 0.5f, chunkSize / 2);
+		sunObject.sourcePoints.extents = new Vector3(chunkSize * (0.5f + generator.GetGenRange()), 0.5f, chunkSize * (0.5f + generator.GetGenRange()));
 		Lighter.Init(sunObject);
 	}
 
