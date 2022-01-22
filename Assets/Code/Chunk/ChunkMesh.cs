@@ -21,8 +21,6 @@ public class ChunkMesh
 	private static readonly Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
 													new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
 
-	private static readonly Vector3Int[] grassRotations = new Vector3Int[] { new Vector3Int(0, 45, 0), new Vector3Int(0, -45, 0) };
-
 	public void Init(Chunk chunk, MeshFilter filter)
 	{
 		this.chunk = chunk;
@@ -111,7 +109,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData MakeSurfaceAndMesh(Block[,,] blocks, ChunkBitArray corners)
+	public MeshData MakeSurfaceAndMesh(Block[,,] blocks)
 	{
 		Block block;
 
@@ -148,8 +146,6 @@ public class ChunkMesh
 					// Solid
 					else
 					{
-						FlagAllCorners(corners, x, y, z);
-
 						// Not near air
 						if (block.maybeNearAir == 0)
 							continue;
@@ -193,22 +189,25 @@ public class ChunkMesh
 						int indexOffset = vertices.Count;
 
 						// Add vertices
-						for (int i = 0; i < blockMeshData.vertices.Length; i++)
+						for (int v = 0; v < blockMeshData.vertices.Length; v++)
 						{
-							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[i] + Vector3.forward * 0.5f);
+							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f);
 
-							vertices.Add(new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z));
+							Vector3 vertPos = new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z);
+							vertices.Add(vertPos);
 
 							// Add normals
 							norm = Vector3.zero;
-							int smoothingDirs = 0;
-							for (int j = 0; j < airDirections.Count; j++)
+							for (int i = -1; i <= 1; i++)
 							{
-								if (Vector3.Dot(vert.normalized, directions[airDirections[j]]) < -0.01)
-									continue;
-
-								smoothingDirs++;
-								norm += directions[airDirections[j]];
+								for (int j = -1; j <= 1; j++)
+								{
+									for (int k = -1; k <= 1; k++)
+									{
+										if (!World.GetCorner(Mathf.RoundToInt(chunk.position.x + x + vert.x + i + 0.5f), Mathf.RoundToInt(chunk.position.y + y + vert.y + j + 0.5f), Mathf.RoundToInt(chunk.position.z + z + vert.z + k + 0.5f)))
+											norm += new Vector3Int(i, j, k);
+									}
+								}
 							}
 
 							normals.Add(norm.normalized);
@@ -235,48 +234,6 @@ public class ChunkMesh
 		}
 
 		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
-	}
-
-	// TODO: Handle chunk borders
-	private void FlagAllCorners(ChunkBitArray corners, int x, int y, int z)
-	{
-		//Block block;
-
-		int chunkSize = World.GetChunkSize();
-
-		bool doX = false, doY = false, doZ = false;
-
-		// X-axis
-		if (x < chunkSize - 1)
-			doX = true;
-
-		// Y-axis
-		if (y < chunkSize - 1)
-			doY = true;
-
-		// Z-axis
-		if (z < chunkSize - 1)
-			doZ = true;
-
-		// Apply
-		corners.Set(true, x, y, z);
-
-		if (doX)
-			corners.Set(true, x + 1, y, z);
-		if (doY)
-			corners.Set(true, x, y + 1, z);
-		if (doZ)
-			corners.Set(true, x, y, z + 1);
-
-		if (doX && doY)
-			corners.Set(true, x + 1, y + 1, z);
-		if (doY && doZ)
-			corners.Set(true, x, y + 1, z + 1);
-		if (doZ && doX)
-			corners.Set(true, x + 1, y, z + 1);
-
-		if (doX && doY && doZ)
-			corners.Set(true, x + 1, y + 1, z + 1);
 	}
 
 	public void FinishMesh(Mesh newMesh)

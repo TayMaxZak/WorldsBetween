@@ -101,7 +101,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			CacheMaybeFlags();
+			CacheAdjacentFlags();
 
 			procStage = ProcStage.MakeMesh;
 			World.Generator.QueueNextStage(this);
@@ -139,7 +139,7 @@ public class Chunk
 		}
 	}
 
-	public void CacheMaybeFlags()
+	public void CacheAdjacentFlags()
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -150,6 +150,8 @@ public class Chunk
 					// Only care if this block is an air block
 					if (!blocks[x, y, z].IsAir())
 					{
+						FlagAllCorners(x + position.x, y + position.y, z + position.z);
+
 						continue;
 					}
 
@@ -196,6 +198,22 @@ public class Chunk
 			blocks[x, y, z - 1].maybeNearAir = 255;
 		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
 			block.maybeNearAir = 255;
+	}
+
+	private void FlagAllCorners(int x, int y, int z)
+	{
+		// Apply
+		World.SetCorner(true, x, y, z);
+
+		World.SetCorner(true, x + 1, y, z);
+		World.SetCorner(true, x, y + 1, z);
+		World.SetCorner(true, x, y, z + 1);
+
+		World.SetCorner(true, x + 1, y + 1, z);
+		World.SetCorner(true, x, y + 1, z + 1);
+		World.SetCorner(true, x + 1, y, z + 1);
+
+		World.SetCorner(true, x + 1, y + 1, z + 1);
 	}
 	#endregion
 
@@ -257,7 +275,7 @@ public class Chunk
 
 	private ChunkMesh.MeshData MakeMesh()
 	{
-		return chunkMesh.MakeSurfaceAndMesh(blocks, corners);
+		return chunkMesh.MakeSurfaceAndMesh(blocks);
 	}
 	#endregion
 
