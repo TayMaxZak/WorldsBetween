@@ -20,17 +20,15 @@ public class LightEngine
 	private Sun sun;
 
 	[SerializeField]
-	private Timer iterateTimer = new Timer(0.01f);
-
-	[SerializeField]
 	private int raysPerStep = 30;
+	private int raysBusy = 0;
 
 	public void Init(Sun sun)
 	{
 		this.sun = sun;
 	}
 
-	public void Begin()
+	public async void Begin()
 	{
 		sourceQueue.Clear();
 		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x++)
@@ -45,16 +43,27 @@ public class LightEngine
 			}
 		}
 		Debug.Log(sourceQueue.Count + " light rays to be cast");
+
+		while (World.Generator.GeneratorsUsed() > 0)
+			await Task.Delay(10);
+
+		Iterate();
 	}
 
-	public void Iterate(float deltaTime)
+	public void Iterate()
 	{
-		iterateTimer.Increment(deltaTime);
+		//iterateTimer.Increment(deltaTime);
 
-		if (!iterateTimer.Expired())
+		//if (!iterateTimer.Expired())
+		//	return;
+
+		//iterateTimer.Reset();
+
+		if (raysBusy > 0)
 			return;
 
-		iterateTimer.Reset();
+		if (!Application.isPlaying)
+			return;
 
 		for (int i = 0; i < raysPerStep; i++)
 		{
@@ -69,6 +78,7 @@ public class LightEngine
 
 	public void AsyncLightRay(Vector3Int source)
 	{
+		raysBusy++;
 		BkgThreadLightRay(this, System.EventArgs.Empty, source);
 	}
 
@@ -93,6 +103,10 @@ public class LightEngine
 			{
 				WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.black, t.airLight);
 			}
+
+			raysBusy--;
+
+			Iterate();
 		});
 
 		bw.RunWorkerAsync();

@@ -198,6 +198,18 @@ public class ChunkMesh
 
 							// Add normals
 							norm = Vector3.zero;
+							//for (int i = -1; i <= 1; i += 2)
+							//{
+							//	for (int j = -1; j <= 1; j += 2)
+							//	{
+							//		for (int k = -1; k <= 1; k += 2)
+							//		{
+							//			if (World.GetBlockFor(Mathf.RoundToInt(chunk.position.x + x + vert.x + i), Mathf.RoundToInt(chunk.position.y + y + vert.y + j), Mathf.RoundToInt(chunk.position.z + z + vert.z + k)).IsAir())
+							//				norm += new Vector3Int(i, j, k);
+							//		}
+							//	}
+							//}
+
 							for (int i = -1; i <= 1; i++)
 							{
 								for (int j = -1; j <= 1; j++)

@@ -90,7 +90,6 @@ public partial class World : MonoBehaviour
 	private void Update()
 	{
 		Generator.ContinueGenerating();
-		Lighter.Iterate(Time.deltaTime);
 	}
 
 	[ContextMenu("Restart Gen")]

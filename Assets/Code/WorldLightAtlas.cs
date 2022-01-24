@@ -24,7 +24,7 @@ public class WorldLightAtlas : MonoBehaviour
 	private int size = 256;
 	private int ambientSize = 16;
 
-	private Timer applyTimer = new Timer(0.1f);
+	private Timer applyTimer = new Timer(20f);
 	private static int changeCount = 0;
 
 	private void OnEnable()
