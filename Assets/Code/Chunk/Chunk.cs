@@ -112,13 +112,18 @@ public class Chunk
 
 	private void Generate()
 	{
-		List<NoiseModifier> modifiers = World.GetModifiers();
+		List<NoiseModifier> nModifiers = World.GetNoiseModifiers();
 
-		for (int i = 0; i < modifiers.Count; i++)
-			ApplyModifier(modifiers[i], i == 0, i == modifiers.Count - 1);
+		for (int i = 0; i < nModifiers.Count; i++)
+			ApplyModifier(nModifiers[i]);
+
+		List<RoomModifier> rModifiers = World.GetRoomModifiers();
+
+		for (int i = 0; i < rModifiers.Count; i++)
+			ApplyModifier(rModifiers[i]);
 	}
 
-	private void ApplyModifier(NoiseModifier modifier, bool firstPass, bool lastPass)
+	private void ApplyModifier(NoiseModifier modifier)
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -129,6 +134,27 @@ public class Chunk
 					float strength = modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
 
 					bool passes = strength > modifier.boundary;
+
+					if (!passes)
+						continue;
+
+					blocks[x, y, z].opacity = (byte)(modifier.addOrSub ? 255 : 0);
+				}
+			}
+		}
+	}
+
+	private void ApplyModifier(RoomModifier modifier)
+	{
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					float strength = modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
+
+					bool passes = strength > 0.5f;
 
 					if (!passes)
 						continue;

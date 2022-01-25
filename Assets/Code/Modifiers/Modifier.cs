@@ -9,8 +9,6 @@ public class Modifier
 
 	private bool didInit = false;
 
-	public Vector3Int pos; // Coordinates in world space
-
 	public virtual bool Init()
 	{
 		if (didInit)

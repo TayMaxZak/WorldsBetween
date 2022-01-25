@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public partial class World : MonoBehaviour
 {
@@ -19,7 +20,11 @@ public partial class World : MonoBehaviour
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
 	[SerializeField]
-	private List<NoiseModifier> modifiers = new List<NoiseModifier>();
+	[FormerlySerializedAs("modifiers")]
+	private List<NoiseModifier> noiseModifiers = new List<NoiseModifier>();
+
+	[SerializeField]
+	private List<RoomModifier> roomModifiers = new List<RoomModifier>();
 
 	//private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -74,7 +79,7 @@ public partial class World : MonoBehaviour
 			seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
-		foreach (NoiseModifier mod in modifiers)
+		foreach (NoiseModifier mod in noiseModifiers)
 			mod.Init();
 
 		// Scene setup
@@ -112,17 +117,22 @@ public partial class World : MonoBehaviour
 
 	public static void RegisterModifier(NoiseModifier modifier)
 	{
-		Instance.modifiers.Add(modifier);
+		Instance.noiseModifiers.Add(modifier);
 	}
 
 	public static void RemoveModifier(NoiseModifier modifier)
 	{
-		Instance.modifiers.Remove(modifier);
+		Instance.noiseModifiers.Remove(modifier);
 	}
 
-	public static List<NoiseModifier> GetModifiers()
+	public static List<NoiseModifier> GetNoiseModifiers()
 	{
-		return Instance.modifiers;
+		return Instance.noiseModifiers;
+	}
+
+	public static List<RoomModifier> GetRoomModifiers()
+	{
+		return Instance.roomModifiers;
 	}
 
 	public static void WaterFollow(Vector3 pos)
@@ -228,5 +238,11 @@ public partial class World : MonoBehaviour
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
 		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + generator.GetGenRange() * 2) * chunkSize);
+
+
+		Gizmos.color = Color.white;
+
+		foreach (RoomModifier room in roomModifiers)
+			Gizmos.DrawWireCube(room.bounds.center, room.bounds.extents * 2);
 	}
 }
