@@ -126,14 +126,14 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					float newOpacity = (firstPass ? 1 : blocks[x, y, z].opacity / 255f);
+					float strength = modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
 
-					newOpacity -= modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
+					bool passes = strength > modifier.boundary;
 
-					blocks[x, y, z].opacity = (byte)(Mathf.Clamp01(newOpacity) * 255);
+					if (!passes)
+						continue;
 
-					if (lastPass && Mathf.Abs(y + position.y - 30) < 4)
-						blocks[x, y, z].opacity = (byte)Mathf.Clamp(blocks[x, y, z].opacity - 8, 0, 255);
+					blocks[x, y, z].opacity = (byte)(modifier.addOrSub ? 255 : 0);
 				}
 			}
 		}

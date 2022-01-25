@@ -20,11 +20,12 @@ public class WorldLightAtlas : MonoBehaviour
 
 	public Texture3D directLightmap;
 	public Texture3D ambientLightmap;
+	private Color[] ambientColors;
 
 	private int size = 256;
 	private int ambientSize = 16;
 
-	private Timer applyTimer = new Timer(20f);
+	private Timer applyTimer = new Timer(10f);
 	private static int changeCount = 0;
 
 	private void OnEnable()
@@ -102,7 +103,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientLightmap.wrapMode = TextureWrapMode.Clamp;
 		ambientLightmap.filterMode = FilterMode.Bilinear;
 
-		Color[] colors = new Color[size * size * size];
+		ambientColors = new Color[size * size * size];
 		for (int z = 0; z < size; z++)
 		{
 			int zOffset = z * size * size;
@@ -111,13 +112,13 @@ public class WorldLightAtlas : MonoBehaviour
 				int yOffset = y * size;
 				for (int x = 0; x < size; x++)
 				{
-					colors[x + yOffset + zOffset] = Color.black;
+					ambientColors[x + yOffset + zOffset] = Color.black;
 				}
 			}
 		}
 
 		// Copy the color values to the texture
-		ambientLightmap.SetPixels(colors);
+		ambientLightmap.SetPixels(ambientColors);
 
 		// Apply the changes to the texture and upload the updated texture to the GPU
 		ambientLightmap.Apply();

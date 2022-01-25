@@ -39,7 +39,7 @@ public class Block
 
 	public bool IsAir()
 	{
-		return opacity <= 127;
+		return opacity == 0;
 	}
 
 	public Vector3Int GetLocalPosVector()
