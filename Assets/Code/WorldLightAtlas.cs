@@ -140,12 +140,12 @@ public class WorldLightAtlas : MonoBehaviour
 		Color oldValue = directLightmap.GetPixel(pos.x, pos.y, pos.z);
 		directLightmap.SetPixel(pos.x, pos.y, pos.z, value);
 
-		// Add to ambient
-		if (!airLight)
-			return;
+		//// Add to ambient
+		//if (airLight)
+		//	return;
 
-		// To work around float color precision limits
-		float ambChangeStrength = 1 / 4f;
+		// To work around float color precision limits	
+		float ambChangeStrength = airLight ? (1 / 4f) : 4f;
 
 		// TODO: You can offset ambPos from pos to simulate diffuse bounce light
 		Vector3Int ambPos = new Vector3Int((pos.x) / ambientSize, (pos.y) / ambientSize, (pos.z ) / ambientSize);
