@@ -5508,7 +5508,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: seed
-      value: -255736704
+      value: -1704722432
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
@@ -5524,7 +5524,7 @@ PrefabInstance:
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: randomizeSeed
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.multiQ
@@ -5556,7 +5556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.size
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: modifiers.Array.data[1].gate
@@ -5852,7 +5852,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].gate
-      value: 0.09
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[2].gate
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[0].label
@@ -5903,6 +5907,18 @@ PrefabInstance:
       value: Sinkholes
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].label
+      value: Crack
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].label
+      value: Crack
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].label
+      value: Crack
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: modifiers.Array.data[0].ribbonCount
       value: 3
       objectReference: {fileID: 0}
@@ -5951,8 +5967,28 @@ PrefabInstance:
       value: -17930.5
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: noiseModifiers.Array.data[2].preMul
-      value: 1
+      propertyPath: noiseModifiers.Array.data[3].offset
+      value: 26343.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].preMul
+      value: 0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].offset
+      value: 26343.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].preMul
+      value: 0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].offset
+      value: 26343.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].preMul
+      value: 0.86
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[0].scale.x
@@ -5968,15 +6004,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].scale.x
-      value: 0.027
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].scale.y
-      value: 0.027
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].scale.z
-      value: 0.027
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].scale.x
@@ -5989,6 +6025,42 @@ PrefabInstance:
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].scale.z
       value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].scale.x
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].scale.y
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].scale.z
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].scale.x
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].scale.y
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].scale.z
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].scale.x
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].scale.y
+      value: 0.017
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].scale.z
+      value: 0.017
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[2].addOrSub
@@ -6028,7 +6100,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].strength
-      value: 1.11
+      value: 1.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[2].addOrSub
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].boundary
@@ -6036,10 +6112,50 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].strength
-      value: 0.8
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].boundary
+      value: 0.985
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].strength
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].boundary
+      value: 0.985
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].strength
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].boundary
+      value: 0.985
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].strength
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[0].ribbonCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[1].ribbonCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].ribbonCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].ribbonCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[5].ribbonCount
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}

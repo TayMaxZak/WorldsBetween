@@ -183,7 +183,8 @@ public class ChunkMesh
 							continue;
 						surfacesAdded++;
 
-						//Vector3 randomNormal = new Vector3(SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1), SeedlessRandom.NextFloatInRange(-1, 1));
+						// Show debug rays in some places
+						bool drawDebugRay = SeedlessRandom.NextFloat() > 0.999f;
 
 						// What index are we starting this face from
 						int indexOffset = vertices.Count;
@@ -196,30 +197,45 @@ public class ChunkMesh
 							Vector3 vertPos = new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z);
 							vertices.Add(vertPos);
 
-							// Add normals
+							// Calculate normals
 							norm = Vector3.zero;
-							//for (int i = -1; i <= 1; i += 2)
+
+							// Based on adjacent vertices (more likely to fail, more loops, softer result)
+							//for (int i = -1; i <= 1; i++)
 							//{
-							//	for (int j = -1; j <= 1; j += 2)
+							//	for (int j = -1; j <= 1; j++)
 							//	{
-							//		for (int k = -1; k <= 1; k += 2)
+							//		for (int k = -1; k <= 1; k++)
 							//		{
-							//			if (World.GetBlockFor(Mathf.RoundToInt(chunk.position.x + x + vert.x + i), Mathf.RoundToInt(chunk.position.y + y + vert.y + j), Mathf.RoundToInt(chunk.position.z + z + vert.z + k)).IsAir())
+							//			if (!World.GetCorner(Mathf.RoundToInt(chunk.position.x + x + vert.x + i + 0.5f), Mathf.RoundToInt(chunk.position.y + y + vert.y + j + 0.5f), Mathf.RoundToInt(chunk.position.z + z + vert.z + k + 0.5f)))
 							//				norm += new Vector3Int(i, j, k);
 							//		}
 							//	}
 							//}
 
-							for (int i = -1; i <= 1; i++)
+							// Based on adjacent blocks (never fails, angular result)
+							for (int i = -1; i <= 1; i += 2)
 							{
-								for (int j = -1; j <= 1; j++)
+								for (int j = -1; j <= 1; j += 2)
 								{
-									for (int k = -1; k <= 1; k++)
+									for (int k = -1; k <= 1; k += 2)
 									{
-										if (!World.GetCorner(Mathf.RoundToInt(chunk.position.x + x + vert.x + i + 0.5f), Mathf.RoundToInt(chunk.position.y + y + vert.y + j + 0.5f), Mathf.RoundToInt(chunk.position.z + z + vert.z + k + 0.5f)))
+										if (World.GetBlockFor(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsAir())
+										{
 											norm += new Vector3Int(i, j, k);
+
+											if (drawDebugRay)
+												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.blue, 2000);
+										}
+										else if (drawDebugRay)
+											Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.red, 2000);
 									}
 								}
+							}
+
+							if (norm == Vector3.zero)
+							{
+								Debug.DrawRay(vertPos + chunk.position, SeedlessRandom.RandomPoint(SeedlessRandom.NextFloatInRange(0.25f, 1f)), SeedlessRandom.NextFloat() > 0.5f ? Color.black : Color.white, 2000);
 							}
 
 							normals.Add(norm.normalized);
