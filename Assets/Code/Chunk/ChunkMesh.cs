@@ -184,7 +184,7 @@ public class ChunkMesh
 						surfacesAdded++;
 
 						// Show debug rays in some places
-						bool drawDebugRay = SeedlessRandom.NextFloat() > 0.999f;
+						bool drawDebugRay = false/*SeedlessRandom.NextFloat() > 0.9999f*/;
 
 						// What index are we starting this face from
 						int indexOffset = vertices.Count;
@@ -225,18 +225,16 @@ public class ChunkMesh
 											norm += new Vector3Int(i, j, k);
 
 											if (drawDebugRay)
-												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.blue, 2000);
+												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.blue, 200);
 										}
 										else if (drawDebugRay)
-											Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.red, 2000);
+											Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.red, 200);
 									}
 								}
 							}
 
-							if (norm == Vector3.zero)
-							{
-								Debug.DrawRay(vertPos + chunk.position, SeedlessRandom.RandomPoint(SeedlessRandom.NextFloatInRange(0.25f, 1f)), SeedlessRandom.NextFloat() > 0.5f ? Color.black : Color.white, 2000);
-							}
+							//if (norm == Vector3.zero)
+							//	Debug.DrawRay(vertPos + chunk.position, SeedlessRandom.RandomPoint(SeedlessRandom.NextFloatInRange(0.25f, 1f)), SeedlessRandom.NextFloat() > 0.5f ? Color.black : Color.white, 200);
 
 							normals.Add(norm.normalized);
 						}

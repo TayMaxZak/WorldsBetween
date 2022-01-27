@@ -90,20 +90,13 @@ public class LightEngine
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = SendLightRay(source);
+			SendLightRay(source);
 		});
 
 		// What to do when worker completes its task
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
 		delegate (object o, RunWorkerCompletedEventArgs args)
 		{
-			LinkedList<LightRayResult> results = (LinkedList<LightRayResult>)args.Result;
-
-			foreach (LightRayResult t in results)
-			{
-				WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, t.coord, t.value ? sun.lightColor : Color.black, t.airLight);
-			}
-
 			raysBusy--;
 
 			Iterate();
@@ -112,13 +105,9 @@ public class LightEngine
 		bw.RunWorkerAsync();
 	}
 
-	private LinkedList<LightRayResult> SendLightRay(Vector3Int source)
+	private void SendLightRay(Vector3Int source)
 	{
 		Vector3Int cur = source;
-
-		LinkedList<LightRayResult> results = new LinkedList<LightRayResult>();
-
-		int chunkSize = World.GetChunkSize();
 
 		bool firstPass = true;
 		int steps = 0;
@@ -129,7 +118,7 @@ public class LightEngine
 			// Get chunk info
 			Chunk chunk = World.GetChunkFor(cur);
 			if (chunk == null || chunk.procStage < Chunk.ProcStage.Done)
-				return results;
+				return;
 
 			ChunkBitArray cornerBit = chunk.GetCorners();
 
@@ -141,12 +130,12 @@ public class LightEngine
 			{
 				// Light starting inside corner
 				if (occupied)
-					return results;
+					return;
+				firstPass = false;
 			}
-			firstPass = false;
 
 			// Remember this result
-			results.AddLast(new LightRayResult() { coord = cur, value = true, airLight = !occupied });
+			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, cur, sun.lightColor, !occupied);
 
 			if (occupied)
 				break;
@@ -155,6 +144,6 @@ public class LightEngine
 		} // y
 
 		Debug.DrawLine(source, cur, sun.lightColor, 1);
-		return results;
+		return;
 	}
 }
