@@ -24,15 +24,21 @@ public class WorldLightAtlas : MonoBehaviour
 	private Color[] ambientLightArr;
 
 	private int fullSize;
+
+	private int dirSize;
+	private int hdRange = 5;
+	private int directScaleHQ = 1;
+	private int directScaleLQ = 2;
+
 	private int ambientScale = 16;
 
 	private Timer cleanupTimer = new Timer(15f);
 
 	private static int directChanges = 0;
-	private static int targdirectChanges = 50000;
+	private static int targDirectChanges = 50000;
 
 	private static int ambientChanges = 0;
-	private static int targambientChanges = 5000;
+	private static int targAmbientChanges = 5000;
 
 	private void OnEnable()
 	{
@@ -43,6 +49,10 @@ public class WorldLightAtlas : MonoBehaviour
 		else
 		{
 			fullSize = World.GetChunkSize() * (1 + World.Generator.GetGenRange() * 2);
+			dirSize = fullSize;
+			//dirSize = World.GetChunkSize() * (1 + 
+			//	(Mathf.Min(hdRange, World.Generator.GetGenRange()) * 2 / directScaleHQ) + 
+			//	(Mathf.Max(0, World.Generator.GetGenRange() - hdRange) * 2 / directScaleLQ));
 
 			CreateDirectLightmap();
 			CreateAmbientLightmap();
@@ -66,25 +76,30 @@ public class WorldLightAtlas : MonoBehaviour
 	{
 		Shader.SetGlobalTexture("LightMap", texture);
 		Shader.SetGlobalTexture("LightMap2", texture2);
-		Shader.SetGlobalFloat("LightMapScale", texture.width);
+		Shader.SetGlobalFloat("LightMapScale", fullSize);
 	}
 
 	private void CreateDirectLightmap()
 	{
-		// Create texture and apply configuration. Half is sufficient for most lighting
-		directLightTex = new Texture3D(fullSize, fullSize, fullSize, TextureFormat.RGBAHalf, false);
+		// TODO:
+		// Up close - 1:1 pixel to block for 125 chunks around origin (center + 2 in each direction). 1:2 pixel to block everywhere else
+		// 1 + 2 + 4(0.5)
+		Debug.Log("dir size " + dirSize);
+
+		// Create texture and apply configuration. RGBAHalf is sufficient for most lighting
+		directLightTex = new Texture3D(dirSize, dirSize, dirSize, TextureFormat.RGBAHalf, false);
 
 		directLightTex.wrapMode = TextureWrapMode.Clamp;
 		directLightTex.filterMode = FilterMode.Bilinear;
 
-		directLightArr = new Color[fullSize * fullSize * fullSize];
-		for (int z = 0; z < fullSize; z++)
+		directLightArr = new Color[dirSize * dirSize * dirSize];
+		for (int z = 0; z < dirSize; z++)
 		{
-			for (int y = 0; y < fullSize; y++)
+			for (int y = 0; y < dirSize; y++)
 			{
-				for (int x = 0; x < fullSize; x++)
+				for (int x = 0; x < dirSize; x++)
 				{
-					directLightArr[IndexFromPos(fullSize, x, y, z)] = Color.black;
+					directLightArr[IndexFromPos(dirSize, x, y, z)] = Color.black;
 				}
 			}
 		}
@@ -141,19 +156,18 @@ public class WorldLightAtlas : MonoBehaviour
 		if (directLightTex == null)
 			return;
 
-		// Convert position
-		if (texSpace == LightMapSpace.WorldSpace)
-			pos = WorldToTex(pos);
-
+		Vector3Int posD = WorldToTex(pos);
+		Vector3Int posA = WorldToTex(pos);
 
 		// Direct light change
-		int dirIndex = IndexFromPos(fullSize, pos.x, pos.y, pos.z);
-		if (!InBounds(fullSize, dirIndex))
+		int dirIndex = IndexFromPos(dirSize, posD.x, posD.y, posD.z);
+		if (!InBounds(dirSize, dirIndex))
 			return;
 		directChanges++;
 
 		Color oldValue = directLightArr[dirIndex];
 
+		//if (SeedlessRandom.NextFloat() > 0.5f)
 		directLightArr[dirIndex] = value;
 
 
@@ -162,7 +176,7 @@ public class WorldLightAtlas : MonoBehaviour
 		float ambChangeStrength = airLight ? (1 / 4f) : 4f;
 
 		// Ambient light change
-		Vector3Int ambPos = new Vector3Int(pos.x / ambientScale, pos.y / ambientScale, pos.z / ambientScale);
+		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
 
 		if (!InBounds(fullSize / ambientScale, ambIndex))
@@ -174,6 +188,28 @@ public class WorldLightAtlas : MonoBehaviour
 
 		ambientLightArr[ambIndex] = newAmbValue;
 	}
+
+	//private int DirectPosCoord(int posIn)
+	//{
+	//	float f1 = posIn;
+	//	f1 /= fullSize;
+	//	f1 -= 0.5f;
+
+	//	float range = World.GetChunkSize() * (1 + hdRange);
+	//	range /= fullSize;
+	//	float f = f1 / range;
+
+	//	float hq = Mathf.Clamp(f, -1, 1);
+	//	float lq = Mathf.Max(0, Mathf.Abs(f) - 1) * Mathf.Sign(f);
+
+	//	float total = hq / directScaleHQ + lq / directScaleLQ;
+	//	total *= range;
+	//	total += 0.5f;
+
+	//	total *= dirSize;
+
+	//	return (int)total;
+	//}
 
 	private int IndexFromPos(int size, int x, int y, int z)
 	{
@@ -195,14 +231,14 @@ public class WorldLightAtlas : MonoBehaviour
 			return;
 
 		// Apply ambient changes as needed (cheaper to apply)
-		if (ambientChanges >= targambientChanges)
+		if (ambientChanges >= targAmbientChanges)
 		{
 			UpdateAmbientTex();
 			ambientChanges = 0;
 		}
 
 		// Apply direct changes as needed (less frequently than ambient)
-		if (directChanges >= targdirectChanges)
+		if (directChanges >= targDirectChanges)
 		{
 			UpdateDirectTex();
 			directChanges = 0;

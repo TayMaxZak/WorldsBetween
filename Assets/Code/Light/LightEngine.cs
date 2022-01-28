@@ -28,7 +28,7 @@ public class LightEngine
 		this.sun = sun;
 	}
 
-	public async void Begin()
+	public void Begin()
 	{
 		sourceQueue.Clear();
 		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x++)
@@ -44,8 +44,8 @@ public class LightEngine
 		}
 		Debug.Log(sourceQueue.Count + " light rays to be cast");
 
-		while (World.Generator.GeneratorsUsed() > 0)
-			await Task.Delay(10);
+		//while (World.Generator.GeneratorsUsed() > 0)
+		//	await Task.Delay(10);
 
 		Iterate();
 	}
@@ -105,7 +105,7 @@ public class LightEngine
 		bw.RunWorkerAsync();
 	}
 
-	private void SendLightRay(Vector3Int source)
+	private async void SendLightRay(Vector3Int source)
 	{
 		Vector3Int cur = source;
 
@@ -115,10 +115,13 @@ public class LightEngine
 		{
 			steps++;
 
-			// Get chunk info
+			// Get chunk (or wait its ready)
 			Chunk chunk = World.GetChunkFor(cur);
-			if (chunk == null || chunk.procStage < Chunk.ProcStage.Done)
+			if (chunk == null)
 				return;
+
+			while (chunk.procStage < Chunk.ProcStage.Done)
+				await Task.Delay(10);
 
 			ChunkBitArray cornerBit = chunk.GetCorners();
 
