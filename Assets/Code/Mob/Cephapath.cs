@@ -251,11 +251,11 @@ public class Cephapath : MonoBehaviour
 				}
 
 				// Which way to dash
-				Vector3 dashDir = dashMaxTime >= 0.99f ? (dir + randomMoveDir * 2).normalized : randomMoveDir;
+				Vector3 dashDir = dashMaxTime >= 0.99f ? (dir + randomMoveDir * 0.5f).normalized : randomMoveDir;
 
-				// Dash twice as far if perpindicular to dir
+				// Strafing dash mult
 				float strafe = 1 - Mathf.Abs(Vector3.Dot(dashDir, dir));
-				float dashMult = Mathf.Lerp(strafe, 1, 0.5f);
+				float dashMult = Mathf.Lerp(strafe, 1, 1f);
 
 				// Smoothly change random dash direction
 				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDirNew, Time.deltaTime).normalized;
