@@ -20,7 +20,9 @@ public class LightEngine
 	private Sun sun;
 
 	[SerializeField]
-	private int raysPerStep = 30;
+	private int raysPerStepHi = 300;
+	[SerializeField]
+	private int raysPerStepLo = 30;
 	private int raysBusy = 0;
 
 	public void Init(Sun sun)
@@ -44,7 +46,7 @@ public class LightEngine
 		}
 		Debug.Log(sourceQueue.Count + " light rays to be cast");
 
-		//while (World.Generator.GeneratorsUsed() > 0)
+		//while (World.Generator.IsGenerating())
 		//	await Task.Delay(10);
 
 		Iterate();
@@ -65,7 +67,7 @@ public class LightEngine
 		if (!Application.isPlaying)
 			return;
 
-		for (int i = 0; i < raysPerStep; i++)
+		for (int i = 0; i < (World.Generator.IsGenerating() ? raysPerStepHi : raysPerStepLo); i++)
 		{
 			if (sourceQueue.Count == 0)
 				break;
@@ -148,5 +150,10 @@ public class LightEngine
 
 		Debug.DrawLine(source, cur, sun.lightColor, 1);
 		return;
+	}
+
+	public bool IsBusy()
+	{
+		return raysBusy > 0;
 	}
 }

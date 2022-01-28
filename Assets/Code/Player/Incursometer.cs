@@ -57,9 +57,15 @@ public class Incursometer : MonoBehaviour
 			held = !held;
 
 		if (Input.GetButtonDown("Flashlight"))
-		{
+		{	
 			flashlightOn = !flashlightOn;
-			flashlight.SetActive(flashlightOn);
+			//flashlight.SetActive(flashlightOn);
+
+			if (!flashlightOn)
+			{
+				Shader.SetGlobalVector("FlashlightA", Vector3.one * 10000);
+				Shader.SetGlobalVector("FlashlightB", Vector3.one * 10001);
+			}
 		}
 
 		UIManager.SetMeterRaised(held);

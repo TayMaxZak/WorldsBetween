@@ -34,6 +34,8 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private Timer cleanupTimer = new Timer(15f);
 
+	private Timer recentApplyTimer = new Timer(1f);
+
 	private static int directChanges = 0;
 	private static int targDirectChanges = 50000;
 
@@ -230,11 +232,17 @@ public class WorldLightAtlas : MonoBehaviour
 		if (!Application.isPlaying)
 			return;
 
+		recentApplyTimer.Increment(Time.deltaTime);
+		if (!recentApplyTimer.Expired())
+			return;
+
 		// Apply ambient changes as needed (cheaper to apply)
 		if (ambientChanges >= targAmbientChanges)
 		{
 			UpdateAmbientTex();
 			ambientChanges = 0;
+
+			recentApplyTimer.Reset();
 		}
 
 		// Apply direct changes as needed (less frequently than ambient)
@@ -244,6 +252,7 @@ public class WorldLightAtlas : MonoBehaviour
 			directChanges = 0;
 
 			cleanupTimer.Reset();
+			recentApplyTimer.Reset();
 		}
 
 		// Leftover changes, eventually apply them during down time

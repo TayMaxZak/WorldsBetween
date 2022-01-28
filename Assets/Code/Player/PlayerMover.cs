@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerMover : Actor
 {
 	public PlayerVitals vitals;
+	public Incursometer incursometer;
 	public float gForceLimit = 10;
 	public float gForceMult = 2;
 
@@ -29,6 +30,9 @@ public class PlayerMover : Actor
 	public bool onRope;
 
 	public bool grabbed;
+
+	Vector3 prevFlashB;
+	Vector3 newFlashB;
 
 	public override void Init()
 	{
@@ -67,6 +71,22 @@ public class PlayerMover : Actor
 		float velDif = (newVel - prevVel).magnitude;
 		float velDmg = Mathf.Max(0, velDif - gForceLimit) * gForceMult;
 		vitals.DealDamage(velDmg);
+
+		if (incursometer.flashlightOn)
+		{
+			Transform t = incursometer.flashlight.transform;
+
+			if (physicsTick)
+			{
+				BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * 20);
+				newFlashB = hit.hit ? hit.worldPos : (t.position + t.forward * 20);
+			}
+
+			Shader.SetGlobalVector("FlashlightA", t.position);
+
+			prevFlashB = Vector3.Lerp(prevFlashB, newFlashB, partialTime);
+			Shader.SetGlobalVector("FlashlightB", prevFlashB);
+		}
 	}
 
 	private void Jump()
