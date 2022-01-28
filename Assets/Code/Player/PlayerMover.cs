@@ -79,7 +79,7 @@ public class PlayerMover : Actor
 			if (physicsTick)
 			{
 				BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * 20);
-				newFlashB = hit.hit ? hit.worldPos : (t.position + t.forward * 20);
+				newFlashB = hit.hit ? (t.position + t.forward * Vector3.Distance(t.position, hit.worldPos)) : (t.position + t.forward * 20);
 			}
 
 			Shader.SetGlobalVector("FlashlightA", t.position);

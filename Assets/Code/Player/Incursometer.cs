@@ -38,6 +38,9 @@ public class Incursometer : MonoBehaviour
 	private void Start()
 	{
 		apparitions = FindObjectsOfType<Cephapath>(true);
+
+		Shader.SetGlobalVector("FlashlightA", Vector3.one * 10000);
+		Shader.SetGlobalVector("FlashlightB", Vector3.one * 10001);
 	}
 
 	private void Update()
