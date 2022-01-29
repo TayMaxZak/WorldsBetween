@@ -26,7 +26,7 @@ public class NoiseModifier : Modifier
 		return true;
 	}
 
-	public override float StrengthAt(float x, float y, float z)
+	public override ModifierOutput OutputAt(float x, float y, float z)
 	{
 		x = x * scale.x + offset + randomOffset.x;
 		y = y * scale.y + offset + randomOffset.y;
@@ -43,6 +43,6 @@ public class NoiseModifier : Modifier
 
 		noise = Mathf.Clamp01(noise - gate) / (1 - gate);
 
-		return noise * strength;
+		return new ModifierOutput { passed = noise * strength > boundary, addOrSub = addOrSub };
 	}
 }

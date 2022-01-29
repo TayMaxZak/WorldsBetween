@@ -18,8 +18,14 @@ public class Modifier
 		return true;
 	}
 
-	public virtual float StrengthAt(float x, float y, float z)
+	public virtual ModifierOutput OutputAt(float x, float y, float z)
 	{
-		return 1;
+		return new ModifierOutput { passed = false, addOrSub = false };
 	}
+}
+
+public struct ModifierOutput
+{
+	public bool passed;
+	public bool addOrSub;
 }

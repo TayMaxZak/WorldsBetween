@@ -123,7 +123,7 @@ public class Chunk
 			ApplyModifier(rModifiers[i]);
 	}
 
-	private void ApplyModifier(NoiseModifier modifier)
+	private void ApplyModifier(Modifier modifier)
 	{
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -131,35 +131,12 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					float strength = modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
+					ModifierOutput mo = modifier.OutputAt(x + position.x + 0.5f, y + position.y + 0.5f, z + position.z + 0.5f);
 
-					bool passes = strength > modifier.boundary;
-
-					if (!passes)
+					if (!mo.passed)
 						continue;
 
-					blocks[x, y, z].opacity = (byte)(modifier.addOrSub ? 255 : 0);
-				}
-			}
-		}
-	}
-
-	private void ApplyModifier(RoomModifier modifier)
-	{
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					float strength = modifier.StrengthAt(x + position.x, y + position.y, z + position.z);
-
-					bool passes = strength > 0.5f;
-
-					if (!passes)
-						continue;
-
-					blocks[x, y, z].opacity = (byte)(modifier.addOrSub ? 255 : 0);
+					blocks[x, y, z].opacity = (byte)(mo.addOrSub ? 255 : 0);
 				}
 			}
 		}
