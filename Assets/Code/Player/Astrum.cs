@@ -51,7 +51,7 @@ public class Astrum : MonoBehaviour
 
 	private void Use()
 	{
-		if (vitals.dead)
+		//if (vitals.dead)
 			vitals.Respawn();
 
 		mover.position = initPos;

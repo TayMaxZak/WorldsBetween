@@ -10,11 +10,9 @@ public class CreateWorldLightTexture : ScriptableWizard
 	public enum LightMapStyle
 	{
 		Flat,
-		Point,
-		Perlin,
-
+		Point
 	}
-	public LightMapStyle style = LightMapStyle.Perlin;
+	public LightMapStyle style = LightMapStyle.Flat;
 
 	[Range(4, 512)]
 	public int size = 128;
@@ -51,33 +49,6 @@ public class CreateWorldLightTexture : ScriptableWizard
 
 	static void CreateTexture3D(int size, LightMapStyle style, float maxBrightness, float maxWarm, float maxCool, float randomDither, float modBrightness, float modWarm, float modCool)
 	{
-		if (style == LightMapStyle.Perlin)
-		{
-			xNoise = new NoiseModifier()
-			{
-				scale = Vector3.one * 0.05f,
-				offset = 2444.0424f,
-				strength = 1
-			};
-			xNoise.Init();
-
-			yNoise = new NoiseModifier()
-			{
-				scale = Vector3.one * 0.05f,
-				offset = 2144.0424f,
-				strength = 1
-			};
-			yNoise.Init();
-
-			zNoise = new NoiseModifier()
-			{
-				scale = Vector3.one * 0.05f,
-				offset = 28744.0424f,
-				strength = 1
-			};
-			zNoise.Init();
-		}
-
 		// Configure the texture
 		TextureFormat format = TextureFormat.RGBAHalf;
 		TextureWrapMode wrapMode = TextureWrapMode.Mirror;
@@ -124,13 +95,6 @@ public class CreateWorldLightTexture : ScriptableWizard
 								r = dist * maxBrightness;
 								g = dist * maxWarm;
 								b = dist * maxCool;
-							}
-							break;
-						case LightMapStyle.Perlin:
-							{
-								r = xNoise.StrengthAt(x * modBrightness, y * modBrightness, z * modBrightness) * maxBrightness;
-								g = yNoise.StrengthAt(x * modWarm, y * modWarm, z * modWarm) * maxWarm;
-								b = zNoise.StrengthAt(x * modCool, y * modCool, z * modCool) * maxCool;
 							}
 							break;
 						default:

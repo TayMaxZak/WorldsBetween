@@ -145,8 +145,8 @@ public partial class PhysicsManager : MonoBehaviour
 
 		Vector3 lastDir = Vector3.one;
 
-		Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.08f), Instance.randomColor, 10f);
-		Debug.DrawLine(a, b, Instance.randomColor, 10f);
+		Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.08f), Instance.randomColor, 5f);
+		Debug.DrawLine(a, b, Instance.randomColor, 5f);
 
 		while (i < 100)
 		{
