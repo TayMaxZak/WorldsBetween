@@ -31,6 +31,7 @@ public class PlayerMover : Actor
 
 	public bool grabbed;
 
+	public float flashlightLength = 20;
 	Vector3 prevFlashB;
 	Vector3 newFlashB;
 
@@ -78,8 +79,8 @@ public class PlayerMover : Actor
 
 			if (physicsTick)
 			{
-				BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * 20);
-				newFlashB = hit.hit ? (t.position + t.forward * Vector3.Distance(t.position, hit.worldPos)) : (t.position + t.forward * 20);
+				BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * flashlightLength);
+				newFlashB = hit.hit ? (t.position + t.forward * Vector3.Distance(t.position, hit.worldPos)) : (t.position + t.forward * flashlightLength);
 			}
 
 			Shader.SetGlobalVector("FlashlightA", t.position);

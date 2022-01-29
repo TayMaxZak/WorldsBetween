@@ -1307,6 +1307,12 @@
             "m_Id": "5d3fde7332ae42028fe44a3ffa9f0b3f"
         },
         {
+            "m_Id": "73944ea744854889aa5f4ba26ce02593"
+        },
+        {
+            "m_Id": "ad3489b0c5cd495da7f0aa4c20357dc9"
+        },
+        {
             "m_Id": "77a0930f5c924d6faf1f206b25027c22"
         },
         {
@@ -1330,7 +1336,9 @@
         "7353976b-a53e-4c59-9743-7b7e35514e50",
         "07811093-cd33-4e9a-804b-c15455ad36cd",
         "6e64e7dd-6106-403a-a9c4-a21bf139a0d3",
-        "6aa9dca9-c34d-4f06-8be7-8dd19a08a95a"
+        "6aa9dca9-c34d-4f06-8be7-8dd19a08a95a",
+        "e4bc0ad9-c92f-44d5-b5c4-9c9d2fc76cb5",
+        "21699f9d-7e2a-4937-ab7d-85d33de3f171"
     ],
     "m_PropertyIds": [
         -1328853205,
@@ -1341,7 +1349,9 @@
         -1385309342,
         196239044,
         -1386043596,
-        618959861
+        618959861,
+        -1315746119,
+        -633088293
     ]
 }
 
@@ -1884,6 +1894,29 @@
         "m_SerializedTexture": "{\"texture\":{\"fileID\":11700000,\"guid\":\"4dafe330dff7d3240a9228bd534a92ad\",\"type\":2}}",
         "m_Guid": ""
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "73944ea744854889aa5f4ba26ce02593",
+    "m_Id": -1315746119,
+    "m_DisplayName": "FlashlightA",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Vector3_bfd9aa3b4c654b1cb92d8777a71e4772",
+    "m_StageCapability": 2,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
 }
 
 {
@@ -2638,6 +2671,29 @@
     "m_StageCapability": 3,
     "m_Value": false,
     "m_DefaultValue": false
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "ad3489b0c5cd495da7f0aa4c20357dc9",
+    "m_Id": -633088293,
+    "m_DisplayName": "FlashlightB",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Vector3_bfd9aa3b4c654b1cb92d8777a71e4772_1",
+    "m_StageCapability": 2,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
 }
 
 {
