@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Incursometer : MonoBehaviour
 {
-	public PlayerVitals vitals;
-
 	public GameObject flashlight;
 
 	public bool held;
@@ -45,7 +43,7 @@ public class Incursometer : MonoBehaviour
 
 	private void Update()
 	{
-		if (vitals.dead)
+		if (Player.Instance.vitals.dead)
 		{
 			tickloopSlow.volume = 0;
 			tickloopMed.volume = 0;

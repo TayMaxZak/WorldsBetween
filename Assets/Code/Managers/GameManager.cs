@@ -11,7 +11,7 @@ public partial class GameManager : MonoBehaviour
 	public bool startedLoading = false;
 	public bool finishedLoading = false;
 
-	public PlayerLoader player;
+	public Player player;
 
 	public LoadingScreenHook loadingScreen;
 

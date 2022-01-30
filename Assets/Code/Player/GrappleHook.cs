@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class GrappleHook : MonoBehaviour
 {
-	public PlayerVitals vitals;
-	public PlayerMover mover;
-
 	public Vector3Int attachBlock;
 	public Vector3 attachBlockPos;
 
@@ -26,7 +23,7 @@ public class GrappleHook : MonoBehaviour
 
 	public void Update()
 	{
-		if (vitals.dead)
+		if (Player.Instance.vitals.dead)
 		{
 			if (isAttached)
 				ReleaseHook();
@@ -75,10 +72,10 @@ public class GrappleHook : MonoBehaviour
 
 		if (isAttached)
 		{
-			Debug.DrawLine(mover.position, attachBlockPos);
+			Debug.DrawLine(Player.Instance.mover.position, attachBlockPos);
 
 			line.gameObject.SetActive(true);
-			line.SetPosition(0, mover.transform.position);
+			line.SetPosition(0, Player.Instance.mover.transform.position);
 			line.SetPosition(1, attachBlockPos);
 
 			//if (Vector3.SqrMagnitude(body.position - attachBlockPos) > length * length)
@@ -88,7 +85,7 @@ public class GrappleHook : MonoBehaviour
 
 			if (isLocked && PhysicsManager.Instance.physicsTicking)
 			{
-				float dist = Vector3.Distance(mover.position, attachBlockPos);
+				float dist = Vector3.Distance(Player.Instance.mover.position, attachBlockPos);
 
 				if (dist > 200)
 				{
@@ -98,7 +95,7 @@ public class GrappleHook : MonoBehaviour
 
 				if (dist > length)
 				{
-					mover.AddVelocity(-(mover.position - attachBlockPos).normalized * (dist - length) * strength * PhysicsManager.Instance.tickingDelta);
+					Player.Instance.mover.AddVelocity(-(Player.Instance.mover.position - attachBlockPos).normalized * (dist - length) * strength * PhysicsManager.Instance.tickingDelta);
 				}
 			}
 		}
@@ -111,7 +108,7 @@ public class GrappleHook : MonoBehaviour
 		if (shootSound)
 			AudioManager.PlaySound(shootSound, transform.position);
 
-		BlockCastHit hit = PhysicsManager.BlockCastAxial(mover.cam.transform.position, mover.cam.transform.position + mover.cam.transform.forward * maxLength);
+		BlockCastHit hit = PhysicsManager.BlockCastAxial(Player.Instance.mover.cam.transform.position, Player.Instance.mover.cam.transform.position + Player.Instance.mover.cam.transform.forward * maxLength);
 		if (!hit.hit)
 		{
 			ReleaseHook();
@@ -128,7 +125,7 @@ public class GrappleHook : MonoBehaviour
 
 	private void LockHook()
 	{
-		length = Vector3.Distance(mover.position, attachBlockPos);
+		length = Vector3.Distance(Player.Instance.mover.position, attachBlockPos);
 
 		ChangeLocked(true);
 	}
@@ -147,7 +144,7 @@ public class GrappleHook : MonoBehaviour
 	private void ChangeAttached(bool val)
 	{
 		isAttached = val;
-		mover.onRope = val;
+		Player.Instance.mover.onRope = val;
 	}
 
 	private void ChangeLocked(bool val)

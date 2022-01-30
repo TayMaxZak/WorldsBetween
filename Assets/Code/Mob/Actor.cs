@@ -32,13 +32,10 @@ public class Actor : MonoBehaviour
 
 	private void Awake()
 	{
+		PhysicsManager.Instance.Register(this);
+
 		position = transform.position;
 		prevPosition = new Vector3(position.x, position.y, position.z);
-	}
-
-	private void Start()
-	{
-		PhysicsManager.Instance.Register(this);
 	}
 
 	public virtual void Init()

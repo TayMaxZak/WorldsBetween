@@ -505,11 +505,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1 &179779508 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8417224531919593864, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-  m_PrefabInstance: {fileID: 805622447}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &204428473
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2024,21 +2019,45 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1335200600, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1335200601, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: line
       value: 
       objectReference: {fileID: 1832004583}
+    - target: {fileID: 1335200601, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215269175067649699, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6388750949980177594, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: mover
+      value: 
+      objectReference: {fileID: 1970799354}
+    - target: {fileID: 6388750949980177594, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: vitals
+      value: 
+      objectReference: {fileID: 1970799355}
     - target: {fileID: 6388750949980177594, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: toActivate.Array.data[5]
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7475139066928018488, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: flashlight
-      value: 
-      objectReference: {fileID: 179779508}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8417224531919593866, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: near clip plane
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: gForceMult
@@ -7351,7 +7370,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 805622447}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a96e8a54576bdfa429ae6f5a6a18d52c, type: 3}
   m_Name: 
@@ -7362,7 +7381,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 805622447}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f27fa7b476663dd47806d74bf384754e, type: 3}
   m_Name: 
@@ -7373,7 +7392,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 805622447}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c23c4a0b6efbce64d959fc300d6e91b2, type: 3}
   m_Name: 

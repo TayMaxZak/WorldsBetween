@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Astrum : MonoBehaviour
 {
-	public PlayerVitals vitals;
-	public PlayerMover mover;
 	public MouseLook look;
 	public GrappleHook hook;
 
@@ -17,7 +15,7 @@ public class Astrum : MonoBehaviour
 
 	private void Awake()
 	{
-		initPos = mover.transform.position;
+		initPos = Player.Instance.mover.transform.position;
 	}
 
 	public void Update()
@@ -32,7 +30,7 @@ public class Astrum : MonoBehaviour
 		else
 			activate.currentTime = activate.maxTime;
 
-		if (vitals.dead && Input.GetButtonDown("Quit"))
+		if (Player.Instance.vitals.dead && Input.GetButtonDown("Quit"))
 			Use();
 
 		if (Input.GetButton("Restart"))
@@ -52,13 +50,13 @@ public class Astrum : MonoBehaviour
 	private void Use()
 	{
 		//if (vitals.dead)
-			vitals.Respawn();
+			Player.Instance.vitals.Respawn();
 
-		mover.position = initPos;
-		mover.SetVelocity(Vector3.zero);
-		mover.UpdateBlockPosition();
+		Player.Instance.mover.position = initPos;
+		Player.Instance.mover.SetVelocity(Vector3.zero);
+		Player.Instance.mover.UpdateBlockPosition();
 
-		World.WaterFollow(mover.blockPosition);
+		World.WaterFollow(Player.Instance.mover.blockPosition);
 
 		look.SetXRotation(0);
 
