@@ -68,26 +68,26 @@ public class PlayerMover : Actor
 		Vector3 newVel = velocity;
 
 		// Velocity damage
-		// TODO: Don't deal damage for increasing speed, only for rapidly decreasing
+		// TODO: Don't deal damage for rapidly increasing speed, only for rapidly decreasing
 		float velDif = (newVel - prevVel).magnitude;
 		float velDmg = Mathf.Max(0, velDif - gForceLimit) * gForceMult;
 		vitals.DealDamage(velDmg);
 
-		if (incursometer.flashlightOn)
-		{
-			Transform t = incursometer.flashlight.transform;
+		//if (incursometer.flashlightOn)
+		//{
+		//	Transform t = incursometer.flashlight.transform;
 
-			if (physicsTick)
-			{
-				BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * flashlightLength);
-				newFlashB = hit.hit ? (t.position + t.forward * Vector3.Distance(t.position, hit.worldPos)) : (t.position + t.forward * flashlightLength);
-			}
+		//	if (physicsTick)
+		//	{
+		//		BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * flashlightLength);
+		//		newFlashB = hit.hit ? (t.position + t.forward * Vector3.Distance(t.position, hit.worldPos)) : (t.position + t.forward * flashlightLength);
+		//	}
 
-			Shader.SetGlobalVector("FlashlightA", t.position);
+		//	Shader.SetGlobalVector("FlashlightA", t.position);
 
-			prevFlashB = Vector3.Lerp(prevFlashB, newFlashB, partialTime);
-			Shader.SetGlobalVector("FlashlightB", prevFlashB);
-		}
+		//	prevFlashB = Vector3.Lerp(prevFlashB, newFlashB, partialTime);
+		//	Shader.SetGlobalVector("FlashlightB", prevFlashB);
+		//}
 	}
 
 	private void Jump()

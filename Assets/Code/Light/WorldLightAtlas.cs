@@ -26,9 +26,9 @@ public class WorldLightAtlas : MonoBehaviour
 	private int fullSize;
 
 	private int dirSize;
-	private int hdRange = 5;
-	private int directScaleHQ = 1;
-	private int directScaleLQ = 2;
+	//private int hdRange = 5;
+	//private int directScaleHQ = 1;
+	//private int directScaleLQ = 2;
 
 	private int ambientScale = 16;
 

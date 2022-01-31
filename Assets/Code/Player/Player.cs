@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 
 	public PlayerVitals vitals;
 	public PlayerMover mover;
+	public MouseLook mouseLook;
 
 	public Item heldItem;
 

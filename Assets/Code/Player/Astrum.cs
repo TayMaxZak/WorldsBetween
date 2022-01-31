@@ -5,10 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Astrum : MonoBehaviour
 {
-	public MouseLook look;
-	public GrappleHook hook;
-
-	public Vector3 initPos;
+	private Vector3 initPos;
 
 	public Timer activate;
 	public Timer restart;
@@ -58,9 +55,9 @@ public class Astrum : MonoBehaviour
 
 		World.WaterFollow(Player.Instance.mover.blockPosition);
 
-		look.SetXRotation(0);
+		Player.Instance.mouseLook.SetXRotation(0);
 
-		hook.ReleaseHook();
+		//hook.ReleaseHook();
 	}
 }
 

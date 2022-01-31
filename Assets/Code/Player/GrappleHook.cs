@@ -4,22 +4,31 @@ using UnityEngine;
 
 public class GrappleHook : MonoBehaviour
 {
-	public Vector3Int attachBlock;
-	public Vector3 attachBlockPos;
+	private Vector3Int attachBlock;
+	private Vector3 attachBlockPos;
 
-	public bool isAttached = false;
+	private bool isAttached = false;
 
-	public bool isLocked = false;
+	private bool isLocked = false;
 
 	public float maxLength = 20;
-	[System.NonSerialized]
-	public float length;
+	private float length;
 
-	public LineRenderer line;
+	[SerializeField]
+	private LineRenderer linePrefab;
+	private LineRenderer line;
 
+	[SerializeField]
 	public Sound shootSound;
+	[SerializeField]
 	public Sound hitSound;
+	[SerializeField]
 	public Sound scrollSound;
+
+	public void Init()
+	{
+		line = Instantiate(linePrefab);
+	}
 
 	public void Update()
 	{

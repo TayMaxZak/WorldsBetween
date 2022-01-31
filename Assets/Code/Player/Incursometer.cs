@@ -5,15 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class Incursometer : MonoBehaviour
 {
-	public GameObject flashlight;
-
 	public bool held;
 
-	public bool flashlightOn;
-
-	public Transform looker;
-
-	public Cephapath[] apparitions;
+	private Cephapath[] apparitions;
 
 	public float range = 40;
 
@@ -49,25 +43,11 @@ public class Incursometer : MonoBehaviour
 			tickloopMed.volume = 0;
 			tickloopFast.volume = 0;
 
-			flashlightOn = false;
-
 			return;
 		}
 
 		if (Input.GetButtonDown("Equipment"))
 			held = !held;
-
-		if (Input.GetButtonDown("Flashlight"))
-		{	
-			flashlightOn = !flashlightOn;
-			//flashlight.SetActive(flashlightOn);
-
-			if (!flashlightOn)
-			{
-				Shader.SetGlobalVector("FlashlightA", Vector3.one * 10000);
-				Shader.SetGlobalVector("FlashlightB", Vector3.one * 10001);
-			}
-		}
 
 		UIManager.SetMeterRaised(held);
 
@@ -85,12 +65,12 @@ public class Incursometer : MonoBehaviour
 		float cutoff = 0.05f;
 		foreach (Cephapath apparition in apparitions)
 		{
-			oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.transform.position - looker.position) - 8, 0)) - cutoff);
+			oneoverx = Mathf.Clamp01((2 / Mathf.Max(Vector3.Magnitude(apparition.transform.position - Player.Instance.transform.position) - 8, 0)) - cutoff);
 			oneoverx = Mathf.Clamp01(oneoverx + cutoff * oneoverx);
-			linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.transform.position - looker.position) - 8, 0) / range) - cutoff);
+			linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.transform.position - Player.Instance.transform.position) - 8, 0) / range) - cutoff);
 			linear = Mathf.Clamp01(linear + cutoff * linear);
 			proximity = Mathf.Lerp(oneoverx, linear, 0.5f);
-			dot = Mathf.Clamp01(Vector3.Dot(looker.forward, (apparition.transform.position - looker.position).normalized));
+			dot = Mathf.Clamp01(Vector3.Dot(Player.Instance.mouseLook.transform.forward, (apparition.transform.position - Player.Instance.transform.position).normalized));
 
 			float toAdd = Mathf.Clamp01(proximity * (1 + 1 * dot));
 			intensity = 1 - (1 - intensity) * (1 - toAdd);
