@@ -153,7 +153,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientLightTex.Apply();
 	}
 
-	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color value, bool airLight)
+	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color newValue, bool airLight)
 	{
 		if (directLightTex == null)
 			return;
@@ -169,13 +169,12 @@ public class WorldLightAtlas : MonoBehaviour
 
 		Color oldValue = directLightArr[dirIndex];
 
-		//if (SeedlessRandom.NextFloat() > 0.5f)
-		directLightArr[dirIndex] = value;
+		directLightArr[dirIndex] = newValue;
 
 
 		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
-		// Surface light should count for 16 times as much because of limited surface area compared to volume
-		float ambChangeStrength = airLight ? (1 / 4f) : 4f;
+		// Surface light should count for 16 times as much as air light because of limited surface area compared to volume
+		float ambChangeStrength = airLight ? 1/4f : 4f;
 
 		// Ambient light change
 		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
@@ -186,7 +185,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientChanges++;
 
 		Color oldAmbValue = ambientLightArr[ambIndex];
-		Color newAmbValue = oldAmbValue + (value - oldValue) * ambChangeStrength;
+		Color newAmbValue = oldAmbValue + (newValue - oldValue) * ambChangeStrength;
 
 		ambientLightArr[ambIndex] = newAmbValue;
 	}
