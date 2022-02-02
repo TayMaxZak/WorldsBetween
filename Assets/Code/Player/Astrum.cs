@@ -1,63 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 public class Astrum : MonoBehaviour
 {
-	private Vector3 initPos;
 
-	public Timer activate;
-	public Timer restart;
-
-	private void Awake()
-	{
-		initPos = Player.Instance.mover.transform.position;
-	}
-
-	public void Update()
-	{
-		if (Input.GetButton("Astrum"))
-		{
-			activate.Increment(Time.deltaTime);
-
-			if (activate.Expired())
-				Use();
-		}
-		else
-			activate.currentTime = activate.maxTime;
-
-		if (Player.Instance.vitals.dead && Input.GetButtonDown("Quit"))
-			Use();
-
-		if (Input.GetButton("Restart"))
-		{
-			restart.Increment(Time.deltaTime);
-
-			if (restart.Expired())
-			{
-				SceneLoader.Remove();
-				SceneManager.LoadScene(0);
-			}
-		}
-		else
-			restart.currentTime = restart.maxTime;
-	}
-
-	private void Use()
-	{
-		//if (vitals.dead)
-			Player.Instance.vitals.Respawn();
-
-		Player.Instance.mover.position = initPos;
-		Player.Instance.mover.SetVelocity(Vector3.zero);
-		Player.Instance.mover.UpdateBlockPosition();
-
-		World.WaterFollow(Player.Instance.mover.blockPosition);
-
-		Player.Instance.mouseLook.SetXRotation(0);
-
-		//hook.ReleaseHook();
-	}
 }
 

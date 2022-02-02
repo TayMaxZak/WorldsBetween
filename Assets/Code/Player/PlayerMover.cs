@@ -5,7 +5,6 @@ using UnityEngine;
 [SelectionBase]
 public class PlayerMover : Actor
 {
-	public PlayerVitals vitals;
 	public Incursometer incursometer;
 	public float gForceLimit = 10;
 	public float gForceMult = 2;
@@ -31,10 +30,6 @@ public class PlayerMover : Actor
 
 	public bool grabbed;
 
-	public float flashlightLength = 20;
-	Vector3 prevFlashB;
-	Vector3 newFlashB;
-
 	public override void Init()
 	{
 		base.Init();
@@ -47,12 +42,12 @@ public class PlayerMover : Actor
 		if (!didInit)
 			return;
 
-		if (!vitals.dead && grounded && Input.GetButtonDown("Jump"))
+		if (!Player.Instance.vitals.dead && grounded && Input.GetButtonDown("Jump"))
 			Jump();
 
-		if (!vitals.dead && Input.GetButtonDown("Sprint"))
+		if (!Player.Instance.vitals.dead && Input.GetButtonDown("Sprint"))
 		{
-			if (sprinting || vitals.currentStamina >= 20)
+			if (sprinting || Player.Instance.vitals.currentStamina >= 20)
 			{
 				if (grounded)
 					sprinting = !sprinting;
@@ -71,7 +66,7 @@ public class PlayerMover : Actor
 		// TODO: Don't deal damage for rapidly increasing speed, only for rapidly decreasing
 		float velDif = (newVel - prevVel).magnitude;
 		float velDmg = Mathf.Max(0, velDif - gForceLimit) * gForceMult;
-		vitals.DealDamage(velDmg);
+		Player.Instance.vitals.DealDamage(velDmg);
 
 		//if (incursometer.flashlightOn)
 		//{
