@@ -15,7 +15,7 @@ public partial class PhysicsManager : MonoBehaviour
 	private Timer physicsTickTimer = new Timer(0.2f);
 	public float epsilon = 0.1f;
 
-	public bool physicsTicking = false;
+	public bool ticking = false;
 	[System.NonSerialized]
 	public float tickingDelta;
 
@@ -39,13 +39,13 @@ public partial class PhysicsManager : MonoBehaviour
 
 	private void Update()
 	{
-		physicsTicking = false;
+		ticking = false;
 
 		physicsTickTimer.Increment(Time.deltaTime);
 
 		if (physicsTickTimer.Expired())
 		{
-			physicsTicking = true;
+			ticking = true;
 
 			physicsTickTimer.Reset();
 		}
@@ -54,7 +54,7 @@ public partial class PhysicsManager : MonoBehaviour
 		randomColor = Color.HSVToRGB(SeedlessRandom.NextFloat(), 1, 1);
 
 		foreach (Actor actor in actors)
-			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, physicsTicking);
+			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, ticking);
 	}
 
 	public void Register(Actor actor)

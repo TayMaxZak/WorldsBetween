@@ -123,11 +123,11 @@ public class PlayerVitals : MonoBehaviour
 		if (dead)
 			return;
 
-		currentStamina -= amount / 2;
-		if (currentStamina < 0)
-			currentStamina = 0;
+		//currentStamina -= amount / 2;
+		//if (currentStamina < 0)
+		//	currentStamina = 0;
 
-		UpdateUIUX();
+		//UpdateUIUX();
 
 		//// More damage if out of stamina
 		//if (currentStamina < 0)
@@ -227,7 +227,7 @@ public class PlayerVitals : MonoBehaviour
 			AudioManager.PlaySound(nearDeathSound, transform.position);
 
 		currentHealth = 1;
-		currentStamina = 0;
+		//currentStamina = 0;
 
 		UpdateUIUX();
 	}

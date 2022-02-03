@@ -9,8 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d8d740c9a9d5f9488ab295890a99de1, type: 3}
+  m_Script: {fileID: 11500000, guid: 664d657459f0a5546b18a8a7bb169060, type: 3}
   m_Name: Flashlight
   m_EditorClassIdentifier: 
   label: Flashlight
-  inventorySize: {x: 1, y: 1}
+  inventorySize: {x: 2, y: 1}
+  on: 0
+  range: 20

@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 	public PlayerVitals vitals;
 	public PlayerMover mover;
 	public MouseLook mouseLook;
+	public Transform hand;
 
 	public Item heldItem;
 
@@ -31,6 +32,14 @@ public class Player : MonoBehaviour
 		vitals.enabled = false;
 		mover.enabled = false;
 		mouseLook.enabled = false;
+
+		if (heldItem)
+		{
+			// Make temp copy of item asset
+			heldItem = Instantiate(heldItem);
+
+			heldItem.Equip(hand);
+		}
 	}
 
 	public void ActivatePlayer()
@@ -44,6 +53,7 @@ public class Player : MonoBehaviour
 
 	public void Update()
 	{
+		// Debug respawn
 		if (Input.GetButton("Astrum"))
 		{
 			activate.Increment(Time.deltaTime);
@@ -57,6 +67,7 @@ public class Player : MonoBehaviour
 		if (vitals.dead && Input.GetButtonDown("Quit"))
 			Respawn();
 
+		// Debug restart
 		if (Input.GetButton("Restart"))
 		{
 			restart.Increment(Time.deltaTime);
@@ -70,14 +81,19 @@ public class Player : MonoBehaviour
 		else
 			restart.currentTime = restart.maxTime;
 
+		// Only handle inputs if alive
 		if (vitals.dead)
-		{
 			return;
-		}
+
+		// Item inputs
+		if (!heldItem)
+			return;
+
+		heldItem.Update();
 
 		bool lmb = Input.GetButtonDown("Use Item Main");
 
-		if (lmb && heldItem)
+		if (lmb)
 		{
 			heldItem.Use();
 		}

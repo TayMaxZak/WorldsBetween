@@ -92,7 +92,7 @@ public class GrappleHook : MonoBehaviour
 
 			float strength = 20;
 
-			if (isLocked && PhysicsManager.Instance.physicsTicking)
+			if (isLocked && PhysicsManager.Instance.ticking)
 			{
 				float dist = Vector3.Distance(Player.Instance.mover.position, attachBlockPos);
 

@@ -183,7 +183,7 @@ public class Cephapath : MonoBehaviour
 		if (!playerVitals.dead)
 		{
 			// Then, gradually reel them in
-			if (playerMover.grabbed && PhysicsManager.Instance.physicsTicking)
+			if (playerMover.grabbed && PhysicsManager.Instance.ticking)
 			{
 				playerMover.AddVelocity(-dir * knockbackReelYankSpeeds.y * Mathf.Lerp(0.5f + reelStrength, 1, 0.5f) * PhysicsManager.Instance.tickingDelta);
 				// Reel less over time
