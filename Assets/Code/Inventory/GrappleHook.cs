@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrappleHook : MonoBehaviour
+public class GrappleHook : Item
 {
 	private Vector3Int attachBlock;
 	private Vector3 attachBlockPos;
@@ -25,12 +25,17 @@ public class GrappleHook : MonoBehaviour
 	[SerializeField]
 	public Sound scrollSound;
 
-	public void Init()
+	public override void Equip(Transform hand)
 	{
 		line = Instantiate(linePrefab);
 	}
 
-	public void Update()
+	public override void Unequip()
+	{
+		Destroy(line);
+	}
+
+	public override void Update()
 	{
 		if (Player.Instance.vitals.dead)
 		{
@@ -76,7 +81,7 @@ public class GrappleHook : MonoBehaviour
 			length = Mathf.Max(length, 0.5f);
 
 			if (Mathf.Abs(speed) > 0.02f && scrollSound && SeedlessRandom.NextFloat() < 10 * Time.deltaTime)
-				AudioManager.PlaySound(scrollSound, transform.position);
+				AudioManager.PlaySound(scrollSound, hand.position);
 		}
 
 		if (isAttached)
@@ -115,7 +120,7 @@ public class GrappleHook : MonoBehaviour
 	private void ShootHook()
 	{
 		if (shootSound)
-			AudioManager.PlaySound(shootSound, transform.position);
+			AudioManager.PlaySound(shootSound, hand.position);
 
 		BlockCastHit hit = PhysicsManager.BlockCastAxial(Player.Instance.mover.cam.transform.position, Player.Instance.mover.cam.transform.position + Player.Instance.mover.cam.transform.forward * maxLength);
 		if (!hit.hit)

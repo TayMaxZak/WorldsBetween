@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Incursometer : MonoBehaviour
+public class Incursometer : Item
 {
-	public bool held;
-
 	private Cephapath[] apparitions;
 
 	public float range = 40;
@@ -27,31 +25,18 @@ public class Incursometer : MonoBehaviour
 	private float weightMed;
 	private float weightFast;
 
-	private void Start()
+	public override void Equip(Transform hand)
 	{
-		apparitions = FindObjectsOfType<Cephapath>(true);
+		base.Equip(hand);
 
-		Shader.SetGlobalVector("FlashlightA", Vector3.one * 10000);
-		Shader.SetGlobalVector("FlashlightB", Vector3.one * 10001);
+		apparitions = FindObjectsOfType<Cephapath>(true);
 	}
 
-	private void Update()
+	public override void Update()
 	{
+		base.Update();
+
 		if (Player.Instance.vitals.dead)
-		{
-			tickloopSlow.volume = 0;
-			tickloopMed.volume = 0;
-			tickloopFast.volume = 0;
-
-			return;
-		}
-
-		if (Input.GetButtonDown("Equipment"))
-			held = !held;
-
-		UIManager.SetMeterRaised(held);
-
-		if (!held)
 		{
 			tickloopSlow.volume = 0;
 			tickloopMed.volume = 0;
