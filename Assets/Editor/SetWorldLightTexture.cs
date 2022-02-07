@@ -13,6 +13,7 @@ public class SetWorldLightTexture : MonoBehaviour
 				Texture3D texture = Selection.activeObject as Texture3D;
 
 				Shader.SetGlobalTexture("LightMap", texture);
+				Shader.SetGlobalTexture("LightMap2", texture);
 				Shader.SetGlobalFloat("LightMapScale", texture.width);
 			}
 		}
