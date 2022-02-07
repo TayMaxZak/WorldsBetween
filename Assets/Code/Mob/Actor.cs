@@ -175,6 +175,16 @@ public class Actor : MonoBehaviour
 		prevBlockPosition = new Vector3Int(blockPosition.x, blockPosition.y, blockPosition.z);
 	}
 
+	public void AddVelocity(Vector3 vel)
+	{
+		velocity += vel;
+	}
+
+	public void SetVelocity(Vector3 vel)
+	{
+		velocity = vel;
+	}
+
 	protected void OnDrawGizmos()
 	{
 		float offset = 0.5f;

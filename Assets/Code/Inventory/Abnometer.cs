@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Incursometer : Item
+public class Abnometer : Item
 {
 	private Cephapath[] apparitions;
 

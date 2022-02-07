@@ -5,7 +5,7 @@ using UnityEngine;
 [SelectionBase]
 public class PlayerMover : Actor
 {
-	public Incursometer incursometer;
+	public Abnometer incursometer;
 	public float gForceLimit = 10;
 	public float gForceMult = 2;
 
@@ -102,15 +102,5 @@ public class PlayerMover : Actor
 		walkVelocity = !inWater ? transform.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		return walkVelocity;
-	}
-
-	public void AddVelocity(Vector3 vel)
-	{
-		velocity += vel;
-	}
-
-	public void SetVelocity(Vector3 vel)
-	{
-		velocity = vel;
 	}
 }
