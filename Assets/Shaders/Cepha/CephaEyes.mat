@@ -7,24 +7,33 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CephaOrb
-  m_Shader: {fileID: -6465566751694194690, guid: 9d89833b6aa75dd4b9100692a45b9450, type: 3}
-  m_ShaderKeywords: UNITY_APPLY_FOG
+  m_Name: CephaEyes
+  m_Shader: {fileID: -6465566751694194690, guid: 894e37a156ffd884fbd49378d963dd52, type: 3}
+  m_ShaderKeywords: _COLORADDSUBDIFF_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - SHADOWCASTER
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - BaseMap:
+        m_Texture: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - LightMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - Texture2D_7706432e2a42464aa6614f342b427dcc:
+        m_Texture: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - Texture2D_ac66aaa89d0641beabae4a819486c0bb:
-        m_Texture: {fileID: 2800000, guid: b58285e86bcbd1e4abae7a5756502336, type: 3}
+        m_Texture: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_ac66aaa89d0641beabae4a819486c0bb_1:
@@ -32,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -40,6 +49,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetWorldLight_024129b7954e469c846c2c00555ee47b_Texture3Da5289fee67494ceaac5fde6af3a3b4ec_618959861:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -104,42 +117,66 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Mult: 5
     - PartialTime: 0
-    - Vector1_1: 2
-    - Vector1_2: 5
-    - Vector1_574f165a08e64ce4b3fa8b641bd0295a: 0.05
+    - Vector1_1: 15
+    - Vector1_2: 2
+    - Vector1_574f165a08e64ce4b3fa8b641bd0295a: 0
     - Vector1_71e33091fc0c45659ab3642a9e395069: 1
     - Vector1_BE32BCCB: 0
+    - Vector1_caedc7ddd5884698a8fbb58773682f2b: 0
     - Vector1_d9826dcd5d17494dacf7b71823ce7854: 0
     - Vector1_dbee4cd0534d46c7a5537c823b7aa06d: 5
+    - Vector1_ef39f1398ba84789a81e4a3d9ad16b2d: 3
     - _AlphaClip: 0
     - _Blend: 0
+    - _BlendOp: 0
     - _BumpScale: 1
+    - _CameraFadingEnabled: 0
+    - _CameraFarFadeDistance: 2
+    - _CameraNearFadeDistance: 1
+    - _ColorMode: 1
     - _Cull: 2
-    - _Cutoff: 0.5
-    - _DstBlend: 0
+    - _Cutoff: 0.021
+    - _DistortionBlend: 0.5
+    - _DistortionEnabled: 0
+    - _DistortionStrength: 1
+    - _DistortionStrengthScaled: 0.1
+    - _DstBlend: 10
     - _EnvironmentReflections: 1
+    - _FlipbookBlending: 0
+    - _FlipbookMode: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
+    - _SoftParticlesEnabled: 0
+    - _SoftParticlesFarFadeDistance: 1
+    - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 1
-    - _Surface: 0
+    - _SrcBlend: 5
+    - _Surface: 1
     - _WorkflowMode: 1
-    - _ZWrite: 1
+    - _ZWrite: 0
     m_Colors:
-    - Color_1: {r: 0, g: 0, b: 0, a: 1}
-    - Color_1105c7c00bfd4ea28cad78509821a90d: {r: 0.3490566, g: 0.3013083, b: 0.3086542, a: 1}
-    - Vector2_f5c2fe79f1ba4c93a1d8dda69b22bff3: {r: -1, g: 1, b: 0, a: 0}
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - Color_1: {r: 0.1, g: 1, b: 0.75, a: 1}
+    - Color_1105c7c00bfd4ea28cad78509821a90d: {r: 1, g: 1, b: 1, a: 1}
+    - FlashlightA: {r: 0, g: 0, b: 0, a: 0}
+    - FlashlightB: {r: 0, g: 0, b: 1, a: 0}
+    - GlowColor: {r: 0, g: 0, b: 0, a: 1}
+    - Vector2_f5c2fe79f1ba4c93a1d8dda69b22bff3: {r: -1, g: 0.5, b: 0, a: 0}
+    - _BaseColor: {r: 0.1, g: 1, b: 0.75, a: 1}
+    - _BaseColorAddSubDiff: {r: 1, g: 0, b: 0, a: 0}
+    - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4172543627793422927
@@ -154,4 +191,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 2
+  version: 4

@@ -11,22 +11,16 @@ public class Cephapath : MonoBehaviour
 
 		public float width = 1;
 
-		[System.NonSerialized]
 		public Vector3 targetPoint;
-		[System.NonSerialized]
 		public Vector3 targetPointNew;
 
-		[System.NonSerialized]
 		public Vector3 offsetDir;
-		[System.NonSerialized]
 		public Vector3 offsetDirNew;
 
-		[System.NonSerialized]
 		public Vector3 curveTipPoint;
 
-		[System.NonSerialized]
-		public bool grabbing;
-		[System.NonSerialized]
+		public Actor toPull;
+
 		public bool movedOutOfSync;
 	}
 
@@ -34,12 +28,11 @@ public class Cephapath : MonoBehaviour
 	public AudioSource grabLoop;
 	public AudioSource damageLoop;
 	public Sound dashSound;
-
-	public PlayerVitals playerVitals;
-	public PlayerMover playerMover;
+	public Transform target;
 
 	[SerializeField]
-	private List<Tentacle> tentacles;
+	[HideInInspector]
+	private List<Tentacle> tentacles = new List<Tentacle>();
 
 	[Header("Stats")]
 	public float farSpeed = 1; // When past engage range
@@ -47,6 +40,7 @@ public class Cephapath : MonoBehaviour
 	public float dashSpeed = 10;
 
 	public float damage = 10;
+	public float grabChance = 0.75f;
 
 	[SerializeField]
 	private Vector3 knockbackReelYankSpeeds = new Vector3(2, 0.5f, 2); // X = push forward speed at start, Y = constant pull back speed in middle, Z = pull back speed at end
@@ -59,8 +53,6 @@ public class Cephapath : MonoBehaviour
 	public float damageDistance = 16;
 	public float stopDistance = 5;
 
-	private float intensity;
-
 	[Header("Timings")]
 	[SerializeField]
 	private Timer damageTimer = new Timer(0.1f);
@@ -69,10 +61,7 @@ public class Cephapath : MonoBehaviour
 	private Timer dashTimer = new Timer(11f);
 
 	[SerializeField]
-	private Timer reconfigureTimer = new Timer(5f);
-
-	[SerializeField]
-	private Timer soonestGrabTimer = new Timer(3f);
+	private Timer randomDirTimer = new Timer(3f);
 
 	[Header("Tweaks")]
 	[SerializeField]
@@ -86,17 +75,15 @@ public class Cephapath : MonoBehaviour
 
 	private Vector3 smoothDir;
 	private Vector3 lookDir;
+	private Vector3 dashDir;
 
 	private float vibrateMult;
 
 	// Handles smooth dashing
 	private float curDashFuel = 0;
-	private float backdashFuel = 0;
-	private bool dashBlink = false;
 
 	// Actual timer max times, in case they get randomized
 	private float dashMaxTime;
-	private float reconfigureMaxTime;
 
 	private float slowDownMult = 1; // Goes into effect when it gets close to the player
 
@@ -108,19 +95,18 @@ public class Cephapath : MonoBehaviour
 	private void Awake()
 	{
 		initPosition = transform.position;
+		if (!target)
+			target = Player.Instance.mover.transform;
 
 		grabLoop.volume = 0;
 		damageLoop.volume = 0;
 		foreach (Tentacle t in tentacles)
 		{
-			t.width = SeedlessRandom.NextFloatInRange(0.4f, 0.8f);
-
 			InitTentacle(t);
 		}
 
 		// Reset all timers
 		dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
-		reconfigureTimer.Reset(1 + SeedlessRandom.NextFloat() * reconfigureTimer.maxTime);
 	}
 
 	private void InitTentacle(Tentacle t)
@@ -145,8 +131,11 @@ public class Cephapath : MonoBehaviour
 	[ContextMenu("Position Tentacles")]
 	private void SceneInitTentacles()
 	{
-		foreach (Tentacle t in tentacles)
+		tentacles.Clear();
+		foreach (LineRenderer l in GetComponentsInChildren<LineRenderer>())
 		{
+			Tentacle t = new Tentacle() { line = l, width = l.widthMultiplier };
+			tentacles.Add(t);
 			InitTentacle(t);
 		}
 	}
@@ -160,40 +149,34 @@ public class Cephapath : MonoBehaviour
 		bool moveTentacles = false;
 
 		// Vector towards player
-		Vector3 diff = playerMover.position - transform.position;
+		Vector3 diff = target.position - transform.position;
 		float distance = diff.magnitude;
 		Vector3 dir = diff.normalized;
 		if (smoothDir == Vector3.zero)
 			smoothDir = dir;
 
 		// Close enough to do bad things
-		intensity = Mathf.Clamp01(1 - Mathf.Max(distance - stopDistance, 0) / damageDistance);
-		intensity *= intensity;
+		float damageCloseness = 1 - Mathf.Clamp01(Mathf.Max(distance - stopDistance, 0) / damageDistance);
+		float grabCloseness = 1 - Mathf.Clamp01(Mathf.Max(distance - grabDistance, 0) / grabDistance);
+		//intensity *= intensity;
 
 		// Deal continuous damage
 		damageTimer.Increment(Time.deltaTime);
-		if (damageTimer.Expired())
+		if (damageTimer.Expired() && damageCloseness > 0.5f)
 		{
-			playerVitals.DealDamage(damage * intensity);
+			Player.Instance.vitals.DealDamage(damage);
 
 			damageTimer.Reset();
 		}
 
 		// Handle player interaction
-		if (!playerVitals.dead)
+		// TODO: Repeated code
+		if (!Player.Instance.vitals.dead)
 		{
-			// Then, gradually reel them in
-			if (playerMover.grabbed && PhysicsManager.Instance.ticking)
-			{
-				playerMover.AddVelocity(-dir * knockbackReelYankSpeeds.y * Mathf.Lerp(0.5f + reelStrength, 1, 0.5f) * PhysicsManager.Instance.tickingDelta);
-				// Reel less over time
-				reelStrength = Mathf.Lerp(reelStrength, 0, PhysicsManager.Instance.tickingDelta / 2);
-			}
-
 			// Update audio
 			grabLoop.volume = (1 - distance / grabDistance) * 0.5f;
-			grabLoop.pitch = 1 + intensity * 0.3f;
-			damageLoop.volume = intensity * 0.3f;
+			grabLoop.pitch = 1 + damageCloseness * 0.3f;
+			damageLoop.volume = damageCloseness * 0.3f;
 
 			playerDeadReset = true;
 		}
@@ -202,19 +185,10 @@ public class Cephapath : MonoBehaviour
 		{
 			playerDeadReset = false;
 
-			grabLoop.volume = 0;
-			damageLoop.volume = 0;
-
-			// Reset
-			transform.position = initPosition;
-
-			playerMover.grabbed = false;
-
-			foreach (Tentacle t in tentacles)
-				MoveTentacle(t);
+			PlayerDeadReset();
 
 			// Recalc vectors after reset
-			diff = playerMover.position - transform.position;
+			diff = target.position - transform.position;
 			distance = diff.magnitude;
 			dir = diff.normalized;
 		}
@@ -223,126 +197,81 @@ public class Cephapath : MonoBehaviour
 		smoothDir = Vector3.Lerp(smoothDir, dir, Time.deltaTime);
 
 		// Use all moves and go forward at normal speed
-		float backdashCutoff = 1f;
-		if (!playerVitals.dead)
+		// TODO: Repeated code
+		if (!Player.Instance.vitals.dead)
 		{
 			if (distance <= engageDistance)
 			{
-				// Use dash move
-				dashTimer.Increment(Time.deltaTime);
+				// Use dash move if not toooo close
+				if (distance > grabDistance * 0.67f)
+					dashTimer.Increment(Time.deltaTime);
 				if (dashTimer.Expired())
 				{
 					if (dashSound)
 						AudioManager.PlaySound(dashSound, transform.position);
 
 					// Reset remaining dash
-					curDashFuel = 0.5f + SeedlessRandom.NextFloat() * 1.5f;
-					dashBlink = true;
+					curDashFuel = 1;
 
-					randomMoveDirNew = SeedlessRandom.RandomPoint(1).normalized;
-
-					// Double dash!
-					if (dashMaxTime >= 0.99f && !playerMover.grabbed && SeedlessRandom.NextFloat() < 0.1f)
-						dashMaxTime = 0.9f;
-					// Normal dashing
-					else
-						dashMaxTime = dashTimer.maxTime * (0.5f + SeedlessRandom.NextFloat());
+					dashMaxTime = dashTimer.maxTime * (0.5f + SeedlessRandom.NextFloat());
 					dashTimer.Reset(dashMaxTime);
+
+					dashDir = ((target.position + SeedlessRandom.RandomPoint(1).normalized * 5) - transform.position).normalized;
+
+					foreach (Tentacle t in tentacles)
+					{
+						// Tentacles in front of us pull back, tentacles behind us push forward
+						Vector3 inward = -(t.curveTipPoint - transform.position).normalized;
+						Vector3 backward = -transform.forward;
+						//float dirMult = -Vector3.Dot((t.curveTipPoint - transform.position).normalized, transform.forward);
+
+						t.targetPointNew += 0.5f * dashSpeed * (inward + 2 * backward);
+					}
 				}
 
 				// Which way to dash
-				Vector3 dashDir = dashMaxTime >= 0.99f ? (dir + randomMoveDir * 0.5f).normalized : randomMoveDir;
 
-				// Strafing dash mult
-				float strafe = 1 - Mathf.Abs(Vector3.Dot(dashDir, dir));
-				float dashMult = Mathf.Lerp(strafe, 1, 1f);
-
-				// Smoothly change random dash direction
-				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDirNew, Time.deltaTime).normalized;
-
-				float fuelConsume = 1f;
+				float fuelConsume = 1;
 
 				// Translate by dash speed
 				if (curDashFuel > 0)
 				{
 					// Also slow down dash (but not as much)
 					float slowDownDashMult = Mathf.Clamp01(distance - stopDistance);
-					slowDownDashMult = Mathf.Lerp(slowDownDashMult, 1, strafe);
-
-					// Blink forwards at start of dash
-					float blinkLength = 0;
-					if (dashBlink)
-					{
-						dashBlink = false;
-
-						blinkLength = 0.08f;
-						curDashFuel -= blinkLength / 2;
-					}
 
 					// Slow down towards end of dash
-					float deccelMult = Mathf.Lerp(Mathf.Min(curDashFuel, 1), 0.5f, 0.5f);
-					transform.position += (Mathf.Clamp01(distance) * dashDir * slowDownDashMult * dashMult * dashSpeed * (blinkLength + deccelMult * Time.deltaTime));
+					float deccelMult = Mathf.Lerp(Mathf.Min(curDashFuel, 1), 0.5f, 0.0f);
+					transform.position += (deccelMult * deccelMult) * dashSpeed * Mathf.Clamp01(distance) * slowDownDashMult * Time.deltaTime * dashDir;
 				}
 
 				// Don't get too close
-				float newSlowdownMult = Mathf.Clamp01(distance - (playerMover.grabbed ? stopDistance : damageDistance / 2));
+				float newSlowdownMult = Mathf.Clamp01(distance - stopDistance);
 				slowDownMult = Mathf.Lerp(slowDownMult, newSlowdownMult, Time.deltaTime * 2);
+
+				// Smoothly change random move dir direction
+				randomDirTimer.Increment(Time.deltaTime);
+				if (randomDirTimer.Expired())
+				{
+					// Orient closer to player as intensity increases
+					randomMoveDirNew = (SeedlessRandom.RandomPoint(1) * (1 - grabCloseness) + dir * (1 + grabCloseness)).normalized;
+					randomDirTimer.Reset();
+				}
+				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDirNew, Time.deltaTime).normalized;
 
 				// Normal movement
 				//if (!playerMover.grabbed)
-				transform.position += (Mathf.Clamp01(distance) * smoothDir * slowDownMult * speed * Time.deltaTime);
+				float oscill = 0.9f + Mathf.Sin(Time.time * Mathf.PI * 1.5f) * 0.5f;
+				transform.position += Mathf.Clamp01(distance) * slowDownMult * (speed * oscill) * Time.deltaTime * randomMoveDir;
 
 				// Use up dash
 				curDashFuel -= Time.deltaTime * fuelConsume;
-
-				// "Backdash" after reaching destination
-				if (curDashFuel <= 0 && (curDashFuel > -backdashCutoff || backdashFuel > 0.005f))
-				{
-					// Ramp up
-					if (curDashFuel > -backdashCutoff / 2)
-						backdashFuel = Mathf.Min(-curDashFuel, 0);
-					// Slow down
-					else
-						backdashFuel = Mathf.Lerp(backdashFuel, 0, Time.deltaTime);
-
-					transform.position += (Mathf.Clamp01(distance) * dashDir * dashMult * dashSpeed * backdashFuel * Time.deltaTime);
-				}
-
-				soonestGrabTimer.Increment(Time.deltaTime);
-
-				// Reconfigure tentacles
-				reconfigureTimer.Increment(Time.deltaTime);
-				if (reconfigureTimer.Expired())
-				{
-					moveTentacles = true;
-
-					// Finally, yank player back one last time
-					if (playerMover.grabbed)
-						playerMover.AddVelocity(-dir * knockbackReelYankSpeeds.z);
-					playerMover.grabbed = false;
-
-					// Was last one fast? Then, make this slow
-					if (reconfigureMaxTime < reconfigureTimer.maxTime / 3)
-						reconfigureMaxTime = reconfigureTimer.maxTime * (1 + 2 * SeedlessRandom.NextFloat());
-					// Otherwise, highly random timing
-					else
-					{
-						float min = 0.1f;
-						reconfigureMaxTime = reconfigureTimer.maxTime * (min + SeedlessRandom.NextFloat() * (1 - min));
-					}
-					reconfigureTimer.Reset(reconfigureMaxTime);
-				}
 			}
 			// Approach in a straight line instead
 			else if (distance <= maxDistance)
 			{
-				transform.position += (smoothDir * farSpeed * Time.deltaTime);
+				transform.position += farSpeed * Time.deltaTime * smoothDir;
 			}
 		}
-
-		// When iterating over tentacles, determine if player was just released
-		bool wasGrabbed = playerMover.grabbed;
-		bool nowNotGrabbed = true;
 
 		// Vibrate when about to dash
 		float newVibrateMult = distance <= engageDistance ? 1 - Mathf.Clamp01(dashTimer.currentTime / dashMaxTime) : 0;
@@ -350,6 +279,7 @@ public class Cephapath : MonoBehaviour
 		vibrateMult = Mathf.Lerp(vibrateMult, newVibrateMult, Time.deltaTime * 3);
 
 		// Handle all tentacles
+		bool alreadyPulled = false;
 		for (int i = 0; i < tentacles.Count; i++)
 		{
 			Tentacle t = tentacles[i];
@@ -358,23 +288,9 @@ public class Cephapath : MonoBehaviour
 			float closeOrFar = Mathf.Clamp01((distance - engageDistance) / (maxDistance - engageDistance));
 			if (distance <= maxDistance)
 			{
-				// Move tips along if still just approaching player
-				if (distance > engageDistance)
-					t.targetPointNew += dir * 0.5f * farSpeed * Time.deltaTime;
-
-				// Rotate tentacles around dir axis
-				float rotSpeed = Mathf.Lerp(25, 50, closeOrFar);
-
-				// Spin it faster if shorter
-				float sizeMult = 1 - Mathf.Clamp01((t.targetPoint - transform.position).magnitude / grabDistance);
-				sizeMult = Mathf.Max(1 + sizeMult, 2f);
-
-				// Some tentacles go slower or faster, some in opposite directions
-				int mod = (i % 5);
-				float randomDirection = mod == 0 ? -0.25f : (mod / 4f);
-
-				t.targetPointNew = transform.position + Quaternion.AngleAxis(rotSpeed * sizeMult * randomDirection * Time.deltaTime, smoothDir) * (t.targetPointNew - transform.position);
-
+				//// Move tips along if still far
+				//if (distance > engageDistance)
+				//	t.targetPointNew += 0.1f * farSpeed * Time.deltaTime * dir;
 
 				// Does this tentacle need to be adjusted now?
 				bool moveNow = (t.targetPoint - transform.position).sqrMagnitude > grabDistance * grabDistance;
@@ -386,87 +302,122 @@ public class Cephapath : MonoBehaviour
 					t.movedOutOfSync = false;
 
 				// Change tentacle positions
-				if (moveTentacles || moveNow)
+				if (moveNow)
 				{
 					// If even one tentacle is attached, no longer true
-					nowNotGrabbed &= !MoveTentacle(t, !playerVitals.dead && distance < grabDistance, moveTentacles, dir);
+					MoveTentacle(t, dir, true);
 				}
 
-				//// Also, yank player back now that this one broke off
-				//if (wasGrabbed && nowNotGrabbed)
-				//{
-				//	playerMover.AddVelocity(-dir * pushReelYankSpeeds.z);
-				//}
+				// Reel in target actor
+				if (t.toPull)
+				{
+					t.targetPointNew = t.toPull.position + dir * 1.5f;
+
+					// Don't stack pulling
+					if (!alreadyPulled && PhysicsManager.Instance.ticking)
+					{
+						t.toPull.AddVelocity(PhysicsManager.Instance.tickingDelta * knockbackReelYankSpeeds.x * -dir);
+
+						alreadyPulled = true;
+					}
+				}
 			}
 
+			float delta = Time.deltaTime * (t.toPull ? 5 : 1);
+
 			// Move towards new target point
-			if (!t.movedOutOfSync)
-				t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, 1 - reconfigureTimer.currentTime / reconfigureMaxTime);
-			else
-				t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, Time.deltaTime * 2);
+			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 2);
 
 			// Overall smoothing
-			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, Time.deltaTime);
+			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta);
 			t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, Time.deltaTime);
 
 			// Drag behind tips to make a curve
-			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, Time.deltaTime);
-
+			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta);
 
 			RenderTentacle(t, dir, smoothDir, (1 - closeOrFar) * (1 - closeOrFar));
 		}
 
 
 		// Change body rotation
-		Vector3 goalDir = curDashFuel > 0 ? randomMoveDir : dir;
+		Vector3 goalDir = dir;
 
-		float rotAccel = Mathf.Lerp(7, 0.33f, 1 - Mathf.Clamp01(-curDashFuel));
+		float rotAccel = Mathf.Lerp(2, 8, curDashFuel);
 
-		lookDir = Vector3.Lerp(lookDir, goalDir, rotAccel * Time.deltaTime * (1 + 3 * intensity));
+		lookDir = Vector3.Lerp(lookDir, goalDir, rotAccel * Time.deltaTime * (1 + 3 * damageCloseness));
 		if (lookDir != Vector3.zero)
 			transform.rotation = Quaternion.LookRotation(lookDir);
 	}
 
-	private void MoveTentacle(Tentacle t)
+	private void PlayerDeadReset()
 	{
-		MoveTentacle(t, false, false, Vector3.zero);
+		grabLoop.volume = 0;
+		damageLoop.volume = 0;
+
+		transform.position = initPosition;
+
+		dashTimer.Reset();
+		curDashFuel = 0;
+
+		foreach (Tentacle t in tentacles)
+			MoveTentacle(t);
 	}
 
-	private bool MoveTentacle(Tentacle t, bool doGrab, bool moveAll, Vector3 dir)
+	private void MoveTentacle(Tentacle t)
 	{
-		bool oldGrab = t.grabbing;
-		if (doGrab)
+		MoveTentacle(t, Vector3.zero, false);
+	}
+
+	private bool MoveTentacle(Tentacle t, Vector3 dir, bool adjust)
+	{
+		bool doGrab = Player.Instance && !Player.Instance.vitals.dead && (target.position - transform.position).sqrMagnitude < (grabDistance * 0.67f) * (grabDistance * 0.67f);
+		if (doGrab && SeedlessRandom.NextFloat() > grabChance)
 		{
-			// Roughly 100% chance to grab with at least one tentacle
-			if (moveAll)
-				t.grabbing = SeedlessRandom.NextFloat() < 1f / tentacles.Count;
-			else
-				t.grabbing &= SeedlessRandom.NextFloat() < 1f / tentacles.Count;
-
-			// This tentacle is grabbing, player isn't already grabbed, not repeating this grab, and grab timer is ready
-			if (t.grabbing && !playerMover.grabbed && !oldGrab && soonestGrabTimer.Expired())
+			// Yank player and remember them for later
+			if (!t.toPull)
 			{
-				soonestGrabTimer.Reset();
-
-				playerMover.grabbed = true;
-
-				// First, knockback player (pull in later)
-				playerMover.AddVelocity(dir * knockbackReelYankSpeeds.x);
-				// Reset reel strength
-				reelStrength = 1;
-
-				// Feedback that player is now in combat
-				AudioManager.PlayMusicCue();
+				t.toPull = target.GetComponentInChildren<Actor>();
+				t.toPull.AddVelocity(dir * -knockbackReelYankSpeeds.z);
+			}
+			// Was already pulling
+			else
+			{
+				doGrab = false;
+				t.toPull = null;
 			}
 		}
 		else
-			t.grabbing = false;
+		{
+			doGrab = false;
+			t.toPull = null;
+		}
 
-		t.targetPointNew = Vector3.Lerp(t.targetPointNew, transform.position + SeedlessRandom.RandomPoint(grabDistance), 0.8f);
+		if (!doGrab)
+		{
+			Vector3 newOffset = SeedlessRandom.RandomPoint(1).normalized;
+			newOffset *= Mathf.Sign(Vector3.Dot((newOffset - transform.forward * 0.1f).normalized, transform.forward));
+			t.targetPointNew = Vector3.Lerp(t.targetPointNew, transform.position + newOffset * grabDistance, 0.7f);
+		}
+		else
+			t.targetPointNew = target.position;
 
-		t.offsetDirNew = Vector3.Lerp(t.offsetDirNew, SeedlessRandom.RandomPoint(6), 0.5f);
+		if (!doGrab)
+			t.offsetDirNew = Vector3.Lerp(t.offsetDirNew, SeedlessRandom.RandomPoint(6), 0.5f);
+		else
+			t.offsetDirNew = SeedlessRandom.RandomPoint(1).normalized * 7;
 
-		return t.grabbing;
+		return t.toPull;
+	}
+
+	private Vector3 PositionOnPlane(Vector3 source)
+	{
+		// create a plane object representing the Plane
+		var plane = new Plane(-transform.forward, transform.position);
+
+		// get the closest point on the plane for the Source position
+		Vector3 mirrorPoint = plane.ClosestPointOnPlane(source);
+
+		return mirrorPoint;
 	}
 
 	private void RenderTentacle(Tentacle t)
@@ -489,28 +440,14 @@ public class Cephapath : MonoBehaviour
 
 			Vector3 surfacePoint = transform.position + (t.targetPoint - transform.position).normalized * 0.5f;
 
-			// Attach to player
-			if (t.grabbing)
-			{
-				t.line.widthMultiplier = 0.6f * t.width;
-
-				Vector3 baseShape = Vector3.Lerp(surfacePoint, playerMover.transform.position - Vector3.up * 0.75f + smoothDir, percent);
-
-				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + (1 - percent) * waveyStrength * perpin + kneeStrength * curveStrength * perpin);
-			}
 			// Attach to world position
-			else
-			{
-				t.line.widthMultiplier = t.width;
+			Vector3 vibrate = t.toPull ? Vector3.zero : (dashVibrate * sharpness * vibrateMult * vibrateMult * SeedlessRandom.NextFloatInRange(-1, 1) * perpin);
 
-				Vector3 vibrate = dashVibrate * sharpness * vibrateMult * vibrateMult * SeedlessRandom.NextFloatInRange(-1, 1) * perpin;
+			Vector3 actualTip = Vector3.Lerp(t.targetPoint, t.curveTipPoint, curveStrength);
 
-				Vector3 actualTip = Vector3.Lerp(t.targetPoint, t.curveTipPoint, curveStrength);
+			Vector3 baseShape = Vector3.Lerp(surfacePoint, actualTip, percent);
 
-				Vector3 baseShape = Vector3.Lerp(surfacePoint, actualTip, percent);
-
-				t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * perpin + vibrate);
-			}
+			t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * perpin + vibrate);
 		}
 	}
 }

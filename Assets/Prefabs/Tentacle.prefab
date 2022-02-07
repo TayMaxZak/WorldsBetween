@@ -72,25 +72,25 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
-  - {x: 0, y: 0.05, z: 2}
-  - {x: 0, y: 0.1, z: 3}
-  - {x: 0, y: 0.2, z: 4}
-  - {x: 0, y: 0.45, z: 5}
-  - {x: 0, y: 0.7, z: 6}
-  - {x: 0, y: 1.2, z: 7}
-  - {x: 0, y: 1.5, z: 8}
-  - {x: 0, y: 1.2, z: 9}
-  - {x: 0, y: 0.7, z: 10}
-  - {x: 0, y: 0.45, z: 11}
-  - {x: 0, y: 0.2, z: 12}
-  - {x: 0, y: 0.1, z: 13}
-  - {x: 0, y: 0.05, z: 14}
-  - {x: 0, y: 0, z: 15}
+  - {x: -3.677071, y: 15.405903, z: 66.39318}
+  - {x: -3.4347005, y: 16.536156, z: 66.46421}
+  - {x: -3.181832, y: 17.642048, z: 66.53879}
+  - {x: -2.9079676, y: 18.69922, z: 66.62046}
+  - {x: -2.6026092, y: 19.683315, z: 66.712776}
+  - {x: -2.255259, y: 20.569971, z: 66.819275}
+  - {x: -1.8554187, y: 21.33483, z: 66.94351}
+  - {x: -1.3925906, y: 21.95353, z: 67.089035}
+  - {x: -0.8562767, y: 22.401714, z: 67.25938}
+  - {x: -0.23597892, y: 22.655022, z: 67.4581}
+  - {x: 0.47880077, y: 22.689093, z: 67.68875}
+  - {x: 1.2985601, y: 22.479568, z: 67.954865}
+  - {x: 2.2337973, y: 22.002089, z: 68.259995}
+  - {x: 3.2950103, y: 21.232294, z: 68.6077}
+  - {x: 4.492697, y: 20.145823, z: 69.0015}
+  - {x: 5.837355, y: 18.71832, z: 69.44497}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.6
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -104,48 +104,39 @@ LineRenderer:
         inWeight: 0.33333334
         outWeight: 0.8856646
       - serializedVersion: 3
-        time: 0.2596839
-        value: 0.621837
-        inSlope: -0.9492892
-        outSlope: -0.9492892
+        time: 0.26336795
+        value: 0.4411258
+        inSlope: -1.3265516
+        outSlope: -1.3265516
         tangentMode: 0
         weightedMode: 0
-        inWeight: 1
+        inWeight: 0.3659137
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.5797374
-        value: 0.4844784
-        inSlope: -0.7772573
-        outSlope: -0.7772573
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.6868763
-      - serializedVersion: 3
         time: 1
-        value: 0.05
-        inSlope: -1.0062112
-        outSlope: -1.0062112
+        value: 0
+        inSlope: -0.31911635
+        outSlope: -0.31911635
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.25555557
+        inWeight: 0.117456995
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      key0: {r: 1, g: 1, b: 1, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
-      key2: {r: 0.34905657, g: 0.27167138, b: 0.3211687, a: 0}
+      key2: {r: 1, g: 1, b: 1, a: 0}
       key3: {r: 0.34905657, g: 0.27167138, b: 0.3211687, a: 0}
       key4: {r: 0.362, g: 1, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 6554
-      ctime2: 46453
+      ctime1: 65535
+      ctime2: 65535
       ctime3: 47609
       ctime4: 65535
       ctime5: 0
@@ -165,7 +156,7 @@ LineRenderer:
     numCornerVertices: 1
     numCapVertices: 1
     alignment: 0
-    textureMode: 0
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1
