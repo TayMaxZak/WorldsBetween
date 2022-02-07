@@ -23,6 +23,10 @@ public class RoomModifier : Modifier
 
 		bool addOrSub = false;
 
+		bool insideOneUp = bounds.Contains(new Vector3(x, y + 1, z));
+
+		bool floor = false;
+
 		switch (roomType)
 		{
 			case RoomType.PedestalRoom:
@@ -48,6 +52,13 @@ public class RoomModifier : Modifier
 							addOrSub = true;
 						}
 					}
+					else if (insideOneUp && y > bounds.min.y - 1 && y < bounds.min.y)
+					{
+						if (true/*World.GetBlockFor((int)x, (int)y, (int)z).IsAir()*/)
+						{
+							addOrSub = true; floor = true;
+						}
+					}
 				}
 				break;
 			case RoomType.CornerRoom:
@@ -56,6 +67,6 @@ public class RoomModifier : Modifier
 				break;
 		}
 
-		return new ModifierOutput { passed = inside, addOrSub = addOrSub };
+		return new ModifierOutput { passed = inside || floor, addOrSub = addOrSub };
 	}
 }
