@@ -73,8 +73,6 @@ public class WorldGenerator
 		await EnqueueAllChunks();
 
 		genStage = GenStage.GenerateChunks;
-
-		GameManager.Instance.MidLoading();
 	}
 
 	public async void StopGen()
@@ -113,6 +111,9 @@ public class WorldGenerator
 		// Playable yet?
 		if (genStage >= GenStage.GenerateChunks)
 		{
+			if (GenProgress() >= targetProgress / 2)
+				GameManager.Instance.MidLoading();
+
 			if (GenProgress() >= targetProgress || Mathf.Approximately(GenProgress(), 1))
 				GameManager.Instance.FinishLoading(1000);
 		}

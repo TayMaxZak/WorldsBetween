@@ -1,13 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
 	public enum MainMenuState
 	{
 		Start,
-		Main
+		Main,
+
+		Play,
+		Database,
+		Settings
 	}
 	public MainMenuState state = MainMenuState.Start;
 
@@ -28,6 +33,10 @@ public class MainMenu : MonoBehaviour
 		{
 			ReturnToStart();
 		}
+		else if (Input.GetButtonDown("Cancel"))
+		{
+			ReturnToMain();
+		}
 	}
 
 	private void PressStart()
@@ -46,5 +55,44 @@ public class MainMenu : MonoBehaviour
 
 		mainAnimator.SetTrigger("HideMenu");
 		startAnimator.SetTrigger("ShowMenu");
+	}
+
+	private void ReturnToMain()
+	{
+		state = MainMenuState.Main;
+		Debug.Log("? -> Main");
+
+		mainAnimator.SetTrigger("ShowMenu");
+	}
+
+	/* Main */
+
+	public void Play()
+	{
+		state = MainMenuState.Play;
+		Debug.Log("Main -> Play");
+
+		mainAnimator.SetTrigger("HideMenu");
+		//startAnimator.SetTrigger("ShowMenu");
+
+		SceneManager.LoadScene(1);
+	}
+
+	public void Database()
+	{
+		state = MainMenuState.Database;
+		Debug.Log("Main -> Database");
+
+		mainAnimator.SetTrigger("HideMenu");
+		//startAnimator.SetTrigger("ShowMenu");
+	}
+
+	public void Settings()
+	{
+		state = MainMenuState.Settings;
+		Debug.Log("Main -> Settings");
+
+		mainAnimator.SetTrigger("HideMenu");
+		//startAnimator.SetTrigger("ShowMenu");
 	}
 }

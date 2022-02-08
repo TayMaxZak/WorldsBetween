@@ -74,6 +74,9 @@ public class Player : MonoBehaviour
 
 			if (restart.Expired())
 			{
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+
 				SceneLoader.Remove();
 				SceneManager.LoadScene(0);
 			}

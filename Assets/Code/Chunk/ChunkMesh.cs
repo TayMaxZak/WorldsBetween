@@ -236,7 +236,7 @@ public class ChunkMesh
 							//if (norm == Vector3.zero)
 							//	Debug.DrawRay(vertPos + chunk.position, SeedlessRandom.RandomPoint(SeedlessRandom.NextFloatInRange(0.25f, 1f)), SeedlessRandom.NextFloat() > 0.5f ? Color.black : Color.white, 200);
 
-							normals.Add(norm.normalized);
+							normals.Add(Vector3.Lerp(norm.normalized, directions[d], 1).normalized);
 						}
 
 						// Add triangles
