@@ -6,22 +6,45 @@ public class MainMenu : MonoBehaviour
 {
 	public enum MainMenuState
 	{
-		PressStart,
-		MainLayout
+		Start,
+		Main
 	}
-	public MainMenuState state = MainMenuState.PressStart;
+	public MainMenuState state = MainMenuState.Start;
+
+	public Animator startAnimator;
+	public Animator mainAnimator;
 
 	// Update is called once per frame
 	void Update()
 	{
-		if (state == MainMenuState.PressStart && Input.anyKeyDown)
+		if (Time.time < 0.2f)
+			return;
+
+		if (state == MainMenuState.Start && Input.anyKeyDown)
 		{
-			NextState();
+			PressStart();
+		}
+		else if (state == MainMenuState.Main && Input.GetButtonDown("Cancel"))
+		{
+			ReturnToStart();
 		}
 	}
 
-	private void NextState()
+	private void PressStart()
 	{
-		Debug.Log("Next state");
+		state = MainMenuState.Main;
+		Debug.Log("Start -> Main");
+
+		startAnimator.SetTrigger("HideMenu");
+		mainAnimator.SetTrigger("ShowMenu");
+	}
+
+	private void ReturnToStart()
+	{
+		state = MainMenuState.Start;
+		Debug.Log("Main -> Start");
+
+		mainAnimator.SetTrigger("HideMenu");
+		startAnimator.SetTrigger("ShowMenu");
 	}
 }
