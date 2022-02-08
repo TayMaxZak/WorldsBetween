@@ -123,53 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &29660103
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 29660105}
-  - component: {fileID: 29660104}
-  m_Layer: 0
-  m_Name: WorldLightAtlas
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &29660104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29660103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb9b3f5dd2c45894bba6f98db311dc1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultLightmap: {fileID: 11700000, guid: 0d879ad2dfebbe74ea3954253bd8a521, type: 2}
-  defaultLightmap2: {fileID: 11700000, guid: 0d879ad2dfebbe74ea3954253bd8a521, type: 2}
-  directLightTex: {fileID: 0}
-  ambientLightTex: {fileID: 0}
---- !u!4 &29660105
+--- !u!4 &29660105 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+  m_PrefabInstance: {fileID: 8966476411514092788}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29660103}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1600001840}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &59901291
 GameObject:
   m_ObjectHideFlags: 0
@@ -8205,3 +8163,60 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8877761786980121274, guid: c0d63e96890a0cb4984b1ede20b0824c, type: 3}
   m_PrefabInstance: {fileID: 8877761786994288059}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8966476411514092788
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1600001840}
+    m_Modifications:
+    - target: {fileID: 8966476411509665587, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_Name
+      value: WorldLightAtlas
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}

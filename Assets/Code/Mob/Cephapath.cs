@@ -24,6 +24,12 @@ public class Cephapath : MonoBehaviour
 		public bool movedOutOfSync;
 	}
 
+	public bool dioramaMode = false;
+	[Range(0,1)]
+	public float dioramaSharpness = 0;
+	[Range(0, 1)]
+	public float dioramaWiggle = 0.1f;
+
 	[Header("References")]
 	public AudioSource grabLoop;
 	public AudioSource damageLoop;
@@ -94,19 +100,26 @@ public class Cephapath : MonoBehaviour
 
 	private void Awake()
 	{
-		initPosition = transform.position;
-		if (!target)
-			target = Player.Instance.mover.transform;
+		if (!enabled)
+			return;
 
-		grabLoop.volume = 0;
-		damageLoop.volume = 0;
+		if (!dioramaMode)
+		{
+			initPosition = transform.position;
+			if (!target)
+				target = Player.Instance.mover.transform;
+
+			grabLoop.volume = 0;
+			damageLoop.volume = 0;
+
+			// Reset all timers
+			dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
+		}
+
 		foreach (Tentacle t in tentacles)
 		{
 			InitTentacle(t);
 		}
-
-		// Reset all timers
-		dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
 	}
 
 	private void InitTentacle(Tentacle t)
@@ -143,12 +156,49 @@ public class Cephapath : MonoBehaviour
 	// TODO: Add "split" move, where it becomes smaller and makes copies of itself!
 	private void Update()
 	{
+		if (dioramaMode)
+		{
+			for (int i = 0; i < tentacles.Count; i++)
+			{
+				Tentacle t = tentacles[i];
+
+				if (true)
+				{
+					// Does this tentacle need to be adjusted now?
+					bool moveNow = SeedlessRandom.NextFloat() > 1 - Time.deltaTime * dioramaWiggle;
+
+					// Change tentacle positions
+					if (moveNow)
+						MoveTentacle(t, transform.forward, true);
+				}
+
+				float delta = Time.deltaTime * (t.toPull ? 5 : 1);
+
+				// Move towards new target point
+				t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 2);
+
+				// Overall smoothing
+				t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta);
+				t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, Time.deltaTime);
+
+				// Drag behind tips to make a curve
+				t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta);
+
+				RenderTentacle(t, transform.forward, transform.forward, dioramaSharpness);
+			}
+
+			return;
+		}
+
 		if (!GameManager.Instance.finishedLoading)
 			return;
 
 		bool moveTentacles = false;
 
 		// Vector towards player
+		if (!target)
+			return;
+
 		Vector3 diff = target.position - transform.position;
 		float distance = diff.magnitude;
 		Vector3 dir = diff.normalized;
@@ -395,7 +445,7 @@ public class Cephapath : MonoBehaviour
 		if (!doGrab)
 		{
 			Vector3 newOffset = SeedlessRandom.RandomPoint(1).normalized;
-			newOffset *= Mathf.Sign(Vector3.Dot((newOffset - transform.forward * 0.1f).normalized, transform.forward));
+			newOffset *= Mathf.Sign(Vector3.Dot((newOffset - dir * 0.1f).normalized, dir));
 			t.targetPointNew = Vector3.Lerp(t.targetPointNew, transform.position + newOffset * grabDistance, 0.7f);
 		}
 		else
@@ -447,7 +497,9 @@ public class Cephapath : MonoBehaviour
 
 			Vector3 baseShape = Vector3.Lerp(surfacePoint, actualTip, percent);
 
-			t.line.SetPosition(i, baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * perpin + vibrate);
+			Vector3 position = baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * perpin + vibrate;
+
+			t.line.SetPosition(i, position);
 		}
 	}
 }

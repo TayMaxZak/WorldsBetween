@@ -47,9 +47,13 @@ public class WorldLightAtlas : MonoBehaviour
 		if (!Application.isPlaying)
 		{
 			SetShaderReferences(defaultLightmap, defaultLightmap2);
+			fullSize = defaultLightmap.width;
 		}
 		else
 		{
+			if (!GameManager.Instance)
+				return;
+
 			fullSize = World.GetChunkSize() * (1 + World.Generator.GetGenRange() * 2);
 			dirSize = fullSize;
 			//dirSize = World.GetChunkSize() * (1 + 
@@ -228,7 +232,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private void Update()
 	{
-		if (!Application.isPlaying)
+		if (!Application.isPlaying || !GameManager.Instance)
 			return;
 
 		recentApplyTimer.Increment(Time.deltaTime);
