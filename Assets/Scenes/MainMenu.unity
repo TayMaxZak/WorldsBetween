@@ -942,8 +942,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4816aa8abdbf0264f885da6595583d1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxExtent: {x: 0.8, y: 0.8}
-  damping: 8
+  xyMaxExtents: {x: 0.8, y: 0.8}
+  xyDamping: 6
+  zoomDamping: 2
+  zPosInitialZoom: -8
 --- !u!1 &956164258
 GameObject:
   m_ObjectHideFlags: 0
