@@ -19,9 +19,16 @@ public class MainMenu : MonoBehaviour
 	public Animator startAnimator;
 	public Animator mainAnimator;
 
+	private void Awake()
+	{
+		startAnimator.SetFloat("IdleHide", 0);
+		mainAnimator.SetFloat("IdleHide", 1);
+	}
+
 	// Update is called once per frame
 	void Update()
 	{
+		// Wait past initial frames
 		if (Time.time < 0.2f)
 			return;
 
