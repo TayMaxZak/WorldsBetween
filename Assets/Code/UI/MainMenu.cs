@@ -68,7 +68,7 @@ public class MainMenu : MonoBehaviour
 		startAnimator.SetTrigger("ShowMenu");
 	}
 
-	private void ReturnToMain()
+	public void ReturnToMain()
 	{
 		MainMenuState prev = state;
 		state = MainMenuState.Main;
