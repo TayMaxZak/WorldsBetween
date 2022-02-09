@@ -61,6 +61,9 @@ public class Cephapath : MonoBehaviour
 
 	[Header("Timings")]
 	[SerializeField]
+	private float timeScale = 1;
+
+	[SerializeField]
 	private Timer damageTimer = new Timer(0.1f);
 
 	[SerializeField]
@@ -165,21 +168,21 @@ public class Cephapath : MonoBehaviour
 				if (true)
 				{
 					// Does this tentacle need to be adjusted now?
-					bool moveNow = SeedlessRandom.NextFloat() > 1 - Time.deltaTime * dioramaWiggle;
+					bool moveNow = SeedlessRandom.NextFloat() > 1 - DeltaTime() * dioramaWiggle;
 
 					// Change tentacle positions
 					if (moveNow)
 						MoveTentacle(t, transform.forward, true);
 				}
 
-				float delta = Time.deltaTime * (t.toPull ? 5 : 1);
+				float delta = DeltaTime() * (t.toPull ? 5 : 1);
 
 				// Move towards new target point
 				t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 2);
 
 				// Overall smoothing
 				t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta);
-				t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, Time.deltaTime);
+				t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, DeltaTime());
 
 				// Drag behind tips to make a curve
 				t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta);
@@ -211,7 +214,7 @@ public class Cephapath : MonoBehaviour
 		//intensity *= intensity;
 
 		// Deal continuous damage
-		damageTimer.Increment(Time.deltaTime);
+		damageTimer.Increment(DeltaTime());
 		if (damageTimer.Expired() && damageCloseness > 0.5f)
 		{
 			Player.Instance.vitals.DealDamage(damage);
@@ -244,7 +247,7 @@ public class Cephapath : MonoBehaviour
 		}
 
 		// For a more curved path towards player
-		smoothDir = Vector3.Lerp(smoothDir, dir, Time.deltaTime);
+		smoothDir = Vector3.Lerp(smoothDir, dir, DeltaTime());
 
 		// Use all moves and go forward at normal speed
 		// TODO: Repeated code
@@ -254,7 +257,7 @@ public class Cephapath : MonoBehaviour
 			{
 				// Use dash move if not toooo close
 				if (distance > grabDistance * 0.67f)
-					dashTimer.Increment(Time.deltaTime);
+					dashTimer.Increment(DeltaTime());
 				if (dashTimer.Expired())
 				{
 					if (dashSound)
@@ -291,42 +294,42 @@ public class Cephapath : MonoBehaviour
 
 					// Slow down towards end of dash
 					float deccelMult = Mathf.Lerp(Mathf.Min(curDashFuel, 1), 0.5f, 0.0f);
-					transform.position += (deccelMult * deccelMult) * dashSpeed * Mathf.Clamp01(distance) * slowDownDashMult * Time.deltaTime * dashDir;
+					transform.position += (deccelMult * deccelMult) * dashSpeed * Mathf.Clamp01(distance) * slowDownDashMult * DeltaTime() * dashDir;
 				}
 
 				// Don't get too close
 				float newSlowdownMult = Mathf.Clamp01(distance - stopDistance);
-				slowDownMult = Mathf.Lerp(slowDownMult, newSlowdownMult, Time.deltaTime * 2);
+				slowDownMult = Mathf.Lerp(slowDownMult, newSlowdownMult, DeltaTime() * 2);
 
 				// Smoothly change random move dir direction
-				randomDirTimer.Increment(Time.deltaTime);
+				randomDirTimer.Increment(DeltaTime());
 				if (randomDirTimer.Expired())
 				{
 					// Orient closer to player as intensity increases
 					randomMoveDirNew = (SeedlessRandom.RandomPoint(1) * (1 - grabCloseness) + dir * (1 + grabCloseness)).normalized;
 					randomDirTimer.Reset();
 				}
-				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDirNew, Time.deltaTime).normalized;
+				randomMoveDir = Vector3.Lerp(randomMoveDir, randomMoveDirNew, DeltaTime()).normalized;
 
 				// Normal movement
 				//if (!playerMover.grabbed)
-				float oscill = 0.9f + Mathf.Sin(Time.time * Mathf.PI * 1.5f) * 0.5f;
-				transform.position += Mathf.Clamp01(distance) * slowDownMult * (speed * oscill) * Time.deltaTime * randomMoveDir;
+				float oscill = 0.9f + Mathf.Sin(TotalTime() * Mathf.PI * 1.5f) * 0.5f;
+				transform.position += Mathf.Clamp01(distance) * slowDownMult * (speed * oscill) * DeltaTime() * randomMoveDir;
 
 				// Use up dash
-				curDashFuel -= Time.deltaTime * fuelConsume;
+				curDashFuel -= DeltaTime() * fuelConsume;
 			}
 			// Approach in a straight line instead
 			else if (distance <= maxDistance)
 			{
-				transform.position += farSpeed * Time.deltaTime * smoothDir;
+				transform.position += farSpeed * DeltaTime() * smoothDir;
 			}
 		}
 
 		// Vibrate when about to dash
 		float newVibrateMult = distance <= engageDistance ? 1 - Mathf.Clamp01(dashTimer.currentTime / dashMaxTime) : 0;
 		newVibrateMult *= newVibrateMult;
-		vibrateMult = Mathf.Lerp(vibrateMult, newVibrateMult, Time.deltaTime * 3);
+		vibrateMult = Mathf.Lerp(vibrateMult, newVibrateMult, DeltaTime() * 3);
 
 		// Handle all tentacles
 		bool alreadyPulled = false;
@@ -340,7 +343,7 @@ public class Cephapath : MonoBehaviour
 			{
 				//// Move tips along if still far
 				//if (distance > engageDistance)
-				//	t.targetPointNew += 0.1f * farSpeed * Time.deltaTime * dir;
+				//	t.targetPointNew += 0.1f * farSpeed * DeltaTime() * dir;
 
 				// Does this tentacle need to be adjusted now?
 				bool moveNow = (t.targetPoint - transform.position).sqrMagnitude > grabDistance * grabDistance;
@@ -373,14 +376,14 @@ public class Cephapath : MonoBehaviour
 				}
 			}
 
-			float delta = Time.deltaTime * (t.toPull ? 5 : 1);
+			float delta = DeltaTime() * (t.toPull ? 5 : 1);
 
 			// Move towards new target point
 			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 2);
 
 			// Overall smoothing
 			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta);
-			t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, Time.deltaTime);
+			t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, DeltaTime());
 
 			// Drag behind tips to make a curve
 			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta);
@@ -394,7 +397,7 @@ public class Cephapath : MonoBehaviour
 
 		float rotAccel = Mathf.Lerp(2, 8, curDashFuel);
 
-		lookDir = Vector3.Lerp(lookDir, goalDir, rotAccel * Time.deltaTime * (1 + 3 * damageCloseness));
+		lookDir = Vector3.Lerp(lookDir, goalDir, rotAccel * DeltaTime() * (1 + 3 * damageCloseness));
 		if (lookDir != Vector3.zero)
 			transform.rotation = Quaternion.LookRotation(lookDir);
 	}
@@ -475,6 +478,16 @@ public class Cephapath : MonoBehaviour
 		RenderTentacle(t, Vector3.zero, Vector3.zero, 0);
 	}
 
+	private float DeltaTime()
+	{
+		return Time.deltaTime * timeScale;
+	}
+
+	private float TotalTime()
+	{
+		return Time.time * timeScale;
+	}
+
 	private void RenderTentacle(Tentacle t, Vector3 dir, Vector3 smoothDir, float sharpness)
 	{
 		// Perpindicular to dir
@@ -486,7 +499,7 @@ public class Cephapath : MonoBehaviour
 
 			float kneeStrength = (1 - Mathf.Abs(2 * percent - 1)) * sharpness;
 			float curveStrength = percent * percent;
-			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - Time.time * (tentacleWaveSpeed));
+			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - TotalTime() * (tentacleWaveSpeed));
 
 			Vector3 surfacePoint = transform.position + (t.targetPoint - transform.position).normalized * 0.5f;
 
