@@ -68,15 +68,12 @@ public class Player : MonoBehaviour
 			Respawn();
 
 		// Debug restart
-		if (Input.GetButton("Restart"))
+		if (Input.GetButton("Quit"))
 		{
 			restart.Increment(Time.deltaTime);
 
 			if (restart.Expired())
 			{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-
 				SceneLoader.Remove();
 				SceneManager.LoadScene(0);
 			}

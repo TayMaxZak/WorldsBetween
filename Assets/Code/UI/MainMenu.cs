@@ -92,6 +92,12 @@ public class MainMenu : MonoBehaviour
 
 	/* Main */
 
+	public void QuitGame()
+	{
+		Debug.Log("Quit Game");
+		Application.Quit();
+	}
+
 	public void OpenPlayGame()
 	{
 		state = MainMenuState.NewGame;

@@ -20,8 +20,6 @@ public partial class GameManager : MonoBehaviour
 	private float newPanSpeed;
 	private Timer panSpeedRandomizer = new Timer(2);
 
-	public Timer quit;
-
 	private void Awake()
 	{
 		// Ensure singleton
@@ -36,9 +34,10 @@ public partial class GameManager : MonoBehaviour
 		EnableLoadingUX();
 	}
 
-	private void Start()
+	private void OnDestroy()
 	{
-		
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 	}
 
 	private void Update()
@@ -65,17 +64,6 @@ public partial class GameManager : MonoBehaviour
 
 			player.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
 		}
-
-		// Handle general app functionality
-		if (Input.GetButton("Quit"))
-		{
-			quit.Increment(Time.deltaTime);
-
-			if (quit.Expired())
-				Application.Quit();
-		}
-		else
-			quit.currentTime = quit.maxTime;
 	}
 
 	public void MidLoading()
