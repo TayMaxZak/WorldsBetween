@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
 		Start,
 		Main,
 
-		Play,
+		NewGame,
 		Database,
 		Settings
 	}
@@ -18,11 +18,15 @@ public class MainMenu : MonoBehaviour
 
 	public Animator startAnimator;
 	public Animator mainAnimator;
+	public Animator playGame;
 
 	private void Awake()
 	{
 		startAnimator.SetFloat("IdleHide", 0);
+
 		mainAnimator.SetFloat("IdleHide", 1);
+
+		playGame.SetFloat("IdleHide", 1);
 	}
 
 	// Update is called once per frame
@@ -66,26 +70,38 @@ public class MainMenu : MonoBehaviour
 
 	private void ReturnToMain()
 	{
+		MainMenuState prev = state;
 		state = MainMenuState.Main;
-		Debug.Log("? -> Main");
+		Debug.Log(prev + "? -> Main");
 
 		mainAnimator.SetTrigger("ShowMenu");
+
+		if (prev == MainMenuState.NewGame)
+		{
+			playGame.SetTrigger("HideMenu");
+		}
+		else if (prev == MainMenuState.Database)
+		{
+
+		}
+		else if (prev == MainMenuState.Settings)
+		{
+
+		}
 	}
 
 	/* Main */
 
-	public void Play()
+	public void OpenPlayGame()
 	{
-		state = MainMenuState.Play;
-		Debug.Log("Main -> Play");
+		state = MainMenuState.NewGame;
+		Debug.Log("Main -> PlayGame?" + state);
 
 		mainAnimator.SetTrigger("HideMenu");
-		//startAnimator.SetTrigger("ShowMenu");
-
-		SceneManager.LoadScene(1);
+		playGame.SetTrigger("ShowMenu");
 	}
 
-	public void Database()
+	public void OpenDatabase()
 	{
 		state = MainMenuState.Database;
 		Debug.Log("Main -> Database");
@@ -94,12 +110,19 @@ public class MainMenu : MonoBehaviour
 		//startAnimator.SetTrigger("ShowMenu");
 	}
 
-	public void Settings()
+	public void OpenSettings()
 	{
 		state = MainMenuState.Settings;
 		Debug.Log("Main -> Settings");
 
 		mainAnimator.SetTrigger("HideMenu");
 		//startAnimator.SetTrigger("ShowMenu");
+	}
+
+	/* Sub Screens */
+
+	public void LoadGameScene()
+	{
+		SceneManager.LoadScene(1);
 	}
 }

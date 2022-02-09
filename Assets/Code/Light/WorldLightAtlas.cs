@@ -52,7 +52,12 @@ public class WorldLightAtlas : MonoBehaviour
 		else
 		{
 			if (!GameManager.Instance)
+			{
+				SetShaderReferences(defaultLightmap, defaultLightmap2);
+				fullSize = defaultLightmap.width;
+
 				return;
+			}
 
 			fullSize = World.GetChunkSize() * (1 + World.Generator.GetGenRange() * 2);
 			dirSize = fullSize;
