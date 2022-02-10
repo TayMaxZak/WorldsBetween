@@ -7637,17 +7637,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 1205060805}
     m_Modifications:
     - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
-      propertyPath: m_Color.b
-      value: 0.9411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
-      propertyPath: m_Color.g
-      value: 0.966323
-      objectReference: {fileID: 0}
-    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
-      propertyPath: m_Color.r
-      value: 0.98039216
-      objectReference: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6dfcf68b0faed83438bb56f5061c10c7, type: 3}
     - target: {fileID: 1544726270181770570, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_Name
       value: Database
@@ -7787,6 +7779,10 @@ PrefabInstance:
     - target: {fileID: 4533598420516526033, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4283382852
+      objectReference: {fileID: 0}
+    - target: {fileID: 6083261039362945983, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
@@ -8017,6 +8013,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1205060805}
     m_Modifications:
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6bfff6ffc372ff9499724bdfe48fdfab, type: 3}
     - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_Color.b
       value: 0.9411765
@@ -8320,6 +8320,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1205060805}
     m_Modifications:
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: caad69ca6af075546ada46387540e084, type: 3}
     - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_Color.b
       value: 0.9411765
