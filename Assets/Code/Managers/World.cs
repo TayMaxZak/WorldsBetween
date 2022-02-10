@@ -233,7 +233,7 @@ public partial class World : MonoBehaviour
 		return Instance.waterHeight;
 	}
 
-	private void OnDrawGizmosSelected()
+	private void OnDrawGizmos()
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 

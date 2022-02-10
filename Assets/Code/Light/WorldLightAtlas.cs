@@ -15,6 +15,8 @@ public class WorldLightAtlas : MonoBehaviour
 
 	public static WorldLightAtlas Instance;
 
+	public bool simpleMode = false;
+
 	public Texture3D defaultLightmap;
 	public Texture3D defaultLightmap2;
 
@@ -44,21 +46,15 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (!Application.isPlaying)
+		if (!Application.isPlaying || simpleMode)
 		{
-			SetShaderReferences(defaultLightmap, defaultLightmap2);
 			fullSize = defaultLightmap.width;
+			dirSize = fullSize;
+
+			SetShaderReferences(defaultLightmap, defaultLightmap2);
 		}
 		else
 		{
-			if (!GameManager.Instance)
-			{
-				SetShaderReferences(defaultLightmap, defaultLightmap2);
-				fullSize = defaultLightmap.width;
-
-				return;
-			}
-
 			fullSize = World.GetChunkSize() * (1 + World.Generator.GetGenRange() * 2);
 			dirSize = fullSize;
 			//dirSize = World.GetChunkSize() * (1 + 
@@ -237,7 +233,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private void Update()
 	{
-		if (!Application.isPlaying || !GameManager.Instance)
+		if (!Application.isPlaying || !GameManager.Instance || simpleMode)
 			return;
 
 		recentApplyTimer.Increment(Time.deltaTime);
