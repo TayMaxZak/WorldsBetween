@@ -498,8 +498,6 @@ MonoBehaviour:
   player: {fileID: 206889555}
   loadingScreen: {fileID: 6292042240279805736}
   deathPostProcess: {fileID: 2719366234491939709}
-  quit:
-    maxTime: 1
 --- !u!4 &173910858
 Transform:
   m_ObjectHideFlags: 0
@@ -2795,7 +2793,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1033971962
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2828,7 +2826,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 7e6055f1362e0074e83e5654b786975c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3335,7 +3333,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e550c57f44b7f7140a586ee899e72886, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4300,7 +4298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1335887592
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6605,7 +6603,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.genRange
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lighter.raysPerStep
@@ -6617,15 +6615,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lighter.raysPerStepHi
-      value: 80
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lighter.raysPerStepLo
-      value: 40
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.spawnGenRange
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: generator.targetProgress
@@ -6637,7 +6635,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.size
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: modifiers.Array.data[1].gate
@@ -6933,15 +6931,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].gate
-      value: 0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].gate
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[3].gate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: noiseModifiers.Array.data[4].gate
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].gate
-      value: 0.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].gate
@@ -6989,11 +6995,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].label
-      value: Vine
+      value: Floating rocks
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].label
-      value: Floating rocks
+      value: Vine
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[3].label
@@ -7001,7 +7007,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].label
-      value: Crack
+      value: Anti Crack
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].label
@@ -7009,7 +7015,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].label
-      value: After vine
+      value: Big ol wall
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].label
@@ -7061,7 +7067,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].offset
-      value: 36343.53
+      value: 35534.35
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].preMul
@@ -7069,7 +7075,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].offset
-      value: 35534.35
+      value: 36343.53
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].preMul
@@ -7093,7 +7099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].offset
-      value: 26343.53
+      value: 76343.53
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].preMul
@@ -7145,27 +7151,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].scale.x
-      value: 0.03
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].scale.y
-      value: 0.03
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].scale.z
-      value: 0.03
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].scale.x
-      value: 0.33
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].scale.y
-      value: 0.33
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].scale.z
-      value: 0.33
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[3].scale.x
@@ -7181,15 +7187,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].scale.x
-      value: 0.017
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].scale.y
-      value: 0.017
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].scale.z
-      value: 0.017
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].scale.x
@@ -7205,15 +7211,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].scale.x
-      value: 0.033
+      value: 0.011
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].scale.y
-      value: 0.033
+      value: 0.011
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].scale.z
-      value: 0.033
+      value: 0.011
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].scale.x
@@ -7301,11 +7307,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].boundary
-      value: 0.79
+      value: 0.96
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[1].strength
-      value: 1.07
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].addOrSub
@@ -7313,11 +7319,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].boundary
-      value: 0.96
+      value: 0.79
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[2].strength
-      value: 1
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[3].addOrSub
@@ -7333,11 +7339,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].addOrSub
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].boundary
-      value: 0.985
+      value: 0.97
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].strength
@@ -7349,7 +7355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].boundary
-      value: 0.98
+      value: 0.97
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].strength
@@ -7365,7 +7371,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].strength
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].addOrSub
@@ -7373,7 +7379,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].boundary
-      value: 0.55
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].strength
@@ -7417,7 +7423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[4].ribbonCount
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[5].ribbonCount
@@ -7425,11 +7431,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[6].ribbonCount
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[7].ribbonCount
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: noiseModifiers.Array.data[8].ribbonCount
@@ -7505,11 +7511,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[4].bounds.m_Center.x
-      value: 36
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[4].bounds.m_Center.y
-      value: -19
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[4].bounds.m_Center.z
@@ -7517,11 +7523,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[4].bounds.m_Extent.x
-      value: 2
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[4].bounds.m_Extent.y
-      value: 16
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[4].bounds.m_Extent.z
@@ -7529,11 +7535,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[5].bounds.m_Center.x
-      value: 22
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[5].bounds.m_Center.y
-      value: -1
+      value: -19
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[5].bounds.m_Center.z
@@ -7541,11 +7547,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[5].bounds.m_Extent.x
-      value: 16
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[5].bounds.m_Extent.y
-      value: 2
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: roomModifiers.Array.data[5].bounds.m_Extent.z
@@ -7647,7 +7653,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4124445721044903742, guid: c597c3935c1375c41866c9a533e9dbbe, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4124445721044903743, guid: c597c3935c1375c41866c9a533e9dbbe, type: 3}
       propertyPath: m_RootOrder
@@ -7706,7 +7712,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 2054161126615649347}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
   m_Name: 
@@ -8174,6 +8180,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: WorldLightAtlas
       objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665587, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: simpleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: defaultLightmap
+      value: 
+      objectReference: {fileID: 11700000, guid: a8b2b78440fa6c344aca81592e445505, type: 2}
+    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: defaultLightmap2
+      value: 
+      objectReference: {fileID: 11700000, guid: a8b2b78440fa6c344aca81592e445505, type: 2}
     - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
       propertyPath: m_RootOrder
       value: 1

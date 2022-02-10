@@ -7035,6 +7035,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
+      propertyPath: simpleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
       propertyPath: defaultLightmap
       value: 
       objectReference: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
@@ -7551,7 +7555,7 @@ GameObject:
   - component: {fileID: 1541613090}
   - component: {fileID: 1541613089}
   m_Layer: 0
-  m_Name: Global Volume
+  m_Name: MenuProfile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7633,9 +7637,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 1205060805}
     m_Modifications:
     - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: ab12fee63fa82a94cbc91f17c17997a7, type: 3}
+      propertyPath: m_Color.b
+      value: 0.9411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.966323
+      objectReference: {fileID: 0}
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Color.r
+      value: 0.98039216
+      objectReference: {fileID: 0}
     - target: {fileID: 1544726270181770570, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_Name
       value: Database
@@ -8006,9 +8018,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 1205060805}
     m_Modifications:
     - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 91d2366a20fabee469319c89c0ad3371, type: 3}
+      propertyPath: m_Color.b
+      value: 0.9411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.966323
+      objectReference: {fileID: 0}
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Color.r
+      value: 0.98039216
+      objectReference: {fileID: 0}
     - target: {fileID: 1544726270181770570, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_Name
       value: Settings
@@ -8301,9 +8321,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 1205060805}
     m_Modifications:
     - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 1df2f6003bf249342b63e282a05f3e59, type: 3}
+      propertyPath: m_Color.b
+      value: 0.9411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.966323
+      objectReference: {fileID: 0}
+    - target: {fileID: 920095806583222830, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
+      propertyPath: m_Color.r
+      value: 0.98039216
+      objectReference: {fileID: 0}
     - target: {fileID: 1544726270181770570, guid: aa5886bd7a8d6c64fadd03806b3e145c, type: 3}
       propertyPath: m_Name
       value: Play
