@@ -693,8 +693,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.98039216, g: 0.966323, b: 0.9411765, a: 1}
-    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.98039216, g: 0.966323, b: 0.9411765, a: 1}
+    m_PressedColor: {r: 0.98039216, g: 0.966323, b: 0.9411765, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.26519918, g: 0.23349059, b: 0.31132078, a: 1}
     m_ColorMultiplier: 1
@@ -4671,6 +4671,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8225691939166361129}
     m_Modifications:
+    - target: {fileID: 738716677688057054, guid: aa3ad83b872911a48a69aa7b184d7443, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4329516164513978221, guid: aa3ad83b872911a48a69aa7b184d7443, type: 3}
       propertyPath: m_Name
       value: HolsterSlot (1)
@@ -5431,6 +5435,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8225691939166361129}
     m_Modifications:
+    - target: {fileID: 738716677688057054, guid: aa3ad83b872911a48a69aa7b184d7443, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4329516164513978221, guid: aa3ad83b872911a48a69aa7b184d7443, type: 3}
       propertyPath: m_Name
       value: HolsterSlot
