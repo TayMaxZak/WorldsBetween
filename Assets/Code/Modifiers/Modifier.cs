@@ -22,6 +22,11 @@ public class Modifier
 	{
 		return new ModifierOutput { passed = false, addOrSub = false };
 	}
+
+	public virtual void DrawGizmo()
+	{
+
+	}
 }
 
 public struct ModifierOutput

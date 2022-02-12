@@ -23,8 +23,6 @@ public class Flashlight : Item
 
 		on = !on;
 
-		Debug.Log("Flashlight is " + (on ? "on" : "off"));
-
 		UpdateShader();
 	}
 

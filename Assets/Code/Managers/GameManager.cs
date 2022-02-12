@@ -16,6 +16,8 @@ public partial class GameManager : MonoBehaviour
 	public LoadingScreenHook loadingScreen;
 
 	public Volume deathPostProcess;
+
+	// Rotate player while loading
 	private float panSpeed;
 	private float newPanSpeed;
 	private Timer panSpeedRandomizer = new Timer(2);

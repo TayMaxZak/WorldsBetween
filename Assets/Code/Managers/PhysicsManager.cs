@@ -50,9 +50,6 @@ public partial class PhysicsManager : MonoBehaviour
 			physicsTickTimer.Reset();
 		}
 
-
-		randomColor = Color.HSVToRGB(SeedlessRandom.NextFloat(), 1, 1);
-
 		foreach (Actor actor in actors)
 			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, ticking);
 	}

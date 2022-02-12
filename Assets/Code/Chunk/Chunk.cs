@@ -112,15 +112,10 @@ public class Chunk
 
 	private void Generate()
 	{
-		List<NoiseModifier> nModifiers = World.GetNoiseModifiers();
+		List<Modifier> modifiers = World.GetModifiers();
 
-		for (int i = 0; i < nModifiers.Count; i++)
-			ApplyModifier(nModifiers[i]);
-
-		List<RoomModifier> rModifiers = World.GetRoomModifiers();
-
-		for (int i = 0; i < rModifiers.Count; i++)
-			ApplyModifier(rModifiers[i]);
+		for (int i = 0; i < modifiers.Count; i++)
+			ApplyModifier(modifiers[i]);
 	}
 
 	private void ApplyModifier(Modifier modifier)

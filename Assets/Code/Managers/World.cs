@@ -20,11 +20,7 @@ public partial class World : MonoBehaviour
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
 
 	[SerializeField]
-	[FormerlySerializedAs("modifiers")]
-	private List<NoiseModifier> noiseModifiers = new List<NoiseModifier>();
-
-	[SerializeField]
-	private List<RoomModifier> roomModifiers = new List<RoomModifier>();
+	private List<Modifier> modifiers = new List<Modifier>();
 
 	//private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -79,7 +75,7 @@ public partial class World : MonoBehaviour
 			seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
-		foreach (NoiseModifier mod in noiseModifiers)
+		foreach (Modifier mod in modifiers)
 			mod.Init();
 
 		// Scene setup
@@ -115,24 +111,9 @@ public partial class World : MonoBehaviour
 		Generator.StopGen();
 	}
 
-	public static void RegisterModifier(NoiseModifier modifier)
+	public static List<Modifier> GetModifiers()
 	{
-		Instance.noiseModifiers.Add(modifier);
-	}
-
-	public static void RemoveModifier(NoiseModifier modifier)
-	{
-		Instance.noiseModifiers.Remove(modifier);
-	}
-
-	public static List<NoiseModifier> GetNoiseModifiers()
-	{
-		return Instance.noiseModifiers;
-	}
-
-	public static List<RoomModifier> GetRoomModifiers()
-	{
-		return Instance.roomModifiers;
+		return Instance.modifiers;
 	}
 
 	public static void WaterFollow(Vector3 pos)
@@ -242,7 +223,7 @@ public partial class World : MonoBehaviour
 
 		Gizmos.color = Color.white;
 
-		foreach (RoomModifier room in roomModifiers)
-			Gizmos.DrawWireCube(room.bounds.center, room.bounds.extents * 2);
+		foreach (Modifier mod in modifiers)
+			mod.DrawGizmo();
 	}
 }

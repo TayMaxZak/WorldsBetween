@@ -4,26 +4,13 @@ using UnityEngine;
 using System;
 using System.Threading;
 
-public class SeedlessRandom : MonoBehaviour
+public class SeedlessRandom
 {
-	private static SeedlessRandom Instance;
-
 	static int seed = Environment.TickCount;
 
 	static readonly ThreadLocal<System.Random> random =
 		new ThreadLocal<System.Random>(() => new System.Random(Interlocked.Increment(ref seed)));
 
-	private void Awake()
-	{
-		// Ensure singleton
-		if (Instance)
-		{
-			Destroy(gameObject);
-			return;
-		}
-		else
-			Instance = this;
-	}
 
 	public static int NextInt()
 	{
@@ -32,6 +19,7 @@ public class SeedlessRandom : MonoBehaviour
 
 	public static float NextFloat()
 	{
+		Debug.Log(seed);
 		return (float)random.Value.NextDouble();
 	}
 
