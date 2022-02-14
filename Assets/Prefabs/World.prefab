@@ -46,53 +46,21 @@ MonoBehaviour:
   relativeOrigin: {x: 0, y: 0, z: 0}
   waterSystem: {fileID: 0}
   sunObject: {fileID: 0}
-  modifiers:
-  - label: 
-    pos: {x: 0, y: 0, z: 0}
-    scale: {x: 0.0001, y: 0.001, z: 0.0001}
-    offset: 16343.532
-    strength: 0.033
-    cutoff: 0
-    ribbon: 0
-  - label: 
-    pos: {x: 0, y: 0, z: 0}
-    scale: {x: 0.005, y: 0.003, z: 0.005}
-    offset: 13130.333
-    strength: 0.3
-    cutoff: 0
-    ribbon: 0
-  - label: 
-    pos: {x: 0, y: 0, z: 0}
-    scale: {x: 0.01, y: 0.01, z: 0.01}
-    offset: 13401.49
-    strength: 0.4
-    cutoff: 0
-    ribbon: 0
-  - label: 
-    pos: {x: 0, y: 0, z: 0}
-    scale: {x: 0.03, y: 0.05, z: 0.03}
-    offset: -15658.42
-    strength: 0.3
-    cutoff: 0
-    ribbon: 0
-  - label: 
-    pos: {x: 0, y: 0, z: 0}
-    scale: {x: 0.1, y: 0.001, z: 0.1}
-    offset: 13406.25
-    strength: 0.1
-    cutoff: 0
-    ribbon: 0
-  generator:
+  modifiers: []
+  worldBuilder:
     genStage: 0
     active: 1
     multiQ: 1
-    queues: 32
+    queues: 16
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
-    genRange: 11
+    genRange: 4
     spawnGenRange: 3
-    targetProgress: 0.8
+    targetProgress: 0.67
+  lightEngine:
+    raysPerStepHi: 20
+    raysPerStepLo: 30
   randomizeSeed: 0
-  seed: -1739373185
+  seed: 0
   chunkSize: 16
   isInfinite: 0
-  waterHeight: 0
+  waterHeight: -50
