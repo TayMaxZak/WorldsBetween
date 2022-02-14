@@ -49,7 +49,7 @@ public class WorldEditor : Editor
 		EditorGUILayout.Space();
 		////////////////////
 
-		EditorGUILayout.LabelField("Generators used: ", World.Generator.GeneratorsUsed().ToString());
+		EditorGUILayout.LabelField("Generators used: ", World.WorldBuilder.GeneratorsUsed().ToString());
 
 		////////////////////
 		EditorGUILayout.Space();
@@ -57,7 +57,7 @@ public class WorldEditor : Editor
 
 		EditorGUILayout.LabelField("Chunk Generators", EditorStyles.boldLabel);
 
-		var generators = World.Generator.GetChunkGenerators();
+		var generators = World.WorldBuilder.GetChunkGenerators();
 
 		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in generators)
 		{

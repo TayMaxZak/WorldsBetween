@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
 	public static Player Instance;
 
+	private bool activated = false;
 	public PlayerVitals vitals;
 	public PlayerMover mover;
 	public MouseLook mouseLook;
@@ -15,8 +16,8 @@ public class Player : MonoBehaviour
 	public Item heldItem;
 
 	private Vector3 initPos;
-	private Timer activate = new Timer(1);
-	private Timer restart = new Timer(1);
+	private Timer respawn = new Timer(1);
+	private Timer quit = new Timer(1);
 
 	private void Awake()
 	{
@@ -49,41 +50,47 @@ public class Player : MonoBehaviour
 		mouseLook.enabled = true;
 
 		initPos = transform.position;
+
+		activated = true;
 	}
 
 	public void Update()
 	{
-		// Debug respawn
-		if (Input.GetButton("Astrum"))
-		{
-			activate.Increment(Time.deltaTime);
-
-			if (activate.Expired())
-				Respawn();
-		}
-		else
-			activate.currentTime = activate.maxTime;
-
-		if (vitals.dead && Input.GetButtonDown("Quit"))
-			Respawn();
-
-		// Debug restart
+		// Debug quit
 		if (Input.GetButton("Quit"))
 		{
-			restart.Increment(Time.deltaTime);
+			quit.Increment(Time.deltaTime);
 
-			if (restart.Expired())
+			if (quit.Expired())
 			{
 				SceneLoader.Remove();
 				SceneManager.LoadScene(0);
 			}
 		}
 		else
-			restart.currentTime = restart.maxTime;
+			quit.currentTime = quit.maxTime;
+
 
 		// Only handle inputs if alive
+		if (!activated)
+			return;
 		if (vitals.dead)
 			return;
+
+
+		// Debug respawn
+		if (Input.GetButton("Astrum"))
+		{
+			respawn.Increment(Time.deltaTime);
+
+			if (respawn.Expired())
+				Respawn();
+		}
+		else
+			respawn.currentTime = respawn.maxTime;
+
+		if (vitals.dead && Input.GetButtonDown("Quit"))
+			Respawn();
 
 		// Item inputs
 		if (!heldItem)
@@ -101,7 +108,6 @@ public class Player : MonoBehaviour
 
 	private void Respawn()
 	{
-		//if (vitals.dead)
 		vitals.Respawn();
 
 		mover.position = initPos;

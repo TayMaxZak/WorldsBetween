@@ -43,9 +43,6 @@ public class Chunk
 	public ChunkGameObject go;
 
 
-	// Represents where each light reaches. true = light, false = shadow
-	//private Dictionary<LightSource, ChunkBitArray> lightToMaskMap = new Dictionary<LightSource, ChunkBitArray>();
-
 	public void Init(int chunkSize)
 	{
 		this.chunkSize = chunkSize;
@@ -68,7 +65,12 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					blocks[x, y, z] = new Block(x, y, z, 255);
+					Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
+
+					bool modCond = Mathf.Abs(coord.x) % 25 >= 23 || Mathf.Abs(coord.y) % 25 >= 23 || Mathf.Abs(coord.z) % 25 >= 23;
+					bool carveCond = coord.y >= -1 || (int)coord.magnitude % 30 >= 28 || modCond;
+
+					blocks[x, y, z] = new Block(x, y, z, (byte)(carveCond ? 0 : 255));
 				}
 			}
 		}
@@ -101,10 +103,12 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			CacheAdjacentFlags();
+			CacheDataFromBlocks();
 
 			procStage = ProcStage.MakeMesh;
-			World.Generator.QueueNextStage(this);
+			World.WorldBuilder.QueueNextStage(this);
+
+			Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.green, 1);
 		});
 
 		bw.RunWorkerAsync();
@@ -137,8 +141,10 @@ public class Chunk
 		}
 	}
 
-	public void CacheAdjacentFlags()
+	public void CacheDataFromBlocks()
 	{
+		int airCount = 0;
+
 		for (byte x = 0; x < chunkSize; x++)
 		{
 			for (byte y = 0; y < chunkSize; y++)
@@ -148,16 +154,20 @@ public class Chunk
 					// Only care if this block is an air block
 					if (!blocks[x, y, z].IsAir())
 					{
-						FlagAllCorners(x + position.x, y + position.y, z + position.z);
+						FlagAllCornersTrue(x + position.x, y + position.y, z + position.z);
 
 						continue;
 					}
+
+					airCount++;
 
 					// Handle adjacent blocks for this block
 					FlagAdjacentsAsMaybeNearAir(x, y, z);
 				}
 			}
 		}
+
+		WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSize / 2, airCount);
 	}
 
 	private void FlagAdjacentsAsMaybeNearAir(int x, int y, int z)
@@ -198,7 +208,7 @@ public class Chunk
 			block.maybeNearAir = 255;
 	}
 
-	private void FlagAllCorners(int x, int y, int z)
+	private void FlagAllCornersTrue(int x, int y, int z)
 	{
 		// Apply
 		World.SetCorner(true, x, y, z);
@@ -263,7 +273,9 @@ public class Chunk
 
 			procStage = ProcStage.Done;
 			lightStage = LightStage.DirectLight;
-			World.Generator.QueueNextStage(this);
+			World.WorldBuilder.QueueNextStage(this);
+
+			Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.cyan, 1);
 
 			//AsyncCalcLight();
 		});

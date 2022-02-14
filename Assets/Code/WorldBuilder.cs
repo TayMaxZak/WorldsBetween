@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 
 [System.Serializable]
-public class WorldGenerator
+public class WorldBuilder
 {
 	public enum GenStage
 	{
@@ -64,12 +64,12 @@ public class WorldGenerator
 	{
 		genStage = GenStage.CreateChunks;
 
-		// First batch of chunks
-		CreateChunksNearPlayer(genRange);
+		// Create chunk data and GameObjects
+		InstantiateChunks(genRange);
 
-		await Task.Delay(1000);
+		await Task.Delay(10);
 
-		// Enqueue all chunks afterwards
+		// Enqueue chunks
 		await EnqueueAllChunks();
 
 		genStage = GenStage.GenerateChunks;
@@ -119,7 +119,7 @@ public class WorldGenerator
 		}
 	}
 
-	public void CreateChunksNearPlayer(int range)
+	public void InstantiateChunks(int range)
 	{
 		// Change range to actual distance
 		int chunkSize = World.GetChunkSize();
@@ -174,7 +174,7 @@ public class WorldGenerator
 			chunksToQueue.Enqueue(entry);
 
 		// Then go through a few at a time
-		int taskSize = 64;
+		int taskSize = 32;
 		while (chunksToQueue.Count > 0)
 		{
 			for (int i = taskSize; i > 0 && chunksToQueue.Count > 0; i--)

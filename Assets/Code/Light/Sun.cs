@@ -12,7 +12,7 @@ public class Sun : MonoBehaviour
 	[ContextMenu("Recalculate Light")]
 	public void Recalc()
 	{
-		World.Lighter.Begin();
+		World.LightEngine.Begin();
 	}
 
 	private void OnDrawGizmosSelected()

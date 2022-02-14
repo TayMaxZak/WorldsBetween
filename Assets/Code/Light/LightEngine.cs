@@ -67,7 +67,7 @@ public class LightEngine
 		if (!Application.isPlaying)
 			return;
 
-		for (int i = 0; i < (World.Generator.IsGenerating() ? raysPerStepHi : raysPerStepLo); i++)
+		for (int i = 0; i < (World.WorldBuilder.IsGenerating() ? raysPerStepHi : raysPerStepLo); i++)
 		{
 			if (sourceQueue.Count == 0)
 				break;
@@ -135,15 +135,21 @@ public class LightEngine
 			{
 				// Light starting inside corner
 				if (occupied)
+				{
+					Debug.DrawLine(cur, cur - Vector3.up * 200, Color.black, 1);
 					return;
+				}
 				firstPass = false;
 			}
 
 			// Remember this result
-			WorldLightAtlas.Instance.WriteToLightmap(WorldLightAtlas.LightMapSpace.WorldSpace, cur, sun.lightColor, !occupied);
+			WorldLightAtlas.Instance.WriteToLightmap(cur, sun.lightColor, !occupied);
 
 			if (occupied)
+			{
+				Debug.DrawLine(cur, cur - Vector3.up * 200, Color.black, 1);
 				break;
+			}
 
 			cur.y -= 1;
 		} // y

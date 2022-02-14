@@ -91,7 +91,7 @@ public partial class GameManager : MonoBehaviour
 
 		DisableLoadingUX();
 
-		World.Lighter.Begin();
+		World.LightEngine.Begin();
 
 		PhysicsManager.Instance.Activate();
 

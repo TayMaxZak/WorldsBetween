@@ -24,6 +24,7 @@ public class WorldLightAtlas : MonoBehaviour
 	private Color[] directLightArr;
 	public Texture3D ambientLightTex;
 	private Color[] ambientLightArr;
+	private int[] airCountArr;
 
 	private int fullSize;
 
@@ -55,7 +56,7 @@ public class WorldLightAtlas : MonoBehaviour
 		}
 		else
 		{
-			fullSize = World.GetChunkSize() * (1 + World.Generator.GetGenRange() * 2);
+			fullSize = World.GetChunkSize() * (1 + World.WorldBuilder.GetGenRange() * 2);
 			dirSize = fullSize;
 			//dirSize = World.GetChunkSize() * (1 + 
 			//	(Mathf.Min(hdRange, World.Generator.GetGenRange()) * 2 / directScaleHQ) + 
@@ -147,6 +148,18 @@ public class WorldLightAtlas : MonoBehaviour
 		}
 
 		UpdateAmbientTex();
+
+		airCountArr = new int[ambSize * ambSize * ambSize];
+		for (int z = 0; z < ambSize; z++)
+		{
+			for (int y = 0; y < ambSize; y++)
+			{
+				for (int x = 0; x < ambSize; x++)
+				{
+					airCountArr[IndexFromPos(ambSize, x, y, z)] = 1024;
+				}
+			}
+		}
 	}
 
 	private void UpdateAmbientTex()
@@ -158,7 +171,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientLightTex.Apply();
 	}
 
-	public void WriteToLightmap(LightMapSpace texSpace, Vector3Int pos, Color newValue, bool airLight)
+	public void WriteToLightmap(Vector3Int pos, Color newValue, bool airLight)
 	{
 		if (directLightTex == null)
 			return;
@@ -177,13 +190,15 @@ public class WorldLightAtlas : MonoBehaviour
 		directLightArr[dirIndex] = newValue;
 
 
-		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
-		// Surface light should count for 16 times as much as air light because of limited surface area compared to volume
-		float ambChangeStrength = airLight ? 1/4f : 4f;
+		if (!airLight)
+			return;
 
 		// Ambient light change
 		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
+
+		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
+		float ambChangeStrength = 256f / airCountArr[ambIndex];
 
 		if (!InBounds(fullSize / ambientScale, ambIndex))
 			return;
@@ -193,6 +208,17 @@ public class WorldLightAtlas : MonoBehaviour
 		Color newAmbValue = oldAmbValue + (newValue - oldValue) * ambChangeStrength;
 
 		ambientLightArr[ambIndex] = newAmbValue;
+	}
+
+	public void SetAirCount(Vector3Int pos, int count)
+	{
+		Vector3Int posA = WorldToTex(pos);
+		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
+		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
+		if (InBounds(fullSize / ambientScale, ambIndex))
+			airCountArr[ambIndex] = Mathf.Max(1, count);
+		else
+			Debug.Log("Out of bounds: " + ambIndex + ", in " + pos + ", tex " + posA);
 	}
 
 	//private int DirectPosCoord(int posIn)
@@ -228,7 +254,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private bool InBounds(int size, int index)
 	{
-		return index > 0 && index < size * size * size;
+		return index >= 0 && index < size * size * size;
 	}
 
 	private void Update()

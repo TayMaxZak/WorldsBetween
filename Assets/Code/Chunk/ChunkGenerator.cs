@@ -65,7 +65,7 @@ public class ChunkGenerator
 		}
 
 		while (reQueue.Count > 0)
-			World.Generator.QueueNextStage(reQueue.Dequeue(), true);
+			World.WorldBuilder.QueueNextStage(reQueue.Dequeue(), true);
 	}
 
 	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue, int taskSize)
@@ -172,7 +172,7 @@ public class ChunkGenerator
 					chunk.Init(World.GetChunkSize());
 
 					chunk.procStage = Chunk.ProcStage.Generate;
-					World.Generator.QueueNextStage(chunk);
+					World.WorldBuilder.QueueNextStage(chunk);
 				}
 				break;
 			case Chunk.ProcStage.Generate: // Generate terrain

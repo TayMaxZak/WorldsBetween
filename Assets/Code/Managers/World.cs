@@ -25,12 +25,12 @@ public partial class World : MonoBehaviour
 	//private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
 	[SerializeField]
-	private WorldGenerator generator;
-	public static WorldGenerator Generator;
+	private WorldBuilder worldBuilder;
+	public static WorldBuilder WorldBuilder;
 
 	[SerializeField]
-	private LightEngine lighter;
-	public static LightEngine Lighter;
+	private LightEngine lightEngine;
+	public static LightEngine LightEngine;
 
 	[Header("General Settings")]
 	[SerializeField]
@@ -57,15 +57,15 @@ public partial class World : MonoBehaviour
 		else
 			Instance = this;
 
-		Generator = generator;
-		Generator.Init();
+		WorldBuilder = worldBuilder;
+		WorldBuilder.Init();
 
 		WorldInit();
 
-		Lighter = lighter;
-		sunObject.sourcePoints.center = new Vector3(chunkSize / 2, chunkSize * (1 + generator.GetGenRange()) - 0.5f, chunkSize / 2);
-		sunObject.sourcePoints.extents = new Vector3(chunkSize * (0.5f + generator.GetGenRange()), 0.5f, chunkSize * (0.5f + generator.GetGenRange()));
-		Lighter.Init(sunObject);
+		LightEngine = lightEngine;
+		sunObject.sourcePoints.center = new Vector3(chunkSize / 2, chunkSize * (1 + worldBuilder.GetGenRange()) - 0.5f, chunkSize / 2);
+		sunObject.sourcePoints.extents = new Vector3(chunkSize * (0.5f + worldBuilder.GetGenRange()), 0.5f, chunkSize * (0.5f + worldBuilder.GetGenRange()));
+		LightEngine.Init(sunObject);
 	}
 
 	private void WorldInit()
@@ -85,12 +85,12 @@ public partial class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		Generator.StartGen();
+		WorldBuilder.StartGen();
 	}
 
 	private void Update()
 	{
-		Generator.ContinueGenerating();
+		WorldBuilder.ContinueGenerating();
 	}
 
 	[ContextMenu("Restart Gen")]
@@ -102,13 +102,13 @@ public partial class World : MonoBehaviour
 		randomizeSeed = true;
 		WorldInit();
 
-		Generator.StartGen();
+		WorldBuilder.StartGen();
 	}
 
 	[ContextMenu("Cancel Gen")]
 	public void CancelGen()
 	{
-		Generator.StopGen();
+		WorldBuilder.StopGen();
 	}
 
 	public static List<Modifier> GetModifiers()
@@ -118,7 +118,8 @@ public partial class World : MonoBehaviour
 
 	public static void WaterFollow(Vector3 pos)
 	{
-		Instance.waterSystem.transform.position = new Vector3(pos.x, Instance.waterHeight, pos.z);
+		if (Instance.waterSystem)
+			Instance.waterSystem.transform.position = new Vector3(pos.x, Instance.waterHeight, pos.z);
 	}
 
 	public static Chunk GetChunkFor(int x, int y, int z)
@@ -218,7 +219,7 @@ public partial class World : MonoBehaviour
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
-		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + generator.GetGenRange() * 2) * chunkSize);
+		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + worldBuilder.GetGenRange() * 2) * chunkSize);
 
 
 		Gizmos.color = Color.white;
