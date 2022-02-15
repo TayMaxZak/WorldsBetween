@@ -236,8 +236,6 @@ public class PlayerVitals : MonoBehaviour
 	{
 		dead = false;
 
-		showVitals = false;
-
 		UIManager.SetDeathUI(false);
 
 		currentHealth = maxHealth;

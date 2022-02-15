@@ -93,7 +93,7 @@ public class PlayerMover : Actor
 
 	protected override Vector3 GetWalkVelocity()
 	{
-		if (!grounded)
+		if (Player.Instance.vitals.dead || !grounded)
 			return Vector3.zero;
 
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));

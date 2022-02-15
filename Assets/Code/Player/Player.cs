@@ -70,6 +70,9 @@ public class Player : MonoBehaviour
 		else
 			quit.currentTime = quit.maxTime;
 
+		if (vitals.dead && (Input.GetButtonDown("Quit") || Input.GetButtonDown("Astrum")))
+			Respawn();
+
 
 		// Only handle inputs if alive
 		if (!activated)
@@ -88,9 +91,6 @@ public class Player : MonoBehaviour
 		}
 		else
 			respawn.currentTime = respawn.maxTime;
-
-		if (vitals.dead && Input.GetButtonDown("Quit"))
-			Respawn();
 
 		// Item inputs
 		if (!heldItem)

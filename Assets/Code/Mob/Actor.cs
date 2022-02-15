@@ -131,15 +131,15 @@ public class Actor : MonoBehaviour
 		Vector3 offsetActual = position - blockPosition;
 		//float eps = 0.001f;
 
-		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2); x++)
+		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2) + 1; x++)
 		{
-			for (float y = (position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2); y++)
+			for (float y = (position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2) + 1; y++)
 			{
-				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2); z++)
+				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2) + 1; z++)
 				{
-					float tx = Mathf.Clamp(x + offset, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
-					float ty = Mathf.Clamp(y + offset, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
-					float tz = Mathf.Clamp(z + offset, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
+					float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
+					float ty = Mathf.Clamp(y, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
+					float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
 
 					Vector3 testPos = new Vector3((tx), (ty), (tz));
 
@@ -187,29 +187,7 @@ public class Actor : MonoBehaviour
 
 	protected void OnDrawGizmos()
 	{
-		float offset = 0.5f;
-		Vector3 offsetActual = position - blockPosition;
-		//float eps = 0.001f;
-
 		Gizmos.color = Utils.colorBlue;
 		Gizmos.DrawWireCube(position, hitbox.size);
-
-		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2); x++)
-		{
-			for (float y = (position.y - hitbox.size.y / 2); y <= (position.y + hitbox.size.y / 2); y++)
-			{
-				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2); z++)
-				{
-					float tx = Mathf.Clamp(x + offset, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
-					float ty = Mathf.Clamp(y + offset, (position.y - hitbox.size.y / 2), (position.y + hitbox.size.y / 2));
-					float tz = Mathf.Clamp(z + offset, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
-
-					Vector3 testPos = new Vector3((tx), (ty), (tz));
-
-					Gizmos.color = Utils.colorOrange;
-					Gizmos.DrawWireCube(testPos, Vector3.one * 0.95f);
-				}
-			}
-		}
 	}
 }
