@@ -67,10 +67,7 @@ public class Chunk
 				{
 					Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
 
-					bool modCond = Mathf.Abs(coord.x) % 25 >= 23 || Mathf.Abs(coord.y) % 25 >= 23 || Mathf.Abs(coord.z) % 25 >= 23;
-					bool carveCond = coord.y >= -1 || (int)coord.magnitude % 30 >= 28 || modCond;
-
-					blocks[x, y, z] = new Block(x, y, z, (byte)(carveCond ? 0 : 255));
+					blocks[x, y, z] = new Block(x, y, z, (byte)(coord.y >= -1 ? 0 : 255));
 				}
 			}
 		}
@@ -124,21 +121,7 @@ public class Chunk
 
 	private void ApplyModifier(Modifier modifier)
 	{
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					ModifierOutput mo = modifier.OutputAt(x + position.x + 0.5f, y + position.y + 0.5f, z + position.z + 0.5f);
-
-					if (!mo.passed)
-						continue;
-
-					blocks[x, y, z].opacity = (byte)(mo.addOrSub ? 255 : 0);
-				}
-			}
-		}
+		modifier.ApplyModifier(this);
 	}
 
 	public void CacheDataFromBlocks()

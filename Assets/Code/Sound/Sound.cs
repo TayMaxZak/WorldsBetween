@@ -11,6 +11,8 @@ public class Sound : ScriptableObject
 
 	public AudioSource preset = null;
 
+	public float volumeMult = 1;
+
 	public RangeFloat pitchRange = new RangeFloat(0.5f, 1.5f);
 }
 

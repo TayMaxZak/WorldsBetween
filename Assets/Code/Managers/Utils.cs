@@ -29,6 +29,16 @@ public class Utils
 		return a;
 	}
 
+	public static int MaxAbs(Vector3Int a)
+	{
+		return Mathf.Max(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
+	}
+
+	public static int SumAbs(Vector3Int a)
+	{
+		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
+	}
+
 	public static float SoftSign(float val)
 	{
 		return Mathf.Clamp(val * 10000, -1, 1);

@@ -75,11 +75,18 @@ public partial class World : MonoBehaviour
 			seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
 		Random.InitState(seed);
 
+		MakeModifiers();
+
 		foreach (Modifier mod in modifiers)
 			mod.Init();
 
 		// Scene setup
 		WaterFollow(relativeOrigin);
+	}
+
+	private void MakeModifiers()
+	{
+		modifiers.Add(new NoiseModifier(false, new Vector3(0.05f, 0.01f, 0.05f)));
 	}
 
 	private void Start()
@@ -94,15 +101,12 @@ public partial class World : MonoBehaviour
 	}
 
 	[ContextMenu("Restart Gen")]
-	public void RestartGen()
+	public async void RestartGen()
 	{
-		//lightSources.Clear();
-		chunks.Clear();
+		foreach (Modifier mod in modifiers)
+			mod.Init();
 
-		randomizeSeed = true;
-		WorldInit();
-
-		WorldBuilder.StartGen();
+		await WorldBuilder.EnqueueAllChunks(Chunk.ProcStage.Allocate);
 	}
 
 	[ContextMenu("Cancel Gen")]
@@ -220,11 +224,5 @@ public partial class World : MonoBehaviour
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
 		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + worldBuilder.GetGenRange() * 2) * chunkSize);
-
-
-		Gizmos.color = Color.white;
-
-		foreach (Modifier mod in modifiers)
-			mod.DrawGizmo();
 	}
 }

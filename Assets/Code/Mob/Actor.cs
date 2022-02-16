@@ -127,8 +127,6 @@ public class Actor : MonoBehaviour
 
 	protected bool Intersecting(float deltaTime, ref Vector3 testVel)
 	{
-		float offset = 0.5f;
-		Vector3 offsetActual = position - blockPosition;
 		//float eps = 0.001f;
 
 		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2) + 1; x++)

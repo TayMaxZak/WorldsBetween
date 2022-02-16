@@ -70,7 +70,7 @@ public class WorldBuilder
 		await Task.Delay(10);
 
 		// Enqueue chunks
-		await EnqueueAllChunks();
+		await EnqueueAllChunks(Chunk.ProcStage.Allocate);
 
 		genStage = GenStage.GenerateChunks;
 	}
@@ -167,7 +167,7 @@ public class WorldBuilder
 		genStage = GenStage.EnqueueChunks;
 	}
 
-	private async Task EnqueueAllChunks()
+	public async Task EnqueueAllChunks(Chunk.ProcStage procStage)
 	{
 		// First get all chunks
 		foreach (var entry in World.GetChunks())
@@ -178,7 +178,11 @@ public class WorldBuilder
 		while (chunksToQueue.Count > 0)
 		{
 			for (int i = taskSize; i > 0 && chunksToQueue.Count > 0; i--)
-				QueueNextStage(chunksToQueue.Dequeue().Value);
+			{
+				Chunk c = chunksToQueue.Dequeue().Value;
+				c.procStage = procStage;
+				QueueNextStage(c);
+			}
 
 			await Task.Delay(1);
 		}
@@ -201,11 +205,6 @@ public class WorldBuilder
 
 	public void QueueNextStage(Chunk chunk)
 	{
-		QueueNextStage(chunk, false);
-	}
-
-	public void QueueNextStage(Chunk chunk, bool requeue)
-	{
 		chunkGenerators.TryGetValue(chunk.procStage, out ChunkGenerator generator);
 
 		if (generator == null)
@@ -213,7 +212,7 @@ public class WorldBuilder
 
 		// Add to appropriate queue. Closer chunks have higher priority (lower value)
 		Vector3Int origin = World.GetRelativeOrigin();
-		float priority = (requeue ? -4 : 0) + Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - origin);
+		float priority = Vector3.SqrMagnitude((chunk.position + Vector3.one * World.GetChunkSize() / 2f) - origin);
 		generator.Enqueue(chunk, priority, multiQ);
 	}
 

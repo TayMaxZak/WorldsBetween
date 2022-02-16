@@ -93,12 +93,14 @@ public class PlayerMover : Actor
 
 	protected override Vector3 GetWalkVelocity()
 	{
-		if (Player.Instance.vitals.dead || !grounded)
+		if (Player.Instance.vitals.dead)
 			return Vector3.zero;
+
+		float groundMult = !grounded ? 0.1f : 1;
 
 		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!inWater ? ((sprinting && grounded) ? sprintSpeed : walkSpeed) : swimSpeed);
+		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!inWater ? ((sprinting && grounded) ? sprintSpeed : walkSpeed) : swimSpeed) * groundMult;
 		walkVelocity = !inWater ? transform.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
 
 		return walkVelocity;
