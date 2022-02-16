@@ -29,11 +29,12 @@ public class WorldLightAtlas : MonoBehaviour
 	private int fullSize;
 
 	private int dirSize;
+	public int directScale = 2;
 	//private int hdRange = 5;
 	//private int directScaleHQ = 1;
 	//private int directScaleLQ = 2;
 
-	private int ambientScale = 16;
+	public int ambientScale = 16;
 
 	private Timer cleanupTimer = new Timer(15f);
 
@@ -50,14 +51,14 @@ public class WorldLightAtlas : MonoBehaviour
 		if (!Application.isPlaying || simpleMode)
 		{
 			fullSize = defaultLightmap.width;
-			dirSize = fullSize;
+			dirSize = fullSize / directScale;
 
 			SetShaderReferences(defaultLightmap, defaultLightmap2);
 		}
 		else
 		{
 			fullSize = World.GetChunkSize() * (1 + World.WorldBuilder.GetGenRange() * 2);
-			dirSize = fullSize;
+			dirSize = fullSize / directScale;
 			//dirSize = World.GetChunkSize() * (1 + 
 			//	(Mathf.Min(hdRange, World.Generator.GetGenRange()) * 2 / directScaleHQ) + 
 			//	(Mathf.Max(0, World.Generator.GetGenRange() - hdRange) * 2 / directScaleLQ));
@@ -180,7 +181,7 @@ public class WorldLightAtlas : MonoBehaviour
 		Vector3Int posA = WorldToTex(pos);
 
 		// Direct light change
-		int dirIndex = IndexFromPos(dirSize, posD.x, posD.y, posD.z);
+		int dirIndex = IndexFromPos(dirSize, posD.x / directScale, posD.y / directScale, posD.z / directScale);
 		if (!InBounds(dirSize, dirIndex))
 			return;
 		directChanges++;
@@ -198,7 +199,7 @@ public class WorldLightAtlas : MonoBehaviour
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
 
 		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
-		float ambChangeStrength = 256f / airCountArr[ambIndex];
+		float ambChangeStrength = (directScale * directScale * directScale) * 256f / airCountArr[ambIndex];
 
 		if (!InBounds(fullSize / ambientScale, ambIndex))
 			return;
