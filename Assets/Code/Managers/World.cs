@@ -86,7 +86,10 @@ public partial class World : MonoBehaviour
 
 	private void MakeModifiers()
 	{
-		modifiers.Add(new NoiseModifier(false, new Vector3(0.05f, 0.01f, 0.05f)));
+		//modifiers.Add(new NoiseModifier(false, 0.1f, new Vector3(0.05f, 0.05f, 0.05f)));
+		modifiers.Add(new BlockyNoiseModifier(false, 1, new Vector3(0.04f, 0.04f, 0.04f), 0.2f, 3, 15, 5));
+		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.05f, 0.01f, 0.05f), 0.3f, 5, 10, 3));
+		modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.08f, 0.24f, 0.08f), 0.05f, 1, 5, 0));
 	}
 
 	private void Start()

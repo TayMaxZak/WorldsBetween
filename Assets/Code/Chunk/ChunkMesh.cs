@@ -5,7 +5,6 @@ using UnityEngine;
 public class ChunkMesh
 {
 	private static Color borderColor = new Color(0.01f, 0.01f, 0.5f, 0.5f);
-	private static Color resetColor = new Color(0.02f, 0.02f, 0.5f, 0.5f);
 
 	private Chunk chunk;
 
@@ -242,7 +241,7 @@ public class ChunkMesh
 							else
 							{
 								// Smooth vs hard determined by block material
-								float hardness = 0.8f;
+								float hardness = 0.0f;
 
 								normals.Add(Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
 							}

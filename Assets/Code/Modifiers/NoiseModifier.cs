@@ -10,15 +10,17 @@ public class NoiseModifier : Modifier
 	public float strength = 1;
 	public float ribbonGateMult = 1;
 	public float gate = 0;
-	public float boundary = 0.5f;
+	private float boundary = 0.5f;
 	public int ribbonCount = 0;
 	public bool addOrSub = false;
 
 	private Vector3 randomOffset = Vector3.zero;
 
-	public NoiseModifier(bool addOrSub, Vector3 scale)
+	// TODO: Strength as chance to exceed 0.5
+	public NoiseModifier(bool addOrSub, float strength, Vector3 scale)
 	{
 		this.addOrSub = addOrSub;
+		this.strength = strength;
 		this.scale = scale;
 	}
 
@@ -41,7 +43,7 @@ public class NoiseModifier : Modifier
 		ApplyToAll(toApply, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
-	private void ApplyNoise(Vector3Int pos)
+	protected virtual void ApplyNoise(Vector3Int pos)
 	{
 		float noise = GetNoiseAt(WarpPosition(pos));
 
@@ -54,15 +56,12 @@ public class NoiseModifier : Modifier
 		}
 	}
 
-	protected virtual Vector3Int WarpPosition(Vector3Int input)
+	protected virtual Vector3 WarpPosition(Vector3 pos)
 	{
-		return input / (1 + ((int)input.magnitude / 3) % 9);
-		//return input / (1 + Utils.MaxAbs(input) % 9);
-		//return input / (1 + Utils.SumAbs(input) % 9);
-		//return input;
+		return pos;
 	}
 
-	private float GetNoiseAt(Vector3Int pos)
+	protected float GetNoiseAt(Vector3 pos)
 	{
 		float x = pos.x * scale.x + offset + randomOffset.x;
 		float y = pos.y * scale.y + offset + randomOffset.y;
@@ -79,6 +78,6 @@ public class NoiseModifier : Modifier
 
 		noise = Mathf.Clamp01(noise - gate) / (1 - gate);
 
-		return noise;
+		return noise * strength;
 	}
 }

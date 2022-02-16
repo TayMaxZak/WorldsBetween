@@ -34,7 +34,17 @@ public class Utils
 		return Mathf.Max(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
 	}
 
+	public static float MaxAbs(Vector3 a)
+	{
+		return Mathf.Max(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
+	}
+
 	public static int SumAbs(Vector3Int a)
+	{
+		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
+	}
+
+	public static float SumAbs(Vector3 a)
 	{
 		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
 	}
