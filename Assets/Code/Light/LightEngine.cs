@@ -63,20 +63,27 @@ public class LightEngine
 
 		//iterateTimer.Reset();
 
-		if (raysBusy > 0)
+		if (!Application.isPlaying)
 			return;
 
-		if (!Application.isPlaying)
+		if (raysBusy > 0)
 			return;
 
 		for (int i = 0; i < (World.WorldBuilder.IsGenerating() ? raysPerStepHi : raysPerStepLo); i++)
 		{
+			// Done early
 			if (sourceQueue.Count == 0)
 				break;
 
 			Vector3Int source = sourceQueue.Dequeue();
 
 			AsyncLightRay(source);
+		}
+
+		// Finished, apply changes
+		if (sourceQueue.Count == 0)
+		{
+			WorldLightAtlas.Instance.ApplyChanges();
 		}
 	}
 

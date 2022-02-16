@@ -258,49 +258,63 @@ public class WorldLightAtlas : MonoBehaviour
 		return index >= 0 && index < size * size * size;
 	}
 
-	private void Update()
+	//private void Update()
+	//{
+	//	if (!Application.isPlaying || !GameManager.Instance || simpleMode)
+	//		return;
+
+	//	recentApplyTimer.Increment(Time.deltaTime);
+	//	if (!recentApplyTimer.Expired())
+	//		return;
+
+	//	// Apply ambient changes as needed (cheaper to apply)
+	//	if (ambientChanges >= targAmbientChanges)
+	//	{
+	//		UpdateAmbientTex();
+	//		ambientChanges = 0;
+
+	//		recentApplyTimer.Reset();
+	//	}
+
+	//	// Apply direct changes as needed (less frequently than ambient)
+	//	if (directChanges >= targDirectChanges)
+	//	{
+	//		UpdateDirectTex();
+	//		directChanges = 0;
+
+	//		cleanupTimer.Reset();
+	//		recentApplyTimer.Reset();
+	//	}
+
+	//	// Leftover changes, eventually apply them during down time
+	//	if (directChanges > 0)
+	//		cleanupTimer.Increment(Time.deltaTime);
+
+	//	if (cleanupTimer.Expired())
+	//	{
+	//		Debug.Log("Leftover changes: " + directChanges + " direct, " + ambientChanges + " ambient");
+	//		cleanupTimer.Reset();
+
+	//		UpdateDirectTex();
+	//		directChanges = 0;
+
+	//		UpdateAmbientTex();
+	//		ambientChanges = 0;
+	//	}
+	//}
+
+	public void ApplyChanges()
 	{
-		if (!Application.isPlaying || !GameManager.Instance || simpleMode)
+		if (directChanges == 0 && ambientChanges == 0)
 			return;
 
-		recentApplyTimer.Increment(Time.deltaTime);
-		if (!recentApplyTimer.Expired())
-			return;
+		Debug.Log("Applied light atlas changes: " + directChanges + " direct, " + ambientChanges + " ambient");
 
-		// Apply ambient changes as needed (cheaper to apply)
-		if (ambientChanges >= targAmbientChanges)
-		{
-			UpdateAmbientTex();
-			ambientChanges = 0;
+		UpdateDirectTex();
+		directChanges = 0;
 
-			recentApplyTimer.Reset();
-		}
-
-		// Apply direct changes as needed (less frequently than ambient)
-		if (directChanges >= targDirectChanges)
-		{
-			UpdateDirectTex();
-			directChanges = 0;
-
-			cleanupTimer.Reset();
-			recentApplyTimer.Reset();
-		}
-
-		// Leftover changes, eventually apply them during down time
-		if (directChanges > 0)
-			cleanupTimer.Increment(Time.deltaTime);
-
-		if (cleanupTimer.Expired())
-		{
-			Debug.Log("Leftover changes: " + directChanges + " direct, " + ambientChanges + " ambient");
-			cleanupTimer.Reset();
-
-			UpdateDirectTex();
-			directChanges = 0;
-
-			UpdateAmbientTex();
-			ambientChanges = 0;
-		}
+		UpdateAmbientTex();
+		ambientChanges = 0;
 	}
 
 	private Vector3Int WorldToTex(Vector3Int wrld)

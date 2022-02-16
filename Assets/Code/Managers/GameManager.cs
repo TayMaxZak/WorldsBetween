@@ -82,24 +82,24 @@ public partial class GameManager : MonoBehaviour
 	{
 		if (startedLoading || finishedLoading)
 			return;
-
 		startedLoading = true;
+
 
 		AlmostFinishLoading();
 
 		await Task.Delay(delay);
 
-		DisableLoadingUX();
 
 		World.LightEngine.Begin();
 
-		PhysicsManager.Instance.Activate();
 
+		PhysicsManager.Instance.Activate();
 		player.ActivatePlayer();
 
-		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
 
+		DisableLoadingUX();
 		loadingScreen.Hide();
+
 
 		finishedLoading = true;
 	}
