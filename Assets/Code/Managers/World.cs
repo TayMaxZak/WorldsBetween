@@ -95,17 +95,17 @@ public partial class World : MonoBehaviour
 			0.15f, new Vector3(0.15f, 0.4f, 0.15f)));
 
 		// Shards
-		modifiers.Add(new BlockyNoiseModifier(true, 0.64f, new Vector3(0.03f, 0.01f, 0.03f),
+		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.03f, 0.01f, 0.03f),
 			0.25f, 5, 10,
 			0.3f, new Vector3(0.2f, 0.0f, 0.2f)));
 
 		// Etches
 		modifiers.Add(new BlockyNoiseModifier(false, 0.6f, new Vector3(0.04f, 0.24f, 0.04f),
-			0.04f, 2, 4,
-			0.01f, new Vector3(1, 1, 1)));
+			0.04f, 2, 2,
+			0.01f, new Vector3(2, 2, 2)));
 
-		// Weird pipes
-		modifiers.Add(new BlockyNoiseModifier(true, 0.52f, new Vector3(0.01f, 0.01f, 0.01f),
+		// Weird blobs
+		modifiers.Add(new BlockyNoiseModifier(true, 0.55f, new Vector3(0.01f, 0.01f, 0.01f),
 			1, 1, 4,
 			1, new Vector3(0.5f, 0.5f, 0.5f)));
 	}

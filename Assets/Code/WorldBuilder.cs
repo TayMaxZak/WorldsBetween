@@ -20,6 +20,8 @@ public class WorldBuilder
 	public bool multiQ = false;
 	public int queues = 32;
 
+	private float progress = 0;
+
 	[Header("References")]
 	[SerializeField]
 	private ChunkGameObject chunkPrefab;
@@ -34,8 +36,6 @@ public class WorldBuilder
 	private int spawnGenRange = 3;
 
 	private Timer chunkGenTimer = new Timer(1);
-
-	public float targetProgress = 0.67f;
 
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
@@ -106,16 +106,6 @@ public class WorldBuilder
 
 			if (empty || (entry.Value.GetSize() >= prev.GetSize()))
 				entry.Value.Generate();
-		}
-
-		// Playable yet?
-		if (genStage >= GenStage.GenerateChunks)
-		{
-			if (GenProgress() >= targetProgress / 2)
-				GameManager.Instance.MidLoading();
-
-			if (GenProgress() >= targetProgress || Mathf.Approximately(GenProgress(), 1))
-				GameManager.Instance.FinishLoading(1000);
 		}
 	}
 
@@ -263,11 +253,13 @@ public class WorldBuilder
 		return busy;
 	}
 
-	public float GenProgress()
+	public void ChunkFinishedProcStage()
 	{
-		int totalChunks = Mathf.Max(World.GetChunks().Count, 1);
-		float progress = (totalChunks - chunksToGen) / (float)totalChunks;
+		progress += (1f / World.GetChunks().Count) / chunkGenerators.Count;
+	}
 
+	public float GetGenProgress()
+	{
 		return progress;
 	}
 

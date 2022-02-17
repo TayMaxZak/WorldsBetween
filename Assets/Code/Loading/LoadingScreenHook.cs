@@ -15,6 +15,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 	[SerializeField]
 	private CanvasGroup group;
+	private float groupOpacity = 1;
 
 	[Header("Main")]
 	[SerializeField]
@@ -22,6 +23,8 @@ public class LoadingScreenHook : MonoBehaviour
 
 	[SerializeField]
 	private Image loadingBar;
+	[SerializeField]
+	private float loadingBarWidth = 100;
 
 	[SerializeField]
 	private Button playButton;
@@ -64,10 +67,9 @@ public class LoadingScreenHook : MonoBehaviour
 	private Timer randomTipTimer = new Timer(10);
 
 	private float progressDisplay;
-	private float progressRaw;
 
 	private bool updateProgress = false;
-	private bool almostDone = false;
+	private bool fadingOut = false;
 
 	private void Awake()
 	{
@@ -94,27 +96,28 @@ public class LoadingScreenHook : MonoBehaviour
 		if (!updateProgress)
 			return;
 
-		if (!almostDone)
-		{
-			// Retrieve raw progress
-			if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.GenerateChunks)
-				progressRaw = Mathf.Clamp01(World.WorldBuilder.GenProgress() / World.WorldBuilder.targetProgress);
-			else
-				progressRaw = 0;
-
-			// Get display progress
-			progressDisplay = Mathf.Lerp(progressDisplay, progressRaw, Time.deltaTime);
-		}
+		// Retrieve progress
+		if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks)
+			progressDisplay = GameManager.Instance.loadingProgressSmooth;
 		else
-			progressDisplay = Mathf.Clamp01(progressDisplay + Time.deltaTime * 0.05f);
+			progressDisplay = 0;
 
 		UpdateProgress(progressDisplay);
+
+		if (fadingOut)
+		{
+			groupOpacity = Mathf.Lerp(groupOpacity, 0, Time.deltaTime);
+
+			group.alpha = groupOpacity;
+			if (updateProgress)
+				AudioManager.SetAmbientVolume(1 - groupOpacity);
+		}
 	}
 
 	private void UpdateProgress(float progress)
 	{
 		// Loading bar
-		loadingBar.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, progress * 150);
+		loadingBar.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, progress * loadingBarWidth);
 
 		// Play button
 		bool tooEarly = progress < 0.2f;
@@ -132,14 +135,6 @@ public class LoadingScreenHook : MonoBehaviour
 
 		// Elevator music
 		UpdateMusic(progress);
-
-		// Group
-		float fade = Mathf.Clamp01((1 - progress) * 20);
-		group.alpha = fade;
-		if (updateProgress)
-		{
-			AudioManager.SetAmbientVolume(1 - fade);
-		}
 	}
 
 	private void UpdateMusic(float progress)
@@ -159,26 +154,24 @@ public class LoadingScreenHook : MonoBehaviour
 			background.sprite = seeThrough ? transparentBkg : opaqueBkg;
 	}
 
-	public async void StartedGenerating()
-	{
-		UpdateProgress(0);
-
-		await Task.Delay(10);
-
-		updateProgress = true;
-	}
-
-	public void SeeThrough()
+	public void ShowProgressBar()
 	{
 		if (generatingUI)
 			generatingUI.SetActive(true);
 
+		UpdateProgress(0);
+
+		updateProgress = true;
+	}
+
+	public void ShowWorld()
+	{
 		UpdateBackground(true);
 	}
 
-	public void AlmostDone()
+	public void StartFadingOut()
 	{
-		almostDone = true;
+		fadingOut = true;
 	}
 
 	public void Hide()
@@ -188,10 +181,5 @@ public class LoadingScreenHook : MonoBehaviour
 		updateProgress = false;
 
 		gameObject.SetActive(false);
-	}
-
-	public float GetDisplayProgress()
-	{
-		return progressDisplay;
 	}
 }

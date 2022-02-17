@@ -55,7 +55,7 @@ public class WorldEditor : Editor
 		EditorGUILayout.Space();
 		////////////////////
 
-		EditorGUILayout.LabelField("Chunk Generators", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("World Builder", EditorStyles.boldLabel);
 
 		var generators = World.WorldBuilder.GetChunkGenerators();
 
@@ -63,5 +63,11 @@ public class WorldEditor : Editor
 		{
 			EditorGUILayout.LabelField(entry.Key.ToString(), entry.Value.GetSize() + " active chunks (" + entry.Value.GetEdgeChunks() + " edge chunks)");
 		}
+
+		EditorGUILayout.LabelField("Light Engine", EditorStyles.boldLabel);
+
+		EditorGUILayout.LabelField("Missing rays: ", "" + (World.LightEngine.RaysMax() - World.LightEngine.RaysCur()));
+
+		EditorGUILayout.LabelField("Progress:", "" + (int)(100 * World.LightEngine.GetGenProgress()));
 	}
 }

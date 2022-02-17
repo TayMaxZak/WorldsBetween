@@ -8,8 +8,16 @@ public partial class GameManager : MonoBehaviour
 {
 	public static GameManager Instance;
 
-	public bool startedLoading = false;
+	public float loadingProgress;
+	public float loadingProgressSmooth;
+
+	public bool startedFadingOut = false;
 	public bool finishedLoading = false;
+
+	private bool startedBuilding = false;
+
+	private bool startedLight = false;
+	private bool finishedLight = false;
 
 	public Player player;
 
@@ -31,7 +39,7 @@ public partial class GameManager : MonoBehaviour
 		else
 			Instance = this;
 
-		EnableLoadingUIUX();
+		loadingScreen.ShowProgressBar();
 	}
 
 	private void OnDestroy()
@@ -50,69 +58,106 @@ public partial class GameManager : MonoBehaviour
 		}
 		else
 		{
-			panSpeedRandomizer.Increment(Time.deltaTime);
-			if (panSpeedRandomizer.Expired())
-			{
-				panSpeedRandomizer.Reset();
+			// Calculate progress
+			float builderProgress = startedLight ? 1 : World.WorldBuilder.GetGenProgress();
+			float lighterProgress = World.LightEngine.GetGenProgress();
 
-				newPanSpeed = Mathf.Lerp(newPanSpeed, SeedlessRandom.NextFloatInRange(-90, 90), 0.5f);
-			}
-			panSpeed = Mathf.Lerp(panSpeed, newPanSpeed, Time.deltaTime);
+			float maxProgress = 2;
 
+			loadingProgress = (builderProgress + lighterProgress) / maxProgress;
+			// Get display progress by interpolating
+			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime);
 
-			float fade = Mathf.Clamp01((1 - loadingScreen.GetDisplayProgress()) * 5);
+			if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks && !startedBuilding)
+				ShowProgress();
 
-			player.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
+			// Lighting can be calculated efficiently
+			if (CloseEnough(builderProgress, 1) && !startedLight)
+				StartLighting();
+
+			// Lighting can be applied efficiently
+			if (CloseEnough(lighterProgress, 1) && !finishedLight)
+				FinishLighting();
+
+			if (CloseEnough(loadingProgress, 1))
+				FinishLoading(1000);
 		}
 	}
 
-	public void MidLoading()
+	private bool CloseEnough(float val, float target)
 	{
-		loadingScreen.SeeThrough();
+		return val >= target - 0.0001f;
 	}
 
-	private void AlmostFinishLoading()
+	private void RotateCameraWhileLoading()
 	{
-		loadingScreen.AlmostDone();
+		panSpeedRandomizer.Increment(Time.deltaTime);
+		if (panSpeedRandomizer.Expired())
+		{
+			panSpeedRandomizer.Reset();
+
+			newPanSpeed = Mathf.Lerp(newPanSpeed, SeedlessRandom.NextFloatInRange(-90, 90), 0.5f);
+		}
+		panSpeed = Mathf.Lerp(panSpeed, newPanSpeed, Time.deltaTime);
+
+
+		float fade = Mathf.Clamp01((1 - loadingProgressSmooth) * 5);
+
+		player.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
+	}
+
+	public void ShowProgress()
+	{
+		startedBuilding = true;
+
+		loadingScreen.ShowProgressBar();
+	}
+
+	public void StartLighting()
+	{
+		startedLight = true;
+
+		loadingScreen.ShowWorld();
+
+		World.LightEngine.Begin();
+	}
+
+	public void FinishLighting()
+	{
+		finishedLight = true;
+
+		WorldLightAtlas.Instance.ApplyChanges();
 	}
 
 	public async void FinishLoading(int delay)
 	{
-		if (startedLoading || finishedLoading)
+		if (startedFadingOut || finishedLoading)
 			return;
-		startedLoading = true;
+		startedFadingOut = true;
 
 
-		AlmostFinishLoading();
+		// Transition from loading state to game state
+		loadingScreen.StartFadingOut();
 
 		await Task.Delay(delay);
 
 
-		World.LightEngine.Begin();
-
-
+		// Activate actors
 		PhysicsManager.Instance.Activate();
 		player.ActivatePlayer();
 
 
-		DisableLoadingUIUX();
-
-
 		finishedLoading = true;
+
+
+		// Disable loading screen completely after some time
+		await Task.Delay(delay * 4);
+
+		loadingScreen.Hide();
 	}
 
 	public static bool GetFinishedLoading()
 	{
 		return Instance.finishedLoading;
-	}
-
-	private void EnableLoadingUIUX()
-	{
-		loadingScreen.StartedGenerating();
-	}
-
-	private void DisableLoadingUIUX()
-	{
-		loadingScreen.Hide();
 	}
 }

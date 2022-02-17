@@ -53,11 +53,11 @@ MonoBehaviour:
     multiQ: 1
     queues: 30
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
-    genRange: 7
+    genRange: 6
     spawnGenRange: 3
-    targetProgress: 1
   lightEngine:
     raysPerBatch: 45
+    maxRays: 0
   randomizeSeed: 1
   seed: 0
   chunkSize: 16

@@ -15,16 +15,6 @@ public class Chunk
 	}
 	public ProcStage procStage = ProcStage.Allocate;
 
-	public enum LightStage
-	{
-		Await,
-		DirectLight,
-		AmbientLight,
-		Done
-	}
-	public LightStage lightStage = LightStage.Await;
-
-
 	public Vector3Int position; // Coordinates of chunk
 
 
@@ -110,6 +100,8 @@ public class Chunk
 			World.WorldBuilder.QueueNextStage(this);
 
 			Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.green, 1);
+
+			OnFinishProcStage();
 		});
 
 		bw.RunWorkerAsync();
@@ -276,18 +268,12 @@ public class Chunk
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
 
-			//// TODO: Better way to do this?
-			//float random = 45 + (SeedlessRandom.NextFloat() < 0.2f ? 45 : 0);
-			//if (go && go.transform)
-			//	go.transform.eulerAngles = new Vector3(SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random), SeedlessRandom.NextFloatInRange(-random, random));
-
 			procStage = ProcStage.Done;
-			lightStage = LightStage.DirectLight;
 			World.WorldBuilder.QueueNextStage(this);
 
 			Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.cyan, 1);
 
-			//AsyncCalcLight();
+			OnFinishProcStage();
 		});
 
 		bw.RunWorkerAsync();
@@ -298,6 +284,12 @@ public class Chunk
 		return chunkMesh.MakeSurfaceAndMesh(blocks);
 	}
 	#endregion
+
+	// Notify that this chunk has completed a stage of processing
+	public void OnFinishProcStage()
+	{
+		World.WorldBuilder.ChunkFinishedProcStage();
+	}
 
 	// Utility
 	public bool ContainsPos(int x, int y, int z)

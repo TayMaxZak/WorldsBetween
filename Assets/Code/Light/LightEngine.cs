@@ -16,12 +16,16 @@ public class LightEngine
 	}
 
 	private readonly SimplePriorityQueue<Vector3Int> sourceQueue = new SimplePriorityQueue<Vector3Int>();
+	private readonly SimplePriorityQueue<Vector3Int> retrySourceQueue = new SimplePriorityQueue<Vector3Int>();
 
 	private Sun sun;
 
 	[SerializeField]
 	private int raysPerBatch = 40;
 	private int raysBusy = 0;
+
+	private int raysDone;
+	private int raysMax;
 
 	public void Init(Sun sun)
 	{
@@ -33,6 +37,8 @@ public class LightEngine
 		int step = WorldLightAtlas.Instance.directScale;
 
 		sourceQueue.Clear();
+		retrySourceQueue.Clear();
+
 		for (int x = Utils.ToInt(sun.sourcePoints.min.x) + (step / 2); x < Utils.ToInt(sun.sourcePoints.max.x); x += step)
 		{
 			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y += step)
@@ -44,7 +50,10 @@ public class LightEngine
 				}
 			}
 		}
-		Debug.Log(sourceQueue.Count + " light rays to be cast");
+
+		raysDone = 0;
+		raysMax = sourceQueue.Count;
+		Debug.Log(raysMax + " light rays to be cast");
 
 		Iterate();
 	}
@@ -59,44 +68,62 @@ public class LightEngine
 
 		for (int i = 0; i < raysPerBatch; i++)
 		{
-			// Done early
-			if (sourceQueue.Count == 0)
-				break;
+			Vector3Int source;
 
-			Vector3Int source = sourceQueue.Dequeue();
+			// Still have new rays to send
+			if (sourceQueue.Count > 0)
+			{
+				source = sourceQueue.Dequeue();
+			}
+			// Retry previous rays
+			else
+			{
+				// Retry a previous ray
+				if (retrySourceQueue.Count > 0)
+					source = retrySourceQueue.Dequeue();
+				else
+					break;
+			}
 
 			AsyncLightRay(source);
-		}
-
-		// Finished, apply changes
-		if (sourceQueue.Count == 0)
-		{
-			WorldLightAtlas.Instance.ApplyChanges();
 		}
 	}
 
 	public void AsyncLightRay(Vector3Int source)
 	{
-		raysBusy++;
 		BkgThreadLightRay(this, System.EventArgs.Empty, source);
 	}
 
 	private void BkgThreadLightRay(object sender, System.EventArgs e, Vector3Int source)
 	{
+		raysBusy++;
+
 		BackgroundWorker bw = new BackgroundWorker();
 
 		// What to do in the background thread
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			SendLightRay(source);
+			args.Result = SendLightRay(source);
 		});
 
 		// What to do when worker completes its task
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
 		delegate (object o, RunWorkerCompletedEventArgs args)
 		{
+			// Free up space for new rays
 			raysBusy--;
+
+			// Ray was successful
+			if (((RayResult)args.Result).success)
+			{
+				raysDone++;
+			}
+			// Ray was unsuccessful, retry when possible
+			else
+			{
+				retrySourceQueue.Enqueue(((RayResult)args.Result).source, Vector3.SqrMagnitude(source - World.GetRelativeOrigin()));
+			}
 
 			Iterate();
 		});
@@ -104,7 +131,13 @@ public class LightEngine
 		bw.RunWorkerAsync();
 	}
 
-	private async void SendLightRay(Vector3Int source)
+	public struct RayResult
+	{
+		public bool success;
+		public Vector3Int source;
+	}
+
+	private RayResult SendLightRay(Vector3Int source)
 	{
 		Vector3Int cur = source;
 
@@ -114,13 +147,18 @@ public class LightEngine
 		{
 			steps++;
 
-			// Get chunk (or wait its ready)
+			// Get chunk (or it is out of the world)
+			// TODO: Check world bounds here
 			Chunk chunk = World.GetChunkFor(cur);
 			if (chunk == null)
-				return;
+			{
+				Debug.DrawLine(source, cur + Vector3.up * 100, Color.magenta, 1);
+
+				return new RayResult() { success = true, source = source };
+			}
 
 			while (chunk.procStage < Chunk.ProcStage.Done)
-				await Task.Delay(10);
+				return new RayResult() { success = false, source = source };
 
 			ChunkBitArray cornerBit = chunk.GetCorners();
 
@@ -134,7 +172,8 @@ public class LightEngine
 				if (occupied)
 				{
 					Debug.DrawLine(cur, cur - Vector3.up * 200, Color.black, 1);
-					return;
+
+					return new RayResult() { success = true, source = source };
 				}
 				firstPass = false;
 			}
@@ -152,11 +191,30 @@ public class LightEngine
 		} // y
 
 		Debug.DrawLine(source, cur, sun.lightColor, 1);
-		return;
+
+		return new RayResult() { success = true, source = source };
 	}
 
 	public bool IsBusy()
 	{
 		return raysBusy > 0;
+	}
+
+	public int RaysCur()
+	{
+		return raysDone;
+	}
+
+	public int RaysMax()
+	{
+		return raysMax;
+	}
+
+	public float GetGenProgress()
+	{
+		if (raysMax > 0)
+			return (float)raysDone / (raysMax + raysBusy); // In-progress rays counted as unfinished
+		else
+			return 0;
 	}
 }

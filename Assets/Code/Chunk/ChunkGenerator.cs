@@ -173,6 +173,8 @@ public class ChunkGenerator
 
 					chunk.procStage = Chunk.ProcStage.Generate;
 					World.WorldBuilder.QueueNextStage(chunk);
+
+					chunk.OnFinishProcStage();
 				}
 				break;
 			case Chunk.ProcStage.Generate: // Generate terrain
