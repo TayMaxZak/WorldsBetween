@@ -25,15 +25,8 @@ public class LoadingScreenHook : MonoBehaviour
 	private Image loadingBar;
 	[SerializeField]
 	private float loadingBarWidth = 100;
-
 	[SerializeField]
-	private Button playButton;
-
-	[SerializeField]
-	private TMPro.TextMeshProUGUI playButtonText;
-
-	private Color normalText = Color.white;
-	private Color fadedText = new Color(1, 1, 1, 0.25f);
+	private TMPro.TextMeshProUGUI loadingText;
 
 	[Header("Background")]
 	[SerializeField]
@@ -106,7 +99,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 		if (fadingOut)
 		{
-			groupOpacity = Mathf.Lerp(groupOpacity, 0, Time.deltaTime);
+			groupOpacity = Mathf.Lerp(groupOpacity, 0, Time.deltaTime * 2);
 
 			group.alpha = groupOpacity;
 			if (updateProgress)
@@ -119,13 +112,7 @@ public class LoadingScreenHook : MonoBehaviour
 		// Loading bar
 		loadingBar.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, progress * loadingBarWidth);
 
-		// Play button
-		bool tooEarly = progress < 0.2f;
-
-		playButton.interactable = !tooEarly;
-
-		playButtonText.text = progress < 0.5f ? (tooEarly ? "Not Ready" : "Early Play") : "Play";
-		playButtonText.color = tooEarly ? fadedText : normalText;
+		loadingText.text = "" + Mathf.CeilToInt(progress * 100);
 
 		// Spin the rings
 		float spinSpeed = Mathf.Clamp01(2 * progress) * (progress);
@@ -139,7 +126,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private void UpdateMusic(float progress)
 	{
-		float fade = Mathf.Clamp01((1 - progress) * 10);
+		float fade = groupOpacity;
 		melodyLayer.volume = (1 - progress) * overallVolume * fade;
 
 		float middleToEnd = Mathf.Clamp01(2 * progress);

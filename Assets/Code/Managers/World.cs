@@ -90,24 +90,25 @@ public partial class World : MonoBehaviour
 		//modifiers.Add(new NoiseModifier(false, 0.1f, new Vector3(0.05f, 0.05f, 0.05f)));
 
 		// Main boxes
-		modifiers.Add(new BlockyNoiseModifier(false, 0.9f, new Vector3(0.04f, 0.03f, 0.04f),
+		modifiers.Add(new BlockyNoiseModifier(false, 0.8f, new Vector3(0.04f, 0.03f, 0.04f),
 			0.35f, 3, 16,
-			0.15f, new Vector3(0.15f, 0.4f, 0.15f)));
+			0.2f, new Vector3(0.15f, 0.4f, 0.15f)));
 
 		// Shards
 		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.03f, 0.01f, 0.03f),
 			0.25f, 5, 10,
-			0.3f, new Vector3(0.2f, 0.0f, 0.2f)));
+			0.15f, new Vector3(0.3f, 0.0f, 0.3f)));
 
 		// Etches
-		modifiers.Add(new BlockyNoiseModifier(false, 0.6f, new Vector3(0.04f, 0.24f, 0.04f),
+		modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.04f, 0.24f, 0.04f),
 			0.04f, 2, 2,
 			0.01f, new Vector3(2, 2, 2)));
 
 		// Weird blobs
 		modifiers.Add(new BlockyNoiseModifier(true, 0.55f, new Vector3(0.01f, 0.01f, 0.01f),
 			1, 1, 4,
-			1, new Vector3(0.5f, 0.5f, 0.5f)));
+			1, new Vector3(0.5f, 0.5f, 0.5f))
+		{ ribbonCount = 1 });
 	}
 
 	private void Start()

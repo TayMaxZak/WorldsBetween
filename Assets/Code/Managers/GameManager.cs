@@ -59,28 +59,29 @@ public partial class GameManager : MonoBehaviour
 		else
 		{
 			// Calculate progress
-			float builderProgress = startedLight ? 1 : World.WorldBuilder.GetGenProgress();
+			float builderProgress = World.WorldBuilder.GetGenProgress();
 			float lighterProgress = World.LightEngine.GetGenProgress();
 
-			float maxProgress = 2;
-
-			loadingProgress = (builderProgress + lighterProgress) / maxProgress;
+			loadingProgress = (builderProgress * 3 + lighterProgress) / (3 + 1);
 			// Get display progress by interpolating
-			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime);
+			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 2);
 
 			if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks && !startedBuilding)
 				ShowProgress();
 
 			// Lighting can be calculated efficiently
-			if (CloseEnough(builderProgress, 1) && !startedLight)
+			if (CloseEnough(builderProgress, 0.95f) && !startedLight)
 				StartLighting();
 
-			// Lighting can be applied efficiently
+			// Lighting can be applied
 			if (CloseEnough(lighterProgress, 1) && !finishedLight)
 				FinishLighting();
 
+			// Start transition from loading
 			if (CloseEnough(loadingProgress, 1))
 				FinishLoading(1000);
+
+			RotateCameraWhileLoading();
 		}
 	}
 
