@@ -6,7 +6,6 @@ using UnityEngine;
 public class NoiseModifier : Modifier
 {
 	public Vector3 scale = Vector3.one * 0.05f;
-	public float offset = 2444.0424f;
 	public float strength = 1;
 	public float ribbonGateMult = 1;
 	public float gate = 0;
@@ -28,12 +27,20 @@ public class NoiseModifier : Modifier
 	{
 		base.Init();
 
-		//if (!base.Init())
-		//	return false;
-
-		randomOffset = new Vector3(Random.value, Random.value, Random.value) * offset;
+		SeedNoise();
 
 		return true;
+	}
+
+	protected void SeedNoise()
+	{
+		float offsetAmount = 999999;
+
+		randomOffset = new Vector3(
+			Random.value + (int)(Random.value * offsetAmount),
+			Random.value + (int)(Random.value * offsetAmount),
+			Random.value + (int)(Random.value * offsetAmount)
+		);
 	}
 
 	public override void ApplyModifier(Chunk chunk)
@@ -63,9 +70,9 @@ public class NoiseModifier : Modifier
 
 	protected float GetNoiseAt(Vector3 pos)
 	{
-		float x = pos.x * scale.x + offset + randomOffset.x;
-		float y = pos.y * scale.y + offset + randomOffset.y;
-		float z = pos.z * scale.z + offset + randomOffset.z;
+		float x = pos.x * scale.x + randomOffset.x;
+		float y = pos.y * scale.y + randomOffset.y;
+		float z = pos.z * scale.z + randomOffset.z;
 
 		float xPlane = Mathf.PerlinNoise(y, z);
 		float yPlane = Mathf.PerlinNoise(z, x);

@@ -65,9 +65,7 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
-
-					blocks[x, y, z] = new Block(x, y, z, (byte)(coord.y >= -1 ? 0 : 255));
+					blocks[x, y, z] = new Block(x, y, z, 0);
 				}
 			}
 		}
@@ -113,6 +111,22 @@ public class Chunk
 
 	private void Generate()
 	{
+		// Fill surface
+		for (byte x = 0; x < chunkSize; x++)
+		{
+			for (byte y = 0; y < chunkSize; y++)
+			{
+				for (byte z = 0; z < chunkSize; z++)
+				{
+					Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
+
+					bool sky = coord.y >= -1;
+
+					blocks[x, y, z].opacity = (byte)(sky ? 0 : 255);
+				}
+			}
+		}
+
 		List<Modifier> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)

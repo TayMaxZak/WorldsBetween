@@ -5,30 +5,32 @@ using UnityEngine;
 [System.Serializable]
 public class BlockyNoiseModifier : NoiseModifier
 {
-	private float resampleScale;
+	private float divideScale;
 
 	private int minDivide;
 	private int maxDivide;
 
-	private float diagAmount;
+	private float diagStrength;
+	private Vector3 diagScale;
 
-	public BlockyNoiseModifier(bool addOrSub, float strength, Vector3 scale, float resampleScale, int minDivide, int maxDivide, float diagAmount) : base(addOrSub, strength, scale)
+	public BlockyNoiseModifier(bool addOrSub, float strength, Vector3 scale, float divideScale, int minDivide, int maxDivide, float diagStrength, Vector3 diagScale) : base(addOrSub, strength, scale)
 	{
-		this.resampleScale = resampleScale;
+		this.divideScale = divideScale;
 
 		this.minDivide = minDivide;
 		this.maxDivide = maxDivide;
 
-		this.diagAmount = diagAmount;
+		this.diagStrength = diagStrength;
+		this.diagScale = diagScale;
 	}
 
 	protected override Vector3 WarpPosition(Vector3 pos)
 	{
-		float divNoise = GetNoiseAt(Utils.Scale(pos, scale) * resampleScale);
-
+		float divNoise = GetNoiseAt(Utils.Scale(pos, scale) * divideScale);
 		int div = (int)(minDivide + (divNoise * (maxDivide - minDivide)));
 
-		float diag = diagAmount * Utils.SumAbs(pos) * (2 * divNoise - 1);
+		float diagNoise = GetNoiseAt(Utils.Scale(Utils.Scale(pos, diagScale), scale));
+		float diag = diagStrength * Utils.Sum(pos) * (2 * diagNoise - 1);
 
 		pos = new Vector3(
 			div * ((int)(pos.x + diag) / div),

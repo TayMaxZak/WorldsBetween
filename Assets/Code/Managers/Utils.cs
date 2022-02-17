@@ -39,14 +39,14 @@ public class Utils
 		return Mathf.Max(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
 	}
 
-	public static int SumAbs(Vector3Int a)
+	public static int Sum(Vector3Int a)
 	{
-		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
+		return (a.x) + (a.y) + (a.z);
 	}
 
-	public static float SumAbs(Vector3 a)
+	public static float Sum(Vector3 a)
 	{
-		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
+		return (a.x) + (a.y) + (a.z);
 	}
 
 	public static float SoftSign(float val)
