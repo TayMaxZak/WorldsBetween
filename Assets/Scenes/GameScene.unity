@@ -236,7 +236,6 @@ MonoBehaviour:
   finishedLoading: 0
   player: {fileID: 206889555}
   loadingScreen: {fileID: 6292042240279805736}
-  deathPostProcess: {fileID: 2719366234491939709}
 --- !u!4 &173910858
 Transform:
   m_ObjectHideFlags: 0
@@ -1830,12 +1829,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: randomizeSeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.Threading.Tasks;
 
 public partial class World : MonoBehaviour
 {
@@ -89,19 +90,24 @@ public partial class World : MonoBehaviour
 		//modifiers.Add(new NoiseModifier(false, 0.1f, new Vector3(0.05f, 0.05f, 0.05f)));
 
 		// Main boxes
-		modifiers.Add(new BlockyNoiseModifier(false, 1, new Vector3(0.04f, 0.04f, 0.04f),
-			0.25f, 3, 16,
-			0.3f, new Vector3(3, 3, 3)));
+		modifiers.Add(new BlockyNoiseModifier(false, 0.9f, new Vector3(0.04f, 0.03f, 0.04f),
+			0.35f, 3, 16,
+			0.15f, new Vector3(0.15f, 0.4f, 0.15f)));
 
 		// Shards
-		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.03f, 0.008f, 0.03f),
-			0.1f, 5, 10,
-			0.3f, new Vector3(3, 0.0f, 3)));
+		modifiers.Add(new BlockyNoiseModifier(true, 0.64f, new Vector3(0.03f, 0.01f, 0.03f),
+			0.25f, 5, 10,
+			0.3f, new Vector3(0.2f, 0.0f, 0.2f)));
 
-		// Walkways
-		//modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.08f, 0.24f, 0.08f),
-		//	0.05f, 1, 5,
-		//	0, new Vector3(1, 1, 1)));
+		// Etches
+		modifiers.Add(new BlockyNoiseModifier(false, 0.6f, new Vector3(0.04f, 0.24f, 0.04f),
+			0.04f, 2, 4,
+			0.01f, new Vector3(1, 1, 1)));
+
+		// Weird pipes
+		modifiers.Add(new BlockyNoiseModifier(true, 0.52f, new Vector3(0.01f, 0.01f, 0.01f),
+			1, 1, 4,
+			1, new Vector3(0.5f, 0.5f, 0.5f)));
 	}
 
 	private void Start()
@@ -126,12 +132,20 @@ public partial class World : MonoBehaviour
 			mod.Init();
 
 		await WorldBuilder.EnqueueAllChunks(Chunk.ProcStage.Allocate);
+
+		// Recalc light after world builder is finished
+		while (WorldBuilder.IsGenerating())
+			await Task.Delay(20);
+
+		RecalcLight();
 	}
 
-	[ContextMenu("Cancel Gen")]
-	public void CancelGen()
+	[ContextMenu("Recalculate Light")]
+	public void RecalcLight()
 	{
-		WorldBuilder.StopGen();
+		WorldLightAtlas.Instance.ClearAtlas();
+
+		LightEngine.Begin();
 	}
 
 	public static List<Modifier> GetModifiers()

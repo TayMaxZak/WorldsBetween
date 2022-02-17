@@ -45,6 +45,9 @@ public class NoiseModifier : Modifier
 
 	public override void ApplyModifier(Chunk chunk)
 	{
+		if (!active)
+			return;
+
 		BlockPosAction toApply = ApplyNoise;
 
 		ApplyToAll(toApply, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));

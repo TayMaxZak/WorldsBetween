@@ -42,12 +42,16 @@ public class Chunk
 
 	public ChunkGameObject go;
 
+	public bool didInit = false;
+
 
 	public void Init(int chunkSize)
 	{
 		this.chunkSize = chunkSize;
 
 		CreateCollections();
+
+		didInit = true;
 	}
 
 	public void SetPos(Vector3Int pos)
@@ -66,6 +70,8 @@ public class Chunk
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					blocks[x, y, z] = new Block(x, y, z, 0);
+
+					DefaultBlock(x, y, z);
 				}
 			}
 		}
@@ -109,24 +115,31 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	private void Generate()
+	public void SetBlocksToDefault()
 	{
-		// Fill surface
 		for (byte x = 0; x < chunkSize; x++)
 		{
 			for (byte y = 0; y < chunkSize; y++)
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
-
-					bool sky = coord.y >= -1;
-
-					blocks[x, y, z].opacity = (byte)(sky ? 0 : 255);
+					DefaultBlock(x, y, z);
 				}
 			}
 		}
+	}
 
+	private void DefaultBlock(int x, int y, int z)
+	{
+		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
+		bool sky = coord.y >= -1;
+		blocks[x, y, z].opacity = (byte)(sky ? 0 : 255);
+
+		blocks[x, y, z].maybeNearAir = 0;
+	}
+
+	private void Generate()
+	{
 		List<Modifier> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)

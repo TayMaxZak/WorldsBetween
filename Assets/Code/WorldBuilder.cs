@@ -167,11 +167,19 @@ public class WorldBuilder
 		genStage = GenStage.EnqueueChunks;
 	}
 
-	public async Task EnqueueAllChunks(Chunk.ProcStage procStage)
+	public async Task EnqueueAllChunks(Chunk.ProcStage curChunkStage)
 	{
 		// First get all chunks
 		foreach (var entry in World.GetChunks())
+		{
+			// Default blocks if needed (restarted gen)
+			if (entry.Value.didInit && curChunkStage == Chunk.ProcStage.Allocate)
+				entry.Value.SetBlocksToDefault();
+
 			chunksToQueue.Enqueue(entry);
+		}
+
+		await Task.Delay(10);
 
 		// Then go through a few at a time
 		int taskSize = 32;
@@ -180,7 +188,8 @@ public class WorldBuilder
 			for (int i = taskSize; i > 0 && chunksToQueue.Count > 0; i--)
 			{
 				Chunk c = chunksToQueue.Dequeue().Value;
-				c.procStage = procStage;
+				c.procStage = curChunkStage;
+
 				QueueNextStage(c);
 			}
 

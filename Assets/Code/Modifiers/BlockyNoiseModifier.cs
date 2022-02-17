@@ -26,10 +26,10 @@ public class BlockyNoiseModifier : NoiseModifier
 
 	protected override Vector3 WarpPosition(Vector3 pos)
 	{
-		float divNoise = GetNoiseAt(Utils.Scale(pos, scale) * divideScale);
+		float divNoise = Mathf.Clamp01(GetNoiseAt(Utils.Scale(pos, scale) * divideScale));
 		int div = (int)(minDivide + (divNoise * (maxDivide - minDivide)));
 
-		float diagNoise = GetNoiseAt(Utils.Scale(Utils.Scale(pos, diagScale), scale));
+		float diagNoise = GetNoiseAt(Utils.Scale(pos, diagScale));
 		float diag = diagStrength * Utils.Sum(pos) * (2 * diagNoise - 1);
 
 		pos = new Vector3(

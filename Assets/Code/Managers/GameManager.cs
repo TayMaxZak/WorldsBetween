@@ -15,8 +15,6 @@ public partial class GameManager : MonoBehaviour
 
 	public LoadingScreenHook loadingScreen;
 
-	public Volume deathPostProcess;
-
 	// Rotate player while loading
 	private float panSpeed;
 	private float newPanSpeed;
@@ -33,7 +31,7 @@ public partial class GameManager : MonoBehaviour
 		else
 			Instance = this;
 
-		EnableLoadingUX();
+		EnableLoadingUIUX();
 	}
 
 	private void OnDestroy()
@@ -97,8 +95,7 @@ public partial class GameManager : MonoBehaviour
 		player.ActivatePlayer();
 
 
-		DisableLoadingUX();
-		loadingScreen.Hide();
+		DisableLoadingUIUX();
 
 
 		finishedLoading = true;
@@ -109,15 +106,13 @@ public partial class GameManager : MonoBehaviour
 		return Instance.finishedLoading;
 	}
 
-	private void EnableLoadingUX()
+	private void EnableLoadingUIUX()
 	{
 		loadingScreen.StartedGenerating();
-
-		deathPostProcess.weight = 1;
 	}
 
-	private void DisableLoadingUX()
+	private void DisableLoadingUIUX()
 	{
-		deathPostProcess.weight = 0;
+		loadingScreen.Hide();
 	}
 }

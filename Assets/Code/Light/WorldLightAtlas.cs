@@ -30,55 +30,49 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private int dirSize;
 	public int directScale = 2;
-	//private int hdRange = 5;
-	//private int directScaleHQ = 1;
-	//private int directScaleLQ = 2;
 
+	private int ambSize;
 	public int ambientScale = 16;
 
-	//private Timer cleanupTimer = new Timer(15f);
-	//private Timer recentApplyTimer = new Timer(1f);
-
 	private static int directChanges = 0;
-	//private static int targDirectChanges = 50000;
 
 	private static int ambientChanges = 0;
-	//private static int targAmbientChanges = 5000;
 
 	private void OnEnable()
 	{
-		if (!Application.isPlaying || simpleMode)
-		{
-			fullSize = defaultLightmap.width;
-			dirSize = fullSize / directScale;
+		bool partialInit = !Application.isPlaying || simpleMode;
 
+		if (partialInit)
+			fullSize = defaultLightmap.width;
+		else
+			fullSize = World.GetChunkSize() * (1 + World.WorldBuilder.GetGenRange() * 2);
+
+
+		// One pixel for every 2 blocks in each dimension (per 8 blocks total)
+		dirSize = fullSize / directScale;
+		// One pixel per chunk (per 4096 blocks total)
+		ambSize = fullSize / ambientScale;
+
+
+		if (partialInit)
+		{
 			SetShaderReferences(defaultLightmap, defaultLightmap2);
 		}
 		else
 		{
-			fullSize = World.GetChunkSize() * (1 + World.WorldBuilder.GetGenRange() * 2);
-			dirSize = fullSize / directScale;
-			//dirSize = World.GetChunkSize() * (1 + 
-			//	(Mathf.Min(hdRange, World.Generator.GetGenRange()) * 2 / directScaleHQ) + 
-			//	(Mathf.Max(0, World.Generator.GetGenRange() - hdRange) * 2 / directScaleLQ));
-
 			CreateDirectLightmap();
 			CreateAmbientLightmap();
+
 			SetShaderReferences(directLightTex, ambientLightTex);
 
 			Instance = this;
 		}
 	}
 
-	private void OnDestroy()
-	{
-		if (directLightTex)
-		{
-			Debug.Log("Destroyed");
-		}
-
-		SetShaderReferences(defaultLightmap, defaultLightmap2);
-	}
+	//private void OnDestroy()
+	//{
+	//	SetShaderReferences(defaultLightmap, defaultLightmap2);
+	//}
 
 	private void SetShaderReferences(Texture texture, Texture texture2)
 	{
@@ -125,9 +119,6 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private void CreateAmbientLightmap()
 	{
-		// One pixel per ambient chunk
-		int ambSize = fullSize / ambientScale;
-
 		// Create texture and apply configuration. Use float for higher fidelity in ambient light
 		ambientLightTex = new Texture3D(ambSize, ambSize, ambSize, TextureFormat.RGBAFloat, false);
 
@@ -220,27 +211,32 @@ public class WorldLightAtlas : MonoBehaviour
 			Debug.Log("Out of bounds: " + ambIndex + ", in " + pos + ", tex " + posA);
 	}
 
-	//private int DirectPosCoord(int posIn)
-	//{
-	//	float f1 = posIn;
-	//	f1 /= fullSize;
-	//	f1 -= 0.5f;
+	public void ClearAtlas()
+	{
+		for (int z = 0; z < dirSize; z++)
+		{
+			for (int y = 0; y < dirSize; y++)
+			{
+				for (int x = 0; x < dirSize; x++)
+				{
+					directLightArr[IndexFromPos(dirSize, x, y, z)] = Color.black;
+				}
+			}
+		}
+		UpdateDirectTex();
 
-	//	float range = World.GetChunkSize() * (1 + hdRange);
-	//	range /= fullSize;
-	//	float f = f1 / range;
-
-	//	float hq = Mathf.Clamp(f, -1, 1);
-	//	float lq = Mathf.Max(0, Mathf.Abs(f) - 1) * Mathf.Sign(f);
-
-	//	float total = hq / directScaleHQ + lq / directScaleLQ;
-	//	total *= range;
-	//	total += 0.5f;
-
-	//	total *= dirSize;
-
-	//	return (int)total;
-	//}
+		for (int z = 0; z < ambSize; z++)
+		{
+			for (int y = 0; y < ambSize; y++)
+			{
+				for (int x = 0; x < ambSize; x++)
+				{
+					ambientLightArr[IndexFromPos(ambSize, x, y, z)] = Color.black;
+				}
+			}
+		}
+		UpdateAmbientTex();
+	}
 
 	private int IndexFromPos(int size, int x, int y, int z)
 	{

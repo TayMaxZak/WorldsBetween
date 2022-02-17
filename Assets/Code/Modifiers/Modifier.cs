@@ -7,6 +7,8 @@ public class Modifier
 {
 	public string label = "";
 
+	public bool active = true;
+
 	private bool didInit = false;
 
 	public virtual bool Init()
@@ -20,7 +22,7 @@ public class Modifier
 
 	public virtual void ApplyModifier(Chunk chunk)
 	{
-
+		
 	}
 
 	protected delegate void BlockPosAction(Vector3Int pos);

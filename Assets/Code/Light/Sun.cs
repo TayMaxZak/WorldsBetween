@@ -9,12 +9,6 @@ public class Sun : MonoBehaviour
 
 	public Bounds sourcePoints;
 
-	[ContextMenu("Recalculate Light")]
-	public void Recalc()
-	{
-		World.LightEngine.Begin();
-	}
-
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = lightColor;

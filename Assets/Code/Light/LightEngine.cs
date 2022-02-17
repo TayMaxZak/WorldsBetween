@@ -46,9 +46,6 @@ public class LightEngine
 		}
 		Debug.Log(sourceQueue.Count + " light rays to be cast");
 
-		//while (World.Generator.IsGenerating())
-		//	await Task.Delay(10);
-
 		Iterate();
 	}
 

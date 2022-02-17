@@ -138,7 +138,6 @@ public class LoadingScreenHook : MonoBehaviour
 		group.alpha = fade;
 		if (updateProgress)
 		{
-			UIManager.SetDeathPostProcess(fade);
 			AudioManager.SetAmbientVolume(1 - fade);
 		}
 	}
