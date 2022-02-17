@@ -51,13 +51,14 @@ MonoBehaviour:
     genStage: 0
     active: 1
     multiQ: 1
-    queues: 30
+    queues: 64
+    enqueueTaskSize: 100
+    generatorTaskSize: 32
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
-    genRange: 6
+    genRange: 8
     spawnGenRange: 3
   lightEngine:
-    raysPerBatch: 45
-    maxRays: 0
+    raysPerBatch: 40
   randomizeSeed: 1
   seed: 0
   chunkSize: 16

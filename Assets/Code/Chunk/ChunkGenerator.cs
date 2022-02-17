@@ -12,8 +12,9 @@ public class ChunkGenerator
 
 	private readonly Queue<Chunk> reQueue = new Queue<Chunk>();
 
+	public readonly int throughput = 4;
 	private readonly float cycleDelay;
-	private readonly int penaltyDelay = 5; // In ms
+	private readonly int penaltyDelay = 500; // In ms
 
 	private int edgeChunks = 0;
 
@@ -22,7 +23,7 @@ public class ChunkGenerator
 		Chunk.ProcStage.MakeMesh,
 	};
 
-	public ChunkGenerator(float cycleDelay, int queueCount)
+	public ChunkGenerator(float cycleDelay, int queueCount, int throughput)
 	{
 		this.cycleDelay = cycleDelay;
 
@@ -33,6 +34,8 @@ public class ChunkGenerator
 			chunkQueues.Add(spq);
 			busy.Add(spq, false);
 		}
+
+		this.throughput = throughput;
 	}
 
 	// Fix extra queues not being used
@@ -61,11 +64,11 @@ public class ChunkGenerator
 		foreach (SimplePriorityQueue<Chunk> spq in chunkQueues)
 		{
 			if (!busy[spq])
-				BackgroundIterate(spq, 32);
+				BackgroundIterate(spq, throughput);
 		}
 
 		while (reQueue.Count > 0)
-			World.WorldBuilder.QueueNextStage(reQueue.Dequeue());
+			World.WorldBuilder.QueueNextStage(reQueue.Dequeue(), true);
 	}
 
 	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue, int taskSize)
@@ -109,7 +112,7 @@ public class ChunkGenerator
 							{
 								// Wait for threaded processing
 								while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
-									await Task.Delay(10);
+									await Task.Delay(penaltyDelay);
 							}
 						}
 					}
