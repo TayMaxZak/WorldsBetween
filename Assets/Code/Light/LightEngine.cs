@@ -20,9 +20,7 @@ public class LightEngine
 	private Sun sun;
 
 	[SerializeField]
-	private int raysPerStepHi = 300;
-	[SerializeField]
-	private int raysPerStepLo = 30;
+	private int raysPerBatch = 40;
 	private int raysBusy = 0;
 
 	public void Init(Sun sun)
@@ -35,13 +33,13 @@ public class LightEngine
 		int step = WorldLightAtlas.Instance.directScale;
 
 		sourceQueue.Clear();
-		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x += step)
+		for (int x = Utils.ToInt(sun.sourcePoints.min.x) + (step / 2); x < Utils.ToInt(sun.sourcePoints.max.x); x += step)
 		{
 			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y += step)
 			{
-				for (int z = Utils.ToInt(sun.sourcePoints.min.z); z < Utils.ToInt(sun.sourcePoints.max.z); z += step)
+				for (int z = Utils.ToInt(sun.sourcePoints.min.z) + (step / 2); z < Utils.ToInt(sun.sourcePoints.max.z); z += step)
 				{
-					Vector3Int pos = new Vector3Int(x, y, z);
+					Vector3Int pos = new Vector3Int(x, y - (step / 2), z);
 					sourceQueue.Enqueue(pos, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
 				}
 			}
@@ -56,20 +54,13 @@ public class LightEngine
 
 	public void Iterate()
 	{
-		//iterateTimer.Increment(deltaTime);
-
-		//if (!iterateTimer.Expired())
-		//	return;
-
-		//iterateTimer.Reset();
-
 		if (!Application.isPlaying)
 			return;
 
 		if (raysBusy > 0)
 			return;
 
-		for (int i = 0; i < (World.WorldBuilder.IsGenerating() ? raysPerStepHi : raysPerStepLo); i++)
+		for (int i = 0; i < raysPerBatch; i++)
 		{
 			// Done early
 			if (sourceQueue.Count == 0)

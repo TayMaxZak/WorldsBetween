@@ -36,15 +36,14 @@ public class WorldLightAtlas : MonoBehaviour
 
 	public int ambientScale = 16;
 
-	private Timer cleanupTimer = new Timer(15f);
-
-	private Timer recentApplyTimer = new Timer(1f);
+	//private Timer cleanupTimer = new Timer(15f);
+	//private Timer recentApplyTimer = new Timer(1f);
 
 	private static int directChanges = 0;
-	private static int targDirectChanges = 50000;
+	//private static int targDirectChanges = 50000;
 
 	private static int ambientChanges = 0;
-	private static int targAmbientChanges = 5000;
+	//private static int targAmbientChanges = 5000;
 
 	private void OnEnable()
 	{
@@ -93,7 +92,6 @@ public class WorldLightAtlas : MonoBehaviour
 		// TODO:
 		// Up close - 1:1 pixel to block for 125 chunks around origin (center + 2 in each direction). 1:2 pixel to block everywhere else
 		// 1 + 2 + 4(0.5)
-		Debug.Log("dir size " + dirSize);
 
 		// Create texture and apply configuration. RGBAHalf is sufficient for most lighting
 		directLightTex = new Texture3D(dirSize, dirSize, dirSize, TextureFormat.RGBAHalf, false);
