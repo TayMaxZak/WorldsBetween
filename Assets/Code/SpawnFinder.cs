@@ -111,7 +111,7 @@ public class SpawnFinder
 
 		await Task.Delay(5);
 
-		Player.Instance.ActivatePlayer(playerPos);
+		Player.Instance.InitPlayerActor(playerPos);
 	}
 
 	public bool IsSuccessful()

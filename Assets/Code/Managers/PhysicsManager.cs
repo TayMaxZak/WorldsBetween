@@ -59,7 +59,7 @@ public partial class PhysicsManager : MonoBehaviour
 		actors.Add(actor);
 	}
 
-	public void Activate()
+	public void InitAll()
 	{
 		Debug.Log("Activating all");
 

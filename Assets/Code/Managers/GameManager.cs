@@ -151,9 +151,10 @@ public partial class GameManager : MonoBehaviour
 		await Task.Delay(delay);
 
 
-		// Activate actors
-		PhysicsManager.Instance.Activate();
-
+		// Init actors
+		PhysicsManager.Instance.InitAll();
+		// Activate player
+		Player.Instance.ActivatePlayer();
 
 		finishedLoading = true;
 

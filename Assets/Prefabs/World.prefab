@@ -55,13 +55,9 @@ MonoBehaviour:
     enqueueTaskSize: 100
     generatorTaskSize: 32
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
-    contextWorker:
-      pos: {x: 0, y: 0, z: 0}
-      extents: {x: 5, y: 3, z: 5}
-      airCount: 0
-      solidCount: 0
-      success: 0
-    genRange: 6
+    spawnFinder:
+      extents: {x: 8, y: 5, z: 8}
+    genRange: 7
     spawnGenRange: 3
   lightEngine:
     raysPerBatch: 40
