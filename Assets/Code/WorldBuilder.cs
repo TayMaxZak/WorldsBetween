@@ -28,6 +28,9 @@ public class WorldBuilder
 	[SerializeField]
 	private ChunkGameObject chunkPrefab;
 
+	[SerializeField]
+	private SpawnFinder spawnFinder;
+
 	[Header("Generation")]
 	[SerializeField]
 	[Range(0, 15)]
@@ -36,8 +39,6 @@ public class WorldBuilder
 	[SerializeField]
 	[Range(0, 10)]
 	private int spawnGenRange = 3;
-
-	private Timer chunkGenTimer = new Timer(1);
 
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
@@ -55,8 +56,6 @@ public class WorldBuilder
 			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
 			{ Chunk.ProcStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
-
-		chunkGenTimer.Reset();
 
 		chunkRoot = new GameObject();
 		chunkRoot.name = "Chunks";
@@ -88,6 +87,14 @@ public class WorldBuilder
 		Debug.Log("Cancel complete");
 	}
 
+	public void UpdateContextWorker()
+	{
+		if (spawnFinder.IsBusy() || spawnFinder.IsSuccessful())
+			return;
+
+		spawnFinder.Tick();
+	}
+
 	public void ContinueGenerating()
 	{
 		if (genStage < GenStage.EnqueueChunks || !active)
@@ -109,6 +116,9 @@ public class WorldBuilder
 			if (empty || (prev.GetSize() == 0))
 				entry.Value.Generate();
 		}
+
+		if (genStage >= GenStage.Ready)
+			UpdateContextWorker();
 	}
 
 	public void InstantiateChunks(int range)
@@ -188,21 +198,6 @@ public class WorldBuilder
 		}
 	}
 
-	private void UpdateChunkGameObjects()
-	{
-		// TODO: Reuse grid of chunks instead of instantiating new ones
-
-		if (!World.IsInfinite())
-			return;
-
-		chunkGenTimer.Increment(Time.deltaTime);
-
-		if (chunkGenTimer.Expired())
-			chunkGenTimer.Reset();
-		else
-			return;
-	}
-
 	public void QueueNextStage(Chunk chunk)
 	{
 		QueueNextStage(chunk, false);
@@ -274,5 +269,10 @@ public class WorldBuilder
 	public Dictionary<Chunk.ProcStage, ChunkGenerator> GetChunkGenerators()
 	{
 		return chunkGenerators;
+	}
+
+	public void DrawGizmo()
+	{
+		spawnFinder.DrawGizmo();
 	}
 }

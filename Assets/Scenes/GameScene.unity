@@ -236,7 +236,6 @@ MonoBehaviour:
   loadingProgressSmooth: 0
   startedFadingOut: 0
   finishedLoading: 0
-  player: {fileID: 206889555}
   loadingScreen: {fileID: 6292042240279805736}
 --- !u!4 &173910858
 Transform:
@@ -310,17 +309,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &206889555 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6388750949980177594, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-  m_PrefabInstance: {fileID: 805622447}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1379bd3aaf61d048be42ef076456074, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &254341829
 GameObject:
   m_ObjectHideFlags: 0
@@ -1679,6 +1667,22 @@ PrefabInstance:
       propertyPath: waterSystem
       value: 
       objectReference: {fileID: 1369908092}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.genRange
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.spawnFinder.extents.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.spawnFinder.extents.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.spawnFinder.extents.z
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
       value: World

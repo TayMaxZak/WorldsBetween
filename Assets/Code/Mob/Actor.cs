@@ -33,15 +33,14 @@ public class Actor : MonoBehaviour
 	private void Awake()
 	{
 		PhysicsManager.Instance.Register(this);
-
-		position = transform.position;
-		prevPosition = new Vector3(position.x, position.y, position.z);
 	}
 
 	public virtual void Init()
 	{
 		Debug.Log(name + " init");
 
+		position = transform.position;
+		prevPosition = new Vector3(position.x, position.y, position.z);
 		UpdateBlockPosition();
 
 		didInit = true;

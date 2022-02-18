@@ -43,13 +43,19 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	public void ActivatePlayer()
+	public void ActivatePlayer(Vector3 blockPos)
 	{
-		vitals.enabled = true;
-		mover.enabled = true;
-		mouseLook.enabled = true;
+		Debug.Log("Activated player at " + blockPos);
 
+		// Set physical position
+		transform.position = blockPos + new Vector3(0.5f, 1, 0.5f);
 		initPos = transform.position;
+		mover.enabled = true;
+		mover.Init();
+
+		// Enable related components
+		vitals.enabled = true;
+		mouseLook.enabled = true;
 
 		activated = true;
 	}

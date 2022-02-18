@@ -253,10 +253,17 @@ public partial class World : MonoBehaviour
 		return Instance.waterHeight;
 	}
 
+	public static Vector3Int GetWorldExtents()
+	{
+		return Vector3Int.one * (1 + WorldBuilder.GetGenRange() * 2) * Instance.chunkSize / 2;
+	}
+
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
-		Gizmos.DrawWireCube(transform.position + Vector3.one * chunkSize / 2, Vector3.one * (1 + worldBuilder.GetGenRange() * 2) * chunkSize);
+		Gizmos.DrawWireCube(Vector3.zero + Vector3.one * chunkSize / 2, Vector3.one * (1 + worldBuilder.GetGenRange() * 2) * chunkSize);
+
+		worldBuilder.DrawGizmo();
 	}
 }

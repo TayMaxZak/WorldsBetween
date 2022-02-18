@@ -64,7 +64,11 @@ public partial class PhysicsManager : MonoBehaviour
 		Debug.Log("Activating all");
 
 		foreach (Actor actor in actors)
-			actor.Init();
+		{
+			// Only init active actor components at game start
+			if (actor.isActiveAndEnabled)
+				actor.Init();
+		}
 	}
 
 	public static BlockCastHit BlockCast(Vector3 startPos, Vector3 dir, int steps)

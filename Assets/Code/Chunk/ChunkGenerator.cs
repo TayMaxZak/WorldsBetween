@@ -14,7 +14,7 @@ public class ChunkGenerator
 
 	public readonly int throughput = 4;
 	private readonly float cycleDelay;
-	private readonly int penaltyDelay = 500; // In ms
+	private readonly int penaltyDelay = 100; // In ms
 
 	private int edgeChunks = 0;
 

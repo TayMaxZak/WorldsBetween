@@ -15,11 +15,10 @@ public partial class GameManager : MonoBehaviour
 	public bool finishedLoading = false;
 
 	private bool startedBuilding = false;
+	private bool finishedBuilding = false;
 
 	private bool startedLight = false;
 	private bool finishedLight = false;
-
-	public Player player;
 
 	public LoadingScreenHook loadingScreen;
 
@@ -73,6 +72,9 @@ public partial class GameManager : MonoBehaviour
 			if (CloseEnough(builderProgress, 0.95f) && !startedLight)
 				StartLighting();
 
+			if (CloseEnough(builderProgress, 1) && !finishedBuilding)
+				FinishBuilding();
+
 			// Lighting can be applied
 			if (CloseEnough(lighterProgress, 1) && !finishedLight)
 				FinishLighting();
@@ -104,7 +106,7 @@ public partial class GameManager : MonoBehaviour
 
 		float fade = Mathf.Clamp01((1 - loadingProgressSmooth) * 5);
 
-		player.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
+		Player.Instance.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
 	}
 
 	public void ShowProgress()
@@ -112,6 +114,13 @@ public partial class GameManager : MonoBehaviour
 		startedBuilding = true;
 
 		loadingScreen.ShowProgressBar();
+	}
+
+	public void FinishBuilding()
+	{
+		finishedBuilding = true;
+
+		World.WorldBuilder.genStage = WorldBuilder.GenStage.Ready;
 	}
 
 	public void StartLighting()
@@ -136,7 +145,6 @@ public partial class GameManager : MonoBehaviour
 			return;
 		startedFadingOut = true;
 
-
 		// Transition from loading state to game state
 		loadingScreen.StartFadingOut();
 
@@ -145,7 +153,6 @@ public partial class GameManager : MonoBehaviour
 
 		// Activate actors
 		PhysicsManager.Instance.Activate();
-		player.ActivatePlayer();
 
 
 		finishedLoading = true;
