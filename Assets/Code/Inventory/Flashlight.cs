@@ -9,10 +9,18 @@ public class Flashlight : Item
 
 	public bool on;
 
-	public float range = 20;
+	public float maxRange = 20;
 
-	private Vector3 targetPosRaw;
-	private Vector3 targetPos;
+	public float distLerpSpeed = 5;
+	public float turnLerpSpeed = 20;
+
+	private Vector3 beamEndPos;
+
+	private Vector3 targetForward;
+	private Vector3 currentForward;
+
+	private float targetDist;
+	private float currentDist;
 
 	private static readonly Vector3 offPosA = new Vector3(10000, 10000, 10000);
 	private static readonly Vector3 offPosB = new Vector3(10000, 10000, 10001);
@@ -40,16 +48,23 @@ public class Flashlight : Item
 	{
 		base.Update();
 
+		currentForward = Vector3.Lerp(currentForward, targetForward, Time.deltaTime * turnLerpSpeed);
+		currentDist = Mathf.Lerp(currentDist, targetDist, Time.deltaTime * distLerpSpeed);
+
 		if (PhysicsManager.Instance.ticking)
 		{
-			BlockCastHit hit = PhysicsManager.BlockCastAxial(hand.position, hand.position + hand.forward * range);
-			if (hit.hit)
-				targetPosRaw = hand.position + hand.forward * (hit.worldPos - hand.position).magnitude;
-			else
-				targetPosRaw = hand.position + hand.forward * range;
-		}
-		targetPos = Vector3.Lerp(targetPos, targetPosRaw, Time.deltaTime * 5);
+			BlockCastHit hit = PhysicsManager.BlockCastAxial(hand.position, hand.position + hand.forward * maxRange);
 
+			targetForward = hand.forward;
+
+			if (hit.hit)
+				targetDist = (hit.worldPos - hand.position).magnitude;
+			else
+				targetDist = maxRange;
+		}
+
+		// Smoothed position is sent to shader
+		beamEndPos = hand.position + currentForward * currentDist;
 		UpdateShader();
 	}
 
@@ -59,7 +74,7 @@ public class Flashlight : Item
 		{
 			Shader.SetGlobalVector("FlashlightA", hand.position);
 
-			Shader.SetGlobalVector("FlashlightB", targetPos);
+			Shader.SetGlobalVector("FlashlightB", beamEndPos);
 		}
 		else
 		{

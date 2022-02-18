@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: Flashlight
   inventorySize: {x: 2, y: 1}
+  hand: {fileID: 0}
   on: 0
-  range: 20
+  maxRange: 32
+  distLerpSpeed: 1
+  turnLerpSpeed: 20
