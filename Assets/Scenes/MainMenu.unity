@@ -7105,7 +7105,7 @@ GameObject:
   - component: {fileID: 1297850401}
   - component: {fileID: 1297850400}
   m_Layer: 5
-  m_Name: ScreenCanvas
+  m_Name: ScreenSpaceCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7207,7 +7207,7 @@ GameObject:
   - component: {fileID: 1339849097}
   - component: {fileID: 1339849096}
   m_Layer: 5
-  m_Name: WorldCanvas
+  m_Name: WorldSpaceCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8215,10 +8215,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1348529968}
     m_Modifications:
-    - target: {fileID: 325440984727902251, guid: c755f10c061279946bbe00476a042f7d, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 963059698}
     - target: {fileID: 465981064031165788, guid: c755f10c061279946bbe00476a042f7d, type: 3}
       propertyPath: m_Color.b
       value: 0.70980394

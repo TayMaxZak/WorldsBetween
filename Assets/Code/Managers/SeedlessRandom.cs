@@ -38,13 +38,13 @@ public class SeedlessRandom
 		return min + (max - min) * (float)random.Value.NextDouble();
 	}
 
+	public static long NextLongInRange(long min, long max)
+	{
+		return min + (long)((max - min) * random.Value.NextDouble());
+	}
+
 	public static Vector3 RandomPoint(float size)
 	{
 		return new Vector3(NextFloatInRange(-size, size), NextFloatInRange(-size, size), NextFloatInRange(-size, size));
-	}
-
-	public static int NextIntInRange(float min, float max)
-	{
-		return (int)NextFloatInRange(min, max);
 	}
 }

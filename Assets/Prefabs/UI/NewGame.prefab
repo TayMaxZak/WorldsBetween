@@ -550,7 +550,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6679903412719762107}
   m_Layer: 5
-  m_Name: TextArea
+  m_Name: TextContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -590,7 +590,6 @@ GameObject:
   - component: {fileID: 5153059071281026609}
   - component: {fileID: 2939545256086989781}
   - component: {fileID: 9093379236808318192}
-  - component: {fileID: 918782807}
   m_Layer: 5
   m_Name: KeyPatternField
   m_TagString: Untagged
@@ -728,7 +727,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 918782807}
+      - m_Target: {fileID: 6746174287842393163}
         m_TargetAssemblyTypeName: UIKeystone, Assembly-CSharp
         m_MethodName: ConfirmCode
         m_Mode: 1
@@ -748,20 +747,6 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_ShouldActivateOnSelect: 1
---- !u!114 &918782807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064291189476716789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33d1a72cef722114a9fcb6f7b5dd8b20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  field: {fileID: 9093379236808318192}
-  realText: {fileID: 8783458922697608114}
 --- !u!1 &1137783144758849612
 GameObject:
   m_ObjectHideFlags: 0
@@ -1828,7 +1813,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8052645092601313654}
   - component: {fileID: 4439103121287022973}
-  - component: {fileID: 6055838377177737514}
   m_Layer: 5
   m_Name: InventoryPanel
   m_TagString: Untagged
@@ -1866,20 +1850,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3643745683237710002}
   m_CullTransparentMesh: 1
---- !u!114 &6055838377177737514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3643745683237710002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0ef8e5a2d1598149804a323325772d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventory:
-    backpackSize: {x: 1, y: 1}
 --- !u!1 &3731926441716854874
 GameObject:
   m_ObjectHideFlags: 0
@@ -2175,6 +2145,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3971439236884025655}
   - component: {fileID: 3971439236884025653}
+  - component: {fileID: 4859125246073740134}
+  - component: {fileID: 3150945645764677032}
+  - component: {fileID: 6746174287842393163}
   m_Layer: 5
   m_Name: NewGame
   m_TagString: Untagged
@@ -2223,6 +2196,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3971439236884025654}
   m_CullTransparentMesh: 1
+--- !u!114 &4859125246073740134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3971439236884025654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5021a2c6fbe044594478562084b98d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiInventory: {fileID: 3150945645764677032}
+  uiKeystone: {fileID: 6746174287842393163}
+  gameSceneIndex: 1
+--- !u!114 &3150945645764677032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3971439236884025654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ef8e5a2d1598149804a323325772d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventory:
+    backpackSize: {x: 4, y: 6}
+--- !u!114 &6746174287842393163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3971439236884025654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d1a72cef722114a9fcb6f7b5dd8b20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sourceField: {fileID: 9093379236808318192}
+  displayText: {fileID: 8783458922697608114}
+  finalStringSeed: 000000000
 --- !u!1 &3991887471787862966
 GameObject:
   m_ObjectHideFlags: 0
@@ -2987,7 +3004,7 @@ GameObject:
   - component: {fileID: 5107180993639969006}
   - component: {fileID: 5569325657166622843}
   m_Layer: 5
-  m_Name: ProxyText
+  m_Name: HiddenInputText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3266,7 +3283,7 @@ GameObject:
   - component: {fileID: 7445081994799493831}
   - component: {fileID: 2037178301672341307}
   m_Layer: 5
-  m_Name: BackText
+  m_Name: PlaceholderText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3554,7 +3571,7 @@ GameObject:
   - component: {fileID: 7733253111280350790}
   - component: {fileID: 8783458922697608114}
   m_Layer: 5
-  m_Name: RealText
+  m_Name: DisplayText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3713,9 +3730,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: LoadGameScene
+      - m_Target: {fileID: 4859125246073740134}
+        m_TargetAssemblyTypeName: NewGameMenu, Assembly-CSharp
+        m_MethodName: NewGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

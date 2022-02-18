@@ -60,6 +60,52 @@ public class Utils
 	}
 }
 
+public static class SeedDecoder
+{
+	private static int ValueOfChar(char c)
+	{
+		// Digit characters
+		if (char.IsDigit(c))
+		{
+			return c - '0';
+		}
+		// Letter characters
+		else if (char.IsLetter(c))
+		{
+			return c - 'A' + 10;
+		}
+		// Invalid character
+		else
+		{
+			Debug.LogWarning("Invalid character " + c + " included in seed string");
+
+			return -1;
+		}
+	}
+
+	public static long StringToLong(string seedAsString, int customBase)
+	{
+		int powerAtPlace = 1; // Initialize power of base
+		long seedAsNumber = 0;
+
+		for (int i = seedAsString.Length - 1; i >= 0; i--)
+		{
+			int charVal = ValueOfChar(seedAsString[i]);
+
+			// Input char must be valid in custom base
+			if (charVal < 0 || charVal >= customBase)
+				return -1;
+
+			// Value of char given its place
+			seedAsNumber += charVal * powerAtPlace;
+			// Next place has higher power
+			powerAtPlace *= customBase;
+		}
+
+		return seedAsNumber;
+	}
+}
+
 namespace ExtensionMethods
 {
 	public static class ComponentExtensions

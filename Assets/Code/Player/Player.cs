@@ -76,7 +76,6 @@ public class Player : MonoBehaviour
 
 			if (quit.Expired())
 			{
-				SceneLoader.Remove();
 				SceneManager.LoadScene(0);
 			}
 		}

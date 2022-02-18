@@ -37,7 +37,7 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private bool randomizeSeed = false;
 	[SerializeField]
-	private int seed = 0;
+	private long seed = 0;
 	[SerializeField]
 	private int chunkSize = 8;
 
@@ -71,11 +71,17 @@ public partial class World : MonoBehaviour
 
 	private void WorldInit()
 	{
-		// Pick a seed, then use it to initialize RNG
-		if (randomizeSeed)
-			seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
-		Random.InitState(seed);
+		// Is there prior seed data?
+		PersistentData data = PersistentData.GetInstanceForRead();
+		if (data)
+			seed = data.GetNumericSeed();
+		// Generate a random seed
+		else if (randomizeSeed)
+			seed = SeedlessRandom.NextLongInRange(0, long.MaxValue);
 
+		Random.InitState((int)seed); // TODO: Use separate class for consistent gen RNG
+
+		// Modifiers
 		MakeModifiers();
 
 		foreach (Modifier mod in modifiers)
@@ -87,7 +93,7 @@ public partial class World : MonoBehaviour
 
 	private void MakeModifiers()
 	{
-		//modifiers.Add(new NoiseModifier(false, 0.1f, new Vector3(0.05f, 0.05f, 0.05f)));
+		modifiers.Clear();
 
 		// Main boxes
 		modifiers.Add(new BlockyNoiseModifier(false, 0.95f, new Vector3(0.04f, 0.03f, 0.04f),
@@ -125,12 +131,7 @@ public partial class World : MonoBehaviour
 	[ContextMenu("Restart Gen")]
 	public async void RestartGen()
 	{
-		if (randomizeSeed)
-			seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
-		Random.InitState(seed);
-
-		foreach (Modifier mod in modifiers)
-			mod.Init();
+		WorldInit();
 
 		await WorldBuilder.EnqueueAllChunks(Chunk.ProcStage.Allocate);
 
