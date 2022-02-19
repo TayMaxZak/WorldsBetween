@@ -10,39 +10,126 @@ public class UIKeystone : MonoBehaviour
 	[SerializeField]
 	private Text displayText;
 	[SerializeField]
+	private Text placeholderText;
+	[SerializeField]
 	private string finalStringSeed = "000000000";
+
+	[Space()]
+	[SerializeField]
+	private Animation shuffleAnim;
+
+	private Timer shuffleTimer = new Timer(1.3f);
 
 	private void Awake()
 	{
-		displayText.text = "";
+		ApplyKeyCode(CreateRandomKeyCode(), true, true);
 	}
 
-	public void ConfirmCode()
+	private void Update()
+	{
+		// Pick a random seed
+		if (sourceField.text.Length == 0)
+		{
+			// Replace a random char
+			shuffleTimer.Increment(Time.deltaTime);
+			if (shuffleTimer.Expired())
+			{
+				shuffleTimer.Reset();
+
+				int randomIndex = SeedlessRandom.NextIntInRange(0, 9);
+				char randomChar = CreateRandomChar();
+
+				char[] charArray = finalStringSeed.ToCharArray();
+				charArray[randomIndex] = randomChar;
+
+				finalStringSeed = new string(charArray);
+				ApplyKeyCode(finalStringSeed, false, true);
+			}
+		}
+	}
+
+	private string CreateRandomKeyCode()
+	{
+		string toReturn = "";
+
+		for (int i = 0; i < 9; i++)
+		{
+			toReturn += CreateRandomChar();
+		}
+
+		if (shuffleAnim)
+		{
+			if (shuffleAnim.isPlaying)
+				shuffleAnim.Stop();
+			shuffleAnim.Play();
+		}
+
+		return toReturn;
+	}
+
+	private char CreateRandomChar()
+	{
+		return SeedDecoder.CharOfValue((byte)SeedlessRandom.NextIntInRange(0, 36));
+	}
+
+	public void ConfirmKeyCode()
 	{
 		string sourceText = sourceField.text;
 
-		// TODO: Optimize with string builder?
-		string changed = "";
-		finalStringSeed = "";
+		if (sourceText.Length > 0)
+			ApplyKeyCode(sourceText, true, false);
+		else
+			ApplyKeyCode(CreateRandomKeyCode(), true, true);
+	}
+
+	// TODO: Optimize with string builder?
+	private void ApplyKeyCode(string sourceText, bool updateStringSeed, bool noDisplayText)
+	{
+		string toDisplay = "";
+		string toPlaceholder = "";
+
+		if (updateStringSeed)
+			finalStringSeed = "";
 
 		// Display text includes whitespace chars
-		for (int i = 0; i < sourceText.Length; i++)
-		{
-			changed += char.ToUpper(sourceText[i]) + " ";
-		}
-
-		// String for backend is strictly alphanumeric and exactly 9 chars long
 		for (int i = 0; i < 9; i++)
 		{
 			if (i < sourceText.Length)
-				finalStringSeed += char.ToUpper(sourceText[i]);
+			{
+				toDisplay += char.ToUpper(sourceText[i]) + " ";
+
+				// Use placeholder text as display text
+				if (noDisplayText)
+					toPlaceholder += char.ToUpper(sourceText[i]) + " ";
+				// Whitespace
+				else
+					toPlaceholder += (i + 1) % 3 == 0 ? "\n" : "  ";
+
+				if (updateStringSeed)
+					finalStringSeed += char.ToUpper(sourceText[i]);
+			}
 			else
-				finalStringSeed += '0';
+			{
+				toPlaceholder += "0 ";
+
+				if (updateStringSeed)
+					finalStringSeed += '0';
+			}
 		}
 
-		displayText.text = changed;
+		if (noDisplayText)
+		{
+			placeholderText.text = toPlaceholder;
 
-		Debug.Log("Keystone updated: seed = " + finalStringSeed);
+			if (sourceField.text.Length == 0)
+				displayText.text = "";
+		}
+		else
+		{
+			placeholderText.text = toPlaceholder;
+
+			displayText.text = toDisplay;
+		}
 	}
 
 	public string GetStringSeed()

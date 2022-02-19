@@ -85,11 +85,11 @@ public class SpawnFinder
 
 	protected async Task ScanAll(BlockPosAction scanAction, Vector3Int min, Vector3Int max)
 	{
-		for (int x = min.x; x <= max.x; x++)
+		for (int x = min.x; x < max.x; x++)
 		{
-			for (int y = min.y; y <= max.y; y++)
+			for (int y = min.y; y < max.y; y++)
 			{
-				for (int z = min.z; z <= max.z; z++)
+				for (int z = min.z; z < max.z; z++)
 				{
 					scanAction(new Vector3Int(x, y, z));
 				}

@@ -19,7 +19,6 @@ public class SeedlessRandom
 
 	public static float NextFloat()
 	{
-		Debug.Log(seed);
 		return (float)random.Value.NextDouble();
 	}
 

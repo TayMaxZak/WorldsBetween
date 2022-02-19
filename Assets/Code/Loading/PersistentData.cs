@@ -34,7 +34,7 @@ public class PersistentData : MonoBehaviour
 	public void SetSeed(string seed)
 	{
 		stringSeed = seed;
-		numericSeed = SeedDecoder.StringToLong(seed, 10 + 26);
+		numericSeed = SeedDecoder.StringToLong(seed);
 	}
 
 	public string GetStringSeed()

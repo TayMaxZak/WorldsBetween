@@ -62,6 +62,27 @@ public class Utils
 
 public static class SeedDecoder
 {
+	public static char CharOfValue(byte i)
+	{
+		// Digit characters
+		if (i >= ValueOfChar('0') && i <= ValueOfChar('9'))
+		{
+			return (char)(i + '0');
+		}
+		// Letter characters
+		else if (i >= ValueOfChar('A') && i <= ValueOfChar('Z'))
+		{
+			return (char)(i + 'A' - 10);
+		}
+		// Invalid character
+		else
+		{
+			Debug.LogWarning("Invalid value " + i + " cannot be displayed as character");
+
+			return '#';
+		}
+	}
+
 	private static int ValueOfChar(char c)
 	{
 		// Digit characters
@@ -83,9 +104,11 @@ public static class SeedDecoder
 		}
 	}
 
-	public static long StringToLong(string seedAsString, int customBase)
+	public static long StringToLong(string seedAsString)
 	{
-		int powerAtPlace = 1; // Initialize power of base
+		int customBase = 36; // 10 digits + 26 letters
+
+		int powerAtPlace = 1; // Exponent increases at each place right to left
 		long seedAsNumber = 0;
 
 		for (int i = seedAsString.Length - 1; i >= 0; i--)

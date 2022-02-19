@@ -79,6 +79,8 @@ public partial class World : MonoBehaviour
 		else if (randomizeSeed)
 			seed = SeedlessRandom.NextLongInRange(0, long.MaxValue);
 
+		Debug.Log("seed = " + seed + " vs (int)seed = " + (int)seed + " vs string = " + (data ? data.GetStringSeed() : ""));
+
 		Random.InitState((int)seed); // TODO: Use separate class for consistent gen RNG
 
 		// Modifiers
