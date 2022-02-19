@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
+	public static MainMenu Instance;
+
 	public enum MainMenuState
 	{
 		Start,
@@ -21,6 +23,8 @@ public class MainMenu : MonoBehaviour
 
 	private void Awake()
 	{
+		Instance = this;
+
 		startAnimator.SetFloat("IdleHide", 0);
 
 		mainAnimator.SetFloat("IdleHide", 1);

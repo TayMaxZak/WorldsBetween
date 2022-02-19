@@ -6,12 +6,12 @@ public class UIInventory : MonoBehaviour
 {
 	public Inventory inventory;
 
-	public Transform backpackUiSlotsRoot;
-	public UIInventorySlot[,] backpackUiSlots;
+	public Transform backpackUiItemsRoot;
+	public UIItem[] backpackUiItems;
 
 	public Vector2Int size = new Vector2Int(6, 4);
 
-	public Sprite testSprite;
+	public Item testItem;
 
 	public void Init(Inventory inventory)
 	{
@@ -19,15 +19,10 @@ public class UIInventory : MonoBehaviour
 			return;
 		this.inventory = inventory;
 
-		backpackUiSlots = new UIInventorySlot[inventory.backpackSize.x, inventory.backpackSize.y];
-
-		// Sort UI slots
-		UIInventorySlot[] slots = backpackUiSlotsRoot.GetComponentsInChildren<UIInventorySlot>();
-		foreach (UIInventorySlot slot in slots)
+		backpackUiItems = backpackUiItemsRoot.GetComponentsInChildren<UIItem>();
+		foreach (UIItem slot in backpackUiItems)
 		{
-			Debug.Log("" + slot.xCoord + " , " + slot.yCoord);
-			//backpackUiSlots[slot.xCoord, slot.yCoord] = slot;
-			slot.itemIcon.sprite = testSprite;
+			slot.SetItem(testItem);
 		}
 	}
 }
