@@ -359,7 +359,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             }
 
             // Depth of Field
-            if (m_DepthOfField.IsActive() && !isSceneViewCamera)
+            if (m_DepthOfField.IsActive()/* && !isSceneViewCamera*/)
             {
                 var markerName = m_DepthOfField.mode.value == DepthOfFieldMode.Gaussian
                     ? URPProfileId.GaussianDepthOfField
@@ -410,7 +410,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 // Setup other effects constants
                 SetupLensDistortion(m_Materials.uber, isSceneViewCamera);
                 SetupChromaticAberration(m_Materials.uber);
-                SetupVignette(m_Materials.uber);
+                SetupVignette(m_Materials.uber, isSceneViewCamera);
                 SetupColorGrading(cmd, ref renderingData, m_Materials.uber);
 
                 // Only apply dithering & grain if there isn't a final pass.
@@ -1078,9 +1078,9 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         #region Vignette
 
-        void SetupVignette(Material material)
+        void SetupVignette(Material material, bool isSceneViewCamera)
         {
-            var color = m_Vignette.color.value;
+            var color =  m_Vignette.color.value;
             var center = m_Vignette.center.value;
             var aspectRatio = m_Descriptor.width / (float)m_Descriptor.height;
 
@@ -1090,7 +1090,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             );
             var v2 = new Vector4(
                 center.x, center.y,
-                m_Vignette.intensity.value * 3f,
+                m_Vignette.intensity.value * (!isSceneViewCamera ? 3f : 0f),
                 m_Vignette.smoothness.value * 5f
             );
 
