@@ -27,8 +27,8 @@ public class UIKeystone : MonoBehaviour
 
 	private void Update()
 	{
-		// Pick a random seed
-		if (sourceField.text.Length == 0)
+		// While a seed is not manually entered
+		if (!sourceField.isFocused && sourceField.text.Length == 0)
 		{
 			// Replace a random char
 			shuffleTimer.Increment(Time.deltaTime);
@@ -46,6 +46,8 @@ public class UIKeystone : MonoBehaviour
 				ApplyKeyCode(finalStringSeed, false, true);
 			}
 		}
+		else
+			shuffleTimer.Reset();
 	}
 
 	private string CreateRandomKeyCode()

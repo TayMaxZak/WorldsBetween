@@ -13,7 +13,7 @@ public class PersistentData : MonoBehaviour
 	[SerializeField]
 	private long numericSeed = 0;
 
-	public Inventory playerInventory;
+	private Inventory playerInventory;
 
 	private void Awake()
 	{
@@ -47,9 +47,14 @@ public class PersistentData : MonoBehaviour
 		return numericSeed;
 	}
 
-	public void SetInventory(Inventory inventory)
+	public void SetPlayerInventory(Inventory inventory)
 	{
 		playerInventory = inventory;
+	}
+
+	public Inventory GetPlayerInventory()
+	{
+		return playerInventory;
 	}
 	#endregion
 
