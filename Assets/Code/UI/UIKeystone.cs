@@ -14,19 +14,24 @@ public class UIKeystone : MonoBehaviour
 	[SerializeField]
 	private string finalStringSeed = "000000000";
 
-	[Space()]
+	[Header("")]
 	[SerializeField]
 	private Animation shuffleAnim;
 
-	private Timer shuffleTimer = new Timer(1.3f);
+	private Timer shuffleTimer = new Timer(10f);
+	private float shuffleTimeMin = 8f;
+	private float shuffleTimeMax = 12f;
 
 	private void Awake()
 	{
-		ApplyKeyCode(CreateRandomKeyCode(), true, true);
+		ApplyKeyCode("ENTERCODE", true, true);
 	}
 
 	private void Update()
 	{
+		if (MainMenu.Instance.state != MainMenu.MainMenuState.NewGame)
+			return;
+
 		// While a seed is not manually entered
 		if (!sourceField.isFocused && sourceField.text.Length == 0)
 		{
@@ -34,16 +39,9 @@ public class UIKeystone : MonoBehaviour
 			shuffleTimer.Increment(Time.deltaTime);
 			if (shuffleTimer.Expired())
 			{
-				shuffleTimer.Reset();
+				shuffleTimer.Reset(SeedlessRandom.NextFloatInRange(shuffleTimeMin, shuffleTimeMax));
 
-				int randomIndex = SeedlessRandom.NextIntInRange(0, 9);
-				char randomChar = CreateRandomChar();
-
-				char[] charArray = finalStringSeed.ToCharArray();
-				charArray[randomIndex] = randomChar;
-
-				finalStringSeed = new string(charArray);
-				ApplyKeyCode(finalStringSeed, false, true);
+				ApplyKeyCode(CreateRandomKeyCode(), true, true);
 			}
 		}
 		else
@@ -72,6 +70,17 @@ public class UIKeystone : MonoBehaviour
 	private char CreateRandomChar()
 	{
 		return SeedDecoder.CharOfValue((byte)SeedlessRandom.NextIntInRange(0, 36));
+	}
+
+	// Pick opposite type of char
+	private char CreateRandomChar(char source)
+	{
+		if (char.IsDigit(source))
+			return SeedDecoder.CharOfValue((byte)SeedlessRandom.NextIntInRange(10, 36));
+		else if (char.IsLetter(source))
+			return SeedDecoder.CharOfValue((byte)SeedlessRandom.NextIntInRange(0, 9));
+		else
+			return '#';
 	}
 
 	public void ConfirmKeyCode()
