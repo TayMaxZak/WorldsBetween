@@ -11,8 +11,12 @@ public class UIKeystone : MonoBehaviour
 	private Text displayText;
 	[SerializeField]
 	private Text placeholderText;
+	[Header("")]
 	[SerializeField]
-	private string finalStringSeed = "000000000";
+	private string currentStringSeed = "000000000";
+	[SerializeField]
+	private string defaultStringSeed = "ENTERCODE";
+	private bool isDefaultSeed = true;
 
 	[Header("")]
 	[SerializeField]
@@ -24,28 +28,53 @@ public class UIKeystone : MonoBehaviour
 
 	private void Awake()
 	{
-		ApplyKeyCode("ENTERCODE", true, true);
+		isDefaultSeed = true;
+		currentStringSeed = defaultStringSeed;
+		ApplyKeyCode(defaultStringSeed, false, true);
 	}
 
 	private void Update()
 	{
-		if (MainMenu.Instance.state != MainMenu.MainMenuState.NewGame)
-			return;
+		shuffleTimer.Increment(Time.deltaTime);
 
-		// While a seed is not manually entered
-		if (!sourceField.isFocused && sourceField.text.Length == 0)
+		// Not on screen (or just leaving this screen)
+		if (MainMenu.Instance.state != MainMenu.MainMenuState.NewGame)
 		{
-			// Replace a random char
-			shuffleTimer.Increment(Time.deltaTime);
+			// While not in view, return to default code (if needed)
+			if (!isDefaultSeed && shuffleTimer.Expired())
+			{
+				shuffleTimer.Reset();
+
+				PlayShuffleAnim(); // In case player catches a glimpse
+
+				isDefaultSeed = true;
+				currentStringSeed = defaultStringSeed;
+				ApplyKeyCode(defaultStringSeed, false, true);
+
+			}
+		}
+		// While a seed is not manually entered
+		else if (!sourceField.isFocused && sourceField.text.Length == 0)
+		{
+			// Periodically replace the default code
 			if (shuffleTimer.Expired())
 			{
 				shuffleTimer.Reset(SeedlessRandom.NextFloatInRange(shuffleTimeMin, shuffleTimeMax));
 
-				ApplyKeyCode(CreateRandomKeyCode(), true, true);
+				// While in view, fully shuffle
+				if (MainMenu.Instance.state == MainMenu.MainMenuState.NewGame)
+				{
+					isDefaultSeed = false;
+					currentStringSeed = CreateRandomKeyCode();
+					ApplyKeyCode(currentStringSeed, false, true);
+				}
 			}
 		}
+		// Still highlighted, so suppress shuffling and keep timer at max
 		else
+		{
 			shuffleTimer.Reset();
+		}
 	}
 
 	private string CreateRandomKeyCode()
@@ -57,14 +86,19 @@ public class UIKeystone : MonoBehaviour
 			toReturn += CreateRandomChar();
 		}
 
+		PlayShuffleAnim();
+
+		return toReturn;
+	}
+
+	private void PlayShuffleAnim()
+	{
 		if (shuffleAnim)
 		{
 			if (shuffleAnim.isPlaying)
 				shuffleAnim.Stop();
 			shuffleAnim.Play();
 		}
-
-		return toReturn;
 	}
 
 	private char CreateRandomChar()
@@ -100,7 +134,7 @@ public class UIKeystone : MonoBehaviour
 		string toPlaceholder = "";
 
 		if (updateStringSeed)
-			finalStringSeed = "";
+			currentStringSeed = "";
 
 		// Display text includes whitespace chars
 		for (int i = 0; i < 9; i++)
@@ -117,14 +151,14 @@ public class UIKeystone : MonoBehaviour
 					toPlaceholder += (i + 1) % 3 == 0 ? "\n" : "  ";
 
 				if (updateStringSeed)
-					finalStringSeed += char.ToUpper(sourceText[i]);
+					currentStringSeed += char.ToUpper(sourceText[i]);
 			}
 			else
 			{
 				toPlaceholder += "0 ";
 
 				if (updateStringSeed)
-					finalStringSeed += '0';
+					currentStringSeed += '0';
 			}
 		}
 
@@ -145,6 +179,6 @@ public class UIKeystone : MonoBehaviour
 
 	public string GetStringSeed()
 	{
-		return finalStringSeed;
+		return currentStringSeed;
 	}
 }
