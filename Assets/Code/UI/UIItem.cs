@@ -2,21 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 [SelectionBase]
-public class UIItem : MonoBehaviour
+public class UIItem : MonoBehaviour, IPointerDownHandler
 {
-	private RectTransform rectTransform;
+	[HideInInspector]
+	public RectTransform rectTransform;
+	[HideInInspector]
+	public UIInventory container;
 
 	[SerializeField]
-	private Image itemIcon;
+	private Button button;
 	[SerializeField]
-	private Image itemOutline;
+	private Image itemIcon;
 
 	[SerializeField]
 	private Vector2 baseDimensions = new Vector2(30, 30);
 	[SerializeField]
-	private TMPro.TextMeshProUGUI label;
+	private string toolTip;
 
 	private void Awake()
 	{
@@ -25,13 +30,23 @@ public class UIItem : MonoBehaviour
 
 	public void SetItem(Item item)
 	{
-		label.text = item.label;
+		toolTip = item.label;
 
 		itemIcon.sprite = item.icon;
 		itemIcon.color = item.tint;
 
-		itemOutline.sprite = item.icon;
-
 		rectTransform.sizeDelta = Utils.Scale(baseDimensions, (Vector2)item.inventorySize);
+	}
+
+	public void OnPointerDown(PointerEventData eventData)
+	{
+		container.PickUpDragDropItem(this);
+
+		button.targetGraphic.raycastTarget = false;
+	}
+
+	public void DropItem()
+	{
+		button.targetGraphic.raycastTarget = true;
 	}
 }
