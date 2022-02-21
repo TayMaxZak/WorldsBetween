@@ -8,6 +8,14 @@ using UnityEngine.EventSystems;
 [SelectionBase]
 public class UIItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+	public enum SlotType
+	{
+		Backpack,
+		HolsterL,
+		HolsterR
+	}
+	public SlotType slotType;
+
 	[HideInInspector]
 	public RectTransform rectTransform;
 	[HideInInspector]

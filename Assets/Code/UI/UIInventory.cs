@@ -15,8 +15,10 @@ public class UIInventory : MonoBehaviour
 
 	[Header("")]
 	[SerializeField]
-	private Transform backpackUiSlotsRoot;
+	private Transform uiSlotsRoot;
 	private UIItemSlot[,] backpackUiSlots;
+	private UIItemSlot holsterLUiSlot;
+	private UIItemSlot holsterRUiSlot;
 
 	[Header("")]
 	public UIItemSlot hoveredSlot;
@@ -40,17 +42,28 @@ public class UIInventory : MonoBehaviour
 
 		// Slots for drag and dropping
 		UIItemSlot[,] backpackUiSlots = new UIItemSlot[inventory.backpackSize.x, inventory.backpackSize.y];
-		UIItemSlot[] slots = backpackUiSlotsRoot.GetComponentsInChildren<UIItemSlot>();
+		UIItemSlot[] slots = uiSlotsRoot.GetComponentsInChildren<UIItemSlot>();
 
 		foreach (UIItemSlot slot in slots)
 		{
 			slot.container = this;
 
-			Vector2Int coord = slot.xyCoord;
-
 			// Link matching slots
-			backpackUiSlots[coord.x, coord.y] = slot;
-			slot.itemSlot = inventory.backpackSlots[coord.x, coord.y];
+			if (slot.slotType == UIItemSlot.SlotType.Backpack)
+			{
+				Vector2Int coord = slot.xyCoord;
+
+				backpackUiSlots[coord.x, coord.y] = slot;
+				slot.itemSlot = inventory.backpackSlots[coord.x, coord.y];
+			}
+			else if (slot.slotType == UIItemSlot.SlotType.HolsterL)
+			{
+				holsterLUiSlot = slot;
+			}
+			else if (slot.slotType == UIItemSlot.SlotType.HolsterR)
+			{
+				holsterLUiSlot = slot;
+			}
 		}
 	}
 
