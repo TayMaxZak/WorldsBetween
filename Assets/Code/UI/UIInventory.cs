@@ -93,12 +93,16 @@ public class UIInventory : MonoBehaviour
 	public void PickUpDragDropItem(UIItem currentItem)
 	{
 		dragDropItem = currentItem;
+		if (currentItem.occupiedSlot)
+			currentItem.occupiedSlot.occupied = false;
 	}
 
 	private void DropDragDropItem()
 	{
 		if (!hoveredSlot)
 			return;
+		dragDropItem.occupiedSlot = hoveredSlot;
+		dragDropItem.occupiedSlot.occupied = true;
 
 		dragDropItem.DropItem();
 

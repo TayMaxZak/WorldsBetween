@@ -25,6 +25,8 @@ public class UIItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
 	public Inventory.ItemSlot itemSlot;
 
+	public bool occupied = false;
+
 	private void Awake()
 	{
 		rectTransform = GetComponent<RectTransform>();
@@ -32,7 +34,8 @@ public class UIItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		container.SetHoveredSlot(this);
+		if (!occupied)
+			container.SetHoveredSlot(this);
 	}
 
 	public void OnPointerExit(PointerEventData eventData)

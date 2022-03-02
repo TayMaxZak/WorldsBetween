@@ -24,6 +24,9 @@ public class NewGameMenu : MonoBehaviour
 	{
 		// Set cross-scene data
 		PersistentData data = PersistentData.GetInstanceForWrite();
+
+		uiKeystone.ShuffleIfDefault();
+
 		data.SetSeed(uiKeystone.GetStringSeed());
 
 		SceneManager.LoadScene(gameSceneIndex);

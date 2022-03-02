@@ -23,6 +23,9 @@ public class UIItem : MonoBehaviour, IPointerDownHandler
 	[SerializeField]
 	private string toolTip;
 
+	[HideInInspector]
+	public UIItemSlot occupiedSlot;
+
 	private void Awake()
 	{
 		rectTransform = GetComponent<RectTransform>();
