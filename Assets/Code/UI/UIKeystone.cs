@@ -65,7 +65,7 @@ public class UIKeystone : MonoBehaviour
 				if (MainMenu.Instance.state == MainMenu.MainMenuState.NewGame)
 				{
 					isDefaultSeed = false;
-					currentStringSeed = CreateRandomKeyCode();
+					currentStringSeed = CreateRandomKeyCode(true);
 					ApplyKeyCode(currentStringSeed, false, true);
 				}
 			}
@@ -77,7 +77,17 @@ public class UIKeystone : MonoBehaviour
 		}
 	}
 
-	private string CreateRandomKeyCode()
+	public void ShuffleIfDefault()
+	{
+		if (!isDefaultSeed)
+			return;
+
+		isDefaultSeed = false;
+		currentStringSeed = CreateRandomKeyCode(false);
+		ApplyKeyCode(currentStringSeed, false, true);
+	}
+
+	private string CreateRandomKeyCode(bool doAnim)
 	{
 		string toReturn = "";
 
@@ -124,7 +134,7 @@ public class UIKeystone : MonoBehaviour
 		if (sourceText.Length > 0)
 			ApplyKeyCode(sourceText, true, false);
 		else
-			ApplyKeyCode(CreateRandomKeyCode(), true, true);
+			ApplyKeyCode(CreateRandomKeyCode(true), true, true);
 	}
 
 	// TODO: Optimize with string builder?
