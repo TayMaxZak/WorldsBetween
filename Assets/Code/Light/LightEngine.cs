@@ -8,8 +8,29 @@ using System.ComponentModel;
 [System.Serializable]
 public class LightEngine
 {
-	private readonly SimplePriorityQueue<Vector3Int> sourceQueue = new SimplePriorityQueue<Vector3Int>();
-	private readonly SimplePriorityQueue<Vector3Int> retrySourceQueue = new SimplePriorityQueue<Vector3Int>();
+	public struct LightRay
+	{
+		public Vector3Int source;
+		public int stepSize;
+	}
+
+	public struct LightRayResult
+	{
+		public Vector3Int source;
+		public int stepSize;
+		public bool success;
+		public Queue<LightRayResultPoint> points;
+	}
+
+	public struct LightRayResultPoint
+	{
+		public Vector3Int pos;
+		public Color color;
+		public bool airLight;
+	}
+
+	private readonly SimplePriorityQueue<LightRay> sourceQueue = new SimplePriorityQueue<LightRay>();
+	private readonly SimplePriorityQueue<LightRay> retrySourceQueue = new SimplePriorityQueue<LightRay>();
 
 	private Sun sun;
 
@@ -28,25 +49,25 @@ public class LightEngine
 	public void Begin()
 	{
 		//int step = WorldLightAtlas.Instance.directScale;
-		int step = 2;
+		int stepSize = 2;
 
 		sourceQueue.Clear();
 		retrySourceQueue.Clear();
 
-		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x += step)
+		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x += stepSize)
 		{
-			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y += step)
+			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y += stepSize)
 			{
-				for (int z = Utils.ToInt(sun.sourcePoints.min.z); z < Utils.ToInt(sun.sourcePoints.max.z); z += step)
+				for (int z = Utils.ToInt(sun.sourcePoints.min.z); z < Utils.ToInt(sun.sourcePoints.max.z); z += stepSize)
 				{
-					Vector3Int pos = new Vector3Int(x, y - (step / 2), z);
-					sourceQueue.Enqueue(pos, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
+					Vector3Int pos = new Vector3Int(x, y - (stepSize / 2), z);
+					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = stepSize }, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
 				}
 			}
 		}
 
 		raysDone = 0;
-		raysMax = sourceQueue.Count;
+		raysMax = sourceQueue.Count * (stepSize * stepSize * stepSize);
 		Debug.Log(raysMax + " light rays to be cast");
 
 		Iterate();
@@ -62,33 +83,33 @@ public class LightEngine
 
 		for (int i = 0; i < raysPerBatch; i++)
 		{
-			Vector3Int source;
+			LightRay ray;
 
 			// Still have new rays to send
 			if (sourceQueue.Count > 0)
 			{
-				source = sourceQueue.Dequeue();
+				ray = sourceQueue.Dequeue();
 			}
 			// Retry previous rays
 			else
 			{
 				// Retry a previous ray
 				if (retrySourceQueue.Count > 0)
-					source = retrySourceQueue.Dequeue();
+					ray = retrySourceQueue.Dequeue();
 				else
 					break;
 			}
 
-			AsyncLightRay(source);
+			AsyncLightRay(ray);
 		}
 	}
 
-	public void AsyncLightRay(Vector3Int source)
+	public void AsyncLightRay(LightRay lightRay)
 	{
-		BkgThreadLightRay(this, System.EventArgs.Empty, source);
+		BkgThreadLightRay(this, System.EventArgs.Empty, lightRay);
 	}
 
-	private void BkgThreadLightRay(object sender, System.EventArgs e, Vector3Int source)
+	private void BkgThreadLightRay(object sender, System.EventArgs e, LightRay lightRay)
 	{
 		raysBusy++;
 
@@ -98,7 +119,7 @@ public class LightEngine
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			args.Result = SendLightRay(source, 2);
+			args.Result = SendLightRay(lightRay.source, lightRay.stepSize);
 		});
 
 		// What to do when worker completes its task
@@ -108,32 +129,62 @@ public class LightEngine
 			// Free up space for new rays
 			raysBusy--;
 
-			RayResult result = (RayResult)args.Result;
+			LightRayResult result = (LightRayResult)args.Result;
 
 			// Ray was successful
 			if (result.success)
 			{
-				raysDone++;
+				bool needsResends = false;
 
 				// Has results to apply
 				if (result.points != null)
 				{
 					while (result.points.Count > 0)
 					{
-						RayPoint point = result.points.Dequeue();
+						LightRayResultPoint point = result.points.Dequeue();
 
-						// Fill in surrounding pixels
-						for (int x = 0; x < point.size; x++)
-							for (int y = 0; y < point.size; y++)
-								for (int z = 0; z < point.size; z++)
-									WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z), point.color, point.airLight);
-					}
+						// Fill in surrounding pixel(s)
+						for (int x = 0; x < result.stepSize; x++)
+						{
+							for (int y = 0; y < result.stepSize; y++)
+							{
+								for (int z = 0; z < result.stepSize; z++)
+								{
+									// Light is 100% accurate here, can safely right straight to lightmap
+									if (point.airLight || result.stepSize == 1)
+									{
+										Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z);
+
+										WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z), point.color, point.airLight);
+									}
+									// Half accuracy (1 check per 8 blocks), send another ray from this position to verify what happened
+									else
+									{
+										Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y + 1, point.pos.z + z);
+
+										needsResends = true;
+
+										retrySourceQueue.Enqueue(
+											new LightRay() { stepSize = 1, source = pos },
+											Vector3.SqrMagnitude(pos - World.GetRelativeOrigin())
+										);
+									}
+								} // z
+							} // y
+						} // x
+					} // count > 0
+				} // !null
+
+				// Count appropriate amount towards total
+				if (!needsResends)
+				{
+					raysDone += (result.stepSize * result.stepSize * result.stepSize);
 				}
 			}
 			// Ray was unsuccessful, retry when possible
 			else
 			{
-				retrySourceQueue.Enqueue(result.source, Vector3.SqrMagnitude(source - World.GetRelativeOrigin()));
+				retrySourceQueue.Enqueue(new LightRay() { source = result.source, stepSize = result.stepSize }, Vector3.SqrMagnitude(lightRay.source - World.GetRelativeOrigin()));
 			}
 
 			Iterate();
@@ -142,26 +193,13 @@ public class LightEngine
 		bw.RunWorkerAsync();
 	}
 
-	public struct RayPoint
+	private LightRayResult SendLightRay(Vector3Int source, int stepSize)
 	{
-		public Vector3Int pos;
-		public Color color;
-		public bool airLight;
-		public int size;
-	}
+		bool hd = stepSize == 1;
 
-	public struct RayResult
-	{
-		public bool success;
-		public Vector3Int source;
-		public Queue<RayPoint> points;
-	}
-
-	private RayResult SendLightRay(Vector3Int source, int stepSize)
-	{
 		Vector3Int cur = source;
 
-		Queue<RayPoint> rayPoints = null;
+		Queue<LightRayResultPoint> rayPoints = null;
 
 		int currentStep = 0;
 		while (currentStep < 1000)
@@ -173,12 +211,14 @@ public class LightEngine
 			Chunk chunk = World.GetChunkFor(cur);
 			if (chunk == null)
 			{
-				Debug.DrawLine(source, cur, Color.magenta, 1);
+				Debug.DrawLine(source, cur, Color.magenta, hd ? 2 : 0.5f);
 
-				return new RayResult()
+				return new LightRayResult()
 				{
-					success = true,
 					source = source,
+					stepSize = stepSize,
+
+					success = true,
 					points = rayPoints
 				};
 			}
@@ -186,40 +226,46 @@ public class LightEngine
 			// Chunk is not ready
 			while (chunk.procStage < Chunk.ProcStage.Done)
 			{
-				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.magenta, 1);
+				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.magenta, hd ? 20 : 5);
 
-				return new RayResult()
+				return new LightRayResult()
 				{
-					success = false,
 					source = source,
+					stepSize = stepSize,
+
+					success = false,
 					points = rayPoints
 				};
 			}
 
 			// Should block light?
-			bool occupied = stepSize == 1 ? World.GetCorner(cur.x, cur.y, cur.z) : World.GetBlurredCorner(cur.x, cur.y, cur.z);
+			bool occupied = hd ? World.GetCorner(cur.x, cur.y, cur.z) : World.GetBlurredCorner(cur.x, cur.y, cur.z);
 
 			// Remember this result
 			if (rayPoints == null)
-				rayPoints = new Queue<RayPoint>();
-			rayPoints.Enqueue(new RayPoint() { pos = cur, color = sun.lightColor, airLight = !occupied, size = stepSize });
+				rayPoints = new Queue<LightRayResultPoint>();
+			// Only count result if not starting inside a corner
+			//if (currentStep != 0)
+				rayPoints.Enqueue(new LightRayResultPoint() { pos = cur, color = sun.lightColor, airLight = !occupied });
 
 			// Stop after we hit something
 			if (occupied)
 			{
-				Debug.DrawLine(cur, cur - Vector3.up * 200, Color.black, 1);
+				Debug.DrawLine(cur, cur - Vector3.up * 200, Color.black, hd ? 2 : 0.5f);
 				break;
 			}
 
-			cur.y -= 2;
+			cur.y -= stepSize;
 		} // y
 
-		Debug.DrawLine(source, cur, sun.lightColor, 1);
+		Debug.DrawLine(source, cur, sun.lightColor, hd ? 2 : 0.5f);
 
-		return new RayResult()
+		return new LightRayResult()
 		{
-			success = true,
 			source = source,
+			stepSize = stepSize,
+
+			success = true,
 			points = rayPoints
 		};
 	}
