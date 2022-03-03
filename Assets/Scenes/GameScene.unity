@@ -232,10 +232,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5424adbd39d017245b08acd2bc2aeeef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingProgress: 0
-  loadingProgressSmooth: 0
-  startedFadingOut: 0
-  finishedLoading: 0
   loadingScreen: {fileID: 6292042240279805736}
 --- !u!4 &173910858
 Transform:
@@ -1818,6 +1814,7 @@ MonoBehaviour:
   sourcePoints:
     m_Center: {x: 8, y: 15.5, z: 8}
     m_Extent: {x: 8, y: 0.5, z: 8}
+  direction: {x: 0, y: 0, z: 0}
 --- !u!114 &2056025807 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6576889597697053752, guid: ebcbb3229181918489f3e7fc0f6b155b, type: 3}

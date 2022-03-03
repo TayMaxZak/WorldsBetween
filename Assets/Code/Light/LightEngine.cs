@@ -179,18 +179,15 @@ public class LightEngine
 								{
 									Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z);
 
-									// Light is 100% accurate here, can safely right straight to lightmap
+									// Light is 100% accurate here: can safely write straight to lightmap
 									if (point.airLight || result.stepSize == 1)
 									{
 										WorldLightAtlas.Instance.WriteToLightmap(pos, point.color, point.airLight);
 									}
-									// Half accuracy (1 check per 8 blocks), send another ray from this position to verify what happened
+									// Half accuracy (1 check per 8 blocks): send another ray from this position to verify what happened
 									else
 									{
 										float directionDot = Vector3.Dot((pos - centerPos).normalized, sun.direction);
-
-										if (SeedlessRandom.NextFloat() > 0.95f)
-											Debug.Log(directionDot);
 
 										sendSubRays = true;
 
@@ -323,9 +320,9 @@ public class LightEngine
 
 	public float GetGenProgress()
 	{
-		if (blurryLightFinished)
+		/*if (blurryLightFinished)
 			return 1;
-		else if (maxProgress > 0)
+		else */if (maxProgress > 0)
 			return (float)curProgress / (maxProgress + raysBusy); // In-progress rays counted as unfinished
 		else
 			return 0;

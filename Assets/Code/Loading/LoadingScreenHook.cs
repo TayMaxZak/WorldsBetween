@@ -30,12 +30,9 @@ public class LoadingScreenHook : MonoBehaviour
 
 	[Header("Background")]
 	[SerializeField]
-	private Image background;
-
+	private Image bkg;
 	[SerializeField]
-	private Sprite opaqueBkg;
-	[SerializeField]
-	private Sprite transparentBkg;
+	private CanvasGroup bkgBlack;
 
 	[SerializeField]
 	private List<SpinRing> ringsToSpin;
@@ -68,7 +65,6 @@ public class LoadingScreenHook : MonoBehaviour
 	{
 		generatingUI.SetActive(false);
 
-		UpdateBackground(false);
 		UpdateProgress(0);
 
 		randomTip.Randomize();
@@ -91,7 +87,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 		// Retrieve progress
 		if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks)
-			progressDisplay = GameManager.Instance.loadingProgressSmooth;
+			progressDisplay = GameManager.GetSmoothLoadingProgress();
 		else
 			progressDisplay = 0;
 
@@ -120,6 +116,9 @@ public class LoadingScreenHook : MonoBehaviour
 		foreach (SpinRing spin in ringsToSpin)
 			spin.toRotate.Rotate(Vector3.forward * overallSpinSpeed * spin.speedMult * spinSpeed * Time.deltaTime);
 
+		// Fade black
+		bkgBlack.alpha = 1 - 2 * Mathf.Clamp01(progress - 0.5f);
+
 		// Elevator music
 		UpdateMusic(progress);
 	}
@@ -135,12 +134,6 @@ public class LoadingScreenHook : MonoBehaviour
 		bassLayer.volume = progress * progress * progress * overallVolume * fade;
 	}
 
-	private void UpdateBackground(bool seeThrough)
-	{
-		if (background)
-			background.sprite = seeThrough ? transparentBkg : opaqueBkg;
-	}
-
 	public void ShowProgressBar()
 	{
 		if (generatingUI)
@@ -149,11 +142,6 @@ public class LoadingScreenHook : MonoBehaviour
 		UpdateProgress(0);
 
 		updateProgress = true;
-	}
-
-	public void ShowWorld()
-	{
-		UpdateBackground(true);
 	}
 
 	public void StartFadingOut()

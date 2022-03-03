@@ -8,11 +8,11 @@ public partial class GameManager : MonoBehaviour
 {
 	public static GameManager Instance;
 
-	public float loadingProgress;
-	public float loadingProgressSmooth;
+	private float loadingProgress;
+	private float loadingProgressSmooth;
 
-	public bool startedFadingOut = false;
-	public bool finishedLoading = false;
+	private bool startedFadingOut = false;
+	private bool finishedLoading = false;
 
 	private bool startedBuilding = false;
 	private bool finishedBuilding = false;
@@ -61,7 +61,7 @@ public partial class GameManager : MonoBehaviour
 			float builderProgress = World.WorldBuilder.GetGenProgress();
 			float lighterProgress = World.LightEngine.GetGenProgress();
 
-			loadingProgress = (builderProgress * 3 + lighterProgress) / (3 + 1);
+			loadingProgress = (builderProgress * 2 + lighterProgress * 3) / (2 + 3);
 			// Get display progress by interpolating
 			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 2);
 
@@ -127,8 +127,6 @@ public partial class GameManager : MonoBehaviour
 	{
 		startedLight = true;
 
-		loadingScreen.ShowWorld();
-
 		World.LightEngine.Begin();
 	}
 
@@ -168,5 +166,10 @@ public partial class GameManager : MonoBehaviour
 	public static bool GetFinishedLoading()
 	{
 		return Instance.finishedLoading;
+	}
+
+	public static float GetSmoothLoadingProgress()
+	{
+		return Instance.loadingProgressSmooth;
 	}
 }

@@ -193,7 +193,7 @@ public class Cephapath : MonoBehaviour
 			return;
 		}
 
-		if (!GameManager.Instance.finishedLoading)
+		if (!GameManager.GetFinishedLoading())
 			return;
 
 		bool moveTentacles = false;

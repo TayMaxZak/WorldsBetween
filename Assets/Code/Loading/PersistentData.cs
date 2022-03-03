@@ -69,6 +69,7 @@ public class PersistentData : MonoBehaviour
 		else
 		{
 			GameObject go = new GameObject();
+			go.name = "Persistent Data";
 			return go.AddComponent<PersistentData>();
 		}
 	}
