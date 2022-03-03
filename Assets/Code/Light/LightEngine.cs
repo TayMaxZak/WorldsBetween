@@ -133,8 +133,7 @@ public class LightEngine
 			// Ray was unsuccessful, retry when possible
 			else
 			{
-				raysDone++;
-				//retrySourceQueue.Enqueue(result.source, Vector3.SqrMagnitude(source - World.GetRelativeOrigin()));
+				retrySourceQueue.Enqueue(result.source, Vector3.SqrMagnitude(source - World.GetRelativeOrigin()));
 			}
 
 			Iterate();
@@ -197,11 +196,8 @@ public class LightEngine
 				};
 			}
 
-			ChunkBitArray cornerBit = chunk.GetCorners();
-
 			// Should block light?
-			Vector3Int adjPos = cur - chunk.position;
-			bool occupied = cornerBit.Get(adjPos.x, adjPos.y, adjPos.z);
+			bool occupied = stepSize == 1 ? World.GetCorner(cur.x, cur.y, cur.z) : World.GetBlurredCorner(cur.x, cur.y, cur.z);
 
 			// Remember this result
 			if (rayPoints == null)

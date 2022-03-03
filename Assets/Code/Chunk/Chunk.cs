@@ -27,6 +27,7 @@ public class Chunk
 	private Block[,,] blocks;
 
 	private ChunkBitArray corners;
+	private ChunkBitArray blurredCorners;
 
 	public ChunkMesh chunkMesh = new ChunkMesh();
 
@@ -66,7 +67,10 @@ public class Chunk
 			}
 		}
 
+		// Starts empty, fills in 8 corners per block
 		corners = new ChunkBitArray(chunkSize, false);
+		// Downsampled corners, corners OF corners. Very inaccurate but good enough for light approximation
+		blurredCorners = new ChunkBitArray(chunkSize / 2, false);
 	}
 
 	#region Generate
@@ -156,7 +160,7 @@ public class Chunk
 					// Only care if this block is an air block
 					if (!blocks[x, y, z].IsAir())
 					{
-						FlagAllCornersTrue(x + position.x, y + position.y, z + position.z);
+						FillCorners(x + position.x, y + position.y, z + position.z);
 
 						continue;
 					}
@@ -210,20 +214,20 @@ public class Chunk
 			block.maybeNearAir = 255;
 	}
 
-	private void FlagAllCornersTrue(int x, int y, int z)
+	private void FillCorners(int x, int y, int z)
 	{
 		// Apply
-		World.SetCorner(true, x, y, z);
+		World.FillCorner(x, y, z);
 
-		World.SetCorner(true, x + 1, y, z);
-		World.SetCorner(true, x, y + 1, z);
-		World.SetCorner(true, x, y, z + 1);
+		World.FillCorner(x + 1, y, z);
+		World.FillCorner(x, y + 1, z);
+		World.FillCorner(x, y, z + 1);
 
-		World.SetCorner(true, x + 1, y + 1, z);
-		World.SetCorner(true, x, y + 1, z + 1);
-		World.SetCorner(true, x + 1, y, z + 1);
+		World.FillCorner(x + 1, y + 1, z);
+		World.FillCorner(x, y + 1, z + 1);
+		World.FillCorner(x + 1, y, z + 1);
 
-		World.SetCorner(true, x + 1, y + 1, z + 1);
+		World.FillCorner(x + 1, y + 1, z + 1);
 	}
 	#endregion
 
@@ -305,5 +309,10 @@ public class Chunk
 	public ChunkBitArray GetCorners()
 	{
 		return corners;
+	}
+
+	public ChunkBitArray GetBlurredCorners()
+	{
+		return blurredCorners;
 	}
 }

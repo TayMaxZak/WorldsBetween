@@ -201,7 +201,7 @@ public partial class World : MonoBehaviour
 		return GetBlockFor(pos.x, pos.y, pos.z);
 	}
 
-	public static void SetCorner(bool value, int x, int y, int z)
+	public static void FillCorner(int x, int y, int z)
 	{
 		Chunk chunk = GetChunkFor(x, y, z);
 
@@ -209,10 +209,17 @@ public partial class World : MonoBehaviour
 			return;
 
 		ChunkBitArray corners = chunk.GetCorners();
-		corners.Set(value,
+		corners.Set(true,
 			x - chunk.position.x,
 			y - chunk.position.y,
 			z - chunk.position.z
+		);
+
+		ChunkBitArray blurredCorners = chunk.GetBlurredCorners();
+		blurredCorners.Set(true,
+			(x - chunk.position.x) / 2,
+			(y - chunk.position.y) / 2,
+			(z - chunk.position.z) / 2
 		);
 	}
 
@@ -228,6 +235,21 @@ public partial class World : MonoBehaviour
 			x - chunk.position.x,
 			y - chunk.position.y,
 			z - chunk.position.z
+		);
+	}
+
+	public static bool GetBlurredCorner(int x, int y, int z)
+	{
+		Chunk chunk = GetChunkFor(x, y, z);
+
+		if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
+			return true;
+
+		ChunkBitArray corners = chunk.GetBlurredCorners();
+		return corners.Get(
+			(x - chunk.position.x) / 2,
+			(y - chunk.position.y) / 2,
+			(z - chunk.position.z) / 2
 		);
 	}
 
