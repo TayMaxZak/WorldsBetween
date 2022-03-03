@@ -15,7 +15,7 @@ public class Item : ScriptableObject
 	public string label = "Item";
 
 	public Sprite icon;
-	public Color tint = Color.white;
+	public Color uiTint = Color.white;
 
 	public Vector2Int inventorySize = new Vector2Int(1, 1);
 

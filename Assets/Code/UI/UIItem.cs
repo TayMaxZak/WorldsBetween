@@ -36,7 +36,7 @@ public class UIItem : MonoBehaviour, IPointerDownHandler
 		toolTip = item.label;
 
 		itemIcon.sprite = item.icon;
-		itemIcon.color = item.tint;
+		itemIcon.color = item.uiTint;
 
 		rectTransform.sizeDelta = Utils.Scale(baseDimensions, (Vector2)item.inventorySize);
 	}
