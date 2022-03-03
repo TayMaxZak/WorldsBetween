@@ -38,8 +38,13 @@ public class LightEngine
 	private int raysPerBatch = 40;
 	private int raysBusy = 0;
 
-	private int raysDone;
-	private int raysMax;
+	private int doneBlurryRays;
+	private int targetBlurryRays;
+	private bool blurryLightDone = false;
+
+	private int curProgress;
+	private int maxProgress;
+	private bool allLightDone = false;
 
 	public void Init(Sun sun)
 	{
@@ -66,9 +71,13 @@ public class LightEngine
 			}
 		}
 
-		raysDone = 0;
-		raysMax = sourceQueue.Count * (stepSize * stepSize * stepSize);
-		Debug.Log(raysMax + " light rays to be cast");
+		doneBlurryRays = 0;
+		targetBlurryRays = sourceQueue.Count;
+
+		curProgress = 0;
+		maxProgress = sourceQueue.Count * (stepSize * stepSize * stepSize);
+
+		Debug.Log(maxProgress + " light rays to be cast");
 
 		Iterate();
 	}
@@ -77,6 +86,18 @@ public class LightEngine
 	{
 		if (!Application.isPlaying)
 			return;
+
+		if (doneBlurryRays == targetBlurryRays && !blurryLightDone)
+		{
+			blurryLightDone = true;
+			WorldLightAtlas.Instance.ApplyChanges();
+		}
+
+		if (curProgress == maxProgress && !allLightDone)
+		{
+			allLightDone = true;
+			WorldLightAtlas.Instance.ApplyChanges();
+		}
 
 		if (raysBusy > 0)
 			return;
@@ -134,7 +155,9 @@ public class LightEngine
 			// Ray was successful
 			if (result.success)
 			{
-				bool needsResends = false;
+				doneBlurryRays++;
+
+				bool sendSubRays = false;
 
 				// Has results to apply
 				if (result.points != null)
@@ -162,7 +185,7 @@ public class LightEngine
 									{
 										Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y + 1, point.pos.z + z);
 
-										needsResends = true;
+										sendSubRays = true;
 
 										retrySourceQueue.Enqueue(
 											new LightRay() { stepSize = 1, source = pos },
@@ -176,9 +199,9 @@ public class LightEngine
 				} // !null
 
 				// Count appropriate amount towards total
-				if (!needsResends)
+				if (!sendSubRays)
 				{
-					raysDone += (result.stepSize * result.stepSize * result.stepSize);
+					curProgress += (result.stepSize * result.stepSize * result.stepSize);
 				}
 			}
 			// Ray was unsuccessful, retry when possible
@@ -277,18 +300,20 @@ public class LightEngine
 
 	public int RaysCur()
 	{
-		return raysDone;
+		return curProgress;
 	}
 
 	public int RaysMax()
 	{
-		return raysMax;
+		return maxProgress;
 	}
 
 	public float GetGenProgress()
 	{
-		if (raysMax > 0)
-			return (float)raysDone / (raysMax + raysBusy); // In-progress rays counted as unfinished
+		if (blurryLightDone)
+			return 1;
+		else if (maxProgress > 0)
+			return (float)curProgress / (maxProgress + raysBusy); // In-progress rays counted as unfinished
 		else
 			return 0;
 	}
