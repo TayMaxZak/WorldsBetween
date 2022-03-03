@@ -38,13 +38,13 @@ public class LightEngine
 	private int raysPerBatch = 40;
 	private int raysBusy = 0;
 
-	private int doneBlurryRays;
+	private int completedBlurryRays;
 	private int targetBlurryRays;
-	private bool blurryLightDone = false;
+	private bool blurryLightFinished;
 
 	private int curProgress;
 	private int maxProgress;
-	private bool allLightDone = false;
+	private bool allLightFinished;
 
 	public void Init(Sun sun)
 	{
@@ -71,11 +71,13 @@ public class LightEngine
 			}
 		}
 
-		doneBlurryRays = 0;
+		completedBlurryRays = 0;
 		targetBlurryRays = sourceQueue.Count;
+		blurryLightFinished = false;
 
 		curProgress = 0;
 		maxProgress = sourceQueue.Count * (stepSize * stepSize * stepSize);
+		allLightFinished = false;
 
 		Debug.Log(maxProgress + " light rays to be cast");
 
@@ -87,15 +89,15 @@ public class LightEngine
 		if (!Application.isPlaying)
 			return;
 
-		if (doneBlurryRays == targetBlurryRays && !blurryLightDone)
+		if (completedBlurryRays == targetBlurryRays && !blurryLightFinished)
 		{
-			blurryLightDone = true;
+			blurryLightFinished = true;
 			WorldLightAtlas.Instance.ApplyChanges();
 		}
 
-		if (curProgress == maxProgress && !allLightDone)
+		if (curProgress == maxProgress && !allLightFinished)
 		{
-			allLightDone = true;
+			allLightFinished = true;
 			WorldLightAtlas.Instance.ApplyChanges();
 		}
 
@@ -155,7 +157,7 @@ public class LightEngine
 			// Ray was successful
 			if (result.success)
 			{
-				doneBlurryRays++;
+				completedBlurryRays++;
 
 				bool sendSubRays = false;
 
@@ -167,30 +169,42 @@ public class LightEngine
 						LightRayResultPoint point = result.points.Dequeue();
 
 						// Fill in surrounding pixel(s)
+						Vector3 centerPos = new Vector3(point.pos.x + (result.stepSize - 1) / 2f, point.pos.y + (result.stepSize - 1) / 2f, point.pos.z + (result.stepSize - 1) / 2f);
+
 						for (int x = 0; x < result.stepSize; x++)
 						{
 							for (int y = 0; y < result.stepSize; y++)
 							{
 								for (int z = 0; z < result.stepSize; z++)
 								{
+									Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z);
+
 									// Light is 100% accurate here, can safely right straight to lightmap
 									if (point.airLight || result.stepSize == 1)
 									{
-										Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z);
-
-										WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z), point.color, point.airLight);
+										WorldLightAtlas.Instance.WriteToLightmap(pos, point.color, point.airLight);
 									}
 									// Half accuracy (1 check per 8 blocks), send another ray from this position to verify what happened
 									else
 									{
-										Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y + 1, point.pos.z + z);
+										float directionDot = Vector3.Dot((pos - centerPos).normalized, sun.direction);
+
+										if (SeedlessRandom.NextFloat() > 0.95f)
+											Debug.Log(directionDot);
 
 										sendSubRays = true;
 
-										retrySourceQueue.Enqueue(
-											new LightRay() { stepSize = 1, source = pos },
-											Vector3.SqrMagnitude(pos - World.GetRelativeOrigin())
-										);
+										// Only send necessary rays
+										if (directionDot < 0f)
+										{
+											retrySourceQueue.Enqueue(
+												new LightRay() { stepSize = 1, source = pos },
+												Vector3.SqrMagnitude(pos - World.GetRelativeOrigin())
+											);
+										}
+										// Make up for missing rays
+										else
+											curProgress += 1;
 									}
 								} // z
 							} // y
@@ -269,19 +283,18 @@ public class LightEngine
 				rayPoints = new Queue<LightRayResultPoint>();
 			// Only count result if not starting inside a corner
 			//if (currentStep != 0)
-				rayPoints.Enqueue(new LightRayResultPoint() { pos = cur, color = sun.lightColor, airLight = !occupied });
+			rayPoints.Enqueue(new LightRayResultPoint() { pos = cur, color = sun.lightColor, airLight = !occupied });
 
 			// Stop after we hit something
 			if (occupied)
 			{
-				Debug.DrawLine(cur, cur - Vector3.up * 200, Color.black, hd ? 2 : 0.5f);
 				break;
 			}
 
 			cur.y -= stepSize;
 		} // y
 
-		Debug.DrawLine(source, cur, sun.lightColor, hd ? 2 : 0.5f);
+		Debug.DrawLine(source, cur + SeedlessRandom.RandomPoint(0.1f), sun.lightColor, hd ? 2 : 0.5f);
 
 		return new LightRayResult()
 		{
@@ -310,7 +323,7 @@ public class LightEngine
 
 	public float GetGenProgress()
 	{
-		if (blurryLightDone)
+		if (blurryLightFinished)
 			return 1;
 		else if (maxProgress > 0)
 			return (float)curProgress / (maxProgress + raysBusy); // In-progress rays counted as unfinished

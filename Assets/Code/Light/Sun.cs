@@ -9,9 +9,16 @@ public class Sun : MonoBehaviour
 
 	public Bounds sourcePoints;
 
+	public Vector3 direction;
+
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = lightColor;
 		Gizmos.DrawWireCube(sourcePoints.center, sourcePoints.size);
+	}
+
+	private void Awake()
+	{
+		direction = transform.forward;
 	}
 }
