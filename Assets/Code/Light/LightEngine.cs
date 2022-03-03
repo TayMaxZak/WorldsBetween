@@ -25,6 +25,7 @@ public class LightEngine
 	public struct LightRayResultPoint
 	{
 		public Vector3Int pos;
+		public Vector3 floatPos;
 		public Color color;
 		public bool airLight;
 	}
@@ -169,7 +170,11 @@ public class LightEngine
 						LightRayResultPoint point = result.points.Dequeue();
 
 						// Fill in surrounding pixel(s)
-						Vector3 centerPos = new Vector3(point.pos.x + (result.stepSize - 1) / 2f, point.pos.y + (result.stepSize - 1) / 2f, point.pos.z + (result.stepSize - 1) / 2f);
+						Vector3 centerPos = new Vector3(
+							point.floatPos.x + (result.stepSize - 1) / 2f,
+							point.floatPos.y + (result.stepSize - 1) / 2f,
+							point.floatPos.z + (result.stepSize - 1) / 2f
+						);
 
 						for (int x = 0; x < result.stepSize; x++)
 						{
@@ -177,7 +182,11 @@ public class LightEngine
 							{
 								for (int z = 0; z < result.stepSize; z++)
 								{
-									Vector3Int pos = new Vector3Int(point.pos.x + x, point.pos.y + y, point.pos.z + z);
+									Vector3Int pos = new Vector3Int(
+										Mathf.RoundToInt(point.floatPos.x) + x,
+										Mathf.RoundToInt(point.floatPos.y) + y,
+										Mathf.RoundToInt(point.floatPos.z) + z
+									);
 
 									// Light is 100% accurate here: can safely write straight to lightmap
 									if (point.airLight || result.stepSize == 1)
@@ -187,7 +196,7 @@ public class LightEngine
 									// Half accuracy (1 check per 8 blocks): send another ray from this position to verify what happened
 									else
 									{
-										float directionDot = Vector3.Dot((pos - centerPos).normalized, sun.direction);
+										float directionDot = Vector3.Dot((pos - centerPos).normalized, sun.GetDirection());
 
 										sendSubRays = true;
 
@@ -231,6 +240,9 @@ public class LightEngine
 	{
 		bool hd = stepSize == 1;
 
+		float floatProgress = 0;
+		Vector3 floatCur = source;
+
 		Vector3Int cur = source;
 
 		Queue<LightRayResultPoint> rayPoints = null;
@@ -245,7 +257,7 @@ public class LightEngine
 			Chunk chunk = World.GetChunkFor(cur);
 			if (chunk == null)
 			{
-				Debug.DrawLine(source, cur, Color.magenta, hd ? 2 : 0.5f);
+				Debug.DrawLine(source, cur, sun.lightColor, hd ? 2 : 0.5f);
 
 				return new LightRayResult()
 				{
@@ -260,7 +272,7 @@ public class LightEngine
 			// Chunk is not ready
 			while (chunk.procStage < Chunk.ProcStage.Done)
 			{
-				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.magenta, hd ? 20 : 5);
+				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.red, hd ? 20 : 5);
 
 				return new LightRayResult()
 				{
@@ -280,7 +292,13 @@ public class LightEngine
 				rayPoints = new Queue<LightRayResultPoint>();
 			// Only count result if not starting inside a corner
 			//if (currentStep != 0)
-			rayPoints.Enqueue(new LightRayResultPoint() { pos = cur, color = sun.lightColor, airLight = !occupied });
+			rayPoints.Enqueue(new LightRayResultPoint() {
+				pos = cur,
+				floatPos = floatCur,
+
+				color = sun.lightColor,
+				airLight = !occupied
+			});
 
 			// Stop after we hit something
 			if (occupied)
@@ -288,10 +306,30 @@ public class LightEngine
 				break;
 			}
 
-			cur.y -= stepSize;
+			// Move cursor
+			floatProgress += stepSize * 0.7071067f;
+
+			floatCur = new Vector3(
+				source.x + (floatProgress * sun.GetDirection().x),
+				source.y + (floatProgress * sun.GetDirection().y),
+				source.z + (floatProgress * sun.GetDirection().z)
+			);
+
+			// Follow float cursor
+			int changeX = Mathf.RoundToInt(floatCur.x - cur.x);
+			int changeY = Mathf.RoundToInt(floatCur.y - cur.y);
+			int changeZ = Mathf.RoundToInt(floatCur.z - cur.z);
+
+			cur = new Vector3Int(
+				cur.x + changeX,
+				cur.y + changeY,
+				cur.z + changeZ
+			);
 		} // y
 
-		Debug.DrawLine(source, cur + SeedlessRandom.RandomPoint(0.1f), sun.lightColor, hd ? 2 : 0.5f);
+		Vector3 rand = SeedlessRandom.RandomPoint(0.1f);
+		Debug.DrawLine(source, cur + rand, sun.lightColor, hd ? 2 : 0.5f);
+		Debug.DrawLine(source, floatCur + rand, sun.lightColor / 2, hd ? 2 : 0.5f);
 
 		return new LightRayResult()
 		{
@@ -322,7 +360,8 @@ public class LightEngine
 	{
 		/*if (blurryLightFinished)
 			return 1;
-		else */if (maxProgress > 0)
+		else */
+		if (maxProgress > 0)
 			return (float)curProgress / (maxProgress + raysBusy); // In-progress rays counted as unfinished
 		else
 			return 0;

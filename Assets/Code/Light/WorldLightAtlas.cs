@@ -186,6 +186,8 @@ public class WorldLightAtlas : MonoBehaviour
 		// Ambient light change
 		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
+		if (!InBounds(ambSize, ambIndex))
+			return;
 
 		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
 		float ambChangeStrength = (directScale * directScale * directScale) * 256f / airCountArr[ambIndex];

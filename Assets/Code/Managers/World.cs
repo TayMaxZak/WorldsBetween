@@ -283,7 +283,7 @@ public partial class World : MonoBehaviour
 		return Vector3Int.one * (1 + WorldBuilder.GetGenRange() * 2) * Instance.chunkSize / 2;
 	}
 
-	private void OnDrawGizmos()
+	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 

@@ -4,21 +4,38 @@ using UnityEngine;
 
 public class Sun : MonoBehaviour
 {
-	[ColorUsageAttribute(false, true)]
+	[ColorUsage(false, true)]
 	public Color lightColor = Color.white;
 
+	[HideInInspector]
 	public Bounds sourcePoints;
 
-	public Vector3 direction;
+	[HideInInspector]
+	private Vector3 direction;
 
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = lightColor;
-		Gizmos.DrawWireCube(sourcePoints.center, sourcePoints.size);
+
+		Vector3 pos = -transform.forward * 50;
+
+		Gizmos.DrawSphere(pos, 1);
+
+		Gizmos.DrawLine(pos, pos + transform.forward * 20);
+
+		Gizmos.DrawLine(pos + transform.right, pos + transform.right + transform.forward * 10);
+		Gizmos.DrawLine(pos - transform.right, pos - transform.right + transform.forward * 10);
+		Gizmos.DrawLine(pos + transform.up, pos + transform.up + transform.forward * 10);
+		Gizmos.DrawLine(pos - transform.up, pos - transform.up + transform.forward * 10);
 	}
 
-	private void Awake()
+	private void OnEnable()
 	{
 		direction = transform.forward;
+	}
+
+	public Vector3 GetDirection()
+	{
+		return direction;
 	}
 }
