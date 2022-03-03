@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
 
 	public void InitPlayerActor(Vector3 blockPos)
 	{
-		Debug.Log("Init player mover at " + blockPos);
+		Debug.Log("Init player actor at " + blockPos);
 
 		// Set physical position
 		transform.position = blockPos + new Vector3(0.5f, 1, 0.5f);
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
 			Respawn();
 
 
-		// Only handle inputs if alive
+		// Only handle inputs if activated and alive
 		if (!activated)
 			return;
 		if (vitals.dead)
@@ -111,11 +111,12 @@ public class Player : MonoBehaviour
 		heldItem.Update();
 
 		bool lmb = Input.GetButtonDown("Use Item Main");
+		bool rmb = Input.GetButtonDown("Use Item Alt");
 
 		if (lmb)
-		{
-			heldItem.Use();
-		}
+			heldItem.Use(Item.UseHow.Main);
+		else if (rmb)
+			heldItem.Use(Item.UseHow.Alt);
 	}
 
 	private void Respawn()

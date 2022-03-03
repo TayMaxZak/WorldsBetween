@@ -25,9 +25,9 @@ public class Flashlight : Item
 	private static readonly Vector3 offPosA = new Vector3(10000, 10000, 10000);
 	private static readonly Vector3 offPosB = new Vector3(10000, 10000, 10001);
 
-	public override void Use()
+	public override void Use(UseHow useHow)
 	{
-		base.Use();
+		base.Use(useHow);
 
 		on = !on;
 
@@ -47,6 +47,9 @@ public class Flashlight : Item
 	public override void Update()
 	{
 		base.Update();
+
+		if (!on)
+			return;
 
 		currentForward = Vector3.Lerp(currentForward, targetForward, Time.deltaTime * turnLerpSpeed);
 		currentDist = Mathf.Lerp(currentDist, targetDist, Time.deltaTime * distLerpSpeed);
