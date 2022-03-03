@@ -29,7 +29,7 @@ public class WorldLightAtlas : MonoBehaviour
 	private int fullSize;
 
 	private int dirSize;
-	public int directScale = 2;
+	public int directScale = 1;
 
 	private int ambSize;
 	public int ambientScale = 16;
@@ -236,6 +236,8 @@ public class WorldLightAtlas : MonoBehaviour
 			}
 		}
 		UpdateAmbientTex();
+
+		// No need to clear air counts
 	}
 
 	private int IndexFromPos(int size, int x, int y, int z)

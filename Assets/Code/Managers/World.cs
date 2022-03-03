@@ -168,9 +168,9 @@ public partial class World : MonoBehaviour
 		float chunkSize = Instance.chunkSize;
 
 		Instance.chunks.TryGetValue(new Vector3Int(
-			Mathf.FloorToInt(x / chunkSize) * (int)chunkSize,
-			Mathf.FloorToInt(y / chunkSize) * (int)chunkSize,
-			Mathf.FloorToInt(z / chunkSize) * (int)chunkSize
+			(x > 0 ? (int)(x / chunkSize) : Mathf.FloorToInt(x / chunkSize)) * (int)chunkSize,
+			(y > 0 ? (int)(y / chunkSize) : Mathf.FloorToInt(y / chunkSize)) * (int)chunkSize,
+			(z > 0 ? (int)(z / chunkSize) : Mathf.FloorToInt(z / chunkSize)) * (int)chunkSize
 		),
 		out Chunk chunk);
 
