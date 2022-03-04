@@ -29,7 +29,7 @@ public class Sun : MonoBehaviour
 		Gizmos.DrawLine(pos - transform.up, pos - transform.up + transform.forward * 10);
 	}
 
-	private void OnEnable()
+	public void OnEnable()
 	{
 		direction = transform.forward;
 	}

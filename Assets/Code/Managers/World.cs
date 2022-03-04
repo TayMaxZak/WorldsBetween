@@ -83,14 +83,30 @@ public partial class World : MonoBehaviour
 
 		Random.InitState((int)seed); // TODO: Use separate class for consistent gen RNG
 
+
+		// Random generation starts here //
+
+		// Sun angle
+		sunObject.transform.forward = new Vector3(
+			Random.value * 2 - 1,
+			-2,
+			Random.value * 2 - 1
+		).normalized;
+		sunObject.OnEnable();
+
+		// Water/no water, water height
+		bool hasWater = Random.value < 0.999f;
+		waterSystem.SetActive(hasWater);
+		if (hasWater)
+		{
+			waterHeight = (int)(Random.value * Random.value * -200 + 10);
+			WaterFollow(relativeOrigin);
+		}
+
 		// Modifiers
 		MakeModifiers();
-
 		foreach (Modifier mod in modifiers)
 			mod.Init();
-
-		// Scene setup
-		WaterFollow(relativeOrigin);
 	}
 
 	private void MakeModifiers()

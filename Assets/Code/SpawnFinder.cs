@@ -34,7 +34,7 @@ public class SpawnFinder
 		playerPos = Vector3.zero;
 
 		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = World.GetWorldExtents() / 2;
+		Vector3Int testBounds = Vector3Int.one * 32;
 		pos = new Vector3Int(
 			(int)(testBounds.x * SeedlessRandom.NextFloatInRange(-1, 1)),
 			(int)(testBounds.y * SeedlessRandom.NextFloatInRange(-1, 1)),
@@ -62,7 +62,7 @@ public class SpawnFinder
 
 	protected virtual void Scan(Vector3Int pos)
 	{
-		if (World.GetBlockFor(pos).IsAir())
+		if (pos.y > World.GetWaterHeight() && World.GetBlockFor(pos).IsAir())
 		{
 			airCount++;
 
