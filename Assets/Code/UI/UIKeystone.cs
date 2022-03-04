@@ -129,6 +129,8 @@ public class UIKeystone : MonoBehaviour
 
 	public void ConfirmKeyCode()
 	{
+		isDefaultSeed = false;
+
 		string sourceText = sourceField.text;
 
 		if (sourceText.Length > 0)
