@@ -171,6 +171,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 		// Direct light change
 		int dirIndex = IndexFromPos(dirSize, posD.x / directScale, posD.y / directScale, posD.z / directScale);
+		// TODO: Better bounds checking... sometimes wraps around to wrong point instead of just blocking it
 		if (!InBounds(dirSize, dirIndex))
 			return;
 		directChanges++;

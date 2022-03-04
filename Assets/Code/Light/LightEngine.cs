@@ -10,13 +10,13 @@ public class LightEngine
 {
 	public struct LightRay
 	{
-		public Vector3Int source;
+		public Vector3 source;
 		public int stepSize;
 	}
 
 	public struct LightRayResult
 	{
-		public Vector3Int source;
+		public Vector3 source;
 		public int stepSize;
 		public bool success;
 		public Queue<LightRayResultPoint> points;
@@ -24,8 +24,7 @@ public class LightEngine
 
 	public struct LightRayResultPoint
 	{
-		public Vector3Int pos;
-		public Vector3 floatPos;
+		public Vector3 pos;
 		public Color color;
 		public bool airLight;
 	}
@@ -171,9 +170,9 @@ public class LightEngine
 
 						// Fill in surrounding pixel(s)
 						Vector3 centerPos = new Vector3(
-							point.floatPos.x + (result.stepSize - 1) / 2f,
-							point.floatPos.y + (result.stepSize - 1) / 2f,
-							point.floatPos.z + (result.stepSize - 1) / 2f
+							point.pos.x + (result.stepSize - 1) / 2f,
+							point.pos.y + (result.stepSize - 1) / 2f,
+							point.pos.z + (result.stepSize - 1) / 2f
 						);
 
 						for (int x = 0; x < result.stepSize; x++)
@@ -182,16 +181,16 @@ public class LightEngine
 							{
 								for (int z = 0; z < result.stepSize; z++)
 								{
-									Vector3Int pos = new Vector3Int(
-										Mathf.RoundToInt(point.floatPos.x) + x,
-										Mathf.RoundToInt(point.floatPos.y) + y,
-										Mathf.RoundToInt(point.floatPos.z) + z
+									Vector3 pos = new Vector3(
+										point.pos.x + x,
+										point.pos.y + y,
+										point.pos.z + z
 									);
 
 									// Light is 100% accurate here: can safely write straight to lightmap
 									if (point.airLight || result.stepSize == 1)
 									{
-										WorldLightAtlas.Instance.WriteToLightmap(pos, point.color, point.airLight);
+										WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z)), point.color, point.airLight);
 									}
 									// Half accuracy (1 check per 8 blocks): send another ray from this position to verify what happened
 									else
@@ -236,14 +235,18 @@ public class LightEngine
 		bw.RunWorkerAsync();
 	}
 
-	private LightRayResult SendLightRay(Vector3Int source, int stepSize)
+	private LightRayResult SendLightRay(Vector3 source, int stepSize)
 	{
 		bool hd = stepSize == 1;
 
-		float floatProgress = 0;
-		Vector3 floatCur = source;
+		float progress = 0;
+		Vector3 cur = source;
 
-		Vector3Int cur = source;
+		Vector3Int intCur = new Vector3Int(
+			Mathf.RoundToInt(cur.x),
+			Mathf.RoundToInt(cur.y),
+			Mathf.RoundToInt(cur.z)
+		);
 
 		Queue<LightRayResultPoint> rayPoints = null;
 
@@ -254,7 +257,7 @@ public class LightEngine
 
 			// Get chunk (or it is out of the world)
 			// TODO: Check world bounds here
-			Chunk chunk = World.GetChunkFor(cur);
+			Chunk chunk = World.GetChunkFor(intCur);
 			if (chunk == null)
 			{
 				Debug.DrawLine(source, cur, sun.lightColor, hd ? 2 : 0.5f);
@@ -285,7 +288,7 @@ public class LightEngine
 			}
 
 			// Should block light?
-			bool occupied = hd ? World.GetCorner(cur.x, cur.y, cur.z) : World.GetBlurredCorner(cur.x, cur.y, cur.z);
+			bool occupied = hd ? World.GetCorner(intCur.x, intCur.y, intCur.z) : World.GetBlurredCorner(intCur.x, intCur.y, intCur.z);
 
 			// Remember this result
 			if (rayPoints == null)
@@ -294,8 +297,6 @@ public class LightEngine
 			//if (currentStep != 0)
 			rayPoints.Enqueue(new LightRayResultPoint() {
 				pos = cur,
-				floatPos = floatCur,
-
 				color = sun.lightColor,
 				airLight = !occupied
 			});
@@ -307,29 +308,25 @@ public class LightEngine
 			}
 
 			// Move cursor
-			floatProgress += stepSize * 0.7071067f;
+			progress += stepSize * 0.5f;
+			//progress += stepSize * 0.7071067f;
 
-			floatCur = new Vector3(
-				source.x + (floatProgress * sun.GetDirection().x),
-				source.y + (floatProgress * sun.GetDirection().y),
-				source.z + (floatProgress * sun.GetDirection().z)
+			cur = new Vector3(
+				source.x + (progress * sun.GetDirection().x),
+				source.y + (progress * sun.GetDirection().y),
+				source.z + (progress * sun.GetDirection().z)
 			);
 
-			// Follow float cursor
-			int changeX = Mathf.RoundToInt(floatCur.x - cur.x);
-			int changeY = Mathf.RoundToInt(floatCur.y - cur.y);
-			int changeZ = Mathf.RoundToInt(floatCur.z - cur.z);
-
-			cur = new Vector3Int(
-				cur.x + changeX,
-				cur.y + changeY,
-				cur.z + changeZ
+			intCur = new Vector3Int(
+				Mathf.RoundToInt(cur.x),
+				Mathf.RoundToInt(cur.y),
+				Mathf.RoundToInt(cur.z)
 			);
 		} // y
 
 		Vector3 rand = SeedlessRandom.RandomPoint(0.1f);
 		Debug.DrawLine(source, cur + rand, sun.lightColor, hd ? 2 : 0.5f);
-		Debug.DrawLine(source, floatCur + rand, sun.lightColor / 2, hd ? 2 : 0.5f);
+		Debug.DrawLine(source, cur + rand, sun.lightColor / 2, hd ? 2 : 0.5f);
 
 		return new LightRayResult()
 		{
