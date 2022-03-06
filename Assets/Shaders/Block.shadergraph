@@ -29,6 +29,9 @@
         },
         {
             "m_Id": "8b8e4312d2d2463cb46dedca84457260"
+        },
+        {
+            "m_Id": "e03c23c96acb4cbc98f4c49a207744b7"
         }
     ],
     "m_Keywords": [
@@ -204,6 +207,9 @@
         },
         {
             "m_Id": "2dc141fdb8ae443c845d0942cc93d9ae"
+        },
+        {
+            "m_Id": "4f114d2e4f074686adec6f7d9dea2b78"
         }
     ],
     "m_GroupDatas": [
@@ -449,6 +455,20 @@
                     "m_Id": "99c595085a6f42d29d13baeb2060f76b"
                 },
                 "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "4f114d2e4f074686adec6f7d9dea2b78"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "a3944e690b9f49feb75ebd0894eb820a"
+                },
+                "m_SlotId": 333315593
             }
         },
         {
@@ -2567,6 +2587,29 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "4bed9259b1b44a25bf047299a1de1527",
+    "m_Id": 333315593,
+    "m_DisplayName": "FogSettings",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Vector3_a6605ccc314d4bedaad6eb0f9597e4a0",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 100.0,
+        "y": 200.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "4c832e646d324afdb521e08f4a261ce8",
     "m_Id": 2,
@@ -2593,6 +2636,41 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "4f114d2e4f074686adec6f7d9dea2b78",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 1667.0,
+            "y": 2082.0,
+            "width": 128.0,
+            "height": 125.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "65c2325dd1724d64b804957682fd9705"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "e03c23c96acb4cbc98f4c49a207744b7"
+    }
 }
 
 {
@@ -3188,6 +3266,29 @@
     "m_StageCapability": 3,
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "65c2325dd1724d64b804957682fd9705",
+    "m_Id": 0,
+    "m_DisplayName": "FogSettings",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
     "m_Labels": []
 }
 
@@ -4740,6 +4841,9 @@
             "m_Id": "7775182574d14b4d8c3fb95af74322ad"
         },
         {
+            "m_Id": "4bed9259b1b44a25bf047299a1de1527"
+        },
+        {
             "m_Id": "a087056bd7454aed805539babadcd5bc"
         },
         {
@@ -4763,7 +4867,8 @@
         "273aa9e9-114b-44ae-a0fc-13bcff4d94bc",
         "5ee89efd-00df-4a7f-a560-40bbb67cc311",
         "bdeb93d3-8f8b-46b8-8d02-ffc18a9c9a13",
-        "d8ee7674-c5f4-4882-8779-5ba5c680c978"
+        "d8ee7674-c5f4-4882-8779-5ba5c680c978",
+        "a681be52-2c5c-4084-a489-993a1bfb50df"
     ],
     "m_PropertyIds": [
         -1685275347,
@@ -4771,7 +4876,8 @@
         628223483,
         506975379,
         -849291912,
-        1176125070
+        1176125070,
+        333315593
     ]
 }
 
@@ -5828,6 +5934,29 @@
         "z": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector3ShaderProperty",
+    "m_ObjectId": "e03c23c96acb4cbc98f4c49a207744b7",
+    "m_Guid": {
+        "m_GuidSerialized": "41b221e5-6951-4d93-9d24-72df4dbeb554"
+    },
+    "m_Name": "FogSettings",
+    "m_DefaultReferenceName": "Vector3_e03c23c96acb4cbc98f4c49a207744b7",
+    "m_OverrideReferenceName": "FogSettings",
+    "m_GeneratePropertyBlock": false,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "x": 100.0,
+        "y": 200.0,
+        "z": 0.0,
+        "w": 0.0
+    }
 }
 
 {

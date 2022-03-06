@@ -43,13 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8dbc5ce7bccb264a96a26c8c58d33ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  init:
+  normal:
     fogColor: {r: 1, g: 1, b: 1, a: 1}
-    start: 75
-    end: 200
-    skybox: {fileID: 2100000, guid: f20f745aa8a612f42ab151321fd1563b, type: 2}
+    fogStart: 100
+    fogEnd: 300
   underwater:
     fogColor: {r: 0.10588235, g: 0.14094773, b: 0.27450982, a: 1}
-    start: 0
-    end: 64
-    skybox: {fileID: 2100000, guid: 4f6642ea9361e8c468baf87e22e7a74a, type: 2}
+    fogStart: 0
+    fogEnd: 70
