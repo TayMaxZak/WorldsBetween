@@ -59,13 +59,13 @@ public class LightEngine
 		sourceQueue.Clear();
 		retrySourceQueue.Clear();
 
-		for (int x = Utils.ToInt(sun.sourcePoints.min.x); x < Utils.ToInt(sun.sourcePoints.max.x); x += stepSize)
+		for (float x = (sun.sourcePoints.min.x); x < (sun.sourcePoints.max.x); x += stepSize)
 		{
-			for (int y = Utils.ToInt(sun.sourcePoints.min.y); y < Utils.ToInt(sun.sourcePoints.max.y); y += stepSize)
+			for (float y = (sun.sourcePoints.min.y); y < (sun.sourcePoints.max.y); y += stepSize)
 			{
-				for (int z = Utils.ToInt(sun.sourcePoints.min.z); z < Utils.ToInt(sun.sourcePoints.max.z); z += stepSize)
+				for (float z = (sun.sourcePoints.min.z); z < (sun.sourcePoints.max.z); z += stepSize)
 				{
-					Vector3Int pos = new Vector3Int(x, y - (stepSize / 2), z);
+					Vector3 pos = new Vector3(x, y - (stepSize / 2), z);
 					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = stepSize }, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
 				}
 			}
@@ -152,87 +152,93 @@ public class LightEngine
 			// Free up space for new rays
 			raysBusy--;
 
-			LightRayResult result = (LightRayResult)args.Result;
-
-			// Ray was successful
-			if (result.success)
-			{
-				completedBlurryRays++;
-
-				bool sendSubRays = false;
-
-				// Has results to apply
-				if (result.points != null)
-				{
-					while (result.points.Count > 0)
-					{
-						LightRayResultPoint point = result.points.Dequeue();
-
-						// Fill in surrounding pixel(s)
-						Vector3 centerPos = new Vector3(
-							point.pos.x + (result.stepSize - 1) / 2f,
-							point.pos.y + (result.stepSize - 1) / 2f,
-							point.pos.z + (result.stepSize - 1) / 2f
-						);
-
-						for (int x = 0; x < result.stepSize; x++)
-						{
-							for (int y = 0; y < result.stepSize; y++)
-							{
-								for (int z = 0; z < result.stepSize; z++)
-								{
-									Vector3 pos = new Vector3(
-										point.pos.x + x,
-										point.pos.y + y,
-										point.pos.z + z
-									);
-
-									// Light is 100% accurate here: can safely write straight to lightmap
-									if (point.airLight || result.stepSize == 1)
-									{
-										WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z)), point.color, point.airLight);
-									}
-									// Half accuracy (1 check per 8 blocks): send another ray from this position to verify what happened
-									else
-									{
-										float directionDot = Vector3.Dot((pos - centerPos).normalized, sun.GetDirection());
-
-										sendSubRays = true;
-
-										// Only send necessary rays
-										if (directionDot < 0f)
-										{
-											retrySourceQueue.Enqueue(
-												new LightRay() { stepSize = 1, source = pos },
-												Vector3.SqrMagnitude(pos - World.GetRelativeOrigin())
-											);
-										}
-										// Make up for missing rays
-										else
-											curProgress += 1;
-									}
-								} // z
-							} // y
-						} // x
-					} // count > 0
-				} // !null
-
-				// Count appropriate amount towards total
-				if (!sendSubRays)
-				{
-					curProgress += (result.stepSize * result.stepSize * result.stepSize);
-				}
-			}
-			// Ray was unsuccessful, retry when possible
-			else
-			{
-				retrySourceQueue.Enqueue(new LightRay() { source = result.source, stepSize = result.stepSize }, Vector3.SqrMagnitude(lightRay.source - World.GetRelativeOrigin()));
-			}
-
-			Iterate();
+			RespondToRay((LightRayResult)args.Result);
 		});
 
 		bw.RunWorkerAsync();
+	}
+
+	private void RespondToRay(LightRayResult result)
+	{
+		// Ray was successful
+		if (result.success)
+		{
+			if (result.stepSize > 1)
+				completedBlurryRays++;
+
+			bool sendSubRays = false;
+
+			// Has results to apply
+			if (result.points != null)
+			{
+				while (result.points.Count > 0)
+				{
+					LightRayResultPoint point = result.points.Dequeue();
+
+					// Fill in surrounding pixel(s)
+					Vector3 centerPos = new Vector3(
+						point.pos.x + (result.stepSize - 1) / 2f,
+						point.pos.y + (result.stepSize - 1) / 2f,
+						point.pos.z + (result.stepSize - 1) / 2f
+					);
+
+					for (int x = 0; x < result.stepSize; x++)
+					{
+						for (int y = 0; y < result.stepSize; y++)
+						{
+							for (int z = 0; z < result.stepSize; z++)
+							{
+								Vector3 pos = new Vector3(
+									point.pos.x + x,
+									point.pos.y + y,
+									point.pos.z + z
+								);
+
+								// Light is 100% accurate here: can safely write straight to lightmap
+								if (point.airLight || result.stepSize == 1)
+								{
+									WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z)), point.color, point.airLight);
+								}
+								// Half accuracy (1 check per 8 blocks): send another ray from this position to verify what happened
+								else
+								{
+									float directionDot = Vector3.Dot((pos - centerPos).normalized, sun.GetDirection());
+
+									sendSubRays = true;
+
+									// Only send necessary rays
+									if (directionDot < 0f)
+									{
+										RespondToRay(SendLightRay(pos, 1));
+									}
+									// Make up for missing rays
+									else
+									{
+										curProgress += 1;
+									}
+								}
+							} // z
+						} // y
+					} // x
+				} // count > 0
+			} // !null
+
+			// Count appropriate amount towards total
+			if (!sendSubRays)
+			{
+				curProgress += (result.stepSize * result.stepSize * result.stepSize);
+			}
+		}
+		// Ray was unsuccessful, retry when possible
+		else
+		{
+			retrySourceQueue.Enqueue(
+				new LightRay() { source = result.source, stepSize = result.stepSize },
+				Vector3.SqrMagnitude(result.source - World.GetRelativeOrigin())
+			);
+		}
+
+		Iterate();
 	}
 
 	private LightRayResult SendLightRay(Vector3 source, int stepSize)
@@ -242,10 +248,10 @@ public class LightEngine
 		float progress = 0;
 		Vector3 cur = source;
 
-		Vector3Int intCur = new Vector3Int(
-			Mathf.RoundToInt(cur.x),
-			Mathf.RoundToInt(cur.y),
-			Mathf.RoundToInt(cur.z)
+		Vector3Int blockCur = new Vector3Int(
+			Mathf.FloorToInt(cur.x),
+			Mathf.FloorToInt(cur.y),
+			Mathf.FloorToInt(cur.z)
 		);
 
 		Queue<LightRayResultPoint> rayPoints = null;
@@ -257,7 +263,7 @@ public class LightEngine
 
 			// Get chunk (or it is out of the world)
 			// TODO: Check world bounds here
-			Chunk chunk = World.GetChunkFor(intCur);
+			Chunk chunk = World.GetChunkFor(blockCur);
 			if (chunk == null)
 			{
 				Debug.DrawLine(source, cur, sun.lightColor, hd ? 2 : 0.5f);
@@ -288,14 +294,19 @@ public class LightEngine
 			}
 
 			// Should block light?
-			bool occupied = hd ? World.GetCorner(intCur.x, intCur.y, intCur.z) : World.GetBlurredCorner(intCur.x, intCur.y, intCur.z);
+			bool occupied = hd ?
+				// Check if inside opaque block if at block resolution
+				!World.GetBlockFor(blockCur.x, blockCur.y, blockCur.z).IsAir() :
+				// Or closest corner is filled if at blurry resolution
+				World.GetBlurredCorner(Mathf.RoundToInt(cur.x), Mathf.RoundToInt(cur.y), Mathf.RoundToInt(cur.z));
 
 			// Remember this result
 			if (rayPoints == null)
 				rayPoints = new Queue<LightRayResultPoint>();
 			// Only count result if not starting inside a corner
 			//if (currentStep != 0)
-			rayPoints.Enqueue(new LightRayResultPoint() {
+			rayPoints.Enqueue(new LightRayResultPoint()
+			{
 				pos = cur,
 				color = sun.lightColor,
 				airLight = !occupied
@@ -308,6 +319,7 @@ public class LightEngine
 			}
 
 			// Move cursor
+			//progress += 1;
 			progress += stepSize * 0.5f;
 			//progress += stepSize * 0.7071067f;
 
@@ -317,7 +329,7 @@ public class LightEngine
 				source.z + (progress * sun.GetDirection().z)
 			);
 
-			intCur = new Vector3Int(
+			blockCur = new Vector3Int(
 				Mathf.RoundToInt(cur.x),
 				Mathf.RoundToInt(cur.y),
 				Mathf.RoundToInt(cur.z)
