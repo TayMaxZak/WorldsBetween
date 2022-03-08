@@ -19,6 +19,9 @@ public class FogHandler : MonoBehaviour
 		public Color fogColor = Color.white;
 		public float fogStart = 100;
 		public float fogEnd = 200;
+
+		public Color skyTopColor = Color.white;
+		public Color skyBottomColor = Color.black;
 	}
 
 	private void Awake()
@@ -40,7 +43,7 @@ public class FogHandler : MonoBehaviour
 			if (povCamera == null)
 				povCamera = Camera.main;
 
-			SetSettings(InWater(povCamera, World.GetWaterHeight()));
+			SetSettings(InWater(povCamera, World.Exists() ? World.GetWaterHeight() : -99999));
 		}
 	}
 
@@ -57,9 +60,12 @@ public class FogHandler : MonoBehaviour
 		RenderSettings.fogColor = settings.fogColor;
 		RenderSettings.fogStartDistance = settings.fogStart;
 		RenderSettings.fogEndDistance = settings.fogEnd;
-		RenderSettings.ambientEquatorColor = settings.fogColor;
 
-		Shader.SetGlobalVector("FogSettings", new Vector3(settings.fogStart, settings.fogEnd, World.GetWaterHeight()));
+		RenderSettings.ambientSkyColor = settings.skyTopColor;
+		RenderSettings.ambientEquatorColor = settings.fogColor;
+		RenderSettings.ambientGroundColor = settings.skyBottomColor;
+
+		Shader.SetGlobalVector("FogSettings", new Vector3(settings.fogStart, settings.fogEnd, World.Exists() ? World.GetWaterHeight() : -99999));
 	}
 
 	public static void SetSettings(bool inWater)
@@ -70,10 +76,10 @@ public class FogHandler : MonoBehaviour
 		RenderSettings.fogStartDistance = settings.fogStart;
 		RenderSettings.fogEndDistance = settings.fogEnd;
 
-		// Looking up in water still has the old sky color
-		RenderSettings.ambientSkyColor = Instance.normal.fogColor;
+		RenderSettings.ambientSkyColor = settings.skyTopColor;
 		RenderSettings.ambientEquatorColor = settings.fogColor;
+		RenderSettings.ambientGroundColor = settings.skyBottomColor;
 
-		Shader.SetGlobalVector("FogSettings", new Vector3(settings.fogStart, settings.fogEnd, World.GetWaterHeight()));
+		Shader.SetGlobalVector("FogSettings", new Vector3(settings.fogStart, settings.fogEnd, World.Exists() ? World.GetWaterHeight() : -99999));
 	}
 }
