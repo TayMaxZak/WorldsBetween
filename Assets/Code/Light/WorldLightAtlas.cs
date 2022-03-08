@@ -45,7 +45,7 @@ public class WorldLightAtlas : MonoBehaviour
 		if (partialInit)
 			fullSize = defaultLightmap.width;
 		else
-			fullSize = World.GetChunkSize() * (1 + World.WorldBuilder.GetGenRange() * 2);
+			fullSize = World.GetWorldSize();
 
 
 		// One pixel for every 2 blocks in each dimension (per 8 blocks total)
@@ -166,18 +166,18 @@ public class WorldLightAtlas : MonoBehaviour
 		if (directLightTex == null)
 			return;
 
+		if (!World.Contains(pos))
+			return;
+
 		Vector3Int posD = WorldToTex(pos);
 		Vector3Int posA = WorldToTex(pos);
 
 		// Direct light change
 		int dirIndex = IndexFromPos(dirSize, posD.x / directScale, posD.y / directScale, posD.z / directScale);
-		// TODO: Better bounds checking... sometimes wraps around to wrong point instead of just blocking it
-		if (!InBounds(dirSize, dirIndex))
-			return;
+
 		directChanges++;
 
 		Color oldValue = directLightArr[dirIndex];
-
 		directLightArr[dirIndex] = newValue;
 
 
@@ -187,19 +187,14 @@ public class WorldLightAtlas : MonoBehaviour
 		// Ambient light change
 		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
-		if (!InBounds(ambSize, ambIndex))
-			return;
 
 		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
 		float ambChangeStrength = (directScale * directScale * directScale) * 256f / airCountArr[ambIndex];
 
-		if (!InBounds(fullSize / ambientScale, ambIndex))
-			return;
 		ambientChanges++;
 
 		Color oldAmbValue = ambientLightArr[ambIndex];
 		Color newAmbValue = oldAmbValue + (newValue - oldValue) * ambChangeStrength;
-
 		ambientLightArr[ambIndex] = newAmbValue;
 	}
 
@@ -208,10 +203,7 @@ public class WorldLightAtlas : MonoBehaviour
 		Vector3Int posA = WorldToTex(pos);
 		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
-		if (InBounds(fullSize / ambientScale, ambIndex))
-			airCountArr[ambIndex] = Mathf.Max(1, count);
-		else
-			Debug.Log("Out of bounds: " + ambIndex + ", in " + pos + ", tex " + posA);
+		airCountArr[ambIndex] = Mathf.Max(1, count);
 	}
 
 	public void ClearAtlas()
@@ -250,11 +242,6 @@ public class WorldLightAtlas : MonoBehaviour
 		int xOffset = x;
 
 		return xOffset + yOffset + zOffset;
-	}
-
-	private bool InBounds(int size, int index)
-	{
-		return index >= 0 && index < size * size * size;
 	}
 
 	//private void Update()
@@ -319,6 +306,6 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private Vector3Int WorldToTex(Vector3Int wrld)
 	{
-		return wrld + Vector3Int.one * (fullSize / 2 - World.GetChunkSize() / 2);
+		return wrld + Vector3Int.one * (fullSize / 2);
 	}
 }

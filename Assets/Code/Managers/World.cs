@@ -64,8 +64,8 @@ public partial class World : MonoBehaviour
 		WorldInit();
 
 		LightEngine = lightEngine;
-		sunObject.sourcePoints.center = new Vector3(chunkSize / 2, chunkSize * (1 + worldBuilder.GetGenRange()) - 0.5f, chunkSize / 2);
-		sunObject.sourcePoints.extents = new Vector3(chunkSize * (0.5f + worldBuilder.GetGenRange()), 0.5f, chunkSize * (0.5f + worldBuilder.GetGenRange()));
+		sunObject.sourcePoints.center = new Vector3(0, chunkSize * worldBuilder.GetGenRange(), 0);
+		sunObject.sourcePoints.extents = new Vector3(chunkSize * worldBuilder.GetGenRange(), 0.5f, chunkSize * worldBuilder.GetGenRange());
 		LightEngine.Init(sunObject);
 	}
 
@@ -304,16 +304,30 @@ public partial class World : MonoBehaviour
 		return Instance.waterHeight;
 	}
 
-	public static Vector3Int GetWorldExtents()
+	public static int GetWorldSize()
 	{
-		return Vector3Int.one * (1 + WorldBuilder.GetGenRange() * 2) * Instance.chunkSize / 2;
+		return WorldBuilder.GetGenRange() * 2 * Instance.chunkSize;
+	}
+
+	public static bool Contains(Vector3 pos)
+	{
+		int extent = WorldBuilder.GetGenRange() * Instance.chunkSize;
+
+		if (Mathf.Abs(pos.x) < extent && Mathf.Abs(pos.y) < extent && Mathf.Abs(pos.z) < extent)
+			return true;
+		else
+			return false;
 	}
 
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
-		Gizmos.DrawWireCube(Vector3.zero + Vector3.one * chunkSize / 2, Vector3.one * (1 + worldBuilder.GetGenRange() * 2) * chunkSize);
+		Gizmos.DrawWireCube(Vector3.zero, Vector3.one * GetWorldSize());
+
+		Gizmos.color = sunObject.lightColor;
+
+		Gizmos.DrawWireCube(sunObject.sourcePoints.center, sunObject.sourcePoints.size);
 
 		worldBuilder.DrawGizmo();
 	}

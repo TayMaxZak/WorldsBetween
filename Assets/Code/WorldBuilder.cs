@@ -125,7 +125,6 @@ public class WorldBuilder
 	{
 		// Change range to actual distance
 		int chunkSize = World.GetChunkSize();
-		range *= chunkSize;
 
 		Vector3Int origin = World.GetRelativeOrigin();
 
@@ -137,13 +136,13 @@ public class WorldBuilder
 		);
 
 		// Go through all nearby chunk positions
-		for (int x = startPos.x - range; x <= startPos.x + range; x += chunkSize)
+		for (int x = startPos.x - range; x < startPos.x + range; x ++)
 		{
-			for (int y = startPos.y - range; y <= startPos.y + range; y += chunkSize) // TODO: Remove testing code
+			for (int y = startPos.y - range; y < startPos.y + range; y ++)
 			{
-				for (int z = startPos.z - range; z <= startPos.z + range; z += chunkSize)
+				for (int z = startPos.z - range; z < startPos.z + range; z ++)
 				{
-					Vector3Int chunkPos = new Vector3Int(x, y, z);
+					Vector3Int chunkPos = new Vector3Int(x * chunkSize, y * chunkSize, z * chunkSize);
 
 					// Chunk already exists at this location
 					if (World.GetChunks().ContainsKey(chunkPos))
@@ -219,11 +218,6 @@ public class WorldBuilder
 	public int GetGenRange()
 	{
 		return genRange;
-	}
-
-	public int GetSpawnGenRange()
-	{
-		return spawnGenRange;
 	}
 
 	public bool IsGenerating()

@@ -15,13 +15,13 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 1, g: 1, b: 1, a: 1}
+  m_FogColor: {r: 0.7607844, g: 0.8705883, b: 1, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 100
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
-  m_AmbientEquatorColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.5379584, g: 0.61724865, b: 0.7264151, a: 1}
+  m_AmbientEquatorColor: {r: 0.7607844, g: 0.8705883, b: 1, a: 1}
   m_AmbientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
@@ -1671,7 +1671,7 @@ PrefabInstance:
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
@@ -2316,10 +2316,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6515504506574358196, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6515504506574358196, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
@@ -2329,10 +2325,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7315620022602711102, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7315620022602711102, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
-      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7315620022602711102, guid: 7ef058007dd8bf245a097e1c4fd96dca, type: 3}
