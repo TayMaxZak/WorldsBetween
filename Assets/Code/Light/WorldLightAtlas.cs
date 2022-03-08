@@ -302,6 +302,7 @@ public class WorldLightAtlas : MonoBehaviour
 	//	}
 	//}
 
+	[ContextMenu("Apply Changes")]
 	public void ApplyChanges()
 	{
 		if (directChanges == 0 && ambientChanges == 0)

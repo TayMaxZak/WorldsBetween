@@ -10,8 +10,9 @@ public class Sun : MonoBehaviour
 	[HideInInspector]
 	public Bounds sourcePoints;
 
-	[HideInInspector]
-	private Vector3 direction;
+	private Vector3 forward;
+	private Vector3 right;
+	private Vector3 up;
 
 	private void OnDrawGizmosSelected()
 	{
@@ -31,11 +32,23 @@ public class Sun : MonoBehaviour
 
 	public void OnEnable()
 	{
-		direction = transform.forward;
+		forward = transform.forward;
+		right = transform.right;
+		up = transform.up;
 	}
 
 	public Vector3 GetDirection()
 	{
-		return direction;
+		return forward;
+	}
+
+	public Vector3 GetRight()
+	{
+		return right;
+	}
+
+	public Vector3 GetUp()
+	{
+		return up;
 	}
 }

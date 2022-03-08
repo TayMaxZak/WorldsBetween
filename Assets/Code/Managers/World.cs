@@ -87,19 +87,22 @@ public partial class World : MonoBehaviour
 		// Random generation starts here //
 
 		// Sun angle
-		sunObject.transform.forward = new Vector3(
-			Random.value * 2 - 1,
-			-2,
-			Random.value * 2 - 1
-		).normalized;
+		int tiltAmtOptions = 9;
+		int tiltDirOptions = 16;
+		sunObject.transform.eulerAngles = new Vector3(
+			Mathf.Max(Random.Range(1, tiltAmtOptions) * (90f / tiltAmtOptions), Random.Range(1, tiltAmtOptions) * (90f / tiltAmtOptions)),
+			Random.Range(0, tiltDirOptions) * (360f / tiltDirOptions),
+			0
+		);
+		//sunObject.transform.localEulerAngles = new Vector3(70f, 112.5f, 0);
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.999f;
+		bool hasWater = Random.value < 0.5f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
-			waterHeight = (int)(Random.value * Random.value * -200 + 10);
+			waterHeight = (int)(Random.value * Random.value * Random.value * -200);
 			WaterFollow(relativeOrigin);
 		}
 
@@ -166,6 +169,11 @@ public partial class World : MonoBehaviour
 		WorldLightAtlas.Instance.ClearAtlas();
 
 		LightEngine.Begin();
+	}
+
+	public static bool Exists()
+	{
+		return Instance;
 	}
 
 	public static List<Modifier> GetModifiers()
