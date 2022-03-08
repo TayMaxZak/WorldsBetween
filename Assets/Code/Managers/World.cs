@@ -90,11 +90,11 @@ public partial class World : MonoBehaviour
 		int tiltAmtOptions = 9;
 		int tiltDirOptions = 16;
 		sunObject.transform.eulerAngles = new Vector3(
-			Mathf.Max(Random.Range(1, tiltAmtOptions) * (90f / tiltAmtOptions), Random.Range(1, tiltAmtOptions) * (90f / tiltAmtOptions)),
+			Mathf.Max(Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions), Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions)),
 			Random.Range(0, tiltDirOptions) * (360f / tiltDirOptions),
 			0
 		);
-		//sunObject.transform.localEulerAngles = new Vector3(70f, 112.5f, 0);
+		//sunObject.transform.localEulerAngles = new Vector3(70f, 67.5f, 0);
 		sunObject.OnEnable();
 
 		// Water/no water, water height
@@ -105,6 +105,8 @@ public partial class World : MonoBehaviour
 			waterHeight = (int)(Random.value * Random.value * Random.value * -200);
 			WaterFollow(relativeOrigin);
 		}
+		else
+			waterHeight = -99999;
 
 		// Modifiers
 		MakeModifiers();

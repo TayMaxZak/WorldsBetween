@@ -61,6 +61,9 @@ MonoBehaviour:
     spawnGenRange: 3
   lightEngine:
     raysPerBatch: 60
+    progressStep: 0.5
+    splitPixelCutoff: 0.229
+    fixSplitOffset: 0.51
   randomizeSeed: 1
   seed: 0
   chunkSize: 16

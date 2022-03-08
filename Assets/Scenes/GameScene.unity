@@ -667,6 +667,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2142271985}
     m_Modifications:
+    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: gForceMult
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: gForceLimit
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1663,7 +1671,7 @@ PrefabInstance:
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name

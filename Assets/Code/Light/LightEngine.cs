@@ -40,6 +40,10 @@ public class LightEngine
 
 	[SerializeField]
 	private float progressStep = 1f;
+	[SerializeField]
+	private float splitPixelCutoff = 0.209f;
+	[SerializeField]
+	private float fixSplitOffset = 0.51f;
 
 	private int completedBlurryRays;
 	private int targetBlurryRays;
@@ -197,8 +201,7 @@ public class LightEngine
 
 					Vector3 offsetPos = point.pos;
 
-					float onEdgeDist = 0.249f;
-					bool onEdge = Mathf.Abs(offsetPos.x - Mathf.RoundToInt(offsetPos.x)) >= onEdgeDist || Mathf.Abs(offsetPos.y - Mathf.RoundToInt(offsetPos.y)) >= onEdgeDist || Mathf.Abs(offsetPos.z - Mathf.RoundToInt(offsetPos.z)) >= onEdgeDist;
+					bool onEdge = Mathf.Abs(offsetPos.x - Mathf.RoundToInt(offsetPos.x)) >= splitPixelCutoff || Mathf.Abs(offsetPos.y - Mathf.RoundToInt(offsetPos.y)) >= splitPixelCutoff || Mathf.Abs(offsetPos.z - Mathf.RoundToInt(offsetPos.z)) >= splitPixelCutoff;
 					
 					// Enough to write to one pixel
 					if (!onEdge)
@@ -208,19 +211,17 @@ public class LightEngine
 					// Possibly missed some pixels because it landed on the edge
 					else
 					{
-						float margin = 0.51f;
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
 
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + margin), Mathf.RoundToInt(offsetPos.y + margin), Mathf.RoundToInt(offsetPos.z + margin)), point.color, point.airLight);
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + margin), Mathf.RoundToInt(offsetPos.y + margin), Mathf.RoundToInt(offsetPos.z - margin)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
 
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + margin), Mathf.RoundToInt(offsetPos.y - margin), Mathf.RoundToInt(offsetPos.z + margin)), point.color, point.airLight);
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + margin), Mathf.RoundToInt(offsetPos.y - margin), Mathf.RoundToInt(offsetPos.z - margin)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
 
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - margin), Mathf.RoundToInt(offsetPos.y + margin), Mathf.RoundToInt(offsetPos.z + margin)), point.color, point.airLight);
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - margin), Mathf.RoundToInt(offsetPos.y + margin), Mathf.RoundToInt(offsetPos.z - margin)), point.color, point.airLight);
-
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - margin), Mathf.RoundToInt(offsetPos.y - margin), Mathf.RoundToInt(offsetPos.z + margin)), point.color, point.airLight);
-						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - margin), Mathf.RoundToInt(offsetPos.y - margin), Mathf.RoundToInt(offsetPos.z - margin)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
+						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
 					}
 				} // count > 0
 			} // !null
