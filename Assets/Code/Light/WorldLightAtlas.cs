@@ -169,11 +169,10 @@ public class WorldLightAtlas : MonoBehaviour
 		if (!World.Contains(pos))
 			return;
 
-		Vector3Int posD = WorldToTex(pos);
-		Vector3Int posA = WorldToTex(pos);
+		pos = WorldToTex(pos);
 
 		// Direct light change
-		int dirIndex = IndexFromPos(dirSize, posD.x / directScale, posD.y / directScale, posD.z / directScale);
+		int dirIndex = IndexFromPos(dirSize, pos.x / directScale, pos.y / directScale, pos.z / directScale);
 
 		directChanges++;
 
@@ -185,7 +184,7 @@ public class WorldLightAtlas : MonoBehaviour
 			return;
 
 		// Ambient light change
-		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
+		Vector3Int ambPos = pos / ambientScale;
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
 
 		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 

@@ -61,19 +61,28 @@ public class LightEngine
 	public void Begin()
 	{
 		//int step = WorldLightAtlas.Instance.directScale;
-		int stepSize = 2;
+		int step = 2;
+		int extent = World.GetWorldSize() / 2;
+
 
 		sourceQueue.Clear();
 		retrySourceQueue.Clear();
 
-		for (float x = (sun.sourcePoints.min.x); x < (sun.sourcePoints.max.x); x += stepSize)
+		for (float x = -extent; x <= extent; x += step)
 		{
-			for (float y = (sun.sourcePoints.min.y); y < (sun.sourcePoints.max.y); y += stepSize)
+			for (float y = -extent; y <= extent; y += step)
 			{
-				for (float z = (sun.sourcePoints.min.z); z < (sun.sourcePoints.max.z); z += stepSize)
+				for (float z = -extent; z <= extent; z += step)
 				{
-					Vector3 pos = new Vector3(x, y, z);
-					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = stepSize }, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
+					if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
+						continue;
+
+					Vector3 pos = new Vector3(x, y, z) + sun.GetDirection();
+
+					if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
+						continue;
+
+					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = step }, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
 				}
 			}
 		}
@@ -83,7 +92,7 @@ public class LightEngine
 		blurryLightFinished = false;
 
 		curProgress = 0;
-		maxProgress = sourceQueue.Count * (stepSize * stepSize);
+		maxProgress = sourceQueue.Count * (step * step);
 		allLightFinished = false;
 
 		Debug.Log(maxProgress + " light rays to be cast");
@@ -204,7 +213,7 @@ public class LightEngine
 					bool onEdge = Mathf.Abs(offsetPos.x - Mathf.RoundToInt(offsetPos.x)) >= splitPixelCutoff || Mathf.Abs(offsetPos.y - Mathf.RoundToInt(offsetPos.y)) >= splitPixelCutoff || Mathf.Abs(offsetPos.z - Mathf.RoundToInt(offsetPos.z)) >= splitPixelCutoff;
 					
 					// Enough to write to one pixel
-					if (!onEdge)
+					if (true)
 					{
 						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x), Mathf.RoundToInt(offsetPos.y), Mathf.RoundToInt(offsetPos.z)), point.color, point.airLight);
 					}

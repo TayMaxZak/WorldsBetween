@@ -88,7 +88,7 @@ public partial class World : MonoBehaviour
 
 		// Sun angle
 		int tiltAmtOptions = 9;
-		int tiltDirOptions = 16;
+		int tiltDirOptions = 8;
 		sunObject.transform.eulerAngles = new Vector3(
 			Mathf.Max(Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions), Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions)),
 			Random.Range(0, tiltDirOptions) * (360f / tiltDirOptions),
@@ -323,7 +323,7 @@ public partial class World : MonoBehaviour
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
 
-		Gizmos.DrawWireCube(Vector3.zero, Vector3.one * GetWorldSize());
+		Gizmos.DrawWireCube(Vector3.zero, Vector3.one * worldBuilder.GetGenRange() * 2 * chunkSize);
 
 		Gizmos.color = sunObject.lightColor;
 
