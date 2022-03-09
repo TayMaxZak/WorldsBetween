@@ -213,11 +213,11 @@ public class LightEngine
 					bool onEdge = Mathf.Abs(offsetPos.x - Mathf.RoundToInt(offsetPos.x)) >= splitPixelCutoff || Mathf.Abs(offsetPos.y - Mathf.RoundToInt(offsetPos.y)) >= splitPixelCutoff || Mathf.Abs(offsetPos.z - Mathf.RoundToInt(offsetPos.z)) >= splitPixelCutoff;
 					
 					// Enough to write to one pixel
-					if (true)
+					if (/*!onEdge*/true)
 					{
 						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x), Mathf.RoundToInt(offsetPos.y), Mathf.RoundToInt(offsetPos.z)), point.color, point.airLight);
 					}
-					// Possibly missed some pixels because it landed on the edge
+					// Possibly missed some pixels because it landed on an edge
 					else
 					{
 						WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);

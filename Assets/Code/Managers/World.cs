@@ -143,7 +143,7 @@ public partial class World : MonoBehaviour
 	private void Start()
 	{
 		// First batch of chunks
-		WorldBuilder.StartGen();
+		WorldBuilder.StartGen(true);
 	}
 
 	private void Update()
@@ -161,6 +161,8 @@ public partial class World : MonoBehaviour
 		// Recalc light after world builder is finished
 		while (WorldBuilder.IsGenerating())
 			await Task.Delay(20);
+
+		WorldBuilder.ResetSpawnFinder();
 
 		RecalcLight();
 	}

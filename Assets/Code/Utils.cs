@@ -8,10 +8,14 @@ using UnityEngine;
 public class Utils
 {
 	public static Color colorOrange = new Color(1, 0.5f, 0);
+	public static Color colorYellow = new Color(1.0f, 0.95f, 0.1f);
+	public static Color colorGreen = new Color(0.3f, 1f, 0.15f);
+	public static Color colorCyan = new Color(0.1f, 0.75f, 1);
 	public static Color colorBlue = new Color(0, 0.25f, 1);
+	public static Color colorPurple = new Color(0.4f, 0, 1);
 
 	public static Color colorDarkGrayBlue = new Color(0.1f, 0.125f, 0.2f);
-	public static Color colorYellow = new Color(1.0f, 0.95f, 0.1f);
+
 
 	public static int DistSquared(int xa, int ya, int za, int xb, int yb, int zb)
 	{

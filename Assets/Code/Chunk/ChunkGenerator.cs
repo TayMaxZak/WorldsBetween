@@ -38,6 +38,19 @@ public class ChunkGenerator
 		this.throughput = throughput;
 	}
 
+	private Color GetDebugColor(int queueID)
+	{
+		queueID = Mathf.Abs(queueID);
+		if (queueID % 3 == 0)
+			return Utils.colorCyan;
+		if (queueID % 3 == 1)
+			return Utils.colorBlue;
+		if (queueID % 3 == 2)
+			return Utils.colorPurple;
+		else
+			return Color.white;
+	}
+
 	// Fix extra queues not being used
 	public void Enqueue(Chunk chunk, float priority, bool useMultiQueue)
 	{
@@ -74,6 +87,8 @@ public class ChunkGenerator
 	private async void BackgroundIterate(SimplePriorityQueue<Chunk> queue, int taskSize)
 	{
 		busy[queue] = true;
+
+		Vector3 prevChunkPos = Vector3.zero;
 
 		int t = taskSize;
 		while (GetSize() > 0 && t > 0)
@@ -161,6 +176,19 @@ public class ChunkGenerator
 				// Sit tight until other generators have made some progress
 				await Task.Delay(Mathf.CeilToInt(penaltyDelay));
 			}
+
+			Vector3 midPos1 = Vector3.Lerp(chunk.position + Vector3.one * 4, prevChunkPos, 0.67f) + prevChunkPos.normalized * 3;
+			Vector3 midPos2 = Vector3.Lerp(chunk.position + Vector3.one * 4, prevChunkPos, 0.33f) + prevChunkPos.normalized * 1.5f;
+
+			Color debugColor = GetDebugColor(queue.GetHashCode());
+
+			Debug.DrawLine(chunk.position + Vector3.one * 4, midPos2, debugColor, 1.5f);
+
+			Debug.DrawLine(midPos2, midPos1, debugColor, 0.667f);
+
+			Debug.DrawLine(midPos1, prevChunkPos, debugColor, 0.25f);
+
+			prevChunkPos = chunk.position + Vector3.one * 4;
 		}
 
 		busy[queue] = false;

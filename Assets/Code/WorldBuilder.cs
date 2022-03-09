@@ -33,12 +33,11 @@ public class WorldBuilder
 
 	[Header("Generation")]
 	[SerializeField]
-	[Range(0, 15)]
-	private int genRange = 8;
-
+	[Range(0, 10)]
+	private int genRangePlayable = 5;
 	[SerializeField]
 	[Range(0, 10)]
-	private int spawnGenRange = 3;
+	private int genRangeScenic = 2;
 
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
@@ -61,19 +60,24 @@ public class WorldBuilder
 		chunkRoot.name = "Chunks";
 	}
 
-	public async void StartGen()
+	public async void StartGen(bool instantiate)
 	{
-		genStage = GenStage.CreateChunks;
+		if (instantiate)
+		{
+			genStage = GenStage.CreateChunks;
 
-		// Create chunk data and GameObjects
-		InstantiateChunks(genRange);
+			// Create chunk data and GameObjects
+			InstantiateChunks(genRangePlayable);
 
-		await Task.Delay(10);
+			await Task.Delay(10);
+		}
 
 		// Enqueue chunks
 		await EnqueueAllChunks(Chunk.ProcStage.Allocate);
 
 		genStage = GenStage.GenerateChunks;
+
+		spawnFinder.Reset();
 	}
 
 	public async void StopGen()
@@ -87,7 +91,13 @@ public class WorldBuilder
 		Debug.Log("Cancel complete");
 	}
 
-	public void UpdateContextWorker()
+	public void ResetSpawnFinder()
+	{
+		spawnFinder.Reset();
+	}
+
+
+	public void UpdateSpawnFinder()
 	{
 		if (spawnFinder.IsBusy() || spawnFinder.IsSuccessful())
 			return;
@@ -118,7 +128,7 @@ public class WorldBuilder
 		}
 
 		if (genStage >= GenStage.Ready)
-			UpdateContextWorker();
+			UpdateSpawnFinder();
 	}
 
 	public void InstantiateChunks(int range)
@@ -217,7 +227,7 @@ public class WorldBuilder
 
 	public int GetGenRange()
 	{
-		return genRange;
+		return genRangePlayable;
 	}
 
 	public bool IsGenerating()

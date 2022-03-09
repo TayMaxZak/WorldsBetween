@@ -103,7 +103,7 @@ public class Chunk
 			procStage = ProcStage.MakeMesh;
 			World.WorldBuilder.QueueNextStage(this);
 
-			Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.green, 1);
+			//Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.green, 1);
 
 			OnFinishProcStage();
 		});
@@ -275,7 +275,7 @@ public class Chunk
 			procStage = ProcStage.Done;
 			World.WorldBuilder.QueueNextStage(this);
 
-			Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.cyan, 1);
+			//Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.cyan, 1);
 
 			OnFinishProcStage();
 		});

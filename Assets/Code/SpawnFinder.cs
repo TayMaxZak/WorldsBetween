@@ -19,11 +19,25 @@ public class SpawnFinder
 	private int minAirCount = 75;
 	private int minSolidCount = 25;
 
-	// TODO: Add to a prio queue instead
 	private bool foundPlayerPos = false;
 	private Vector3 playerPos = Vector3.zero;
 
 	private bool success = false;
+
+	public void Reset()
+	{
+		pos = Vector3Int.zero;
+
+		isBusy = false;
+
+		airCount = 0;
+		solidCount = 0;
+
+		foundPlayerPos = false;
+		playerPos = Vector3.zero;
+
+		success = false;
+	}
 
 	public void Move()
 	{
