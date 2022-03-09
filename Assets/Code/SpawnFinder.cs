@@ -11,6 +11,9 @@ public class SpawnFinder
 
 	private bool isBusy;
 
+	private int attemptsLeft;
+	private int attemptsMax = 1000;
+
 	protected delegate void BlockPosAction(Vector3Int pos);
 
 	private int airCount = 0;
@@ -29,6 +32,8 @@ public class SpawnFinder
 		pos = Vector3Int.zero;
 
 		isBusy = false;
+
+		attemptsLeft = attemptsMax;
 
 		airCount = 0;
 		solidCount = 0;
@@ -76,7 +81,9 @@ public class SpawnFinder
 
 	protected virtual void Scan(Vector3Int pos)
 	{
-		if (pos.y > World.GetWaterHeight() && World.GetBlockFor(pos).IsAir())
+		bool notWaterOrNoChoice = pos.y > World.GetWaterHeight() || attemptsLeft <= 0;
+
+		if (notWaterOrNoChoice && World.GetBlockFor(pos).IsAir())
 		{
 			airCount++;
 
@@ -95,6 +102,7 @@ public class SpawnFinder
 		{
 			solidCount++;
 		}
+		attemptsLeft--;
 	}
 
 	protected async Task ScanAll(BlockPosAction scanAction, Vector3Int min, Vector3Int max)
