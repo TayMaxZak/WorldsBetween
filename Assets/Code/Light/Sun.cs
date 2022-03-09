@@ -30,6 +30,7 @@ public class Sun : MonoBehaviour
 		Gizmos.DrawLine(pos - transform.up, pos - transform.up + transform.forward * 10);
 	}
 
+	[ContextMenu("Update Sun")]
 	public void OnEnable()
 	{
 		forward = transform.forward;

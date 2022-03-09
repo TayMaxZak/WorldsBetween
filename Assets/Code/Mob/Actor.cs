@@ -182,7 +182,7 @@ public class Actor : MonoBehaviour
 		velocity = vel;
 	}
 
-	protected void OnDrawGizmos()
+	protected void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorBlue;
 		Gizmos.DrawWireCube(position, hitbox.size);
