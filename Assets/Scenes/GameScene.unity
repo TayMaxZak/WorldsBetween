@@ -636,14 +636,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2142271985}
     m_Modifications:
-    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: gForceMult
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: gForceLimit
-      value: 11
-      objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1797,9 +1789,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightColor: {r: 1.9766747, g: 1.8834887, b: 1.7394737, a: 1}
-  sourcePoints:
-    m_Center: {x: 8, y: 15.5, z: 8}
-    m_Extent: {x: 8, y: 0.5, z: 8}
 --- !u!114 &2056025807 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6576889597697053752, guid: ebcbb3229181918489f3e7fc0f6b155b, type: 3}

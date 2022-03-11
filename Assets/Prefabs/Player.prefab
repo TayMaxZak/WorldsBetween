@@ -732,15 +732,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mover: {fileID: 8417224532618400513}
   dead: 0
+  vitalsTickTimer:
+    maxTime: 0.05
   currentHealth: 100
   maxHealth: 100
+  stopHealthRegen:
+    maxTime: 5
   healthRegen: 4
   currentStamina: 100
   maxStamina: 100
+  stopStaminaRegen:
+    maxTime: 3
   staminaRegen: 10
-  slowStaminaRegen: 0.5
-  vitalsTimer:
-    maxTime: 0.05
+  staminaRegenSlow: 1
   deathSound: {fileID: 11400000, guid: eb68c2c4a78521c46bd95ba5f41f0cd0, type: 2}
   nearDeathSound: {fileID: 11400000, guid: 8af0dd925ca7a334083d2b3c9bab26cb, type: 2}
   showVitals: 0
@@ -766,19 +770,17 @@ MonoBehaviour:
   inWater: 0
   grounded: 0
   dead: 0
-  incursometer: {fileID: 0}
-  gForceLimit: 12
-  gForceMult: 12
-  swimmingCost: 2
-  sprintingCost: 8
-  sprinting: 0
   cam: {fileID: 8417224531919593866}
-  walkSpeed: 0.8
-  swimSpeed: 0.375
-  jumpSpeed: 8
+  velDmgMult: 11
+  velDmgLimit: 11
+  sprintCost: 10
+  holdBreathCost: 4
+  swimCost: 1
+  sprinting: 0
+  slowSpeed: 0.7
   sprintSpeed: 1.5
-  onRope: 0
-  grabbed: 0
+  swimSpeed: 0.3
+  jumpSpeed: 7.9
 --- !u!65 &731691462813523884
 BoxCollider:
   m_ObjectHideFlags: 0

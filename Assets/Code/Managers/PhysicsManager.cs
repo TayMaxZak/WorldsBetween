@@ -51,7 +51,7 @@ public partial class PhysicsManager : MonoBehaviour
 		}
 
 		foreach (Actor actor in actors)
-			actor.Tick(physicsTickTimer.maxTime, physicsTickTimer.currentTime, ticking);
+			actor.UpdateTick(ticking, physicsTickTimer.maxTime, physicsTickTimer.currentTime);
 	}
 
 	public void Register(Actor actor)

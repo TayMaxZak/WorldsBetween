@@ -69,7 +69,7 @@ public partial class GameManager : MonoBehaviour
 				ShowProgress();
 
 			// Lighting can be calculated efficiently
-			if (CloseEnough(builderProgress, 0.95f) && !startedLight)
+			if (CloseEnough(builderProgress, 1) && !startedLight)
 				StartLighting();
 
 			if (CloseEnough(builderProgress, 1) && !finishedBuilding)

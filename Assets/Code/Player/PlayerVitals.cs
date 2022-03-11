@@ -7,20 +7,25 @@ public class PlayerVitals : MonoBehaviour
 	public PlayerMover mover;
 
 	public bool dead = false;
+	public Timer vitalsTickTimer = new Timer(0.05f);
 
+	[Header("Health")]
 	public float currentHealth = 100;
 	public float maxHealth = 100;
 
+	public Timer stopHealthRegen = new Timer(5);
 	public float healthRegen = 2;
 
+	[Header("Stamina")]
 	public float currentStamina = 100;
 	public float maxStamina = 100;
 
+	public Timer stopStaminaRegen = new Timer(3);
 	public float staminaRegen = 10;
-	public float slowStaminaRegen = 1;
+	public float staminaRegenSlow = 1;
 
-	public Timer vitalsTimer = new Timer(0.05f);
 
+	[Header("UI/UX")]
 	public Sound deathSound;
 
 	public Sound nearDeathSound;
@@ -40,32 +45,35 @@ public class PlayerVitals : MonoBehaviour
 
 		UIManager.SetWatchRaised(showVitals);
 
-		vitalsTimer.Increment(Time.deltaTime);
-		if (vitalsTimer.Expired())
-		{
-			VitalsTick(vitalsTimer.maxTime);
+		stopHealthRegen.Increment(Time.deltaTime);
+		stopStaminaRegen.Increment(Time.deltaTime);
 
-			vitalsTimer.Reset();
+		vitalsTickTimer.Increment(Time.deltaTime);
+		if (vitalsTickTimer.Expired())
+		{
+			VitalsTick(vitalsTickTimer.maxTime);
+
+			vitalsTickTimer.Reset();
 		}
 	}
 
 	private void VitalsTick(float deltaTime)
 	{
-		// Stamina only regens when the player can breathe
-		if (!mover.inWater && !mover.sprinting)
+		if (stopStaminaRegen.Expired())
 		{
 			// Stamina only regens up to current health or max stamina
 			float staminaCap = Mathf.Min(currentHealth, maxStamina);
 			if (currentStamina < staminaCap)
 				currentStamina += Mathf.Min(staminaRegen * deltaTime, staminaCap - currentStamina);
 			else if (currentStamina < maxStamina)
-				currentStamina += Mathf.Min(slowStaminaRegen * deltaTime, maxStamina - currentStamina);
+				currentStamina += Mathf.Min(staminaRegenSlow * deltaTime, maxStamina - currentStamina);
 		}
 
-		// Health only regens up to current stamina or max health
-		float healthCap = Mathf.Min(currentStamina, maxHealth);
-		if (currentHealth < healthCap)
-			currentHealth += Mathf.Min(healthRegen * deltaTime, healthCap - currentHealth);
+		if (stopHealthRegen.Expired())
+		{
+			if (currentHealth < maxHealth)
+				currentHealth += Mathf.Min(healthRegen * deltaTime, maxHealth - currentHealth);
+		}
 
 		UpdateUIUX();
 	}
@@ -123,27 +131,21 @@ public class PlayerVitals : MonoBehaviour
 		if (dead)
 			return;
 
-		//currentStamina -= amount / 2;
-		//if (currentStamina < 0)
-		//	currentStamina = 0;
-
-		//UpdateUIUX();
-
-		//// More damage if out of stamina
-		//if (currentStamina < 0)
-		//	amount -= currentStamina;
+		UseStamina(amount, false, true);
 
 		HurtHealth(amount);
 	}
 
-	public bool UseStamina(float amount, bool hurtWhenEmpty)
+	public bool UseStamina(float amount, bool hurtWhenEmpty, bool useAnyway)
 	{
-		if (dead)
+		if (dead || amount <= 0)
 			return false;
+
+		stopStaminaRegen.Reset();
 
 		if (!hurtWhenEmpty)
 		{
-			if (currentStamina < amount)
+			if (!useAnyway && currentStamina < amount)
 				return false;
 
 			currentStamina -= amount;
@@ -185,8 +187,10 @@ public class PlayerVitals : MonoBehaviour
 
 	private void HurtHealth(float amount)
 	{
-		if (dead)
+		if (dead || amount <= 0)
 			return;
+
+		stopHealthRegen.Reset();
 
 		float initialHealth = currentHealth;
 

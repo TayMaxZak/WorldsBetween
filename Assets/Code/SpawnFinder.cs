@@ -12,7 +12,7 @@ public class SpawnFinder
 	private bool isBusy;
 
 	private int attemptsLeft;
-	private int attemptsMax = 1000;
+	private int attemptsMax = 2000;
 
 	protected delegate void BlockPosAction(Vector3Int pos);
 

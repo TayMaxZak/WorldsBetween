@@ -158,7 +158,6 @@ public class GrappleHook : Item
 	private void ChangeAttached(bool val)
 	{
 		isAttached = val;
-		Player.Instance.mover.onRope = val;
 	}
 
 	private void ChangeLocked(bool val)

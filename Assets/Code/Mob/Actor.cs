@@ -8,6 +8,7 @@ public class Actor : MonoBehaviour
 	public Vector3 position;
 	private Vector3 prevPosition;
 
+	[HideInInspector]
 	public Vector3Int blockPosition;
 	private Vector3Int prevBlockPosition;
 
@@ -22,6 +23,7 @@ public class Actor : MonoBehaviour
 	private BoxCollider hitbox;
 
 	public bool inWater;
+	protected float waterHeightOffset = -0.5f;
 
 	[SerializeField]
 	protected bool grounded = false;
@@ -46,22 +48,22 @@ public class Actor : MonoBehaviour
 		didInit = true;
 	}
 
-	public virtual void Tick(float deltaTime, float partialTime, bool physicsTick)
+	public virtual void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
 	{
 		if (!didInit)
 			return;
 
 		// Update prev position for lerping
-		if (physicsTick)
+		if (isPhysicsTick)
 			prevPosition = new Vector3(position.x, position.y, position.z);
 
 		// Lerp logic position and visual position
-		transform.position = Vector3.Lerp(prevPosition, position, 1 - (partialTime / deltaTime));
+		transform.position = Vector3.Lerp(prevPosition, position, 1 - (tickPartialTime / tickDeltaTime));
 
 		// Physics stuff
-		if (physicsTick)
+		if (isPhysicsTick)
 		{
-			PhysicsTick(deltaTime, partialTime);
+			PhysicsTick(tickDeltaTime, tickPartialTime);
 
 			UpdateBlockPosition();
 		}
@@ -71,13 +73,8 @@ public class Actor : MonoBehaviour
 	{
 		UpdateBlockPosition();
 
-		Chunk chunk;
-		bool realChunk =
-			(chunk = World.GetChunkFor(blockPosition.x, blockPosition.y, blockPosition.z)) != null
-			&& chunk.procStage >= Chunk.ProcStage.MakeMesh;
-
 		// Apply water physics
-		bool newInWater = blockPosition.y - 0.4f < World.GetWaterHeight() && realChunk;
+		bool newInWater = blockPosition.y + waterHeightOffset < World.GetWaterHeight();
 		//bool newInWater = true;
 
 		// Entered water, break velocity on impact

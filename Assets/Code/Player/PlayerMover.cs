@@ -5,46 +5,49 @@ using UnityEngine;
 [SelectionBase]
 public class PlayerMover : Actor
 {
-	public Abnometer incursometer;
-	public float gForceLimit = 10;
-	public float gForceMult = 2;
+	public Camera cam;
 
-	public float swimmingCost = 2;
-	public float sprintingCost = 10;
+	private float eyeOffset = 0.8f;
+	private float swimTiltUp = 16;
+
+	[Header("Vitals Costs")]
+	public float velDmgMult = 2;
+	public float velDmgLimit = 10;
+	[Header("'")]
+	public float sprintCost = 10;
+	public float holdBreathCost = 2;
 
 	public bool sprinting = false;
 
-	public Camera cam;
-	private Vector3 eyeOffset;
+	[Header("Speeds")]
+	[SerializeField]
+	private float slowSpeed = 0.7f;
+	[SerializeField]
+	private float sprintSpeed = 1.5f;
+	[SerializeField]
+	private float swimSpeed = 0.3f;
+	[SerializeField]
+	private float jumpSpeed = 9;
 
-	[SerializeField]
-	private float walkSpeed = 0.8f;
-	[SerializeField]
-	private float swimSpeed = 0.4f;
-	[SerializeField]
-	private float jumpSpeed = 10;
-	[SerializeField]
-	private float sprintSpeed = 1.2f;
-
-	public bool onRope;
-
-	public bool grabbed;
+	protected bool walking;
+	protected bool eyesUnderWater;
 
 	public override void Init()
 	{
 		base.Init();
 
-		eyeOffset = cam.transform.localPosition;
+		eyeOffset = cam.transform.localPosition.y;
 	}
 
-	public override void Tick(float deltaTime, float partialTime, bool physicsTick)
+	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
 	{
-		if (!didInit)
+		if (!didInit || !GameManager.GetFinishedLoading())
 			return;
 
 		if (!Player.Instance.vitals.dead && grounded && Input.GetButtonDown("Jump"))
 			Jump();
 
+		// Start sprinting if possible
 		if (!Player.Instance.vitals.dead && Input.GetButtonDown("Sprint"))
 		{
 			if (sprinting || Player.Instance.vitals.currentStamina >= 20)
@@ -55,34 +58,36 @@ public class PlayerMover : Actor
 					sprinting = true;
 			}
 		}
+		// If pressing inputs and out of water, use stamina. Stop sprinting otherwise
+		if (sprinting && isPhysicsTick)
+		{
+			// Not pressing inputs, or in water
+			if (!walking || inWater)
+				sprinting = false;
+			// On ground, so use stamina. If out of stamina, stop sprinting
+			else if (grounded && !Player.Instance.vitals.UseStamina(sprintCost * tickDeltaTime, false, false))
+				sprinting = false;
+		}
 
 		Vector3 prevVel = velocity;
 
-		base.Tick(deltaTime, partialTime, physicsTick);
+		base.UpdateTick(isPhysicsTick, tickDeltaTime, tickPartialTime);
 
 		Vector3 newVel = velocity;
 
 		// Velocity damage
 		// TODO: Don't deal damage for rapidly increasing speed, only for rapidly decreasing
 		float velDif = (newVel - prevVel).magnitude;
-		float velDmg = Mathf.Max(0, velDif - gForceLimit) * gForceMult;
+		float velDmg = Mathf.Max(0, velDif - velDmgLimit) * velDmgMult;
 		Player.Instance.vitals.DealDamage(velDmg);
 
-		//if (incursometer.flashlightOn)
-		//{
-		//	Transform t = incursometer.flashlight.transform;
+		eyesUnderWater = blockPosition.y + eyeOffset + waterHeightOffset < World.GetWaterHeight();
 
-		//	if (physicsTick)
-		//	{
-		//		BlockCastHit hit = PhysicsManager.BlockCastAxial(t.position, t.position + t.forward * flashlightLength);
-		//		newFlashB = hit.hit ? (t.position + t.forward * Vector3.Distance(t.position, hit.worldPos)) : (t.position + t.forward * flashlightLength);
-		//	}
-
-		//	Shader.SetGlobalVector("FlashlightA", t.position);
-
-		//	prevFlashB = Vector3.Lerp(prevFlashB, newFlashB, partialTime);
-		//	Shader.SetGlobalVector("FlashlightB", prevFlashB);
-		//}
+		if (isPhysicsTick)
+		{
+			if (eyesUnderWater)
+				Player.Instance.vitals.UseStamina(holdBreathCost * tickDeltaTime, true, false);
+		}
 	}
 
 	private void Jump()
@@ -94,15 +99,23 @@ public class PlayerMover : Actor
 	protected override Vector3 GetWalkVelocity()
 	{
 		if (Player.Instance.vitals.dead)
+		{
+			walking = false;
 			return Vector3.zero;
+		}
 
-		float groundMult = !grounded ? 0.1f : 1;
+		float airborneMult = (!grounded && !inWater) ? 0.1f : 1;
 
-		Vector3 velocityVectorArrows = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		Vector3 inputDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		inputDirection = Vector3.ClampMagnitude(inputDirection, 1);
 
-		Vector3 walkVelocity = Vector3.ClampMagnitude(velocityVectorArrows, 1) * (!inWater ? ((sprinting && grounded) ? sprintSpeed : walkSpeed) : swimSpeed) * groundMult;
-		walkVelocity = !inWater ? transform.rotation * walkVelocity : cam.transform.rotation * walkVelocity;
+		// Determine what speed to use
+		float currentSpeed = (!inWater ? ((sprinting && grounded) ? sprintSpeed : slowSpeed) : swimSpeed) * airborneMult;
 
+		// Rotate input direction
+		Vector3 walkVelocity = !inWater ? (transform.rotation * inputDirection * currentSpeed) : (cam.transform.rotation * Quaternion.Euler(Vector3.right * -swimTiltUp) * inputDirection * currentSpeed);
+
+		walking = walkVelocity.sqrMagnitude > 0;
 		return walkVelocity;
 	}
 }
