@@ -67,7 +67,7 @@ public class WorldBuilder
 			genStage = GenStage.CreateChunks;
 
 			// Create chunk data and GameObjects
-			InstantiateChunks(genRangePlayable);
+			InstantiateChunks();
 
 			await Task.Delay(10);
 		}
@@ -131,27 +131,27 @@ public class WorldBuilder
 			UpdateSpawnFinder();
 	}
 
-	public void InstantiateChunks(int range)
+	public void InstantiateChunks()
 	{
-		// Change range to actual distance
 		int chunkSize = World.GetChunkSize();
 
-		Vector3Int origin = World.GetRelativeOrigin();
-
 		// Start pos in chunk coordinates
-		Vector3Int startPos = new Vector3Int(
-			Mathf.FloorToInt(origin.x / chunkSize) * chunkSize,
-			Mathf.FloorToInt(origin.y / chunkSize) * chunkSize,
-			Mathf.FloorToInt(origin.z / chunkSize) * chunkSize
-		);
+		Vector3Int origin = World.GetRelativeOrigin() / chunkSize;
+
+		int range = genRangePlayable;
 
 		// Go through all nearby chunk positions
-		for (int x = startPos.x - range; x < startPos.x + range; x ++)
+		for (int x = origin.x - range; x < origin.x + range; x++)
 		{
-			for (int y = startPos.y - range; y < startPos.y + range; y ++)
+			for (int y = origin.y - range; y < origin.y + range; y++)
 			{
-				for (int z = startPos.z - range; z < startPos.z + range; z ++)
+				for (int z = origin.z - range; z < origin.z + range; z++)
 				{
+					//bool playable = Mathf.Abs(x) < genRangePlayable && Mathf.Abs(y) < genRangePlayable && Mathf.Abs(z) < genRangePlayable;
+
+					//if (!playable)
+					//	continue;
+
 					Vector3Int chunkPos = new Vector3Int(x * chunkSize, y * chunkSize, z * chunkSize);
 
 					// Chunk already exists at this location
@@ -225,9 +225,14 @@ public class WorldBuilder
 		generator.Enqueue(chunk, priority, multiQ);
 	}
 
-	public int GetGenRange()
+	public int GetGenRangePlayable()
 	{
 		return genRangePlayable;
+	}
+
+	public int GetGenRangeScenic()
+	{
+		return genRangeScenic;
 	}
 
 	public bool IsGenerating()

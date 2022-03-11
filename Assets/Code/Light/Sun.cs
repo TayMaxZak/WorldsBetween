@@ -7,9 +7,6 @@ public class Sun : MonoBehaviour
 	[ColorUsage(false, true)]
 	public Color lightColor = Color.white;
 
-	[HideInInspector]
-	public Bounds sourcePoints;
-
 	private Vector3 forward;
 	private Vector3 right;
 	private Vector3 up;

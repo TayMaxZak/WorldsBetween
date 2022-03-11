@@ -64,8 +64,6 @@ public partial class World : MonoBehaviour
 		WorldInit();
 
 		LightEngine = lightEngine;
-		sunObject.sourcePoints.center = new Vector3(0, chunkSize * worldBuilder.GetGenRange(), 0);
-		sunObject.sourcePoints.extents = new Vector3(chunkSize * worldBuilder.GetGenRange(), 0.5f, chunkSize * worldBuilder.GetGenRange());
 		LightEngine.Init(sunObject);
 	}
 
@@ -308,12 +306,17 @@ public partial class World : MonoBehaviour
 
 	public static int GetWorldSize()
 	{
-		return WorldBuilder.GetGenRange() * 2 * Instance.chunkSize;
+		return WorldBuilder.GetGenRangePlayable() * 2 * Instance.chunkSize;
+	}
+
+	public static int GetWorldSizeScenic()
+	{
+		return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeScenic()) * 2 * Instance.chunkSize;
 	}
 
 	public static bool Contains(Vector3 pos)
 	{
-		int extent = WorldBuilder.GetGenRange() * Instance.chunkSize;
+		int extent = WorldBuilder.GetGenRangePlayable() * Instance.chunkSize;
 
 		if (Mathf.Abs(pos.x) < extent && Mathf.Abs(pos.y) < extent && Mathf.Abs(pos.z) < extent)
 			return true;
@@ -324,12 +327,10 @@ public partial class World : MonoBehaviour
 	private void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorDarkGrayBlue;
+		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * worldBuilder.GetGenRangePlayable() * Vector3.one);
 
-		Gizmos.DrawWireCube(Vector3.zero, Vector3.one * worldBuilder.GetGenRange() * 2 * chunkSize);
-
-		Gizmos.color = sunObject.lightColor;
-
-		Gizmos.DrawWireCube(sunObject.sourcePoints.center, sunObject.sourcePoints.size);
+		Gizmos.color = Utils.colorPurple;
+		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeScenic()) * Vector3.one);
 
 		worldBuilder.DrawGizmo();
 	}
