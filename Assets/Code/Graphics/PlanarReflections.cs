@@ -244,6 +244,9 @@ namespace UnityEngine.Rendering.Universal
 			if (camera.cameraType == CameraType.Reflection || camera.cameraType == CameraType.Preview)
 				return;
 
+			if (Vector3.Dot(camera.transform.forward, Vector3.up) == 0)
+				return;
+
 			UpdateReflectionCamera(camera); // create reflected camera
 			PlanarReflectionTexture(camera); // create and assign RenderTexture
 
@@ -251,20 +254,12 @@ namespace UnityEngine.Rendering.Universal
 			data.Set(); // set quality settings
 
 			BeginPlanarReflections?.Invoke(context, _reflectionCamera); // callback Action for PlanarReflection
-			if (CheckCamera(_reflectionCamera)) // Fix screen position error?
-				UniversalRenderPipeline.RenderSingleCamera(context, _reflectionCamera); // render planar reflections
+			if (_reflectionCamera.fieldOfView < 1)
+				_reflectionCamera.fieldOfView = 1;
+			UniversalRenderPipeline.RenderSingleCamera(context, _reflectionCamera); // render planar reflections
 
 			data.Restore(); // restore the quality settings
 			Shader.SetGlobalTexture(_planarReflectionTextureId, _reflectionTexture); // Assign texture to water shader
-		}
-
-		private bool CheckCamera(Camera cam)
-		{
-			// TODO: Find fix
-			//if (cam.orthographicSize == 0)
-			//	return false;
-
-			return true;
 		}
 
 		class PlanarReflectionSettingData
