@@ -131,6 +131,8 @@ public class Player : MonoBehaviour
 
 		mouseLook.SetXRotation(0);
 
+		heldItem.Init();
+
 		//hook.ReleaseHook();
 	}
 }

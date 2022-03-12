@@ -22,6 +22,12 @@ public class Item : ScriptableObject
 	[HideInInspector]
 	public Transform hand;
 
+	// Called when the player spawns
+	public virtual void Init()
+	{
+
+	}
+
 	// Called when the player clicks while this item is held
 	public virtual void Use(UseHow useHow)
 	{

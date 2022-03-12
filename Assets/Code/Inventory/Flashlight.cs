@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Flashlight : Item
 {
-	[Header("")]
+	[Header("")] // Separate from Item fields
 
 	public bool on;
 

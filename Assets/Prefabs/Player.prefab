@@ -737,14 +737,14 @@ MonoBehaviour:
   currentHealth: 100
   maxHealth: 100
   stopHealthRegen:
-    maxTime: 5
+    maxTime: 4
   healthRegen: 4
   currentStamina: 100
   maxStamina: 100
   stopStaminaRegen:
-    maxTime: 3
+    maxTime: 1
   staminaRegen: 10
-  staminaRegenSlow: 1
+  staminaRegenSlow: 10
   deathSound: {fileID: 11400000, guid: eb68c2c4a78521c46bd95ba5f41f0cd0, type: 2}
   nearDeathSound: {fileID: 11400000, guid: 8af0dd925ca7a334083d2b3c9bab26cb, type: 2}
   showVitals: 0
@@ -775,7 +775,6 @@ MonoBehaviour:
   velDmgLimit: 11
   sprintCost: 10
   holdBreathCost: 4
-  swimCost: 1
   sprinting: 0
   slowSpeed: 0.7
   sprintSpeed: 1.5
