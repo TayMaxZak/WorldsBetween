@@ -22,7 +22,7 @@ public class Cephapath : MonoBehaviour
 	}
 
 	public bool dioramaMode = false;
-	[Range(0,1)]
+	[Range(0, 1)]
 	public float dioramaSharpness = 0;
 	[Range(0, 1)]
 	public float dioramaWiggle = 0.1f;
@@ -38,6 +38,9 @@ public class Cephapath : MonoBehaviour
 	private Transform tentacleRoot;
 	private List<Tentacle> tentacles = new List<Tentacle>();
 
+	[Header("Stats")]
+	[SerializeField]
+	private float speed = 1;
 	public float damage = 10;
 	public float grabChance = 0.75f;
 
@@ -45,7 +48,6 @@ public class Cephapath : MonoBehaviour
 	public int tentacleCount = 20;
 	public float grabDistance = 32;
 	public float damageDistance = 16;
-	public float maxDistance = 400;
 
 	[Header("Timings")]
 	[SerializeField]
@@ -55,7 +57,7 @@ public class Cephapath : MonoBehaviour
 	private Timer dashTimer = new Timer(11f);
 
 	[SerializeField]
-	private Timer randomDirTimer = new Timer(3f);
+	private Timer randomDirTimer = new Timer(1f);
 
 	[Header("Tweaks")]
 	[SerializeField]
@@ -76,6 +78,8 @@ public class Cephapath : MonoBehaviour
 	private Vector3 initPosition; // Where did it start? Returns here after killing the player
 
 	private bool playerDeadReset = true;
+
+	private bool hasBlinked = false;
 
 	private void Awake()
 	{
@@ -191,6 +195,8 @@ public class Cephapath : MonoBehaviour
 		if (!target)
 			return;
 
+		Move();
+
 		// Vector towards player
 		Vector3 diff = target.position - transform.position;
 		float distance = diff.magnitude;
@@ -232,9 +238,6 @@ public class Cephapath : MonoBehaviour
 			Tentacle t = tentacles[i];
 
 			// Main tentacle logic
-			bool inWater = transform.position.y < World.GetWaterHeight();
-			float wallsOrWater = inWater ? 1 : 0;
-			if (distance <= maxDistance)
 			{
 				// Does this tentacle need to be adjusted now?
 				bool moveNow = (t.targetPoint - transform.position).sqrMagnitude > grabDistance * grabDistance;
@@ -265,7 +268,49 @@ public class Cephapath : MonoBehaviour
 			// Drag behind tips to make a curve
 			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta);
 
-			RenderTentacle(t, dir, smoothDir, (1 - wallsOrWater) * (1 - wallsOrWater));
+			//bool inWater = transform.position.y < World.GetWaterHeight();
+			//float smoothOrSharp = inWater ? 1 : 0;
+			float smoothOrSharp = i % 2 == 0 ? 1 : 0;
+			RenderTentacle(t, dir, smoothDir, (1 - smoothOrSharp) * (1 - smoothOrSharp));
+		}
+	}
+
+	private void Move()
+	{
+		float deltaTime = Time.deltaTime;
+
+		transform.position += speed * deltaTime * transform.forward;
+
+		randomDirTimer.Increment(deltaTime);
+		if (randomDirTimer.Expired() || !hasBlinked)
+		{
+			randomDirTimer.Reset();
+
+			if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < 0 || !hasBlinked)
+			{
+				Vector3 newPos = new Vector3(
+					(SeedlessRandom.NextFloatInRange(0, 2) - 0.5f) * World.GetWorldSizeScenic(),
+					(0.5f) * World.GetWorldSizeScenic(),
+					(SeedlessRandom.NextFloatInRange(0, 2) - 0.5f) * World.GetWorldSizeScenic()
+				);
+
+				if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < 0 || !hasBlinked)
+				{
+					transform.position = newPos;
+
+					transform.eulerAngles = new Vector3(
+						SeedlessRandom.NextFloatInRange(-10, 10),
+						SeedlessRandom.NextFloatInRange(0, 360),
+						0
+					);
+
+					foreach (Tentacle t in tentacles)
+						InitTentacle(t);
+
+					hasBlinked = true;
+				}
+			}
+
 		}
 	}
 
