@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 	public PlayerMover mover;
 	public MouseLook mouseLook;
 	public Transform hand;
+	public Camera cam;
 
 	public Item heldItem;
 
