@@ -25635,17 +25635,17 @@ MonoBehaviour:
   target: {fileID: 0}
   tentaclePrefab: {fileID: 8390588029003683492, guid: 9c18bacdce9aab5418d04d5510185e55, type: 3}
   tentacleRoot: {fileID: 8513241437453654586}
+  speed: 2
   damage: 5
   grabChance: 1
   tentacleCount: 20
   grabDistance: 25
   damageDistance: 9
-  maxDistance: 100
   timeScale: 1
   dashTimer:
     maxTime: 3
   randomDirTimer:
-    maxTime: 2.5
+    maxTime: 0.5
   dashVibrate: 0
-  tentacleWaveSpeed: 4
+  tentacleWaveSpeed: 0.6
   initPosition: {x: 0, y: 0, z: 0}
