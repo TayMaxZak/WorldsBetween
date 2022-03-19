@@ -26,19 +26,34 @@ public class UIItem : MonoBehaviour, IPointerDownHandler
 	[HideInInspector]
 	public UIItemSlot occupiedSlot;
 
+	private Item item;
+
 	private void Awake()
 	{
 		rectTransform = GetComponent<RectTransform>();
 	}
 
+	public void SetPos(UIItemSlot slot)
+	{
+		Transform origParent = transform.parent;
+
+		transform.SetParent(slot.transform, false);
+		rectTransform.anchoredPosition = Vector2.zero;
+		transform.SetParent(origParent, true);
+	}
+
 	public void SetItem(Item item)
 	{
-		toolTip = item.label;
+		this.item = item;
 
+		toolTip = item.label;
 		itemIcon.sprite = item.icon;
 		itemIcon.color = item.uiTint;
+	}
 
-		rectTransform.sizeDelta = Utils.Scale(baseDimensions, (Vector2)item.inventorySize);
+	public Item GetItem()
+	{
+		return item;
 	}
 
 	public void OnPointerDown(PointerEventData eventData)

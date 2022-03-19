@@ -10,14 +10,18 @@ public class NewGameMenu : MonoBehaviour
 
 	public int gameSceneIndex = 1;
 
+	[SerializeField]
+	public List<Item> stockItems;
+
 	private void Awake()
 	{
 		PersistentData data = PersistentData.GetInstanceForWrite();
 
 		// Create inventory and assign it
-		Inventory playerInventory = new Inventory(uiInventory.size);
+		Inventory playerInventory = new Inventory(uiInventory.backpackSize);
 		data.SetPlayerInventory(playerInventory);
-		uiInventory.Init(playerInventory);
+
+		uiInventory.Init(playerInventory, stockItems);
 	}
 
 	public void NewGame()
@@ -28,6 +32,8 @@ public class NewGameMenu : MonoBehaviour
 		uiKeystone.ShuffleIfDefault();
 
 		data.SetSeed(uiKeystone.GetStringSeed());
+
+		data.SetPlayerInventory(uiInventory.GetInventory());
 
 		SceneManager.LoadScene(gameSceneIndex);
 	}

@@ -12,7 +12,8 @@ public class UIItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 	{
 		Backpack,
 		HolsterL,
-		HolsterR
+		HolsterR,
+		Stock
 	}
 	public SlotType slotType;
 
@@ -23,9 +24,7 @@ public class UIItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
 	public Vector2Int xyCoord;
 
-	public Inventory.ItemSlot itemSlot;
-
-	public bool occupied = false;
+	public UIItem occupied;
 
 	private void Awake()
 	{
@@ -34,7 +33,7 @@ public class UIItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		if (!occupied)
+		if (!occupied && slotType != SlotType.Stock)
 			container.SetHoveredSlot(this);
 	}
 

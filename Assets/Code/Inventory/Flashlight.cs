@@ -31,7 +31,7 @@ public class Flashlight : Item
 
 		on = !on;
 
-		UpdateShader();
+		UpdateShader(on);
 	}
 
 	// Turn off when put away
@@ -39,16 +39,14 @@ public class Flashlight : Item
 	{
 		base.Unequip();
 
-		on = false;
-
-		UpdateShader();
+		UpdateShader(false);
 	}
 
 	public override void Update()
 	{
 		base.Update();
 
-		if (!on)
+		if (!equipped || !on)
 			return;
 
 		currentForward = Vector3.Lerp(currentForward, targetForward, Time.deltaTime * turnLerpSpeed);
@@ -68,12 +66,12 @@ public class Flashlight : Item
 
 		// Smoothed position is sent to shader
 		beamEndPos = hand.position + currentForward * currentDist;
-		UpdateShader();
+		UpdateShader(on);
 	}
 
-	private void UpdateShader()
+	private void UpdateShader(bool display)
 	{
-		if (on)
+		if (display)
 		{
 			Shader.SetGlobalVector("FlashlightA", hand.position);
 

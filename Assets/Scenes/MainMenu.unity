@@ -1225,12 +1225,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xyMaxExtents: {x: 0.6, y: 0.6}
-  xyDamping: 5
-  wanderAmount: 0.2
+  xyDamping: 3
+  wanderAmount: 0.3
   wanderTimeMin: 2
   wanderTimeMax: 6
-  zoomDamping: 2
-  zPosInitialZoom: -8
+  zoomDamping: 2.5
+  zPosInitialZoom: -9
 --- !u!1 &956164258
 GameObject:
   m_ObjectHideFlags: 0
@@ -8364,6 +8364,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4859125246073740134, guid: c755f10c061279946bbe00476a042f7d, type: 3}
+      propertyPath: stockItems.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4859125246073740134, guid: c755f10c061279946bbe00476a042f7d, type: 3}
+      propertyPath: stockItems.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 96dcb5f8b8ec8a04fb43702092b77475, type: 2}
+    - target: {fileID: 4859125246073740134, guid: c755f10c061279946bbe00476a042f7d, type: 3}
+      propertyPath: stockItems.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 9aee9599338d7b441961561b846add66, type: 2}
     - target: {fileID: 6040487748053867925, guid: c755f10c061279946bbe00476a042f7d, type: 3}
       propertyPath: m_IsActive
       value: 0

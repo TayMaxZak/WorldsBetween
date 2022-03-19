@@ -4,45 +4,38 @@ using UnityEngine;
 
 public class UIInventory : MonoBehaviour
 {
-	public Inventory inventory;
+	public Vector2Int backpackSize;
 
-	public Vector2Int size = new Vector2Int(6, 4);
+	public Vector2Int stockSize;
 
 	[Header("")]
 	[SerializeField]
 	private Transform uiItemsRoot;
-	private UIItem[] uiItems;
+	private List<UIItem> uiItems;
 
 	[Header("")]
 	[SerializeField]
-	private Transform uiSlotsRoot;
+	private Transform uiInvSlotsRoot;
 	private UIItemSlot[,] backpackUiSlots;
 	private UIItemSlot holsterLUiSlot;
 	private UIItemSlot holsterRUiSlot;
+	[SerializeField]
+	private Transform uiStkSlotsRoot;
+	private UIItemSlot[,] stockUiSlots;
 
 	[Header("")]
 	public UIItemSlot hoveredSlot;
 	public UIItem dragDropItem;
-	public Item testItem;
+	public UIItem uiItemPrefab;
 
-	public void Init(Inventory inventory)
+	public void Init(Inventory inventory, List<Item> stock)
 	{
 		if (inventory == null)
 			return;
-		this.inventory = inventory;
-
-		// Moveable items
-		uiItems = uiItemsRoot.GetComponentsInChildren<UIItem>();
-		foreach (UIItem item in uiItems)
-		{
-			item.container = this;
-
-			item.SetItem(testItem);
-		}
 
 		// Slots for drag and dropping
-		UIItemSlot[,] backpackUiSlots = new UIItemSlot[inventory.backpackSize.x, inventory.backpackSize.y];
-		UIItemSlot[] slots = uiSlotsRoot.GetComponentsInChildren<UIItemSlot>();
+		backpackUiSlots = new UIItemSlot[inventory.backpackSize.x, inventory.backpackSize.y];
+		UIItemSlot[] slots = uiInvSlotsRoot.GetComponentsInChildren<UIItemSlot>();
 
 		foreach (UIItemSlot slot in slots)
 		{
@@ -54,7 +47,6 @@ public class UIInventory : MonoBehaviour
 				Vector2Int coord = slot.xyCoord;
 
 				backpackUiSlots[coord.x, coord.y] = slot;
-				slot.itemSlot = inventory.backpackSlots[coord.x, coord.y];
 			}
 			else if (slot.slotType == UIItemSlot.SlotType.HolsterL)
 			{
@@ -64,6 +56,41 @@ public class UIInventory : MonoBehaviour
 			{
 				holsterLUiSlot = slot;
 			}
+		}
+
+		// Slots for drag and dropping
+		stockUiSlots = new UIItemSlot[stockSize.x, stockSize.y];
+		slots = uiStkSlotsRoot.GetComponentsInChildren<UIItemSlot>();
+
+		foreach (UIItemSlot slot in slots)
+		{
+			slot.container = this;
+
+			// Link matching slots
+			if (slot.slotType == UIItemSlot.SlotType.Stock)
+			{
+				Vector2Int coord = slot.xyCoord;
+
+				stockUiSlots[coord.x, coord.y] = slot;
+			}
+		}
+
+
+		// UI items
+		uiItems = new List<UIItem>();
+		for (int i = 0; i < stock.Count; i++)
+		{
+			// Copy of prefab
+			UIItem uiItem = Instantiate(uiItemPrefab, uiItemsRoot);
+			// Copy of item data
+			uiItem.SetItem(Instantiate(stock[i]));
+
+			// Moving it into place
+			uiItem.SetPos(stockUiSlots[i % stockSize.x, i / stockSize.x]);
+
+			uiItem.container = this;
+
+			uiItems.Add(uiItem);
 		}
 	}
 
@@ -94,7 +121,7 @@ public class UIInventory : MonoBehaviour
 	{
 		dragDropItem = currentItem;
 		if (currentItem.occupiedSlot)
-			currentItem.occupiedSlot.occupied = false;
+			currentItem.occupiedSlot.occupied = null;
 	}
 
 	private void DropDragDropItem()
@@ -102,14 +129,26 @@ public class UIInventory : MonoBehaviour
 		if (!hoveredSlot)
 			return;
 		dragDropItem.occupiedSlot = hoveredSlot;
-		dragDropItem.occupiedSlot.occupied = true;
+		dragDropItem.occupiedSlot.occupied = dragDropItem;
 
 		dragDropItem.DropItem();
 
-		dragDropItem.transform.SetParent(hoveredSlot.transform, false);
-		dragDropItem.rectTransform.anchoredPosition = Vector2.zero;
-		dragDropItem.transform.SetParent(uiItemsRoot, true);
+		dragDropItem.SetPos(hoveredSlot);
 
 		dragDropItem = null;
+	}
+
+	public Inventory GetInventory()
+	{
+		Inventory inventory = new Inventory(backpackSize);
+
+		foreach (UIItem uiItem in uiItems)
+		{
+			if (!uiItem.occupiedSlot)
+				continue;
+			inventory.Add(uiItem.GetItem(), uiItem.occupiedSlot.xyCoord);
+		}
+
+		return inventory;
 	}
 }

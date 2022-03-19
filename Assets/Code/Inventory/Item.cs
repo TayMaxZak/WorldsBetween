@@ -14,13 +14,16 @@ public class Item : ScriptableObject
 
 	public string label = "Item";
 
+	// For in-game display
 	public Sprite icon;
 	public Color uiTint = Color.white;
 
+	// Affects how it can be placed inside an inventory
 	public Vector2Int inventorySize = new Vector2Int(1, 1);
 
-	[HideInInspector]
-	public Transform hand;
+	// Only set on instantiated copies during game
+	protected Transform hand;
+	protected bool equipped;
 
 	// Called when the player spawns
 	public virtual void Init()
@@ -37,12 +40,14 @@ public class Item : ScriptableObject
 	// Called when the player starts holding this item
 	public virtual void Equip(Transform hand)
 	{
+		equipped = true;
 		this.hand = hand;
 	}
 
 	// Called when the player stops holding this item
 	public virtual void Unequip()
 	{
+		equipped = false;
 		hand = null;
 	}
 

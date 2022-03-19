@@ -20,6 +20,8 @@ public class Player : MonoBehaviour
 	private Timer respawn = new Timer(1);
 	private Timer quit = new Timer(1);
 
+	private bool firstOrSecond = true;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -105,6 +107,22 @@ public class Player : MonoBehaviour
 		else
 			respawn.currentTime = respawn.maxTime;
 
+		if (Input.GetButtonDown("Equipment"))
+		{
+			int index = firstOrSecond ? 0 : 1;
+			firstOrSecond = !firstOrSecond;
+
+			Inventory inv = PersistentData.GetInstanceForRead().GetPlayerInventory();
+
+			if (heldItem)
+				heldItem.Unequip();
+
+			heldItem = inv.GetNth(index);
+
+			if (heldItem)
+				heldItem.Equip(hand);
+		}
+
 		// Item inputs
 		if (!heldItem)
 			return;
@@ -132,7 +150,8 @@ public class Player : MonoBehaviour
 
 		mouseLook.SetXRotation(0);
 
-		heldItem.Init();
+		if (heldItem)
+			heldItem.Init();
 
 		//hook.ReleaseHook();
 	}

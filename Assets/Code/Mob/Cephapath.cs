@@ -96,6 +96,8 @@ public class Cephapath : MonoBehaviour
 
 			// Reset all timers
 			dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
+
+			Move();
 		}
 
 		foreach (Tentacle t in tentacles)
@@ -220,13 +222,6 @@ public class Cephapath : MonoBehaviour
 		else if (playerDeadReset)
 		{
 			playerDeadReset = false;
-
-			PlayerDeadReset();
-
-			// Recalc vectors after reset
-			diff = target.position - transform.position;
-			distance = diff.magnitude;
-			dir = diff.normalized;
 		}
 
 		// For a more curved path towards player
@@ -277,6 +272,8 @@ public class Cephapath : MonoBehaviour
 
 	private void Move()
 	{
+		float dotCutoff = 0.5f;
+
 		float deltaTime = Time.deltaTime;
 
 		transform.position += speed * deltaTime * transform.forward;
@@ -286,15 +283,15 @@ public class Cephapath : MonoBehaviour
 		{
 			randomDirTimer.Reset();
 
-			if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < 0 || !hasBlinked)
+			if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
 			{
 				Vector3 newPos = new Vector3(
-					(SeedlessRandom.NextFloatInRange(0, 2) - 0.5f) * World.GetWorldSizeScenic(),
-					(0.5f) * World.GetWorldSizeScenic(),
-					(SeedlessRandom.NextFloatInRange(0, 2) - 0.5f) * World.GetWorldSizeScenic()
+					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSizeScenic(),
+					0.5f * World.GetWorldSizeScenic(),
+					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSizeScenic()
 				);
 
-				if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < 0 || !hasBlinked)
+				if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
 				{
 					transform.position = newPos;
 
@@ -312,16 +309,6 @@ public class Cephapath : MonoBehaviour
 			}
 
 		}
-	}
-
-	private void PlayerDeadReset()
-	{
-		grabLoop.volume = 0;
-
-		transform.position = initPosition;
-
-		foreach (Tentacle t in tentacles)
-			MoveTentacle(t);
 	}
 
 	private void MoveTentacle(Tentacle t)

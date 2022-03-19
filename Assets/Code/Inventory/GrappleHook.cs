@@ -35,11 +35,15 @@ public class GrappleHook : Item
 	public override void Unequip()
 	{
 		base.Unequip();
+		attached = false;
 	}
 
 	public override void Update()
 	{
 		base.Update();
+
+		if (!equipped)
+			return;
 
 		if (PhysicsManager.Instance.ticking)
 		{
