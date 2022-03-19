@@ -93,7 +93,6 @@ public class PlayerVitals : MonoBehaviour
 			UIManager.SetDamagePostProcess(1);
 
 			UIManager.SetWatchRaised(false);
-			UIManager.SetMeterRaised(false);
 
 			UIManager.SetDeathUI(true);
 

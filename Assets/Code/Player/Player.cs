@@ -107,21 +107,21 @@ public class Player : MonoBehaviour
 		else
 			respawn.currentTime = respawn.maxTime;
 
+
+		// Open equipment menu
 		if (Input.GetButtonDown("Equipment"))
 		{
 			int index = firstOrSecond ? 0 : 1;
 			firstOrSecond = !firstOrSecond;
 
-			Inventory inv = PersistentData.GetInstanceForRead().GetPlayerInventory();
+			if (PersistentData.GetInstanceForRead())
+			{
+				Inventory inv = PersistentData.GetInstanceForRead().GetPlayerInventory();
 
-			if (heldItem)
-				heldItem.Unequip();
-
-			heldItem = inv.GetNth(index);
-
-			if (heldItem)
-				heldItem.Equip(hand);
+				ChangeHeldItem(inv.GetNth(index));
+			}
 		}
+
 
 		// Item inputs
 		if (!heldItem)
@@ -136,6 +136,17 @@ public class Player : MonoBehaviour
 			heldItem.Use(Item.UseHow.Main);
 		else if (rmb)
 			heldItem.Use(Item.UseHow.Alt);
+	}
+
+	private void ChangeHeldItem(Item newItem)
+	{
+		if (heldItem)
+			heldItem.Unequip();
+
+		heldItem = newItem;
+
+		if (heldItem)
+			heldItem.Equip(hand);
 	}
 
 	private void Respawn()
