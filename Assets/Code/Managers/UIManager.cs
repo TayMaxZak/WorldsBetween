@@ -8,17 +8,14 @@ public class UIManager : MonoBehaviour
 {
 	private static UIManager Instance;
 
-	private bool watchRaised;
+	//private bool watchRaised;
 
-	public Animator watchAnim;
-
-	private bool meterRaised;
-
-	public Animator meterAnim;
+	//public Animator watchAnim;
 
 	public TMPro.TextMeshProUGUI healthText;
 
 	public Image staminaSlider;
+	public float staminaWidth = 1;
 
 	public Volume deathPostProcess;
 
@@ -38,16 +35,9 @@ public class UIManager : MonoBehaviour
 
 	public static void SetWatchRaised(bool raised)
 	{
-		Instance.watchRaised = raised;
+		//Instance.watchRaised = raised;
 
-		Instance.watchAnim.SetBool("Raised", raised);
-	}
-
-	public static void SetMeterRaised(bool raised)
-	{
-		Instance.meterRaised = raised;
-
-		Instance.meterAnim.SetBool("Raised", raised);
+		//Instance.watchAnim.SetBool("Raised", raised);
 	}
 
 	public static void SetCurrentHealth(int health)
@@ -57,7 +47,7 @@ public class UIManager : MonoBehaviour
 
 	public static void SetCurrentStamina(float stamina)
 	{
-		Instance.staminaSlider.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stamina * 100);
+		Instance.staminaSlider.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stamina * Instance.staminaWidth);
 	}
 
 	public static void SetDeathPostProcess(float death)
