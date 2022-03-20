@@ -759,6 +759,7 @@ MonoBehaviour:
   healthText: {fileID: 805622450}
   staminaSlider: {fileID: 805622449}
   staminaWidth: 0.2
+  heldItemImage: {fileID: 3964215063533455037}
   deathPostProcess: {fileID: 2719366234491939709}
   damagePostProcess: {fileID: 2056025807}
   deathCanvas: {fileID: 1712392478}
@@ -1347,10 +1348,6 @@ PrefabInstance:
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
       value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.genRangePlayable
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name

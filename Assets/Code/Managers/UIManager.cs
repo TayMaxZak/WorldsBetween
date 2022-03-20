@@ -17,6 +17,10 @@ public class UIManager : MonoBehaviour
 	public Image staminaSlider;
 	public float staminaWidth = 1;
 
+
+	public Image heldItemImage;
+
+
 	public Volume deathPostProcess;
 
 	public Volume damagePostProcess;
@@ -63,5 +67,10 @@ public class UIManager : MonoBehaviour
 	public static void SetDeathUI(bool show)
 	{
 		Instance.deathCanvas.SetActive(show);
+	}
+
+	public static void SetHeldItem(Item heldItem)
+	{
+		Instance.heldItemImage.sprite = heldItem.icon;
 	}
 }

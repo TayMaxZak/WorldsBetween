@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
 			// Make temp copy of item asset
 			heldItem = Instantiate(heldItem);
 
-			heldItem.Equip(hand);
+			ChangeHeldItem(heldItem);
 		}
 	}
 
@@ -146,7 +146,10 @@ public class Player : MonoBehaviour
 		heldItem = newItem;
 
 		if (heldItem)
+		{
 			heldItem.Equip(hand);
+			UIManager.SetHeldItem(heldItem);
+		}
 	}
 
 	private void Respawn()
