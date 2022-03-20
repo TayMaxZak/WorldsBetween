@@ -16,6 +16,7 @@ public class Chunk
 
 	// Data
 	protected Block[,,] blocks;
+	public bool isFake = false;
 
 	// Transform
 	public Vector3Int position;
@@ -32,7 +33,7 @@ public class Chunk
 	public ChunkMesh chunkMesh = new ChunkMesh();
 	public ChunkGameObject go;
 
-	public void Init(int chunkSize, int scaleFactor)
+	public virtual void Init(int chunkSize, int scaleFactor)
 	{
 		this.chunkSize = chunkSize;
 		this.scaleFactor = scaleFactor;
@@ -144,7 +145,7 @@ public class Chunk
 		WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSize / 2, airCount);
 	}
 
-	private void FlagAdjacentsAsMaybeNearAir(int x, int y, int z)
+	protected void FlagAdjacentsAsMaybeNearAir(int x, int y, int z)
 	{
 		Block block;
 
@@ -225,14 +226,20 @@ public class Chunk
 			chunkMesh.FinishMesh(newMesh);
 
 			procStage = ProcStage.Done;
-			World.WorldBuilder.QueueNextStage(this);
 
-			//Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.cyan, 1);
+			OnDone();
+
+			World.WorldBuilder.QueueNextStage(this);
 
 			OnFinishProcStage();
 		});
 
 		bw.RunWorkerAsync();
+	}
+
+	protected virtual void OnDone()
+	{
+		
 	}
 
 	private ChunkMesh.MeshData MakeMesh()

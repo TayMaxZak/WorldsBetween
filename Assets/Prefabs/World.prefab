@@ -55,10 +55,11 @@ MonoBehaviour:
     enqueueTaskSize: 100
     generatorTaskSize: 32
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
+    fakeChunkPrefab: {fileID: 0}
     spawnFinder:
       extents: {x: 8, y: 5, z: 8}
-    genRangePlayable: 5
-    genRangeScenic: 2
+    genRangePlayable: 4
+    genRangeFake: 10
   lightEngine:
     raysPerBatch: 64
     progressStep: 0.5

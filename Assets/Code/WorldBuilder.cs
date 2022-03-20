@@ -27,6 +27,8 @@ public class WorldBuilder
 	[Header("References")]
 	[SerializeField]
 	private ChunkGameObject chunkPrefab;
+	[SerializeField]
+	private ChunkGameObject fakeChunkPrefab;
 
 	[SerializeField]
 	private SpawnFinder spawnFinder;
@@ -37,27 +39,41 @@ public class WorldBuilder
 	private int genRangePlayable = 5;
 	[SerializeField]
 	[Range(0, 10)]
-	private int genRangeScenic = 2;
+	private int genRangeFake = 2;
 
 	private int generatorsUsed = 0;
 	private int chunksToGen = 0;
 
 	private GameObject chunkRoot;
+	private GameObject fakeChunkRoot;
+
 	private Dictionary<Chunk.ProcStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>();
+	private Dictionary<Chunk.ProcStage, ChunkGenerator> fakeChunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>();
+
+
 	private Queue<KeyValuePair<Vector3Int, Chunk>> chunksToQueue = new Queue<KeyValuePair<Vector3Int, Chunk>>();
 
 	public void Init()
 	{
 		float delay = 0.0f;
+
 		chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
 		{
 			{ Chunk.ProcStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
 			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
 			{ Chunk.ProcStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
-
 		chunkRoot = new GameObject();
 		chunkRoot.name = "Chunks";
+
+		fakeChunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
+		{
+			{ Chunk.ProcStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
+			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.ProcStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
+		};
+		fakeChunkRoot = new GameObject();
+		fakeChunkRoot.name = "Fake Chunks";
 	}
 
 	public async void StartGen(bool instantiate)
@@ -80,22 +96,10 @@ public class WorldBuilder
 		spawnFinder.Reset();
 	}
 
-	public async void StopGen()
-	{
-		Debug.Log("Cancel start");
-
-		active = false;
-
-		while (GeneratorsBusy() > 0) await Task.Delay(100);
-
-		Debug.Log("Cancel complete");
-	}
-
 	public void ResetSpawnFinder()
 	{
 		spawnFinder.Reset();
 	}
-
 
 	public void UpdateSpawnFinder()
 	{
@@ -129,16 +133,30 @@ public class WorldBuilder
 
 		if (genStage >= GenStage.Ready)
 			UpdateSpawnFinder();
+
+		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in fakeChunkGenerators)
+		{
+			fakeChunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
+
+			chunksToGen += entry.Value.GetSize();
+
+			bool empty = entry.Key == Chunk.ProcStage.Init;
+			if (!empty && entry.Value.IsBusy())
+				generatorsUsed++;
+
+			if (empty || (prev.GetSize() == 0))
+				entry.Value.Generate();
+		}
 	}
 
 	public void InstantiateChunks()
 	{
-		int chunkSize = World.GetChunkSize();
+		int actualChunkSize = World.GetChunkSize();
 
 		// Start pos in chunk coordinates
-		Vector3Int origin = World.GetRelativeOrigin() / chunkSize;
+		Vector3Int origin = World.GetRelativeOrigin() / actualChunkSize;
 
-		int range = genRangePlayable;
+		int range = genRangePlayable + genRangeFake;
 
 		// Go through all nearby chunk positions
 		for (int x = origin.x - range; x < origin.x + range; x++)
@@ -147,30 +165,23 @@ public class WorldBuilder
 			{
 				for (int z = origin.z - range; z < origin.z + range; z++)
 				{
-					//bool playable = Mathf.Abs(x) < genRangePlayable && Mathf.Abs(y) < genRangePlayable && Mathf.Abs(z) < genRangePlayable;
+					bool playable = Mathf.Abs(x + 0.5f) < genRangePlayable && Mathf.Abs(y + 0.5f) < genRangePlayable && Mathf.Abs(z + 0.5f) < genRangePlayable;
 
-					//if (!playable)
-					//	continue;
-
-					Vector3Int chunkPos = new Vector3Int(x * chunkSize, y * chunkSize, z * chunkSize);
-
-					// Chunk already exists at this location
-					if (World.GetChunks().ContainsKey(chunkPos))
-						continue;
+					Vector3Int chunkPos = new Vector3Int(x * actualChunkSize, y * actualChunkSize, z * actualChunkSize);
 
 					// Instantiate chunk GameObject
-					ChunkGameObject chunkGO = Object.Instantiate(chunkPrefab, chunkPos, Quaternion.identity, chunkRoot.transform);
-					chunkGO.name = "Chunk " + x + ", " + y + ", " + z;
+					ChunkGameObject chunkGO = Object.Instantiate(playable ? chunkPrefab : fakeChunkPrefab, chunkPos, Quaternion.identity, playable ? chunkRoot.transform : fakeChunkRoot.transform);
+					chunkGO.name = (playable ? "Chunk " : "FakeChunk ") + x + ", " + y + ", " + z;
 
 					// Initialize and register chunk
-					chunkGO.data = new Chunk();
+					chunkGO.data = (playable ? new Chunk() : new FakeChunk());
 					chunkGO.data.SetPos(chunkPos);
 
 					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);
 
 					chunkGO.data.go = chunkGO;
 
-					World.GetChunks().Add(chunkPos, chunkGO.data);
+					World.AddChunk(chunkPos, chunkGO.data);
 				}
 			}
 		}
@@ -181,12 +192,8 @@ public class WorldBuilder
 	public async Task EnqueueAllChunks(Chunk.ProcStage curChunkStage)
 	{
 		// First get all chunks
-		foreach (var entry in World.GetChunks())
+		foreach (var entry in World.GetAllChunks())
 		{
-			//// Default blocks if needed (restarted gen)
-			//if (entry.Value.didInit && curChunkStage == Chunk.ProcStage.Allocate)
-			//	entry.Value.SetBlocksToDefault();
-
 			chunksToQueue.Enqueue(entry);
 		}
 
@@ -214,7 +221,12 @@ public class WorldBuilder
 
 	public void QueueNextStage(Chunk chunk, bool requeue)
 	{
-		chunkGenerators.TryGetValue(chunk.procStage, out ChunkGenerator generator);
+		ChunkGenerator generator;
+
+		if (chunk.isFake)
+			fakeChunkGenerators.TryGetValue(chunk.procStage, out generator);
+		else
+			chunkGenerators.TryGetValue(chunk.procStage, out generator);
 
 		if (generator == null)
 			return;
@@ -230,9 +242,9 @@ public class WorldBuilder
 		return genRangePlayable;
 	}
 
-	public int GetGenRangeScenic()
+	public int GetGenRangeFake()
 	{
-		return genRangeScenic;
+		return genRangeFake;
 	}
 
 	public bool IsGenerating()
@@ -260,6 +272,12 @@ public class WorldBuilder
 				busy++;
 		}
 
+		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in fakeChunkGenerators)
+		{
+			if (entry.Value.IsBusy())
+				busy++;
+		}
+
 		return busy;
 	}
 
@@ -267,7 +285,7 @@ public class WorldBuilder
 	{
 		float firstTimeMult = Mathf.Approximately(progress, 0) ? 2 : 1;
 
-		progress += firstTimeMult * (1f / World.GetChunks().Count) / chunkGenerators.Count;
+		progress += firstTimeMult * (1f / World.GetRealChunkCount()) / (chunkGenerators.Count);
 	}
 
 	public float GetGenProgress()

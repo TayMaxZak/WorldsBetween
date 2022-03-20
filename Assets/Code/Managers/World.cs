@@ -19,6 +19,8 @@ public partial class World : MonoBehaviour
 	private Sun sunObject;
 
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
+	private int realChunkCount = 0;
+	private int fakeChunkCount = 0;
 
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
@@ -289,7 +291,27 @@ public partial class World : MonoBehaviour
 		return Instance.relativeOrigin;
 	}
 
-	public static Dictionary<Vector3Int, Chunk> GetChunks()
+	//public static Dictionary<Vector3Int, Chunk> GetChunks()
+	//{
+	//	return Instance.chunks;
+	//}
+
+	public static void AddChunk(Vector3Int pos, Chunk chunk)
+	{
+		Instance.chunks.Add(pos, chunk);
+
+		if (!chunk.isFake)
+			Instance.realChunkCount++;
+		else
+			Instance.fakeChunkCount++;
+	}
+
+	public static int GetRealChunkCount()
+	{
+		return Instance.realChunkCount;
+	}
+
+	public static Dictionary<Vector3Int, Chunk> GetAllChunks()
 	{
 		return Instance.chunks;
 	}
@@ -311,7 +333,7 @@ public partial class World : MonoBehaviour
 
 	public static int GetWorldSizeScenic()
 	{
-		return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeScenic()) * 2 * Instance.chunkSize;
+		return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeFake()) * 2 * Instance.chunkSize;
 	}
 
 	public static bool Contains(Vector3 pos)
@@ -330,7 +352,7 @@ public partial class World : MonoBehaviour
 		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * worldBuilder.GetGenRangePlayable() * Vector3.one);
 
 		Gizmos.color = Utils.colorPurple;
-		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeScenic()) * Vector3.one);
+		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeFake()) * Vector3.one);
 
 		worldBuilder.DrawGizmo();
 	}

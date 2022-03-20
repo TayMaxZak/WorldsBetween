@@ -105,34 +105,34 @@ public class ChunkGenerator
 			bool validAdj = true;
 			bool requiresAdj = requireAdjacents.Contains(chunk.procStage);
 
-			//// Check if neighboring chunks are ready yet
-			//if (requiresAdj)
-			//{
-			//	for (int i = -1; i <= 1; i++)
-			//	{
-			//		for (int j = -1; j <= 1; j++)
-			//		{
-			//			for (int k = -1; k <= 1; k++)
-			//			{
-			//				if (i == 0 && j == 0 && k == 0)
-			//					continue;
+			// Check if neighboring chunks are ready yet
+			if (requiresAdj)
+			{
+				for (int i = -1; i <= 1; i++)
+				{
+					for (int j = -1; j <= 1; j++)
+					{
+						for (int k = -1; k <= 1; k++)
+						{
+							if (i == 0 && j == 0 && k == 0)
+								continue;
 
-			//				//if (Mathf.Abs(i) != Mathf.Abs(j) || Mathf.Abs(j) != Mathf.Abs(k) || Mathf.Abs(k) != Mathf.Abs(i))
-			//				//	continue;
+							//if (Mathf.Abs(i) != Mathf.Abs(j) || Mathf.Abs(j) != Mathf.Abs(k) || Mathf.Abs(k) != Mathf.Abs(i))
+							//	continue;
 
-			//				// Try every orthagonal and diagonal direction
-			//				Vector3Int adjPos = chunk.position + new Vector3Int(i, j, k) * World.GetChunkSize();
-			//				Chunk adj = World.GetChunkFor(adjPos);
-			//				if (adj == null || adj.procStage < chunk.procStage || adj.isProcessing)
-			//				{
-			//					// Wait for threaded processing
-			//					while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
-			//						await Task.Delay(penaltyDelay);
-			//				}
-			//			}
-			//		}
-			//	}
-			//}
+							// Try every orthagonal and diagonal direction
+							Vector3Int adjPos = chunk.position + new Vector3Int(i, j, k) * World.GetChunkSize();
+							Chunk adj = World.GetChunkFor(adjPos);
+							if (adj == null || adj.procStage < chunk.procStage || adj.isProcessing)
+							{
+								// Wait for threaded processing
+								while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
+									await Task.Delay(penaltyDelay);
+							}
+						}
+					}
+				}
+			}
 
 			// Either doesn't care about adjacents or has adjacents
 			if (!requiresAdj || validAdj)

@@ -43,7 +43,7 @@ public class WorldEditor : Editor
 
 		EditorGUILayout.LabelField("World Size", EditorStyles.boldLabel);
 
-		EditorGUILayout.LabelField("Chunk count: ", World.GetChunks().Count.ToString());
+		EditorGUILayout.LabelField("Chunk count: ", World.GetRealChunkCount().ToString());
 
 		////////////////////
 		EditorGUILayout.Space();
