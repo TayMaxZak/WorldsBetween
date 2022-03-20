@@ -53,7 +53,7 @@ public class GrappleHook : Item
 
 				if (hit.hit)
 				{
-					if (World.GetCorner(hit.blockPos.x, hit.blockPos.y, hit.blockPos.z))
+					if (!World.GetBlockFor(hit.blockPos.x, hit.blockPos.y, hit.blockPos.z).IsAir())
 					{
 						cornerPos = hit.blockPos;
 					}

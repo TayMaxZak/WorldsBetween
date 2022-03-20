@@ -154,7 +154,7 @@ public partial class World : MonoBehaviour
 	{
 		WorldInit();
 
-		await WorldBuilder.EnqueueAllChunks(Chunk.ProcStage.Allocate);
+		await WorldBuilder.EnqueueAllChunks(Chunk.ProcStage.Init);
 
 		// Recalc light after world builder is finished
 		while (WorldBuilder.IsGenerating())
@@ -212,7 +212,7 @@ public partial class World : MonoBehaviour
 	{
 		Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.procStage == Chunk.ProcStage.Allocate)
+		if (chunk == null || chunk.procStage == Chunk.ProcStage.Init)
 			return Block.empty;
 
 		return chunk.GetBlock(
@@ -227,57 +227,57 @@ public partial class World : MonoBehaviour
 		return GetBlockFor(pos.x, pos.y, pos.z);
 	}
 
-	public static void FillCorner(int x, int y, int z)
-	{
-		Chunk chunk = GetChunkFor(x, y, z);
+	//public static void FillCorner(int x, int y, int z)
+	//{
+	//	Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
-			return;
+	//	if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
+	//		return;
 
-		ChunkBitArray corners = chunk.GetCorners();
-		corners.Set(true,
-			x - chunk.position.x,
-			y - chunk.position.y,
-			z - chunk.position.z
-		);
+	//	ChunkBitArray corners = ((RealChunk)chunk).GetCorners();
+	//	corners.Set(true,
+	//		x - chunk.position.x,
+	//		y - chunk.position.y,
+	//		z - chunk.position.z
+	//	);
 
-		ChunkBitArray blurredCorners = chunk.GetBlurredCorners();
-		blurredCorners.Set(true,
-			(x - chunk.position.x) / 2,
-			(y - chunk.position.y) / 2,
-			(z - chunk.position.z) / 2
-		);
-	}
+	//	ChunkBitArray blurredCorners = ((RealChunk)chunk).GetBlurredCorners();
+	//	blurredCorners.Set(true,
+	//		(x - chunk.position.x) / 2,
+	//		(y - chunk.position.y) / 2,
+	//		(z - chunk.position.z) / 2
+	//	);
+	//}
 
-	public static bool GetCorner(int x, int y, int z)
-	{
-		Chunk chunk = GetChunkFor(x, y, z);
+	//public static bool GetCorner(int x, int y, int z)
+	//{
+	//	Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
-			return true;
+	//	if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
+	//		return true;
 
-		ChunkBitArray corners = chunk.GetCorners();
-		return corners.Get(
-			x - chunk.position.x,
-			y - chunk.position.y,
-			z - chunk.position.z
-		);
-	}
+	//	ChunkBitArray corners = ((RealChunk)chunk).GetCorners();
+	//	return corners.Get(
+	//		x - chunk.position.x,
+	//		y - chunk.position.y,
+	//		z - chunk.position.z
+	//	);
+	//}
 
-	public static bool GetBlurredCorner(int x, int y, int z)
-	{
-		Chunk chunk = GetChunkFor(x, y, z);
+	//public static bool GetBlurredCorner(int x, int y, int z)
+	//{
+	//	Chunk chunk = GetChunkFor(x, y, z);
 
-		if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
-			return true;
+	//	if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
+	//		return true;
 
-		ChunkBitArray corners = chunk.GetBlurredCorners();
-		return corners.Get(
-			(x - chunk.position.x) / 2,
-			(y - chunk.position.y) / 2,
-			(z - chunk.position.z) / 2
-		);
-	}
+	//	ChunkBitArray corners = ((RealChunk)chunk).GetBlurredCorners();
+	//	return corners.Get(
+	//		(x - chunk.position.x) / 2,
+	//		(y - chunk.position.y) / 2,
+	//		(z - chunk.position.z) / 2
+	//	);
+	//}
 
 	public static int GetChunkSize()
 	{

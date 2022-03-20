@@ -8,37 +8,34 @@ public class Chunk
 {
 	public enum ProcStage
 	{
-		Allocate,
+		Init,
 		Generate,
 		MakeMesh,
 		Done
 	}
-	public ProcStage procStage = ProcStage.Allocate;
 
-	public Vector3Int position; // Coordinates of chunk
+	// Data
+	protected Block[,,] blocks;
 
+	// Transform
+	public Vector3Int position;
+	protected int chunkSize = 16;
+	protected int scaleFactor = 1;
 
-	public bool atEdge = false;
-
+	// State
+	public ProcStage procStage = ProcStage.Init;
 	public bool isProcessing = false;
-
-	private int chunkSize = 8;
-
-	private Block[,,] blocks;
-
-	private ChunkBitArray corners;
-	private ChunkBitArray blurredCorners;
-
-	public ChunkMesh chunkMesh = new ChunkMesh();
-
-	public ChunkGameObject go;
-
+	//public bool atEdge = false;
 	public bool didInit = false;
 
+	// References
+	public ChunkMesh chunkMesh = new ChunkMesh();
+	public ChunkGameObject go;
 
-	public void Init(int chunkSize)
+	public void Init(int chunkSize, int scaleFactor)
 	{
 		this.chunkSize = chunkSize;
+		this.scaleFactor = scaleFactor;
 
 		CreateCollections();
 
@@ -50,7 +47,7 @@ public class Chunk
 		position = pos;
 	}
 
-	public void CreateCollections()
+	public virtual void CreateCollections()
 	{
 		blocks = new Block[chunkSize, chunkSize, chunkSize];
 
@@ -66,12 +63,8 @@ public class Chunk
 				}
 			}
 		}
-
-		// Starts empty, fills in 8 corners per block
-		corners = new ChunkBitArray(chunkSize, false);
-		// Downsampled corners, corners OF corners. Very inaccurate but good enough for light approximation
-		blurredCorners = new ChunkBitArray(chunkSize / 2, false);
 	}
+
 
 	#region Generate
 	public void AsyncGenerate()
@@ -79,7 +72,7 @@ public class Chunk
 		BkgThreadGenerate(this, System.EventArgs.Empty);
 	}
 
-	private void BkgThreadGenerate(object sender, System.EventArgs e)
+	protected void BkgThreadGenerate(object sender, System.EventArgs e)
 	{
 		isProcessing = true;
 
@@ -103,29 +96,13 @@ public class Chunk
 			procStage = ProcStage.MakeMesh;
 			World.WorldBuilder.QueueNextStage(this);
 
-			//Debug.DrawRay(position, Vector3.ClampMagnitude(World.GetRelativeOrigin() - position, 16), Color.green, 1);
-
 			OnFinishProcStage();
 		});
 
 		bw.RunWorkerAsync();
 	}
 
-	public void SetBlocksToDefault()
-	{
-		for (byte x = 0; x < chunkSize; x++)
-		{
-			for (byte y = 0; y < chunkSize; y++)
-			{
-				for (byte z = 0; z < chunkSize; z++)
-				{
-					DefaultBlock(x, y, z);
-				}
-			}
-		}
-	}
-
-	private void DefaultBlock(int x, int y, int z)
+	protected virtual void DefaultBlock(int x, int y, int z)
 	{
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
 		bool sky = coord.y >= -1;
@@ -134,20 +111,15 @@ public class Chunk
 		blocks[x, y, z].maybeNearAir = 0;
 	}
 
-	private void Generate()
+	protected virtual void Generate()
 	{
 		List<Modifier> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)
-			ApplyModifier(modifiers[i]);
+			modifiers[i].ApplyModifier(this);
 	}
 
-	private void ApplyModifier(Modifier modifier)
-	{
-		modifier.ApplyModifier(this);
-	}
-
-	public void CacheDataFromBlocks()
+	public virtual void CacheDataFromBlocks()
 	{
 		int airCount = 0;
 
@@ -159,11 +131,7 @@ public class Chunk
 				{
 					// Only care if this block is an air block
 					if (!blocks[x, y, z].IsAir())
-					{
-						FillCorners(x + position.x, y + position.y, z + position.z);
-
 						continue;
-					}
 
 					airCount++;
 
@@ -213,22 +181,6 @@ public class Chunk
 		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
 			block.maybeNearAir = 255;
 	}
-
-	private void FillCorners(int x, int y, int z)
-	{
-		// Apply
-		World.FillCorner(x, y, z);
-
-		World.FillCorner(x + 1, y, z);
-		World.FillCorner(x, y + 1, z);
-		World.FillCorner(x, y, z + 1);
-
-		World.FillCorner(x + 1, y + 1, z);
-		World.FillCorner(x, y + 1, z + 1);
-		World.FillCorner(x + 1, y, z + 1);
-
-		World.FillCorner(x + 1, y + 1, z + 1);
-	}
 	#endregion
 
 	#region Mesh
@@ -237,7 +189,7 @@ public class Chunk
 		BkgThreadMakeMesh(this, System.EventArgs.Empty);
 	}
 
-	private void BkgThreadMakeMesh(object sender, System.EventArgs e)
+	protected virtual void BkgThreadMakeMesh(object sender, System.EventArgs e)
 	{
 		isProcessing = true;
 
@@ -290,29 +242,19 @@ public class Chunk
 	#endregion
 
 	// Notify that this chunk has completed a stage of processing
-	public void OnFinishProcStage()
+	public virtual void OnFinishProcStage()
 	{
 		World.WorldBuilder.ChunkFinishedProcStage();
 	}
 
 	// Utility
-	public bool ContainsPos(int x, int y, int z)
-	{
-		return x >= 0 && chunkSize > x && y >= 0 && chunkSize > y && z >= 0 && chunkSize > z;
-	}
+	//public bool ContainsPos(int x, int y, int z)
+	//{
+	//	return x >= 0 && chunkSize > x && y >= 0 && chunkSize > y && z >= 0 && chunkSize > z;
+	//}
 
 	public Block GetBlock(int x, int y, int z)
 	{
 		return blocks[x, y, z];
-	}
-
-	public ChunkBitArray GetCorners()
-	{
-		return corners;
-	}
-
-	public ChunkBitArray GetBlurredCorners()
-	{
-		return blurredCorners;
 	}
 }

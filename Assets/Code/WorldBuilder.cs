@@ -51,7 +51,7 @@ public class WorldBuilder
 		float delay = 0.0f;
 		chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
 		{
-			{ Chunk.ProcStage.Allocate, new ChunkGenerator(0, 1, enqueueTaskSize) },
+			{ Chunk.ProcStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
 			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
 			{ Chunk.ProcStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
@@ -73,7 +73,7 @@ public class WorldBuilder
 		}
 
 		// Enqueue chunks
-		await EnqueueAllChunks(Chunk.ProcStage.Allocate);
+		await EnqueueAllChunks(Chunk.ProcStage.Init);
 
 		genStage = GenStage.GenerateChunks;
 
@@ -119,7 +119,7 @@ public class WorldBuilder
 
 			chunksToGen += entry.Value.GetSize();
 
-			bool empty = entry.Key == Chunk.ProcStage.Allocate;
+			bool empty = entry.Key == Chunk.ProcStage.Init;
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
