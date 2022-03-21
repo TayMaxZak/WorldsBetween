@@ -183,6 +183,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cephapath (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: maxDistance
       value: 10000
@@ -337,6 +341,10 @@ PrefabInstance:
     - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: m_Name
       value: Cephapath
+      objectReference: {fileID: 0}
+    - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: maxDistance
@@ -993,6 +1001,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cephapath (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9004443760993121363, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
       propertyPath: maxDistance
       value: 10000
@@ -1338,10 +1350,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: seed
-      value: 8401168953596830720
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
       value: 
       objectReference: {fileID: 2035213415}
@@ -1350,21 +1358,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: randomizeSeed
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.genRangeFake
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.fakeChunkPrefab
-      value: 
-      objectReference: {fileID: 6042555085825754433, guid: 4b4b891d8840f164199b476385ce3f7e, type: 3}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
       value: World
@@ -1514,7 +1510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339e35b12209a3f478b2b07db09bebe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightColor: {r: 1.9766747, g: 1.8834887, b: 1.7394737, a: 1}
+  lightColor: {r: 1.9766746, g: 1.91458, b: 1.8214383, a: 1}
 --- !u!114 &2056025807 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6576889597697053752, guid: ebcbb3229181918489f3e7fc0f6b155b, type: 3}
@@ -2409,10 +2405,6 @@ PrefabInstance:
     - target: {fileID: 8966476411509665587, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
       propertyPath: m_Name
       value: WorldLightAtlas
-      objectReference: {fileID: 0}
-    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
-      propertyPath: simpleMode
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
       propertyPath: m_RootOrder

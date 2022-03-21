@@ -153,19 +153,22 @@ public class WorldBuilder
 	{
 		int actualChunkSize = World.GetChunkSize();
 
-		// Start pos in chunk coordinates
-		Vector3Int origin = World.GetRelativeOrigin() / actualChunkSize;
-
 		int range = genRangePlayable + genRangeFake;
 
 		// Go through all nearby chunk positions
-		for (int x = origin.x - range; x < origin.x + range; x++)
+		for (int x = -range; x < range; x++)
 		{
-			for (int y = origin.y - range; y < origin.y + range; y++)
+			for (int y = -range; y < range; y++)
 			{
-				for (int z = origin.z - range; z < origin.z + range; z++)
+				for (int z = -range; z < range; z++)
 				{
-					bool playable = Mathf.Abs(x + 0.5f) < genRangePlayable && Mathf.Abs(y + 0.5f) < genRangePlayable && Mathf.Abs(z + 0.5f) < genRangePlayable;
+					bool playable =
+						x >= -genRangePlayable && x < genRangePlayable &&
+						y >= -genRangePlayable && y < genRangePlayable &&
+						z >= -genRangePlayable && z < genRangePlayable;
+
+					if (!playable)
+						continue;
 
 					Vector3Int chunkPos = new Vector3Int(x * actualChunkSize, y * actualChunkSize, z * actualChunkSize);
 

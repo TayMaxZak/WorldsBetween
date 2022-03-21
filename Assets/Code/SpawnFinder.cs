@@ -12,7 +12,7 @@ public class SpawnFinder
 	private bool isBusy;
 
 	private int attemptsLeft;
-	private int attemptsMax = 2000;
+	private int attemptsMax = 10000;
 
 	protected delegate void BlockPosAction(Vector3Int pos);
 
@@ -27,8 +27,12 @@ public class SpawnFinder
 
 	private bool success = false;
 
+	private System.Random random;
+
 	public void Reset()
 	{
+		random = new System.Random(0);
+
 		pos = Vector3Int.zero;
 
 		isBusy = false;
@@ -55,9 +59,9 @@ public class SpawnFinder
 		// Move to a new location in the world near-ish the origin
 		Vector3Int testBounds = Vector3Int.one * 32;
 		pos = new Vector3Int(
-			(int)(testBounds.x * SeedlessRandom.NextFloatInRange(-1, 1)),
-			(int)(testBounds.y * SeedlessRandom.NextFloatInRange(-1, 1)),
-			(int)(testBounds.z * SeedlessRandom.NextFloatInRange(-1, 1))
+			(int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
+			(int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
+			(int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
 		);
 	}
 

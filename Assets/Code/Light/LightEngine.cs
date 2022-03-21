@@ -284,9 +284,22 @@ public class LightEngine
 				};
 			}
 			Chunk chunk = World.GetChunkFor(blockCur);
+			if (chunk == null)
+			{
+				Debug.DrawLine(source, cur, sun.lightColor, 0.5f);
+
+				return new LightRayResult()
+				{
+					source = source,
+					stepSize = 1,
+
+					success = true,
+					points = rayPoints
+				};
+			}
 
 			// Chunk is not ready
-			while (chunk.procStage < Chunk.ProcStage.Done)
+			if (chunk.procStage < Chunk.ProcStage.Done)
 			{
 				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.red, 5);
 

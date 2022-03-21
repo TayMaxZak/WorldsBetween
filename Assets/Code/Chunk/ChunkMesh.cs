@@ -171,16 +171,18 @@ public class ChunkMesh
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
-						// Only render viewable faces for fake chunks
-						if (chunk.isFake)
-						{
-							if (Vector3.Dot(directions[d], faceOffset) > 0.33f)
-								continue;
-						}
-
 						faceOffset.x = chunk.position.x + x + directions[d].x;
 						faceOffset.y = chunk.position.y + y + directions[d].y;
 						faceOffset.z = chunk.position.z + z + directions[d].z;
+
+						// Only render viewable faces for fake chunks
+						if (chunk.isFake)
+						{
+							Vector3 checkDir = new Vector3(Mathf.RoundToInt(faceOffset.x), Mathf.RoundToInt(faceOffset.y), Mathf.RoundToInt(faceOffset.z)).normalized;
+
+							if (Vector3.Dot(directions[d], checkDir) > 0.5f)
+								continue;
+						}
 
 						MeshData blockMeshData = ModelsList.GetModelFor(0).faces[d].meshData;
 
