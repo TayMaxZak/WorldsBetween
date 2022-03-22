@@ -18,9 +18,9 @@ public class ChunkGenerator
 
 	private int edgeChunks = 0;
 
-	private static readonly List<Chunk.ProcStage> requireAdjacents = new List<Chunk.ProcStage> {
-		Chunk.ProcStage.Generate,
-		Chunk.ProcStage.MakeMesh,
+	private static readonly List<Chunk.BuildStage> requireAdjacents = new List<Chunk.BuildStage> {
+		Chunk.BuildStage.Generate,
+		Chunk.BuildStage.MakeMesh,
 	};
 
 	public ChunkGenerator(float cycleDelay, int queueCount, int throughput)
@@ -103,7 +103,7 @@ public class ChunkGenerator
 			Chunk chunk = queue.Dequeue();
 
 			bool validAdj = true;
-			bool requiresAdj = requireAdjacents.Contains(chunk.procStage);
+			bool requiresAdj = requireAdjacents.Contains(chunk.buildStage);
 
 			// Check if neighboring chunks are ready yet
 			if (requiresAdj)
@@ -122,11 +122,11 @@ public class ChunkGenerator
 
 							// Try every orthagonal and diagonal direction
 							Vector3Int adjPos = chunk.position + new Vector3Int(i, j, k) * World.GetChunkSize();
-							Chunk adj = World.GetChunkFor(adjPos);
-							if (adj == null || adj.procStage < chunk.procStage || adj.isProcessing)
+							Chunk adj = World.GetChunk(adjPos);
+							if (adj == null || adj.buildStage < chunk.buildStage || adj.isProcessing)
 							{
 								// Wait for threaded processing
-								while (adj != null && (adj.isProcessing || adj.procStage < chunk.procStage))
+								while (adj != null && (adj.isProcessing || adj.buildStage < chunk.buildStage))
 									await Task.Delay(penaltyDelay);
 							}
 						}
@@ -196,24 +196,24 @@ public class ChunkGenerator
 
 	private void ProcessChunk(Chunk chunk)
 	{
-		switch (chunk.procStage)
+		switch (chunk.buildStage)
 		{
-			case Chunk.ProcStage.Init: // Create blocks
+			case Chunk.BuildStage.Init: // Create blocks
 				{
 					chunk.Init(World.GetChunkSize(), 1);
 
-					chunk.procStage = Chunk.ProcStage.Generate;
+					chunk.buildStage = Chunk.BuildStage.Generate;
 					World.WorldBuilder.QueueNextStage(chunk);
 
 					chunk.OnFinishProcStage();
 				}
 				break;
-			case Chunk.ProcStage.Generate: // Generate terrain
+			case Chunk.BuildStage.Generate: // Generate terrain
 				{
 					chunk.AsyncGenerate();
 				}
 				break;
-			case Chunk.ProcStage.MakeMesh: // Cache data and build mesh
+			case Chunk.BuildStage.MakeMesh: // Cache data and build mesh
 				{
 					chunk.AsyncMakeMesh();
 				}

@@ -80,13 +80,13 @@ public partial class PhysicsManager : MonoBehaviour
 
 		for (int i = 1; i <= steps; i++)
 		{
-			bool occluded = !World.GetBlockFor(
+			bool blocked = World.GetBlock(
 				(int)(blockPos.x + direction.x * i + adj),
 				(int)(blockPos.y + direction.y * i + adj),
 				(int)(blockPos.z + direction.z * i + adj)
-			).IsAir();
+			).IsRigid();
 
-			if (occluded)
+			if (blocked)
 				return new BlockCastHit(new Vector3Int((int)(blockPos.x + direction.x * i + adj), (int)(blockPos.y + direction.y * i + adj), (int)(blockPos.z + direction.z * i + adj)));
 		}
 
@@ -102,13 +102,13 @@ public partial class PhysicsManager : MonoBehaviour
 
 		for (int i = 1; i <= (b - a).magnitude; i++)
 		{
-			bool occluded = !World.GetBlockFor(
+			bool blocked = World.GetBlock(
 				(int)(blockPos.x + direction.x * i + adj),
 				(int)(blockPos.y + direction.y * i + adj),
 				(int)(blockPos.z + direction.z * i + adj)
-			).IsAir();
+			).IsRigid();
 
-			if (occluded)
+			if (blocked)
 				return new BlockCastHit(new Vector3Int((int)(blockPos.x + direction.x * i + adj), (int)(blockPos.y + direction.y * i + adj), (int)(blockPos.z + direction.z * i + adj)));
 		}
 
@@ -178,11 +178,11 @@ public partial class PhysicsManager : MonoBehaviour
 				Vector3 oldBP = testBlockPos;
 				testBlockPos = new Vector3Int(Utils.ToInt(testPos.x), Utils.ToInt(testPos.y), Utils.ToInt(testPos.z));
 
-				bool occluded = !World.GetBlockFor(testBlockPos).IsAir();
+				bool blocked = World.GetBlock(testBlockPos).IsRigid();
 
 				//Debug.DrawLine(oldBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, occluded ? Color.green : Instance.randomColor, occluded ? 2 : 1);
 
-				if (occluded)
+				if (blocked)
 				{
 					return new BlockCastHit(testBlockPos, -lastDir);
 				}

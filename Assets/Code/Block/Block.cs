@@ -1,49 +1,71 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Specialized;
 
 public class Block
 {
-	public static readonly Block empty = new Block(0, 0, 0, 255, 0);
+	private BitVector32 bits;
 
-	public byte localX, localY, localZ; // Coordinates in chunk local space
-
-	public byte opacity; // How full is this block (0 is empty air, 15 is completely solid)
-
-	// TODO: Make into a flags enum; more clear what each value means, more memory efficient, etc.
-	public byte maybeNearAir; // Is this block visible to the player
-
-	public byte blockType; // 0 = normal block, 1 = grass
-
-	public Block(byte localX, byte localY, byte localZ, byte opacity) : this(localX, localY, localZ, opacity, 0)
+	public Block()
 	{
-		this.localX = localX;
-		this.localY = localY;
-		this.localZ = localZ;
-
-		maybeNearAir = 0;
-
-		this.opacity = opacity;
+		bits = new BitVector32();
 	}
 
-	private Block(byte localX, byte localY, byte localZ, byte opacity, byte nearAir)
+	public Block(bool exists, bool opaque, bool rigid, byte blockType)
 	{
-		this.localX = localX;
-		this.localY = localY;
-		this.localZ = localZ;
+		bits = new BitVector32();
 
-		maybeNearAir = nearAir;
+		bits[BlockUtils.exists] = exists ? 1 : 0;
+		bits[BlockUtils.opaque] = opaque ? 1 : 0;
+		bits[BlockUtils.rigid] = rigid ? 1 : 0;
+		bits[BlockUtils.needsMesh] = 0;
 
-		this.opacity = opacity;
+		bits[BlockUtils.blockType] = blockType;
 	}
 
-	public bool IsAir()
+	public bool IsFilled()
 	{
-		return opacity == 0;
+		return bits[BlockUtils.exists] == 1;
 	}
 
-	public Vector3Int GetLocalPosVector()
+	public bool IsOpaque()
 	{
-		return new Vector3Int(localX, localY, localZ);
+		return bits[BlockUtils.opaque] == 1;
+	}
+
+	public bool IsRigid()
+	{
+		return bits[BlockUtils.rigid] == 1;
+	}
+
+	public bool GetNeedsMesh()
+	{
+		return bits[BlockUtils.rigid] == 1;
+	}
+
+	public void SetNeedsMesh(bool needsMesh)
+	{
+		bits[BlockUtils.needsMesh] = needsMesh ? 1 : 0;
+	}
+
+	private static class BlockUtils
+	{
+		public static BitVector32.Section exists;       // 1 bit: Air/empty/no block, or not
+		public static BitVector32.Section opaque;       // 1 bit: Hides mesh rendering and stops light rays, or not
+		public static BitVector32.Section rigid;        // 1 bit: Stops physics objects, or not
+		public static BitVector32.Section needsMesh;    // 1 bit: Flag used for building mesh faster
+
+		public static BitVector32.Section blockType;    // 1 byte: Which type of block is this
+
+		static BlockUtils()
+		{
+			exists = BitVector32.CreateSection(1);
+			opaque = BitVector32.CreateSection(1, exists);
+			rigid = BitVector32.CreateSection(1, opaque);
+			needsMesh = BitVector32.CreateSection(1, rigid);
+
+			blockType = BitVector32.CreateSection(8, needsMesh);
+		}
 	}
 }

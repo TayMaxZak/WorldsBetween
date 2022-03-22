@@ -60,9 +60,9 @@ public class NoiseModifier : Modifier
 		if (noise > boundary)
 		{
 			if (addOrSub)
-				World.GetBlockFor(pos.x, pos.y, pos.z).opacity = 255;
+				World.SetBlock(pos.x, pos.y, pos.z, BlockList.FILLED);
 			else
-				World.GetBlockFor(pos.x, pos.y, pos.z).opacity = 0;
+				World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
 		}
 	}
 

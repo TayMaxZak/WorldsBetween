@@ -108,7 +108,7 @@ public class ChunkMesh
 		}
 	}
 
-	public MeshData MakeSurfaceAndMesh(Block[,,] blocks)
+	public MeshData MakeMesh()
 	{
 		Block block;
 
@@ -133,20 +133,20 @@ public class ChunkMesh
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					block = blocks[x, y, z];
+					block = chunk.GetBlock(x,y,z);
 
 					// No model for this block
-					if (block.IsAir())
+					if (!block.IsFilled())
 					{
 						// Air should not count as near air?
-						block.maybeNearAir = 0;
+						block.SetNeedsMesh(false);
 						continue;
 					}
 					// Solid
 					else
 					{
 						// Not near air
-						if (block.maybeNearAir == 0)
+						if (!block.GetNeedsMesh())
 							continue;
 					}
 
@@ -159,7 +159,7 @@ public class ChunkMesh
 						faceOffset.y = chunk.position.y + y + directions[d].y;
 						faceOffset.z = chunk.position.z + z + directions[d].z;
 
-						if (!World.GetBlockFor(faceOffset.x, faceOffset.y, faceOffset.z).IsAir())
+						if (World.GetBlock(faceOffset.x, faceOffset.y, faceOffset.z).IsOpaque())
 							continue;
 						airDirections.Add(d);
 					}
@@ -175,8 +175,8 @@ public class ChunkMesh
 						faceOffset.y = chunk.position.y + y + directions[d].y;
 						faceOffset.z = chunk.position.z + z + directions[d].z;
 
-						// Only render viewable faces for fake chunks
-						if (chunk.isFake)
+						// Only render easily viewable faces for non-near chunks
+						if (chunk.chunkType != Chunk.ChunkType.Close)
 						{
 							Vector3 checkDir = new Vector3(Mathf.RoundToInt(faceOffset.x), Mathf.RoundToInt(faceOffset.y), Mathf.RoundToInt(faceOffset.z)).normalized;
 
@@ -208,19 +208,6 @@ public class ChunkMesh
 							// Calculate normals
 							norm = Vector3.zero;
 
-							// Based on adjacent vertices (more likely to fail, more loops, softer result)
-							//for (int i = -1; i <= 1; i++)
-							//{
-							//	for (int j = -1; j <= 1; j++)
-							//	{
-							//		for (int k = -1; k <= 1; k++)
-							//		{
-							//			if (!World.GetCorner(Mathf.RoundToInt(chunk.position.x + x + vert.x + i + 0.5f), Mathf.RoundToInt(chunk.position.y + y + vert.y + j + 0.5f), Mathf.RoundToInt(chunk.position.z + z + vert.z + k + 0.5f)))
-							//				norm += new Vector3Int(i, j, k);
-							//		}
-							//	}
-							//}
-
 							// Based on adjacent blocks (never fails, angular result)
 							for (int i = -1; i <= 1; i += 2)
 							{
@@ -228,7 +215,7 @@ public class ChunkMesh
 								{
 									for (int k = -1; k <= 1; k += 2)
 									{
-										if (World.GetBlockFor(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsAir())
+										if (!World.GetBlock(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsOpaque())
 										{
 											norm += new Vector3Int(i, j, k);
 
@@ -271,7 +258,7 @@ public class ChunkMesh
 
 					// No surfaces created, not actually near air
 					if (surfacesAdded == 0)
-						block.maybeNearAir = 0;
+						block.SetNeedsMesh(false);
 				}
 			}
 		}

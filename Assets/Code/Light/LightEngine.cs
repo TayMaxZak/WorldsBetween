@@ -283,7 +283,7 @@ public class LightEngine
 					points = rayPoints
 				};
 			}
-			Chunk chunk = World.GetChunkFor(blockCur);
+			Chunk chunk = World.GetChunk(blockCur);
 			if (chunk == null)
 			{
 				Debug.DrawLine(source, cur, sun.lightColor, 0.5f);
@@ -299,7 +299,7 @@ public class LightEngine
 			}
 
 			// Chunk is not ready
-			if (chunk.procStage < Chunk.ProcStage.Done)
+			if (chunk.buildStage < Chunk.BuildStage.Done)
 			{
 				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.red, 5);
 
@@ -314,7 +314,7 @@ public class LightEngine
 			}
 
 			// Should block light? Check if inside opaque block if at block resolution
-			bool occupied = !World.GetBlockFor(blockCur.x, blockCur.y, blockCur.z).IsAir();
+			bool occupied = World.GetBlock(blockCur.x, blockCur.y, blockCur.z).IsOpaque();
 
 			// Remember this result
 			if (rayPoints == null)

@@ -6,7 +6,14 @@ using System.ComponentModel;
 [System.Serializable]
 public class Chunk
 {
-	public enum ProcStage
+	public enum ChunkType
+	{
+		Close,
+		Far,
+		Bkg
+	}
+
+	public enum BuildStage
 	{
 		Init,
 		Generate,
@@ -15,8 +22,8 @@ public class Chunk
 	}
 
 	// Data
-	protected Block[,,] blocks;
-	public bool isFake = false;
+	public ChunkType chunkType;
+	protected Block[] blocks;
 
 	// Transform
 	public Vector3Int position;
@@ -24,7 +31,7 @@ public class Chunk
 	protected int scaleFactor = 1;
 
 	// State
-	public ProcStage procStage = ProcStage.Init;
+	public BuildStage buildStage = BuildStage.Init;
 	public bool isProcessing = false;
 	//public bool atEdge = false;
 	public bool didInit = false;
@@ -48,9 +55,19 @@ public class Chunk
 		position = pos;
 	}
 
+	public Block GetBlock(int x, int y, int z)
+	{
+		return blocks[x * chunkSize * chunkSize + y * chunkSize + z];
+	}
+
+	public Block SetBlock(int x, int y, int z, Block b)
+	{
+		return (blocks[x * chunkSize * chunkSize + y * chunkSize + z] = b);
+	}
+
 	public virtual void CreateCollections()
 	{
-		blocks = new Block[chunkSize, chunkSize, chunkSize];
+		blocks = new Block[chunkSize * chunkSize * chunkSize];
 
 		for (byte x = 0; x < chunkSize; x++)
 		{
@@ -58,7 +75,7 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					blocks[x, y, z] = new Block(x, y, z, 0);
+					SetBlock(x, y, z, BlockList.EMPTY);
 
 					DefaultBlock(x, y, z);
 				}
@@ -94,7 +111,7 @@ public class Chunk
 
 			CacheDataFromBlocks();
 
-			procStage = ProcStage.MakeMesh;
+			buildStage = BuildStage.MakeMesh;
 			World.WorldBuilder.QueueNextStage(this);
 
 			OnFinishProcStage();
@@ -106,10 +123,9 @@ public class Chunk
 	protected virtual void DefaultBlock(int x, int y, int z)
 	{
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
-		bool sky = coord.y >= -1;
-		blocks[x, y, z].opacity = (byte)(sky ? 0 : 255);
+		bool sky = coord.y >= 0;
 
-		blocks[x, y, z].maybeNearAir = 0;
+		SetBlock(x, y, z, sky ? BlockList.EMPTY : BlockList.FILLED);
 	}
 
 	protected virtual void Generate()
@@ -130,8 +146,8 @@ public class Chunk
 			{
 				for (byte z = 0; z < chunkSize; z++)
 				{
-					// Only care if this block is an air block
-					if (!blocks[x, y, z].IsAir())
+					// Only care if this block is a transparent block
+					if (GetBlock(x, y, z).IsOpaque())
 						continue;
 
 					airCount++;
@@ -151,36 +167,36 @@ public class Chunk
 
 		// X-axis
 		if (x < chunkSize - 1)
-			blocks[x + 1, y, z].maybeNearAir = 255;
-		else if ((block = World.GetBlockFor(position.x + x + 1, position.y + y, position.z + z)) != Block.empty)
-			block.maybeNearAir = 255;
+			GetBlock(x + 1, y, z).SetNeedsMesh(true);
+		else if ((block = World.GetBlock(position.x + x + 1, position.y + y, position.z + z)) != BlockList.EMPTY)
+			block.SetNeedsMesh(true);
 
 		if (x > 0)
-			blocks[x - 1, y, z].maybeNearAir = 255;
-		else if ((block = World.GetBlockFor(position.x + x - 1, position.y + y, position.z + z)) != Block.empty)
-			block.maybeNearAir = 255;
+			GetBlock(x - 1, y, z).SetNeedsMesh(true);
+		else if ((block = World.GetBlock(position.x + x - 1, position.y + y, position.z + z)) != BlockList.EMPTY)
+			block.SetNeedsMesh(true);
 
 		// Y-axis
 		if (y < chunkSize - 1)
-			blocks[x, y + 1, z].maybeNearAir = 255;
-		else if ((block = World.GetBlockFor(position.x + x, position.y + y + 1, position.z + z)) != Block.empty)
-			block.maybeNearAir = 255;
+			GetBlock(x, y + 1, z).SetNeedsMesh(true);
+		else if ((block = World.GetBlock(position.x + x, position.y + y + 1, position.z + z)) != BlockList.EMPTY)
+			block.SetNeedsMesh(true);
 
 		if (y > 0)
-			blocks[x, y - 1, z].maybeNearAir = 255;
-		else if ((block = World.GetBlockFor(position.x + x, position.y + y - 1, position.z + z)) != Block.empty)
-			block.maybeNearAir = 255;
+			GetBlock(x, y - 1, z).SetNeedsMesh(true);
+		else if ((block = World.GetBlock(position.x + x, position.y + y - 1, position.z + z)) != BlockList.EMPTY)
+			block.SetNeedsMesh(true);
 
 		// Z-axis
 		if (z < chunkSize - 1)
-			blocks[x, y, z + 1].maybeNearAir = 255;
-		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z + 1)) != Block.empty)
-			block.maybeNearAir = 255;
+			GetBlock(x, y, z + 1).SetNeedsMesh(true);
+		else if ((block = World.GetBlock(position.x + x, position.y + y, position.z + z + 1)) != BlockList.EMPTY)
+			block.SetNeedsMesh(true);
 
 		if (z > 0)
-			blocks[x, y, z - 1].maybeNearAir = 255;
-		else if ((block = World.GetBlockFor(position.x + x, position.y + y, position.z + z - 1)) != Block.empty)
-			block.maybeNearAir = 255;
+			GetBlock(x, y, z - 1).SetNeedsMesh(true);
+		else if ((block = World.GetBlock(position.x + x, position.y + y, position.z + z - 1)) != BlockList.EMPTY)
+			block.SetNeedsMesh(true);
 	}
 	#endregion
 
@@ -225,9 +241,7 @@ public class Chunk
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
 
-			procStage = ProcStage.Done;
-
-			OnDone();
+			buildStage = BuildStage.Done;
 
 			World.WorldBuilder.QueueNextStage(this);
 
@@ -237,14 +251,9 @@ public class Chunk
 		bw.RunWorkerAsync();
 	}
 
-	protected virtual void OnDone()
-	{
-		
-	}
-
 	private ChunkMesh.MeshData MakeMesh()
 	{
-		return chunkMesh.MakeSurfaceAndMesh(blocks);
+		return chunkMesh.MakeMesh();
 	}
 	#endregion
 
@@ -252,16 +261,5 @@ public class Chunk
 	public virtual void OnFinishProcStage()
 	{
 		World.WorldBuilder.ChunkFinishedProcStage();
-	}
-
-	// Utility
-	//public bool ContainsPos(int x, int y, int z)
-	//{
-	//	return x >= 0 && chunkSize > x && y >= 0 && chunkSize > y && z >= 0 && chunkSize > z;
-	//}
-
-	public Block GetBlock(int x, int y, int z)
-	{
-		return blocks[x, y, z];
 	}
 }

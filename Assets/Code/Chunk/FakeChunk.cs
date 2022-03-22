@@ -10,7 +10,7 @@ public class FakeChunk : Chunk
 	{
 		base.Init(chunkSize, scaleFactor);
 
-		isFake = true;
+		chunkType = ChunkType.Far;
 	}
 
 	public override void CacheDataFromBlocks()
@@ -24,7 +24,7 @@ public class FakeChunk : Chunk
 				for (byte z = 0; z < chunkSize; z++)
 				{
 					// Only care if this block is an air block
-					if (!blocks[x, y, z].IsAir())
+					if (GetBlock(x,y,z).IsFilled())
 						continue;
 
 					airCount++;

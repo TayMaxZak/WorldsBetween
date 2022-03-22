@@ -47,8 +47,8 @@ public class WorldBuilder
 	private GameObject chunkRoot;
 	private GameObject fakeChunkRoot;
 
-	private Dictionary<Chunk.ProcStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>();
-	private Dictionary<Chunk.ProcStage, ChunkGenerator> fakeChunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>();
+	private Dictionary<Chunk.BuildStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>();
+	private Dictionary<Chunk.BuildStage, ChunkGenerator> fakeChunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>();
 
 
 	private Queue<KeyValuePair<Vector3Int, Chunk>> chunksToQueue = new Queue<KeyValuePair<Vector3Int, Chunk>>();
@@ -57,20 +57,20 @@ public class WorldBuilder
 	{
 		float delay = 0.0f;
 
-		chunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
+		chunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>()
 		{
-			{ Chunk.ProcStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
-			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
-			{ Chunk.ProcStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
+			{ Chunk.BuildStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
+			{ Chunk.BuildStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
 		chunkRoot = new GameObject();
 		chunkRoot.name = "Chunks";
 
-		fakeChunkGenerators = new Dictionary<Chunk.ProcStage, ChunkGenerator>()
+		fakeChunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>()
 		{
-			{ Chunk.ProcStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
-			{ Chunk.ProcStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
-			{ Chunk.ProcStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
+			{ Chunk.BuildStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
+			{ Chunk.BuildStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
 		fakeChunkRoot = new GameObject();
 		fakeChunkRoot.name = "Fake Chunks";
@@ -89,7 +89,7 @@ public class WorldBuilder
 		}
 
 		// Enqueue chunks
-		await EnqueueAllChunks(Chunk.ProcStage.Init);
+		await EnqueueAllChunks(Chunk.BuildStage.Init);
 
 		genStage = GenStage.GenerateChunks;
 
@@ -117,13 +117,13 @@ public class WorldBuilder
 		chunksToGen = 0;
 		generatorsUsed = 0;
 
-		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in chunkGenerators)
+		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			chunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
 			chunksToGen += entry.Value.GetSize();
 
-			bool empty = entry.Key == Chunk.ProcStage.Init;
+			bool empty = entry.Key == Chunk.BuildStage.Init;
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
@@ -134,13 +134,13 @@ public class WorldBuilder
 		if (genStage >= GenStage.Ready)
 			UpdateSpawnFinder();
 
-		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in fakeChunkGenerators)
+		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
 		{
 			fakeChunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
 			chunksToGen += entry.Value.GetSize();
 
-			bool empty = entry.Key == Chunk.ProcStage.Init;
+			bool empty = entry.Key == Chunk.BuildStage.Init;
 			if (!empty && entry.Value.IsBusy())
 				generatorsUsed++;
 
@@ -192,7 +192,7 @@ public class WorldBuilder
 		genStage = GenStage.EnqueueChunks;
 	}
 
-	public async Task EnqueueAllChunks(Chunk.ProcStage curChunkStage)
+	public async Task EnqueueAllChunks(Chunk.BuildStage curChunkStage)
 	{
 		// First get all chunks
 		foreach (var entry in World.GetAllChunks())
@@ -208,7 +208,7 @@ public class WorldBuilder
 			for (int i = enqueueTaskSize; i > 0 && chunksToQueue.Count > 0; i--)
 			{
 				Chunk c = chunksToQueue.Dequeue().Value;
-				c.procStage = curChunkStage;
+				c.buildStage = curChunkStage;
 
 				QueueNextStage(c);
 			}
@@ -226,10 +226,10 @@ public class WorldBuilder
 	{
 		ChunkGenerator generator;
 
-		if (chunk.isFake)
-			fakeChunkGenerators.TryGetValue(chunk.procStage, out generator);
+		if (chunk.chunkType != Chunk.ChunkType.Close)
+			fakeChunkGenerators.TryGetValue(chunk.buildStage, out generator);
 		else
-			chunkGenerators.TryGetValue(chunk.procStage, out generator);
+			chunkGenerators.TryGetValue(chunk.buildStage, out generator);
 
 		if (generator == null)
 			return;
@@ -269,13 +269,13 @@ public class WorldBuilder
 	{
 		int busy = 0;
 
-		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in chunkGenerators)
+		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in chunkGenerators)
 		{
 			if (entry.Value.IsBusy())
 				busy++;
 		}
 
-		foreach (KeyValuePair<Chunk.ProcStage, ChunkGenerator> entry in fakeChunkGenerators)
+		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
 		{
 			if (entry.Value.IsBusy())
 				busy++;
@@ -296,7 +296,7 @@ public class WorldBuilder
 		return progress;
 	}
 
-	public Dictionary<Chunk.ProcStage, ChunkGenerator> GetChunkGenerators()
+	public Dictionary<Chunk.BuildStage, ChunkGenerator> GetChunkGenerators()
 	{
 		return chunkGenerators;
 	}

@@ -156,7 +156,7 @@ public partial class World : MonoBehaviour
 	{
 		WorldInit();
 
-		await WorldBuilder.EnqueueAllChunks(Chunk.ProcStage.Init);
+		await WorldBuilder.EnqueueAllChunks(Chunk.BuildStage.Init);
 
 		// Recalc light after world builder is finished
 		while (WorldBuilder.IsGenerating())
@@ -191,7 +191,7 @@ public partial class World : MonoBehaviour
 			Instance.waterSystem.transform.position = new Vector3(pos.x, Instance.waterHeight, pos.z);
 	}
 
-	public static Chunk GetChunkFor(int x, int y, int z)
+	public static Chunk GetChunk(int x, int y, int z)
 	{
 		float chunkSize = Instance.chunkSize;
 
@@ -205,17 +205,17 @@ public partial class World : MonoBehaviour
 		return chunk;
 	}
 
-	public static Chunk GetChunkFor(Vector3Int pos)
+	public static Chunk GetChunk(Vector3Int pos)
 	{
-		return GetChunkFor(pos.x, pos.y, pos.z);
+		return GetChunk(pos.x, pos.y, pos.z);
 	}
 
-	public static Block GetBlockFor(int x, int y, int z)
+	public static Block GetBlock(int x, int y, int z)
 	{
-		Chunk chunk = GetChunkFor(x, y, z);
+		Chunk chunk = GetChunk(x, y, z);
 
-		if (chunk == null || chunk.procStage == Chunk.ProcStage.Init)
-			return Block.empty;
+		if (chunk == null)
+			return BlockList.BORDER;
 
 		return chunk.GetBlock(
 			x - chunk.position.x,
@@ -224,9 +224,29 @@ public partial class World : MonoBehaviour
 		);
 	}
 
-	public static Block GetBlockFor(Vector3Int pos)
+	public static Block GetBlock(Vector3Int pos)
 	{
-		return GetBlockFor(pos.x, pos.y, pos.z);
+		return GetBlock(pos.x, pos.y, pos.z);
+	}
+
+	public static void SetBlock(int x, int y, int z, Block b)
+	{
+		Chunk chunk = GetChunk(x, y, z);
+
+		if (chunk == null || chunk.buildStage == Chunk.BuildStage.Init)
+			return;
+
+		chunk.SetBlock(
+			x - chunk.position.x,
+			y - chunk.position.y,
+			z - chunk.position.z,
+			b
+		);
+	}
+
+	public static void SetBlock(Vector3Int pos, Block b)
+	{
+		SetBlock(pos.x, pos.y, pos.z, b);
 	}
 
 	//public static void FillCorner(int x, int y, int z)
@@ -300,7 +320,7 @@ public partial class World : MonoBehaviour
 	{
 		Instance.chunks.Add(pos, chunk);
 
-		if (!chunk.isFake)
+		if (chunk.chunkType == Chunk.ChunkType.Close)
 			Instance.realChunkCount++;
 		else
 			Instance.fakeChunkCount++;

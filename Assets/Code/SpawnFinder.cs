@@ -87,14 +87,14 @@ public class SpawnFinder
 	{
 		bool notWaterOrNoChoice = pos.y > World.GetWaterHeight() || attemptsLeft <= 0;
 
-		if (notWaterOrNoChoice && World.GetBlockFor(pos).IsAir())
+		if (notWaterOrNoChoice && !World.GetBlock(pos).IsRigid())
 		{
 			airCount++;
 
 			// Check playerPos conditions
 			if (!foundPlayerPos)
 			{
-				if (World.GetBlockFor(pos + Vector3Int.up).IsAir() && !World.GetBlockFor(pos + Vector3Int.down).IsAir())
+				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && World.GetBlock(pos + Vector3Int.down).IsRigid())
 				{
 					foundPlayerPos = true;
 
