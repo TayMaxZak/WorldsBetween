@@ -58,11 +58,11 @@ MonoBehaviour:
     fakeChunkPrefab: {fileID: 6042555085825754433, guid: 4b4b891d8840f164199b476385ce3f7e, type: 3}
     spawnFinder:
       extents: {x: 8, y: 5, z: 8}
-    genRangePlayable: 4
-    genRangeFake: 0
+    genRangePlayable: 8
+    genRangeFake: 8
   lightEngine:
-    raysPerBatch: 64
-    progressStep: 0.5
+    raysPerBatch: 128
+    progressStep: 1
     splitPixelCutoff: 0.229
     fixSplitOffset: 0.51
   randomizeSeed: 1
@@ -70,3 +70,4 @@ MonoBehaviour:
   chunkSize: 16
   isInfinite: 0
   waterHeight: -120
+  deadFallHeight: -999

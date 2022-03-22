@@ -25,7 +25,7 @@ public partial class GameManager : MonoBehaviour
 	// Rotate player while loading
 	private float panSpeed;
 	private float newPanSpeed;
-	private Timer panSpeedRandomizer = new Timer(2);
+	private Timer panSpeedRandomizer = new Timer(3);
 
 	private void Awake()
 	{
@@ -61,9 +61,9 @@ public partial class GameManager : MonoBehaviour
 			float builderProgress = World.WorldBuilder.GetGenProgress();
 			float lighterProgress = World.LightEngine.GetGenProgress();
 
-			loadingProgress = (builderProgress * 2 + lighterProgress * 3) / (2 + 3);
+			loadingProgress = (builderProgress * 1 + lighterProgress * 1) / (1 + 1);
 			// Get display progress by interpolating
-			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 2);
+			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 3);
 
 			if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks && !startedBuilding)
 				ShowProgress();

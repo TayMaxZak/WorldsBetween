@@ -48,6 +48,8 @@ public partial class World : MonoBehaviour
 	[Header("World Settings")]
 	[SerializeField]
 	private int waterHeight = 0;
+	[SerializeField]
+	private int deadFallHeight = -999;
 
 	private void Awake()
 	{
@@ -212,6 +214,9 @@ public partial class World : MonoBehaviour
 
 	public static Block GetBlock(int x, int y, int z)
 	{
+		if (y < Instance.deadFallHeight)
+			return BlockList.FILLED;
+
 		Chunk chunk = GetChunk(x, y, z);
 
 		if (chunk == null)

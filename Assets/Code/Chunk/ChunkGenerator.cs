@@ -46,7 +46,7 @@ public class ChunkGenerator
 		if (queueID % 3 == 1)
 			return Utils.colorBlue;
 		if (queueID % 3 == 2)
-			return Utils.colorPurple;
+			return Utils.colorDarkGrayBlue;
 		else
 			return Color.white;
 	}
@@ -182,11 +182,11 @@ public class ChunkGenerator
 
 			Color debugColor = GetDebugColor(queue.GetHashCode());
 
-			Debug.DrawLine(chunk.position + Vector3.one * 8, midPos2, debugColor, 1.5f);
+			Debug.DrawLine(chunk.position + Vector3.one * 8, midPos2, debugColor, 0.5f);
 
-			Debug.DrawLine(midPos2, midPos1, debugColor, 0.667f);
+			Debug.DrawLine(midPos2, midPos1, debugColor, 0.3f);
 
-			Debug.DrawLine(midPos1, prevChunkPos, debugColor, 0.25f);
+			Debug.DrawLine(midPos1, prevChunkPos, debugColor, 0.1f);
 
 			prevChunkPos = chunk.position + Vector3.one * 8;
 		}

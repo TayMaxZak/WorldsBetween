@@ -29,8 +29,8 @@ public class LightEngine
 		public bool airLight;
 	}
 
-	private readonly SimplePriorityQueue<LightRay> sourceQueue = new SimplePriorityQueue<LightRay>();
-	private readonly SimplePriorityQueue<LightRay> retrySourceQueue = new SimplePriorityQueue<LightRay>();
+	private readonly Queue<LightRay> sourceQueue = new Queue<LightRay>();
+	private readonly Queue<LightRay> retrySourceQueue = new Queue<LightRay>();
 
 	private Sun sun;
 
@@ -46,11 +46,11 @@ public class LightEngine
 	private float fixSplitOffset = 0.51f;
 
 	private int completedBlurryRays;
-	private int targetBlurryRays;
+	private int targetBlurryRays = -1;
 	private bool blurryLightFinished;
 
 	private int curProgress;
-	private int maxProgress;
+	private int maxProgress = -1;
 	private bool allLightFinished;
 
 	public void Init(Sun sun)
@@ -58,15 +58,45 @@ public class LightEngine
 		this.sun = sun;
 	}
 
-	public void Begin()
+	public async Task Begin()
 	{
 		//int step = WorldLightAtlas.Instance.directScale;
 		int step = 2;
-		int extent = World.GetWorldSize() / 2;
+		int extent = World.GetWorldSize() / 2 - 1;
 
 
 		sourceQueue.Clear();
 		retrySourceQueue.Clear();
+
+		int sourceCount = 0;
+		for (float x = -extent; x <= extent; x += step)
+		{
+			for (float y = -extent; y <= extent; y += step)
+			{
+				for (float z = -extent; z <= extent; z += step)
+				{
+					if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
+						continue;
+
+					Vector3 pos = new Vector3(x, y, z);
+
+					if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
+						continue;
+
+					sourceCount++;
+				}
+			}
+		}
+
+		completedBlurryRays = 0;
+		targetBlurryRays = sourceCount;
+		blurryLightFinished = false;
+
+		curProgress = 0;
+		maxProgress = sourceCount * (step * step);
+		allLightFinished = false;
+
+		Debug.Log(maxProgress + " light rays to be cast");
 
 		for (float x = -extent; x <= extent; x += step)
 		{
@@ -77,27 +107,20 @@ public class LightEngine
 					if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
 						continue;
 
-					Vector3 pos = new Vector3(x, y, z) + sun.GetDirection();
+					Vector3 pos = new Vector3(x, y, z);
 
 					if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
 						continue;
 
-					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = step }, Vector3.SqrMagnitude(pos - World.GetRelativeOrigin()));
+					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = step });
 				}
 			}
+
+			Iterate();
+			await Task.Delay(1);
 		}
 
-		completedBlurryRays = 0;
-		targetBlurryRays = sourceQueue.Count;
-		blurryLightFinished = false;
-
-		curProgress = 0;
-		maxProgress = sourceQueue.Count * (step * step);
-		allLightFinished = false;
-
-		Debug.Log(maxProgress + " light rays to be cast");
-
-		Iterate();
+		//Iterate();
 	}
 
 	public void Iterate()
@@ -158,12 +181,6 @@ public class LightEngine
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			//args.Result = new LightRayResult[] {
-			//	SendLightRay(lightRay.source),
-			//	SendLightRay(lightRay.source + sun.GetRight()),
-			//	SendLightRay(lightRay.source + sun.GetUp()),
-			//	SendLightRay(lightRay.source + sun.GetRight() + sun.GetUp())
-			//};
 			args.Result = new LightRayResult[] {
 				SendLightRay(lightRay.source),
 				SendLightRay(lightRay.source + Vector3.right),
@@ -183,6 +200,8 @@ public class LightEngine
 			RespondToRay(((LightRayResult[])args.Result)[1]);
 			RespondToRay(((LightRayResult[])args.Result)[2]);
 			RespondToRay(((LightRayResult[])args.Result)[3]);
+
+			Iterate();
 		});
 
 		bw.RunWorkerAsync();
@@ -206,30 +225,9 @@ public class LightEngine
 					LightRayResultPoint point = result.points.Dequeue();
 
 					// Fill in surrounding pixel(s)
-					//Vector3 centerPos = point.pos;
-
 					Vector3 offsetPos = point.pos;
 
-					//bool onEdge = Mathf.Abs(offsetPos.x - Mathf.RoundToInt(offsetPos.x)) >= splitPixelCutoff || Mathf.Abs(offsetPos.y - Mathf.RoundToInt(offsetPos.y)) >= splitPixelCutoff || Mathf.Abs(offsetPos.z - Mathf.RoundToInt(offsetPos.z)) >= splitPixelCutoff;
-					
-					// Enough accuracy to write to a single pixel
 					WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x), Mathf.RoundToInt(offsetPos.y), Mathf.RoundToInt(offsetPos.z)), point.color, point.airLight);
-
-					//// Possibly missed some pixels because it landed on an edge
-					//else
-					//{
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
-
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x + fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
-
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y + fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
-
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z + fixSplitOffset)), point.color, point.airLight);
-					//	WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x - fixSplitOffset), Mathf.RoundToInt(offsetPos.y - fixSplitOffset), Mathf.RoundToInt(offsetPos.z - fixSplitOffset)), point.color, point.airLight);
-					//}
 				} // count > 0
 			} // !null
 
@@ -242,13 +240,8 @@ public class LightEngine
 		// Ray was unsuccessful, retry when possible
 		else
 		{
-			retrySourceQueue.Enqueue(
-				new LightRay() { source = result.source, stepSize = result.stepSize },
-				Vector3.SqrMagnitude(result.source - World.GetRelativeOrigin())
-			);
+			retrySourceQueue.Enqueue(new LightRay() { source = result.source, stepSize = result.stepSize });
 		}
-
-		Iterate();
 	}
 
 	private LightRayResult SendLightRay(Vector3 source)
