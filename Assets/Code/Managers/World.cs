@@ -19,8 +19,11 @@ public partial class World : MonoBehaviour
 	private Sun sunObject;
 
 	private Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
+
 	private int realChunkCount = 0;
 	private int fakeChunkCount = 0;
+
+	private Dictionary<Vector3Int, List<LightSource>> pointLights = new Dictionary<Vector3Int, List<LightSource>>();
 
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
@@ -359,6 +362,16 @@ public partial class World : MonoBehaviour
 	public static int GetWorldSizeScenic()
 	{
 		return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeFake()) * 2 * Instance.chunkSize;
+	}
+
+	public static void SetLightsAt(Vector3Int pos, List<LightSource> chunkLights)
+	{
+		Instance.pointLights[pos] = chunkLights;
+	}
+
+	public static Dictionary<Vector3Int, List<LightSource>> GetAllLights()
+	{
+		return Instance.pointLights;
 	}
 
 	public static bool Contains(Vector3 pos)

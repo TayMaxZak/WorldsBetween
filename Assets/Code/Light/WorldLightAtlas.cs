@@ -69,11 +69,6 @@ public class WorldLightAtlas : MonoBehaviour
 		}
 	}
 
-	//private void OnDestroy()
-	//{
-	//	SetShaderReferences(defaultLightmap, defaultLightmap2);
-	//}
-
 	private void SetShaderReferences(Texture texture, Texture texture2)
 	{
 		Shader.SetGlobalTexture("LightMap", texture);
@@ -83,10 +78,6 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private void CreateDirectLightmap()
 	{
-		// TODO:
-		// Up close - 1:1 pixel to block for 125 chunks around origin (center + 2 in each direction). 1:2 pixel to block everywhere else
-		// 1 + 2 + 4(0.5)
-
 		// Create texture and apply configuration. RGBAHalf is sufficient for most lighting
 		directLightTex = new Texture3D(dirSize, dirSize, dirSize, TextureFormat.RGBAHalf, false);
 
@@ -161,7 +152,7 @@ public class WorldLightAtlas : MonoBehaviour
 		ambientLightTex.Apply();
 	}
 
-	public void WriteToLightmap(Vector3Int pos, Color newValue, bool airLight)
+	public void WriteToLightmap(Vector3Int pos, Color newValue, bool airLight, bool additive = false)
 	{
 		if (directLightTex == null)
 			return;
@@ -177,6 +168,10 @@ public class WorldLightAtlas : MonoBehaviour
 		directChanges++;
 
 		Color oldValue = directLightArr[dirIndex];
+
+		if (additive)
+			newValue = oldValue + newValue;
+
 		directLightArr[dirIndex] = newValue;
 
 
@@ -289,10 +284,12 @@ public class WorldLightAtlas : MonoBehaviour
 	//}
 
 	[ContextMenu("Apply Changes")]
-	public void ApplyChanges()
+	public async void ApplyChanges()
 	{
 		if (directChanges == 0 && ambientChanges == 0)
 			return;
+
+		await ApplyChunkLights();
 
 		Debug.Log("Applied light atlas changes: " + directChanges + " direct, " + ambientChanges + " ambient");
 
@@ -301,6 +298,46 @@ public class WorldLightAtlas : MonoBehaviour
 
 		UpdateAmbientTex();
 		ambientChanges = 0;
+	}
+
+	private async Task ApplyChunkLights()
+	{
+		float lightRange = 8;
+		float lightSamples = 1500;
+		float lightSampleStrength = 0.05f;
+
+		int chunks = 0;
+		int chunkLights = 0;
+		foreach (var pl in World.GetAllLights())
+		{
+			foreach (LightSource light in pl.Value)
+			{
+				WriteToLightmap(light.pos, light.lightColor, false, true);
+				for (int i = 0; i < lightSamples; i++)
+				{
+					Vector3 offset = SeedlessRandom.RandomPoint(1).normalized;
+					float dist = SeedlessRandom.NextFloatInRange(0, lightRange);
+
+					Vector3Int newPos = new Vector3Int(
+						Mathf.RoundToInt(light.pos.x + 0.5f + offset.x * dist),
+						Mathf.RoundToInt(light.pos.y + 0.5f + offset.y * dist),
+						Mathf.RoundToInt(light.pos.z + 0.5f + offset.z * dist)
+					);
+					float falloff = (1 - (dist * (1 / lightRange))) * lightSampleStrength;
+
+					WriteToLightmap(newPos, light.lightColor * falloff, false, true);
+				}
+
+				chunkLights++;
+			}
+
+			chunks++;
+
+			if (chunks % 64 == 0)
+				await Task.Delay(1);
+		}
+
+		Debug.Log("Chunk lights: " + chunkLights);
 	}
 
 	private Vector3Int WorldToTex(Vector3Int wrld)

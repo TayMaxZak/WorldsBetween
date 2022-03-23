@@ -40,10 +40,6 @@ public class LightEngine
 
 	[SerializeField]
 	private float progressStep = 1f;
-	[SerializeField]
-	private float splitPixelCutoff = 0.209f;
-	[SerializeField]
-	private float fixSplitOffset = 0.51f;
 
 	private int completedBlurryRays;
 	private int targetBlurryRays = -1;

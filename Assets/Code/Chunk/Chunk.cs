@@ -24,6 +24,7 @@ public class Chunk
 	// Data
 	public ChunkType chunkType;
 	protected Block[] blocks;
+	protected List<LightSource> lights;
 
 	// Transform
 	public Vector3Int position;
@@ -33,7 +34,6 @@ public class Chunk
 	// State
 	public BuildStage buildStage = BuildStage.Init;
 	public bool isProcessing = false;
-	//public bool atEdge = false;
 	public bool didInit = false;
 
 	// References
@@ -67,6 +67,8 @@ public class Chunk
 
 	public virtual void CreateCollections()
 	{
+		lights = new List<LightSource>();
+
 		blocks = new Block[chunkSize * chunkSize * chunkSize];
 
 		for (byte x = 0; x < chunkSize; x++)
@@ -217,6 +219,21 @@ public class Chunk
 		delegate (object o, DoWorkEventArgs args)
 		{
 			args.Result = MakeMesh();
+
+			for (int i = 0; i < 24; i++)
+			{
+				Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSize), SeedlessRandom.NextIntInRange(0, chunkSize), SeedlessRandom.NextIntInRange(0, chunkSize)) + position;
+
+				// Not inside an opaque block, and located on top of a rigid block
+				if (!World.GetBlock(pos).IsOpaque() && World.GetBlock(pos + Vector3Int.down).IsRigid())
+				{
+					lights.Add(new LightSource()
+					{
+						pos = pos,
+						lightColor = SeedlessRandom.NextFloat() < 0.2f ? LightSource.colorOrange : LightSource.colorCyan
+					});
+				}
+			}
 		});
 
 		// What to do when worker completes its task
@@ -244,6 +261,8 @@ public class Chunk
 			buildStage = BuildStage.Done;
 
 			World.WorldBuilder.QueueNextStage(this);
+
+			World.SetLightsAt(position, lights);
 
 			OnFinishProcStage();
 		});
