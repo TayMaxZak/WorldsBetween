@@ -265,7 +265,7 @@ public class Cephapath : MonoBehaviour
 
 			//bool inWater = transform.position.y < World.GetWaterHeight();
 			//float smoothOrSharp = inWater ? 1 : 0;
-			float smoothOrSharp = i % 2 == 0 ? 1 : 0;
+			float smoothOrSharp = i % 3 == 0 ? 0 : 1;
 			RenderTentacle(t, dir, smoothDir, (1 - smoothOrSharp) * (1 - smoothOrSharp));
 		}
 	}
@@ -286,9 +286,9 @@ public class Cephapath : MonoBehaviour
 			if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
 			{
 				Vector3 newPos = new Vector3(
-					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSizeScenic(),
-					0.5f * World.GetWorldSizeScenic(),
-					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSizeScenic()
+					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize(),
+					0.5f * World.GetWorldSize(),
+					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize()
 				);
 
 				if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)

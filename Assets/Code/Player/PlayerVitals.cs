@@ -12,6 +12,7 @@ public class PlayerVitals : MonoBehaviour
 	[Header("Health")]
 	public float currentHealth = 100;
 	public float maxHealth = 100;
+	public bool canNearDie = true;
 
 	public Timer stopHealthRegen = new Timer(5);
 	public float healthRegen = 2;
@@ -208,7 +209,7 @@ public class PlayerVitals : MonoBehaviour
 
 	private void TryDie(float initialHealth, float finalHealth)
 	{
-		if (initialHealth <= 25 || finalHealth < -initialHealth)
+		if (!canNearDie || finalHealth < -initialHealth)
 			Die();
 		else
 			NearDie();
@@ -229,8 +230,12 @@ public class PlayerVitals : MonoBehaviour
 		if (nearDeathSound)
 			AudioManager.PlaySound(nearDeathSound, transform.position);
 
+		canNearDie = false;
+
 		currentHealth = 1;
 		//currentStamina = 0;
+		stopHealthRegen.Reset(0);
+		stopStaminaRegen.Reset(0.4f);
 
 		UpdateUIUX();
 	}
@@ -243,6 +248,7 @@ public class PlayerVitals : MonoBehaviour
 
 		currentHealth = maxHealth;
 		currentStamina = maxStamina;
+		canNearDie = true;
 
 		UpdateUIUX();
 	}
