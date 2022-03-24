@@ -153,7 +153,7 @@ public class WorldBuilder
 	{
 		int actualChunkSize = World.GetChunkSize();
 
-		int range = genRangePlayable + genRangeFake;
+		int range = genRangePlayable;
 
 		// Go through all nearby chunk positions
 		for (int x = -range; x < range; x++)
@@ -162,22 +162,54 @@ public class WorldBuilder
 			{
 				for (int z = -range; z < range; z++)
 				{
+					Vector3Int chunkPos = new Vector3Int(x * actualChunkSize, y * actualChunkSize, z * actualChunkSize);
+
+					// Instantiate chunk GameObject
+					ChunkGameObject chunkGO = Object.Instantiate(chunkPrefab, chunkPos, Quaternion.identity, chunkRoot.transform);
+					chunkGO.name = "Chunk " + x + ", " + y + ", " + z;
+
+					// Initialize and register chunk
+					chunkGO.data = new Chunk();
+					chunkGO.data.SetPos(chunkPos);
+
+					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);
+
+					chunkGO.data.go = chunkGO;
+
+					World.AddChunk(chunkPos, chunkGO.data);
+				}
+			}
+		}
+
+		int fakeChunkScale = 2;
+
+		//actualChunkSize = World.GetChunkSize() * fakeChunkScale;
+
+		range = genRangePlayable + genRangeFake;
+
+		// Fake chunks are further away
+		for (int x = -range; x < range; x += fakeChunkScale)
+		{
+			for (int y = -range; y < range; y += fakeChunkScale)
+			{
+				for (int z = -range; z < range; z += fakeChunkScale)
+				{
 					bool playable =
 						x >= -genRangePlayable && x < genRangePlayable &&
 						y >= -genRangePlayable && y < genRangePlayable &&
 						z >= -genRangePlayable && z < genRangePlayable;
 
-					if (!playable)
+					if (playable)
 						continue;
 
 					Vector3Int chunkPos = new Vector3Int(x * actualChunkSize, y * actualChunkSize, z * actualChunkSize);
 
 					// Instantiate chunk GameObject
-					ChunkGameObject chunkGO = Object.Instantiate(playable ? chunkPrefab : fakeChunkPrefab, chunkPos, Quaternion.identity, playable ? chunkRoot.transform : fakeChunkRoot.transform);
-					chunkGO.name = (playable ? "Chunk " : "FakeChunk ") + x + ", " + y + ", " + z;
+					ChunkGameObject chunkGO = Object.Instantiate(fakeChunkPrefab, chunkPos, Quaternion.identity, fakeChunkRoot.transform);
+					chunkGO.name = "FakeChunk " + x + ", " + y + ", " + z;
 
 					// Initialize and register chunk
-					chunkGO.data = (playable ? new Chunk() : new FakeChunk());
+					chunkGO.data = new FakeChunk();
 					chunkGO.data.SetPos(chunkPos);
 
 					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);

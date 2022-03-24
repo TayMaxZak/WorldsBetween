@@ -6,22 +6,23 @@ using System.ComponentModel;
 [System.Serializable]
 public class FakeChunk : Chunk
 {
-	public override void Init(int chunkSize, int scaleFactor)
+	public override void Init(int chunkSize)
 	{
-		base.Init(chunkSize, scaleFactor);
-
+		scaleFactor = 2;
 		chunkType = ChunkType.Far;
+
+		base.Init(chunkSize);
 	}
 
 	public override void CacheDataFromBlocks()
 	{
 		int airCount = 0;
 
-		for (byte x = 0; x < chunkSize; x++)
+		for (byte x = 0; x < chunkSizeBlocks; x++)
 		{
-			for (byte y = 0; y < chunkSize; y++)
+			for (byte y = 0; y < chunkSizeBlocks; y++)
 			{
-				for (byte z = 0; z < chunkSize; z++)
+				for (byte z = 0; z < chunkSizeBlocks; z++)
 				{
 					// Only care if this block is an air block
 					if (GetBlock(x,y,z).IsFilled())

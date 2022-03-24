@@ -113,26 +113,27 @@ public class ChunkMesh
 		Block block;
 
 		List<Vector3> vertices = new List<Vector3>();
+
 		List<int> triangles = new List<int>();
 		List<int> vegTriangles = new List<int>();
+
 		List<Vector3> normals = new List<Vector3>();
+
 		List<Vector2> uv = new List<Vector2>();
-
-		Vector3Int faceOffset = new Vector3Int();
-
-		Vector3 vert;
-
-		Vector3 norm;
 
 		List<int> airDirections = new List<int>();
 
-		int chunkSize = World.GetChunkSize();
-		for (byte x = 0; x < chunkSize; x++)
+		int chunkSize = chunk.chunkSizeWorld;
+		for (int x = 0; x < chunkSize; x += chunk.scaleFactor)
 		{
-			for (byte y = 0; y < chunkSize; y++)
+			for (int y = 0; y < chunkSize; y += chunk.scaleFactor)
 			{
-				for (byte z = 0; z < chunkSize; z++)
+				for (int z = 0; z < chunkSize; z += chunk.scaleFactor)
 				{
+					Vector3Int faceOffset = new Vector3Int();
+					Vector3 vert;
+					Vector3 norm;
+
 					block = chunk.GetBlock(x,y,z);
 
 					// No model for this block
@@ -155,9 +156,9 @@ public class ChunkMesh
 
 					for (int d = 0; d < directions.Length; d++)
 					{
-						faceOffset.x = chunk.position.x + x + directions[d].x;
-						faceOffset.y = chunk.position.y + y + directions[d].y;
-						faceOffset.z = chunk.position.z + z + directions[d].z;
+						faceOffset.x = chunk.position.x + x + directions[d].x * chunk.scaleFactor;
+						faceOffset.y = chunk.position.y + y + directions[d].y * chunk.scaleFactor;
+						faceOffset.z = chunk.position.z + z + directions[d].z * chunk.scaleFactor;
 
 						if (World.GetBlock(faceOffset.x, faceOffset.y, faceOffset.z).IsOpaque())
 							continue;
@@ -171,9 +172,9 @@ public class ChunkMesh
 					int surfacesAdded = 0;
 					for (int d = 0; d < directions.Length; d++)
 					{
-						faceOffset.x = chunk.position.x + x + directions[d].x;
-						faceOffset.y = chunk.position.y + y + directions[d].y;
-						faceOffset.z = chunk.position.z + z + directions[d].z;
+						faceOffset.x = chunk.position.x + x + directions[d].x * chunk.scaleFactor;
+						faceOffset.y = chunk.position.y + y + directions[d].y * chunk.scaleFactor;
+						faceOffset.z = chunk.position.z + z + directions[d].z * chunk.scaleFactor;
 
 						// Only render easily viewable faces for non-near chunks
 						if (chunk.chunkType != Chunk.ChunkType.Close)
@@ -200,9 +201,9 @@ public class ChunkMesh
 						// Add vertices
 						for (int v = 0; v < blockMeshData.vertices.Length; v++)
 						{
-							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f);
+							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f) * chunk.scaleFactor;
 
-							Vector3 vertPos = new Vector3(vert.x + 0.5f + x, vert.y + 0.5f + y, vert.z + 0.5f + z);
+							Vector3 vertPos = new Vector3(vert.x + 0.5f * chunk.scaleFactor + x, vert.y + 0.5f * chunk.scaleFactor + y, vert.z + 0.5f * chunk.scaleFactor + z);
 							vertices.Add(vertPos);
 
 							// Calculate normals
@@ -215,7 +216,7 @@ public class ChunkMesh
 								{
 									for (int k = -1; k <= 1; k += 2)
 									{
-										if (!World.GetBlock(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsOpaque())
+										if (!World.GetBlock(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsOpaque())
 										{
 											norm += new Vector3Int(i, j, k);
 

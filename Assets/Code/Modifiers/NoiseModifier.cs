@@ -50,7 +50,7 @@ public class NoiseModifier : Modifier
 
 		BlockPosAction toApply = ApplyNoise;
 
-		ApplyToAll(toApply, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
+		ApplyToAll(toApply, chunk.scaleFactor, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
 	protected virtual void ApplyNoise(Vector3Int pos)

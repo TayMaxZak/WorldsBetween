@@ -200,7 +200,7 @@ public class ChunkGenerator
 		{
 			case Chunk.BuildStage.Init: // Create blocks
 				{
-					chunk.Init(World.GetChunkSize(), 1);
+					chunk.Init(World.GetChunkSize());
 
 					chunk.buildStage = Chunk.BuildStage.Generate;
 					World.WorldBuilder.QueueNextStage(chunk);

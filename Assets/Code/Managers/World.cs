@@ -134,15 +134,15 @@ public partial class World : MonoBehaviour
 			0.15f, new Vector3(0.3f, 0.0f, 0.3f)));
 
 		// Etches
-		modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.04f, 0.24f, 0.04f),
-			0.04f, 2, 2,
-			0.01f, new Vector3(2, 2, 2)));
+		//modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.04f, 0.24f, 0.04f),
+		//	0.04f, 2, 2,
+		//	0.01f, new Vector3(2, 2, 2)));
 
 		// Weird blobs
-		modifiers.Add(new BlockyNoiseModifier(true, 0.65f, new Vector3(0.01f, 0.01f, 0.01f),
-			1, 1, 4,
-			1, new Vector3(0.5f, 0.5f, 0.5f))
-		{ ribbonCount = 1 });
+		//modifiers.Add(new BlockyNoiseModifier(true, 0.65f, new Vector3(0.01f, 0.01f, 0.01f),
+		//	1, 1, 4,
+		//	1, new Vector3(0.5f, 0.5f, 0.5f))
+		//{ ribbonCount = 1 });
 	}
 
 	private void Start()
@@ -386,7 +386,7 @@ public partial class World : MonoBehaviour
 
 	private void OnDrawGizmosSelected()
 	{
-		Gizmos.color = Utils.colorDarkGrayBlue;
+		Gizmos.color = Utils.colorOrange;
 		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * worldBuilder.GetGenRangePlayable() * Vector3.one);
 
 		Gizmos.color = Utils.colorPurple;

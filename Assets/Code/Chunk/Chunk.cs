@@ -28,8 +28,9 @@ public class Chunk
 
 	// Transform
 	public Vector3Int position;
-	protected int chunkSize = 16;
-	protected int scaleFactor = 1;
+	protected int chunkSizeBlocks = 16;
+	public int scaleFactor = 1;
+	public int chunkSizeWorld = 16;
 
 	// State
 	public BuildStage buildStage = BuildStage.Init;
@@ -40,10 +41,10 @@ public class Chunk
 	public ChunkMesh chunkMesh = new ChunkMesh();
 	public ChunkGameObject go;
 
-	public virtual void Init(int chunkSize, int scaleFactor)
+	public virtual void Init(int chunkSize)
 	{
-		this.chunkSize = chunkSize;
-		this.scaleFactor = scaleFactor;
+		chunkSizeBlocks = chunkSize;
+		chunkSizeWorld = chunkSize * scaleFactor;
 
 		CreateCollections();
 
@@ -57,25 +58,29 @@ public class Chunk
 
 	public Block GetBlock(int x, int y, int z)
 	{
-		return blocks[x * chunkSize * chunkSize + y * chunkSize + z];
+		x /= scaleFactor; y /= scaleFactor; z /= scaleFactor;
+
+		return blocks[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z];
 	}
 
 	public Block SetBlock(int x, int y, int z, Block b)
 	{
-		return (blocks[x * chunkSize * chunkSize + y * chunkSize + z] = b);
+		x /= scaleFactor; y /= scaleFactor; z /= scaleFactor;
+
+		return (blocks[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = b);
 	}
 
 	public virtual void CreateCollections()
 	{
 		lights = new List<LightSource>();
 
-		blocks = new Block[chunkSize * chunkSize * chunkSize];
+		blocks = new Block[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 
-		for (byte x = 0; x < chunkSize; x++)
+		for (int x = 0; x < chunkSizeWorld; x += scaleFactor)
 		{
-			for (byte y = 0; y < chunkSize; y++)
+			for (int y = 0; y < chunkSizeWorld; y += scaleFactor)
 			{
-				for (byte z = 0; z < chunkSize; z++)
+				for (int z = 0; z < chunkSizeWorld; z += scaleFactor)
 				{
 					SetBlock(x, y, z, BlockList.EMPTY);
 
@@ -142,11 +147,11 @@ public class Chunk
 	{
 		int airCount = 0;
 
-		for (byte x = 0; x < chunkSize; x++)
+		for (byte x = 0; x < chunkSizeWorld; x++)
 		{
-			for (byte y = 0; y < chunkSize; y++)
+			for (byte y = 0; y < chunkSizeWorld; y++)
 			{
-				for (byte z = 0; z < chunkSize; z++)
+				for (byte z = 0; z < chunkSizeWorld; z++)
 				{
 					// Only care if this block is a transparent block
 					if (GetBlock(x, y, z).IsOpaque())
@@ -160,7 +165,7 @@ public class Chunk
 			}
 		}
 
-		WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSize / 2, airCount);
+		WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSizeWorld / 2, airCount);
 	}
 
 	protected void FlagAdjacentsAsMaybeNearAir(int x, int y, int z)
@@ -168,7 +173,7 @@ public class Chunk
 		Block block;
 
 		// X-axis
-		if (x < chunkSize - 1)
+		if (x < chunkSizeWorld - 1)
 			GetBlock(x + 1, y, z).SetNeedsMesh(true);
 		else if ((block = World.GetBlock(position.x + x + 1, position.y + y, position.z + z)) != BlockList.EMPTY)
 			block.SetNeedsMesh(true);
@@ -179,7 +184,7 @@ public class Chunk
 			block.SetNeedsMesh(true);
 
 		// Y-axis
-		if (y < chunkSize - 1)
+		if (y < chunkSizeWorld - 1)
 			GetBlock(x, y + 1, z).SetNeedsMesh(true);
 		else if ((block = World.GetBlock(position.x + x, position.y + y + 1, position.z + z)) != BlockList.EMPTY)
 			block.SetNeedsMesh(true);
@@ -190,7 +195,7 @@ public class Chunk
 			block.SetNeedsMesh(true);
 
 		// Z-axis
-		if (z < chunkSize - 1)
+		if (z < chunkSizeWorld - 1)
 			GetBlock(x, y, z + 1).SetNeedsMesh(true);
 		else if ((block = World.GetBlock(position.x + x, position.y + y, position.z + z + 1)) != BlockList.EMPTY)
 			block.SetNeedsMesh(true);
@@ -220,18 +225,38 @@ public class Chunk
 		{
 			args.Result = MakeMesh();
 
-			for (int i = 0; i < 24; i++)
+			if (chunkType == ChunkType.Close)
 			{
-				Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSize), SeedlessRandom.NextIntInRange(0, chunkSize), SeedlessRandom.NextIntInRange(0, chunkSize)) + position;
-
-				// Not inside an opaque block, and located on top of a rigid block
-				if (!World.GetBlock(pos).IsOpaque() && World.GetBlock(pos + Vector3Int.down).IsRigid())
+				for (int i = 0; i < 20; i++)
 				{
-					lights.Add(new LightSource()
+					Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld)) + position;
+
+					// Not inside an opaque block, and located on top of a rigid block
+					if (!World.GetBlock(pos).IsOpaque() && World.GetBlock(pos + Vector3Int.up).IsRigid())
 					{
-						pos = pos,
-						lightColor = SeedlessRandom.NextFloat() < 0.2f ? LightSource.colorOrange : LightSource.colorCyan
-					});
+						// Check existing positions
+						bool overlapping = false;
+						foreach (LightSource l in lights)
+						{
+							if (l.pos == pos)
+								overlapping = true;
+						}
+						if (overlapping)
+							break;
+
+						// Create light
+						lights.Add(new LightSource()
+						{
+							pos = pos,
+							// Randomize color
+							lightColor = Color.Lerp(
+								(SeedlessRandom.NextFloat() < 0.8f ? Color.white : LightSource.colorOrange),
+								(SeedlessRandom.NextFloat() < 0.8f ? LightSource.colorGold : LightSource.colorRed),
+								SeedlessRandom.NextFloatInRange(0, 1f) * SeedlessRandom.NextFloatInRange(0.25f, 0.75f)
+							),
+							intensity = SeedlessRandom.NextFloatInRange(1f, 2f)
+						});
+					}
 				}
 			}
 		});
