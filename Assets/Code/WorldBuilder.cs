@@ -138,11 +138,7 @@ public class WorldBuilder
 		{
 			fakeChunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
-			chunksToGen += entry.Value.GetSize();
-
 			bool empty = entry.Key == Chunk.BuildStage.Init;
-			if (!empty && entry.Value.IsBusy())
-				generatorsUsed++;
 
 			if (empty || (prev.GetSize() == 0))
 				entry.Value.Generate();
@@ -309,8 +305,6 @@ public class WorldBuilder
 
 		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
 		{
-			if (entry.Value.IsBusy())
-				busy++;
 		}
 
 		return busy;
