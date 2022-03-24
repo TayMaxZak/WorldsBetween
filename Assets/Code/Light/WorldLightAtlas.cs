@@ -302,9 +302,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 	private async Task ApplyChunkLights()
 	{
-		float lightRange = 8;
-		float lightSamples = 1500;
-		float lightSampleStrength = 0.05f;
+		int baseLightRange = 10;
 
 		int chunks = 0;
 		int chunkLights = 0;
@@ -312,28 +310,67 @@ public class WorldLightAtlas : MonoBehaviour
 		{
 			foreach (LightSource light in pl.Value)
 			{
-				WriteToLightmap(light.pos, light.lightColor, false, true);
-				for (int i = 0; i < lightSamples; i++)
+				int lightRange = (int)(baseLightRange * light.intensity);
+
+				for (int x = -lightRange; x <= lightRange; x++)
 				{
-					Vector3 offset = SeedlessRandom.RandomPoint(1).normalized;
-					float dist = SeedlessRandom.NextFloatInRange(0, lightRange);
+					for (int y = -lightRange; y <= lightRange; y++)
+					{
+						for (int z = -lightRange; z <= lightRange; z++)
+						{
+							if ((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f) + (z - 0.5f) * (z - 0.5f) > lightRange * lightRange)
+								continue;
 
-					Vector3Int newPos = new Vector3Int(
-						Mathf.RoundToInt(light.pos.x + 0.5f + offset.x * dist),
-						Mathf.RoundToInt(light.pos.y + 0.5f + offset.y * dist),
-						Mathf.RoundToInt(light.pos.z + 0.5f + offset.z * dist)
-					);
-					float falloff = (1 - (dist * (1 / lightRange))) * lightSampleStrength;
+							Vector3Int newPos = new Vector3Int(
+								Mathf.FloorToInt(light.pos.x + x),
+								Mathf.FloorToInt(light.pos.y + y),
+								Mathf.FloorToInt(light.pos.z + z)
+							);
 
-					WriteToLightmap(newPos, light.lightColor * falloff, false, true);
-				}
+							float dist = Mathf.Sqrt((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f) + (z - 0.5f) * (z - 0.5f));
+							float falloff = Mathf.Clamp01(1 - dist * (1f / lightRange));
+							falloff *= falloff;
+
+							Vector3Int shadowPos = new Vector3Int(
+								Mathf.FloorToInt(newPos.x - x / dist),
+								Mathf.FloorToInt(newPos.y - y / dist),
+								Mathf.FloorToInt(newPos.z - z / dist)
+							);
+
+							if (!World.GetBlock(shadowPos).IsOpaque())
+								WriteToLightmap(newPos, light.lightColor * light.intensity * falloff, !World.GetBlock(newPos).IsFilled(), true);
+						}
+					}
+				} // x y z
+
+				//for (int x = -lightRange * 2; x <= lightRange * 2; x += SeedlessRandom.NextIntInRange(1, 2 + 1))
+				//{
+				//	for (int y = -lightRange * 2; y <= lightRange * 2; y += SeedlessRandom.NextIntInRange(1, 2 + 1))
+				//	{
+				//		for (int z = -lightRange * 2; z <= lightRange * 2; z += SeedlessRandom.NextIntInRange(1, 2 + 1))
+				//		{
+				//			if ((x * x) + (y * y) + (z * z) > (lightRange * 2) * (lightRange * 2))
+				//				continue;
+
+				//			Vector3Int newPos = new Vector3Int(
+				//				Mathf.FloorToInt(light.pos.x + x),
+				//				Mathf.FloorToInt(light.pos.y + y),
+				//				Mathf.FloorToInt(light.pos.z + z)
+				//			);
+
+				//			float dist = Mathf.Sqrt((x * x) + (y * y) + (z * z));
+				//			float falloff = 0.5f * Mathf.Max(0, 1 - dist * (1f / lightRange));
+				//			WriteToLightmap(newPos, light.lightColor * falloff, World.GetBlock(newPos).IsFilled(), true);
+				//		}
+				//	}
+				//} // x y z
 
 				chunkLights++;
 			}
 
 			chunks++;
 
-			if (chunks % 64 == 0)
+			if (chunks % 32 == 0)
 				await Task.Delay(1);
 		}
 
