@@ -60,7 +60,6 @@ public class LightEngine
 		int step = 2;
 		int extent = World.GetWorldSize() / 2 - 1;
 
-
 		sourceQueue.Clear();
 		retrySourceQueue.Clear();
 

@@ -48,11 +48,10 @@ public partial class World : MonoBehaviour
 
 	public bool isInfinite = true;
 
-	[Header("World Settings")]
-	[SerializeField]
+	//[Header("World Settings")]
+	private int worldHeight = 99999;
 	private int waterHeight = 0;
-	[SerializeField]
-	private int deadFallHeight = -999;
+	private int deadFallHeight = -199;
 
 	private void Awake()
 	{
@@ -124,14 +123,15 @@ public partial class World : MonoBehaviour
 		modifiers.Clear();
 
 		// Main boxes
-		modifiers.Add(new BlockyNoiseModifier(false, 0.9f, new Vector3(0.04f, 0.03f, 0.04f),
+		modifiers.Add(new BlockyNoiseModifier(false, 0.7f, new Vector3(0.04f, 0.03f, 0.04f),
 			0.35f, 3, 16,
-			0.2f, new Vector3(0.15f, 0.4f, 0.15f)));
+			0.05f, new Vector3(0.8f, 0.8f, 0.8f))
+		{ ribbonCount = 2 });
 
 		// Shards
-		modifiers.Add(new BlockyNoiseModifier(true, 0.65f, new Vector3(0.03f, 0.01f, 0.03f),
+		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.03f, 0.01f, 0.03f),
 			0.25f, 5, 10,
-			0.15f, new Vector3(0.3f, 0.0f, 0.3f)));
+			0.0f, new Vector3(0.4f, 0.0f, 0.4f)));
 
 		// Etches
 		//modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.04f, 0.24f, 0.04f),
@@ -257,58 +257,6 @@ public partial class World : MonoBehaviour
 		SetBlock(pos.x, pos.y, pos.z, b);
 	}
 
-	//public static void FillCorner(int x, int y, int z)
-	//{
-	//	Chunk chunk = GetChunkFor(x, y, z);
-
-	//	if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
-	//		return;
-
-	//	ChunkBitArray corners = ((RealChunk)chunk).GetCorners();
-	//	corners.Set(true,
-	//		x - chunk.position.x,
-	//		y - chunk.position.y,
-	//		z - chunk.position.z
-	//	);
-
-	//	ChunkBitArray blurredCorners = ((RealChunk)chunk).GetBlurredCorners();
-	//	blurredCorners.Set(true,
-	//		(x - chunk.position.x) / 2,
-	//		(y - chunk.position.y) / 2,
-	//		(z - chunk.position.z) / 2
-	//	);
-	//}
-
-	//public static bool GetCorner(int x, int y, int z)
-	//{
-	//	Chunk chunk = GetChunkFor(x, y, z);
-
-	//	if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
-	//		return true;
-
-	//	ChunkBitArray corners = ((RealChunk)chunk).GetCorners();
-	//	return corners.Get(
-	//		x - chunk.position.x,
-	//		y - chunk.position.y,
-	//		z - chunk.position.z
-	//	);
-	//}
-
-	//public static bool GetBlurredCorner(int x, int y, int z)
-	//{
-	//	Chunk chunk = GetChunkFor(x, y, z);
-
-	//	if (chunk == null || chunk.procStage < Chunk.ProcStage.Generate)
-	//		return true;
-
-	//	ChunkBitArray corners = ((RealChunk)chunk).GetBlurredCorners();
-	//	return corners.Get(
-	//		(x - chunk.position.x) / 2,
-	//		(y - chunk.position.y) / 2,
-	//		(z - chunk.position.z) / 2
-	//	);
-	//}
-
 	public static int GetChunkSize()
 	{
 		return Instance.chunkSize;
@@ -318,11 +266,6 @@ public partial class World : MonoBehaviour
 	{
 		return Instance.relativeOrigin;
 	}
-
-	//public static Dictionary<Vector3Int, Chunk> GetChunks()
-	//{
-	//	return Instance.chunks;
-	//}
 
 	public static void AddChunk(Vector3Int pos, Chunk chunk)
 	{
@@ -352,6 +295,11 @@ public partial class World : MonoBehaviour
 	public static int GetWaterHeight()
 	{
 		return Instance.waterHeight;
+	}
+
+	public static int GetWorldHeight()
+	{
+		return Instance.worldHeight;
 	}
 
 	public static int GetWorldSize()
