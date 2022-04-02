@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 570941321311836171}
   - component: {fileID: 6831406579662687800}
   - component: {fileID: 7325103411530256385}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 3055702966805891004}
   - component: {fileID: 374284869040826691}
   - component: {fileID: 2104337012581257248}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -289,7 +289,7 @@ GameObject:
   - component: {fileID: 3181490988118456996}
   - component: {fileID: 7307829562728860257}
   - component: {fileID: 6258140493225352442}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +491,7 @@ GameObject:
   - component: {fileID: 5831771571451242163}
   - component: {fileID: 8499052478391205857}
   - component: {fileID: 6469835766400089069}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -625,7 +625,7 @@ GameObject:
   - component: {fileID: 4070425843515761638}
   - component: {fileID: 1140208024818592835}
   - component: {fileID: 2897541213409007753}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HandModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -645,7 +645,7 @@ Transform:
   m_Children:
   - {fileID: 2206537417399619288}
   m_Father: {fileID: 8417224531919593861}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -31.636, y: -24.536, z: -8.743}
 --- !u!33 &1140208024818592835
 MeshFilter:
@@ -707,7 +707,7 @@ GameObject:
   - component: {fileID: 1539153801902233327}
   - component: {fileID: 3458219657568845670}
   - component: {fileID: 3521856918916037288}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: StaminaBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -837,6 +837,113 @@ Transform:
   m_Father: {fileID: 8417224532618400518}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6084783458761969261
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2507628024144031828}
+  - component: {fileID: 4050733941968647427}
+  - component: {fileID: 223103672788660822}
+  m_Layer: 15
+  m_Name: Hand Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2507628024144031828
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6084783458761969261}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8417224531919593861}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &4050733941968647427
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6084783458761969261}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 4
+  m_BackGroundColor: {r: 0.015686275, g: 0.003921569, b: 0.007843138, a: 1}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.1
+  far clip plane: 2000
+  field of view: 70
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 32768
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!114 &223103672788660822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6084783458761969261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 17
+  m_VolumeTrigger: {fileID: 0}
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 1
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &7656046117159519097
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,7 +956,7 @@ GameObject:
   - component: {fileID: 3816004064727326742}
   - component: {fileID: 8389212129650882336}
   - component: {fileID: 8687019296766735697}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1179,6 +1286,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4283246282663221415}
+  - {fileID: 2507628024144031828}
   - {fileID: 4070425843515761638}
   m_Father: {fileID: 8417224532618400518}
   m_RootOrder: 1
@@ -1358,6 +1466,7 @@ MonoBehaviour:
     maxTime: 0.05
   currentHealth: 100
   maxHealth: 100
+  canNearDie: 1
   stopHealthRegen:
     maxTime: 4
   healthRegen: 4
@@ -1393,8 +1502,8 @@ MonoBehaviour:
   grounded: 0
   dead: 0
   cam: {fileID: 8417224531919593866}
-  velDmgMult: 11
-  velDmgLimit: 11
+  velDmgMult: 10
+  velDmgLimit: 10
   sprintCost: 10
   holdBreathCost: 4
   sprinting: 0

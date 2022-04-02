@@ -10,7 +10,7 @@ public class RandomTip : MonoBehaviour
 	[SerializeField]
 	private TMPro.TextMeshProUGUI tipText;
 
-	public List<int> usable = new List<int>();
+	private List<int> usable = new List<int>();
 
 	public void Randomize()
 	{

@@ -91,14 +91,14 @@ public partial class World : MonoBehaviour
 		// Random generation starts here //
 
 		// Sun angle
-		int tiltAmtOptions = 9;
-		int tiltDirOptions = 8;
-		sunObject.transform.eulerAngles = new Vector3(
-			Mathf.Max(Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions), Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions)),
-			Random.Range(0, tiltDirOptions) * (360f / tiltDirOptions),
-			0
-		);
-		//sunObject.transform.localEulerAngles = new Vector3(70f, 67.5f, 0);
+		//int tiltAmtOptions = 9;
+		//int tiltDirOptions = 8;
+		//sunObject.transform.eulerAngles = new Vector3(
+		//	Mathf.Max(Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions), Random.Range(1, tiltAmtOptions - 1) * (90f / tiltAmtOptions)),
+		//	Random.Range(0, tiltDirOptions) * (360f / tiltDirOptions),
+		//	0
+		//);
+		sunObject.transform.localEulerAngles = new Vector3(90f, 0, 0);
 		sunObject.OnEnable();
 
 		// Water/no water, water height
@@ -121,28 +121,6 @@ public partial class World : MonoBehaviour
 	private void MakeModifiers()
 	{
 		modifiers.Clear();
-
-		// Main boxes
-		modifiers.Add(new BlockyNoiseModifier(false, 0.7f, new Vector3(0.04f, 0.03f, 0.04f),
-			0.35f, 3, 16,
-			0.05f, new Vector3(0.8f, 0.8f, 0.8f))
-		{ ribbonCount = 2 });
-
-		// Shards
-		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.03f, 0.01f, 0.03f),
-			0.25f, 5, 10,
-			0.0f, new Vector3(0.4f, 0.0f, 0.4f)));
-
-		// Etches
-		//modifiers.Add(new BlockyNoiseModifier(false, 0.65f, new Vector3(0.04f, 0.24f, 0.04f),
-		//	0.04f, 2, 2,
-		//	0.01f, new Vector3(2, 2, 2)));
-
-		// Weird blobs
-		//modifiers.Add(new BlockyNoiseModifier(true, 0.65f, new Vector3(0.01f, 0.01f, 0.01f),
-		//	1, 1, 4,
-		//	1, new Vector3(0.5f, 0.5f, 0.5f))
-		//{ ribbonCount = 1 });
 	}
 
 	private void Start()

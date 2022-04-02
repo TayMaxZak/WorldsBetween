@@ -227,7 +227,7 @@ public class Chunk
 
 			if (chunkType == ChunkType.Close)
 			{
-				for (int i = 0; i < 20; i++)
+				for (int i = 0; i < 4; i++)
 				{
 					Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld)) + position;
 

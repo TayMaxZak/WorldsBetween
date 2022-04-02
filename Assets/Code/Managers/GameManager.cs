@@ -160,7 +160,8 @@ public partial class GameManager : MonoBehaviour
 		// Disable loading screen completely after some time
 		await Task.Delay(delay * 4);
 
-		loadingScreen.Hide();
+		if (loadingScreen)
+			loadingScreen.Hide();
 	}
 
 	public static bool GetFinishedLoading()
