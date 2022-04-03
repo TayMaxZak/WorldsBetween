@@ -265,10 +265,17 @@ public class ChunkMesh
 							triangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
 						}
 
+						int uvCount = 4;
+
+						int uvX = (block.GetBlockType() - 1) % uvCount;
+						int uvY = (uvCount - 1) - (block.GetBlockType() - 1) / uvCount;
+
+						float uvScale = 1f / uvCount;
+
 						// Add UVs
 						for (int i = 0; i < blockMeshData.uv.Length; i++)
 						{
-							uv.Add(blockMeshData.uv[i]);
+							uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
 						}
 					}
 

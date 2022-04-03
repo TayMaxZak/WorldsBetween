@@ -41,7 +41,12 @@ public class Block
 
 	public bool GetNeedsMesh()
 	{
-		return bits[BlockUtils.rigid] == 1;
+		return bits[BlockUtils.needsMesh] == 1;
+	}
+
+	public int GetBlockType()
+	{
+		return bits[BlockUtils.blockType];
 	}
 
 	public void SetNeedsMesh(bool needsMesh)
@@ -85,15 +90,18 @@ public class Block
 
 		public static float GetNormalHardness(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Artifical || blockType == (int)BlockList.BlockType.Crystal)
+			if (blockType == (int)BlockList.BlockType.Artifical)
 				return 1;
+
+			if (blockType == (int)BlockList.BlockType.Crystal || blockType == (int)BlockList.BlockType.Ice)
+				return 0.5f;
 
 			return 0;
 		}
 
 		public static float GetNormalRefractive(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Ice || blockType == (int)BlockList.BlockType.Crystal)
+			if (blockType == (int)BlockList.BlockType.Crystal || blockType == (int)BlockList.BlockType.Ice)
 				return -1;
 
 			return 1;
@@ -101,11 +109,11 @@ public class Block
 
 		public static int GetMeshSmoothing(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Crystal)
-				return -1;
-
 			if (blockType == (int)BlockList.BlockType.Natural || blockType == (int)BlockList.BlockType.Ice)
 				return 1;
+
+			if (blockType == (int)BlockList.BlockType.Crystal)
+				return -1;
 
 			return 0;
 		}

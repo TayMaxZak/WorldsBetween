@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Block
-  m_Shader: {fileID: -6465566751694194690, guid: bf7e7c66fef938746ae20b85f6bd53df, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: a036358338e012948a3acfbc983c265e, type: 3}
   m_ShaderKeywords: UNITY_APPLY_FOG
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_b2565499f0db43ff828a565829bd18a9:
+        m_Texture: {fileID: 2800000, guid: 039982f3cf3e4bb41b26ccfef55e8c55, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - Texture3D_1:
         m_Texture: {fileID: 11700000, guid: 13d9074a20d03724b9d3caa3967e2cdd, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -159,6 +163,10 @@ Material:
         m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _WorldSample_ddab3c14a30f4c2b80273bb6a1688d1b_Texture3D083c0877ebc64b2ba7d1fbaff2018b66_3133226644:
+        m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -205,6 +213,8 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - Color_afec31f9cb4d45fb8d6b7ca6614de7ba: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - Vector2_1: {r: 0, g: 0, b: 0, a: 0}
+    - Vector2_47bfdb22b58f4e779d11847e3a95c5aa: {r: 1, g: 1, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
