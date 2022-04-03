@@ -5,6 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class Modifier
 {
+	public struct Mask
+	{
+		public bool fill;
+		public bool replace;
+	}
+
 	public string label = "";
 
 	public bool active = true;
