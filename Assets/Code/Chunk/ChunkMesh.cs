@@ -201,10 +201,12 @@ public class ChunkMesh
 						// Add vertices
 						for (int v = 0; v < blockMeshData.vertices.Length; v++)
 						{
-							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f) * chunk.scaleFactor;
+							Vector3 middle = new Vector3(0.5f * chunk.scaleFactor + x, 0.5f * chunk.scaleFactor + y, 0.5f * chunk.scaleFactor + z);
 
-							Vector3 vertPos = new Vector3(vert.x + 0.5f * chunk.scaleFactor + x, vert.y + 0.5f * chunk.scaleFactor + y, vert.z + 0.5f * chunk.scaleFactor + z);
-							vertices.Add(vertPos);
+							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f);
+							vert *= chunk.scaleFactor;
+
+							Vector3 vertPos = middle + vert;
 
 							// Calculate normals
 							norm = Vector3.zero;
@@ -242,6 +244,11 @@ public class ChunkMesh
 
 								normals.Add(Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
 							}
+
+							
+							float dot = 1;
+							Vector3 displacedVert = vertPos + dot * (norm / 2 - norm.normalized * 2) / 2;
+							vertices.Add(displacedVert);
 						}
 
 						// Add triangles
