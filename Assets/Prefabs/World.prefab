@@ -43,7 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbc28df5073d7d47b394f4db71171fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  relativeOrigin: {x: 0, y: 0, z: 0}
   waterSystem: {fileID: 0}
   sunObject: {fileID: 0}
   modifiers: []
@@ -59,15 +58,11 @@ MonoBehaviour:
     spawnFinder:
       extents: {x: 8, y: 5, z: 8}
     genRangePlayable: 8
-    genRangeFake: 8
+    genRangeFake: 0
   lightEngine:
-    raysPerBatch: 128
-    progressStep: 1
-    splitPixelCutoff: 0.229
-    fixSplitOffset: 0.51
+    raysPerBatch: 125
+    progressStep: 0.5
   randomizeSeed: 1
   seed: 0
   chunkSize: 16
   isInfinite: 0
-  waterHeight: -120
-  deadFallHeight: -999

@@ -59,14 +59,19 @@ public class SpawnFinder
 		// Move to a new location in the world near-ish the origin
 		Vector3Int testBounds = Vector3Int.one * 32;
 		pos = new Vector3Int(
-			(int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
-			(int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
-			(int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
+			World.GetPointA().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
+			World.GetPointA().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
+			World.GetPointA().z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
 		);
 	}
 
 	public async void Tick()
 	{
+		if (success)
+			return;
+		else
+			Move();
+
 		BlockPosAction act = Scan;
 
 		isBusy = true;
@@ -74,11 +79,6 @@ public class SpawnFinder
 		await ScanAll(act, pos, pos + extents);
 
 		await CheckConditions();
-
-		if (success)
-			return;
-		else
-			Move();
 
 		isBusy = false;
 	}

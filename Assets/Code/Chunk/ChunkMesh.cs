@@ -238,7 +238,7 @@ public class ChunkMesh
 							else
 							{
 								// Smooth vs hard determined by block material
-								float hardness = 0.5f;
+								float hardness = 0f;
 
 								normals.Add(Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
 							}

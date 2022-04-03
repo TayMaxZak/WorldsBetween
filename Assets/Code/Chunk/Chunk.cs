@@ -227,12 +227,12 @@ public class Chunk
 
 			if (chunkType == ChunkType.Close)
 			{
-				for (int i = 0; i < 4; i++)
+				for (int i = 0; i < 100; i++)
 				{
 					Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld)) + position;
 
 					// Not inside an opaque block, and located on top of a rigid block
-					if (!World.GetBlock(pos).IsOpaque() && World.GetBlock(pos + Vector3Int.up).IsRigid())
+					if (!World.GetBlock(pos).IsOpaque() && (World.GetBlock(pos + Vector3Int.down).IsRigid() || World.GetBlock(pos + Vector3Int.up).IsRigid()))
 					{
 						// Check existing positions
 						bool overlapping = false;
@@ -244,18 +244,30 @@ public class Chunk
 						if (overlapping)
 							break;
 
+						bool cond = (pos.y > World.GetWaterHeight() && World.GetBlock(pos + Vector3Int.down).IsRigid());
+
 						// Create light
-						lights.Add(new LightSource()
+						if (!cond || SeedlessRandom.NextFloat() > 0.33f)
 						{
-							pos = pos,
-							// Randomize color
-							lightColor = Color.Lerp(
-								(SeedlessRandom.NextFloat() < 0.8f ? Color.white : LightSource.colorOrange),
-								(SeedlessRandom.NextFloat() < 0.8f ? LightSource.colorGold : LightSource.colorRed),
-								SeedlessRandom.NextFloatInRange(0, 1f) * SeedlessRandom.NextFloatInRange(0.25f, 0.75f)
-							),
-							intensity = SeedlessRandom.NextFloatInRange(1f, 2f)
-						});
+							lights.Add(new LightSource()
+							{
+								pos = pos,
+								// Randomize color
+								lightColor = cond ?
+								(Color.Lerp(
+									(SeedlessRandom.NextFloat() < 0.1f ? Color.white : LightSource.colorOrange),
+									(SeedlessRandom.NextFloat() < 0.8f ? LightSource.colorGold : LightSource.colorRed),
+									SeedlessRandom.NextFloatInRange(0, 1f) * SeedlessRandom.NextFloatInRange(0.25f, 0.75f)
+								)) :
+								(5 * Color.Lerp(
+									(SeedlessRandom.NextFloat() < 0.05f ? LightSource.colorGreen : LightSource.colorCyan),
+									(SeedlessRandom.NextFloat() < 0.05f ? LightSource.colorOrange : LightSource.colorBlue),
+									SeedlessRandom.NextFloatInRange(0, 1f)
+								)),
+								intensity = cond ? SeedlessRandom.NextFloatInRange(0.33f, 1.33f) : SeedlessRandom.NextFloatInRange(0.2f, 0.5f),
+								noise = cond ? 0.33f : 1f
+							});
+						}
 					}
 				}
 			}

@@ -10,9 +10,6 @@ public partial class World : MonoBehaviour
 
 	[Header("References")]
 	[SerializeField]
-	private Vector3Int relativeOrigin;
-
-	[SerializeField]
 	private GameObject waterSystem;
 
 	[SerializeField]
@@ -48,7 +45,11 @@ public partial class World : MonoBehaviour
 
 	public bool isInfinite = true;
 
-	//[Header("World Settings")]
+	[Header("World Settings")]
+	private Vector3Int relativeOrigin;
+	private Vector3Int pointA;
+	private Vector3Int pointB;
+
 	private int worldHeight = 99999;
 	private int waterHeight = 0;
 	private int deadFallHeight = -199;
@@ -102,7 +103,7 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.1f;
+		bool hasWater = Random.value < 0.5f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
@@ -111,6 +112,13 @@ public partial class World : MonoBehaviour
 		}
 		else
 			waterHeight = -99999;
+
+		// Points A and B
+		Vector3 floatA = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
+		pointA = new Vector3Int(Mathf.FloorToInt(floatA.x), Mathf.FloorToInt(floatA.y), Mathf.FloorToInt(floatA.z));
+		if (pointA.y < 0)
+			pointA.y = -pointA.y;
+		pointB = -pointA;
 
 		// Modifiers
 		MakeModifiers();
@@ -121,6 +129,44 @@ public partial class World : MonoBehaviour
 	private void MakeModifiers()
 	{
 		modifiers.Clear();
+
+		// Big cave
+		modifiers.Add(new TunnelModifier(8, pointA, pointB, 9f, new Vector3(0.05f, 0.05f, 0.05f), new Vector3(48, 48, 48), new Vector3(0.02f, 0.02f, 0.02f)));
+
+		// Buildings
+		modifiers.Add(new BlockyNoiseModifier(true, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
+			0.35f, 3, 16,
+			0.25f, new Vector3(0.15f, 0.4f, 0.15f))
+		);
+
+		// Main cave
+		modifiers.Add(new TunnelModifier(8, pointA, pointB, 3.5f, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.03f, 0.03f, 0.03f)));
+
+		// Pillars
+		modifiers.Add(new BlockyNoiseModifier(true, 0.53f, new Vector3(0.2f, 0.005f, 0.2f),
+			0.35f, 4, 10,
+			0.05f, new Vector3(0.15f, 0.15f, 0.15f))
+		);
+
+		// Leaning pillars
+		modifiers.Add(new BlockyNoiseModifier(true, 0.51f, new Vector3(0.2f, 0.005f, 0.2f),
+			0.35f, 8, 8,
+			0.7f, new Vector3(0.25f, 0.05f, 0.25f))
+		);
+
+		// Meandering tunnel
+		modifiers.Add(new TunnelModifier(5, pointA, pointB, 1f, Vector3.one, new Vector3(64, 64, 64), new Vector3(0.01f, 0.01f, 0.01f)));
+		
+		// Pillars
+		modifiers.Add(new BlockyNoiseModifier(true, 0.53f, new Vector3(0.2f, 0.005f, 0.2f),
+			0.35f, 4, 10,
+			0.05f, new Vector3(0.15f, 0.4f, 0.15f))
+		);
+
+
+
+		// Last resort tunnel
+		modifiers.Add(new TunnelModifier(4, pointA, pointB, 1f, Vector3.one, new Vector3(8, 8, 8), new Vector3(0.1f, 0.1f, 0.1f)));
 	}
 
 	private void Start()
@@ -151,11 +197,11 @@ public partial class World : MonoBehaviour
 	}
 
 	[ContextMenu("Recalculate Light")]
-	public void RecalcLight()
+	public async void RecalcLight()
 	{
 		WorldLightAtlas.Instance.ClearAtlas();
 
-		LightEngine.Begin();
+		await LightEngine.Begin();
 	}
 
 	public static bool Exists()
@@ -245,6 +291,11 @@ public partial class World : MonoBehaviour
 		return Instance.relativeOrigin;
 	}
 
+	public static Vector3Int GetPointA()
+	{
+		return Instance.pointA;
+	}
+
 	public static void AddChunk(Vector3Int pos, Chunk chunk)
 	{
 		Instance.chunks.Add(pos, chunk);
@@ -317,6 +368,11 @@ public partial class World : MonoBehaviour
 
 		Gizmos.color = Utils.colorPurple;
 		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeFake()) * Vector3.one);
+
+		Gizmos.color = Color.white;
+		Gizmos.DrawLine(pointA, pointB);
+		Vector3 dif = ((Vector3)(pointA - pointB)).normalized * 2;
+		Gizmos.DrawLine(pointB, pointB + SeedlessRandom.RandomPoint(1) + dif);
 
 		worldBuilder.DrawGizmo();
 	}

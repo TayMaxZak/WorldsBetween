@@ -123,11 +123,11 @@ public partial class GameManager : MonoBehaviour
 		World.WorldBuilder.genStage = WorldBuilder.GenStage.Ready;
 	}
 
-	public void StartLighting()
+	public async void StartLighting()
 	{
 		startedLight = true;
 
-		World.LightEngine.Begin();
+		await World.LightEngine.Begin();
 	}
 
 	public void FinishLighting()

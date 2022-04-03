@@ -639,14 +639,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3690381111653038428}
-  m_LocalRotation: {x: -0.2499996, y: -0.2241436, z: -0.12940907, w: 0.93301296}
-  m_LocalPosition: {x: -0.729, y: -0.16500002, z: 0.489}
+  m_LocalRotation: {x: -0.30519164, y: -0.55974454, z: -0.2970667, w: 0.7108415}
+  m_LocalPosition: {x: -0.665, y: -0.189, z: 0.332}
   m_LocalScale: {x: 0.1, y: 0.10000001, z: 0.09999999}
   m_Children:
   - {fileID: 2206537417399619288}
   m_Father: {fileID: 8417224531919593861}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -31.636, y: -24.536, z: -8.743}
+  m_LocalEulerAnglesHint: {x: -50.036, y: -73.066, z: -7.216}
 --- !u!33 &1140208024818592835
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1447,7 +1447,7 @@ MonoBehaviour:
   mouseLook: {fileID: 8417224531919593863}
   hand: {fileID: 4283246282663221415}
   cam: {fileID: 8417224531919593866}
-  heldItem: {fileID: 11400000, guid: 38d580269c4c25b41ab1b6248a864571, type: 2}
+  heldItem: {fileID: 11400000, guid: 96dcb5f8b8ec8a04fb43702092b77475, type: 2}
 --- !u!114 &6215269175067649699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1792,6 +1792,14 @@ PrefabInstance:
     - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: InitialModule.startSize.minScalar
       value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: InitialModule.startColor.minColor.a
+      value: 0.050980393
       objectReference: {fileID: 0}
     - target: {fileID: 5374829732445087029, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: m_Name

@@ -331,14 +331,15 @@ public class WorldLightAtlas : MonoBehaviour
 							float falloff = Mathf.Clamp01(1 - dist * (1f / lightRange));
 							falloff *= falloff;
 
-							Vector3Int shadowPos = new Vector3Int(
+							Vector3Int shadowPos = dist > 1 ? new Vector3Int(
 								Mathf.FloorToInt(newPos.x - x / dist),
 								Mathf.FloorToInt(newPos.y - y / dist),
 								Mathf.FloorToInt(newPos.z - z / dist)
-							);
+							) : light.pos;
 
+							float noise = Mathf.Lerp(1, SeedlessRandom.NextFloat(), light.noise);
 							if (!World.GetBlock(shadowPos).IsOpaque())
-								WriteToLightmap(newPos, light.lightColor * light.intensity * falloff, !World.GetBlock(newPos).IsFilled(), true);
+								WriteToLightmap(newPos, light.lightColor * light.intensity * falloff * noise, !World.GetBlock(newPos).IsFilled(), true);
 						}
 					}
 				} // x y z
