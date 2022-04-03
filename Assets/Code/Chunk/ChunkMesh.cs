@@ -152,17 +152,25 @@ public class ChunkMesh
 					}
 
 					// Useful to predict which directions will require a surface
-					airDirections.Clear();
+					airDirections.Clear();	
 
 					for (int d = 0; d < directions.Length; d++)
 					{
-						faceOffset.x = chunk.position.x + x + directions[d].x * chunk.scaleFactor;
-						faceOffset.y = chunk.position.y + y + directions[d].y * chunk.scaleFactor;
-						faceOffset.z = chunk.position.z + z + directions[d].z * chunk.scaleFactor;
+						faceOffset = new Vector3Int(
+							chunk.position.x + x + directions[d].x * chunk.scaleFactor,
+							chunk.position.y + y + directions[d].y * chunk.scaleFactor,
+							chunk.position.z + z + directions[d].z * chunk.scaleFactor
+						);
 
-						if (World.GetBlock(faceOffset.x, faceOffset.y, faceOffset.z).IsOpaque())
+						if (chunk.chunkType == Chunk.ChunkType.Close && !World.Contains(faceOffset))
 							continue;
-						airDirections.Add(d);
+
+						Block adj = World.GetBlock(faceOffset.x, faceOffset.y, faceOffset.z);
+
+						if (!adj.IsOpaque() || (adj.GetMeshSmoothing() != block.GetMeshSmoothing()))
+						{
+							airDirections.Add(d);
+						}
 					}
 
 					// No air in any direction
@@ -234,19 +242,19 @@ public class ChunkMesh
 							// Stuck between corners, use hard normal always
 							if (norm == Vector3.zero)
 							{
-								normals.Add(directions[d]);
+								normals.Add(block.GetNormalRefractive() * (Vector3)directions[d]);
 							}
 							// Normal case
 							else
 							{
 								// Smooth vs hard determined by block material
-								float hardness = block.GetHardness();
+								float hardness = block.GetNormalHardness();
 
-								normals.Add(Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
+								normals.Add(block.GetNormalRefractive() * Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
 							}
 
 							
-							float dot = 1;
+							float dot = block.GetMeshSmoothing();
 							Vector3 displacedVert = vertPos + dot * (norm / 2 - norm.normalized * 2) / 2;
 							vertices.Add(displacedVert);
 						}

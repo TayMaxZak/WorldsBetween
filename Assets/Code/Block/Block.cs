@@ -49,9 +49,19 @@ public class Block
 		bits[BlockUtils.needsMesh] = needsMesh ? 1 : 0;
 	}
 
-	public float GetHardness()
+	public float GetNormalHardness()
 	{
-		return BlockUtils.GetHardness(bits[BlockUtils.blockType]);
+		return BlockUtils.GetNormalHardness(bits[BlockUtils.blockType]);
+	}
+
+	public float GetNormalRefractive()
+	{
+		return BlockUtils.GetNormalRefractive(bits[BlockUtils.blockType]);
+	}
+
+	public int GetMeshSmoothing()
+	{
+		return BlockUtils.GetMeshSmoothing(bits[BlockUtils.blockType]);
 	}
 
 	private static class BlockUtils
@@ -73,10 +83,29 @@ public class Block
 			blockType = BitVector32.CreateSection(8, needsMesh);
 		}
 
-		public static float GetHardness(int blockType)
+		public static float GetNormalHardness(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Artifical)
-				return 0.9f;
+			if (blockType == (int)BlockList.BlockType.Artifical || blockType == (int)BlockList.BlockType.Crystal)
+				return 1;
+
+			return 0;
+		}
+
+		public static float GetNormalRefractive(int blockType)
+		{
+			if (blockType == (int)BlockList.BlockType.Ice || blockType == (int)BlockList.BlockType.Crystal)
+				return -1;
+
+			return 1;
+		}
+
+		public static int GetMeshSmoothing(int blockType)
+		{
+			if (blockType == (int)BlockList.BlockType.Crystal)
+				return -1;
+
+			if (blockType == (int)BlockList.BlockType.Natural || blockType == (int)BlockList.BlockType.Ice)
+				return 1;
 
 			return 0;
 		}

@@ -103,11 +103,11 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.2f;
+		bool hasWater = Random.value < 0.25f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
-			waterHeight = (int)(Random.value * Random.value * Random.value * -200);
+			waterHeight = (int)(Random.value * Random.value * -200);
 			WaterFollow(relativeOrigin);
 		}
 		else
@@ -149,12 +149,12 @@ public partial class World : MonoBehaviour
 		);
 
 		// Leaning pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, 0.55f, new Vector3(0.2f, 0.005f, 0.2f),
+		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, 0.55f, new Vector3(0.2f, 0.005f, 0.2f),
 			0.35f, 8, 8,
 			0.6f, new Vector3(0.25f, 0.05f, 0.25f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, 0.55f, new Vector3(0.2f, 0.005f, 0.2f),
+		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, 0.55f, new Vector3(0.2f, 0.005f, 0.2f),
 			0.35f, 8, 8,
 			0.7f, new Vector3(0.25f, 0.05f, 0.25f))
 		);
