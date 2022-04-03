@@ -11,14 +11,14 @@ public class NoiseModifier : Modifier
 	public float gate = 0;
 	private float boundary = 0.5f;
 	public int ribbonCount = 0;
-	public bool addOrSub = false;
+	public Block block = BlockList.EMPTY;
 
 	private Vector3 randomOffset = Vector3.zero;
 
 	// TODO: Strength as chance to exceed 0.5
-	public NoiseModifier(bool addOrSub, float strength, Vector3 scale)
+	public NoiseModifier(Block block, float strength, Vector3 scale)
 	{
-		this.addOrSub = addOrSub;
+		this.block = block;
 		this.strength = strength;
 		this.scale = scale;
 	}
@@ -59,10 +59,7 @@ public class NoiseModifier : Modifier
 
 		if (noise > boundary)
 		{
-			if (addOrSub)
-				World.SetBlock(pos.x, pos.y, pos.z, BlockList.FILLED);
-			else
-				World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
+			World.SetBlock(pos.x, pos.y, pos.z, block);
 		}
 	}
 

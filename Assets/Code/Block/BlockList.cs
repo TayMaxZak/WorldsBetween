@@ -5,7 +5,17 @@ using System.Collections.Specialized;
 
 public static class BlockList
 {
-	public static Block EMPTY = new Block(false, false, false, 0);
-	public static Block FILLED = new Block(true, true, true, 0);
-	public static Block BORDER = new Block(false, true, false, 0);
+	public enum BlockType
+	{
+		Utility,
+		Natural,
+		Artifical
+	}
+
+	public static Block EMPTY = new Block(false, false, false, BlockType.Utility);
+	public static Block BORDER = new Block(false, true, false, BlockType.Utility);
+
+	public static Block NATURAL = new Block(true, true, true, BlockType.Natural);
+	public static Block ARTIFICAL = new Block(true, true, true, BlockType.Artifical);
+
 }

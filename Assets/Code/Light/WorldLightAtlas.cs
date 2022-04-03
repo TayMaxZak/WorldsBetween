@@ -329,7 +329,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 							float dist = Mathf.Sqrt((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f) + (z - 0.5f) * (z - 0.5f));
 							float falloff = Mathf.Clamp01(1 - dist * (1f / lightRange));
-							falloff *= falloff;
+							falloff = falloff * falloff;
 
 							Vector3Int shadowPos = dist > 1 ? new Vector3Int(
 								Mathf.FloorToInt(newPos.x - x / dist),

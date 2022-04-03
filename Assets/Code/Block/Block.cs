@@ -12,7 +12,7 @@ public class Block
 		bits = new BitVector32();
 	}
 
-	public Block(bool exists, bool opaque, bool rigid, byte blockType)
+	public Block(bool exists, bool opaque, bool rigid, BlockList.BlockType blockType)
 	{
 		bits = new BitVector32();
 
@@ -21,7 +21,7 @@ public class Block
 		bits[BlockUtils.rigid] = rigid ? 1 : 0;
 		bits[BlockUtils.needsMesh] = 0;
 
-		bits[BlockUtils.blockType] = blockType;
+		bits[BlockUtils.blockType] = (int)blockType;
 	}
 
 	public bool IsFilled()
@@ -49,6 +49,11 @@ public class Block
 		bits[BlockUtils.needsMesh] = needsMesh ? 1 : 0;
 	}
 
+	public float GetHardness()
+	{
+		return BlockUtils.GetHardness(bits[BlockUtils.blockType]);
+	}
+
 	private static class BlockUtils
 	{
 		public static BitVector32.Section exists;       // 1 bit: Air/empty/no block, or not
@@ -66,6 +71,14 @@ public class Block
 			needsMesh = BitVector32.CreateSection(1, rigid);
 
 			blockType = BitVector32.CreateSection(8, needsMesh);
+		}
+
+		public static float GetHardness(int blockType)
+		{
+			if (blockType == (int)BlockList.BlockType.Artifical)
+				return 0.9f;
+
+			return 0;
 		}
 	}
 }

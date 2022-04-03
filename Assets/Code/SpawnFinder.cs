@@ -85,6 +85,9 @@ public class SpawnFinder
 
 	protected virtual void Scan(Vector3Int pos)
 	{
+		if (!World.Contains(pos))
+			return;
+
 		bool notWaterOrNoChoice = pos.y > World.GetWaterHeight() || attemptsLeft <= 0;
 
 		if (notWaterOrNoChoice && !World.GetBlock(pos).IsRigid())

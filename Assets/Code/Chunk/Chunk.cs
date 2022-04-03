@@ -132,7 +132,7 @@ public class Chunk
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
 		bool sky = coord.y >= World.GetWorldHeight();
 
-		SetBlock(x, y, z, sky ? BlockList.EMPTY : BlockList.FILLED);
+		SetBlock(x, y, z, sky ? BlockList.EMPTY : BlockList.NATURAL);
 	}
 
 	protected virtual void Generate()
@@ -227,7 +227,7 @@ public class Chunk
 
 			if (chunkType == ChunkType.Close)
 			{
-				for (int i = 0; i < 100; i++)
+				for (int i = 0; i < SeedlessRandom.NextIntInRange(10, 100); i++)
 				{
 					Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld)) + position;
 
@@ -247,7 +247,7 @@ public class Chunk
 						bool cond = (pos.y > World.GetWaterHeight() && World.GetBlock(pos + Vector3Int.down).IsRigid());
 
 						// Create light
-						if (!cond || SeedlessRandom.NextFloat() > 0.33f)
+						if (!cond || SeedlessRandom.NextFloat() > 0.25f)
 						{
 							lights.Add(new LightSource()
 							{
@@ -264,8 +264,8 @@ public class Chunk
 									(SeedlessRandom.NextFloat() < 0.05f ? LightSource.colorOrange : LightSource.colorBlue),
 									SeedlessRandom.NextFloatInRange(0, 1f)
 								)),
-								intensity = cond ? SeedlessRandom.NextFloatInRange(0.33f, 1.33f) : SeedlessRandom.NextFloatInRange(0.2f, 0.5f),
-								noise = cond ? 0.33f : 1f
+								intensity = cond ? 1f : 0.3f,
+								noise = cond ? 0.67f : 1f
 							});
 						}
 					}

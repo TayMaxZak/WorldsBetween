@@ -13,7 +13,7 @@ public class BlockyNoiseModifier : NoiseModifier
 	private float diagStrength;
 	private Vector3 diagScale;
 
-	public BlockyNoiseModifier(bool addOrSub, float strength, Vector3 scale, float divideScale, int minDivide, int maxDivide, float diagStrength, Vector3 diagScale) : base(addOrSub, strength, scale)
+	public BlockyNoiseModifier(Block block, float strength, Vector3 scale, float divideScale, int minDivide, int maxDivide, float diagStrength, Vector3 diagScale) : base(block, strength, scale)
 	{
 		this.divideScale = divideScale;
 
