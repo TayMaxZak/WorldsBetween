@@ -46,12 +46,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
-    procStage: 0
+    chunkType: 0
     position: {x: 0, y: 0, z: 0}
-    atEdge: 0
+    scaleFactor: 1
+    chunkSizeWorld: 16
+    buildStage: 0
     isProcessing: 0
-    go: {fileID: 0}
     didInit: 0
+    go: {fileID: 0}
   filter: {fileID: 6233231840159841262}
 --- !u!33 &6233231840159841262
 MeshFilter:
@@ -81,6 +83,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 43ed010cd7cc0a243b80d2f4e3de8487, type: 2}
+  - {fileID: 2100000, guid: 541fcf6908a9bd64ca1eba20edbad765, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

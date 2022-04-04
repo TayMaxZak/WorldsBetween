@@ -313,7 +313,7 @@ public class ChunkMesh
 						// Add triangles
 						for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
 						{
-							triangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
+							vegTriangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
 						}
 
 						int uvCount = 4;

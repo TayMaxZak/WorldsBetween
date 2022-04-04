@@ -88,9 +88,9 @@ public class Decorator : Modifier
 			lightColor = glowshroom ?
 			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold) :
 			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan),
-			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroom ? 0.5f : 0.5f),
-			spread = glowshroom ? 1f : 0.5f,
-			noise = glowshroom ? 0.67f : 0.33f
+			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroom ? 0.67f : 0.5f),
+			spread = glowshroom ? 0.67f : 0.33f,
+			noise = glowshroom ? 0.5f : 0.25f
 		});
 	}
 }
