@@ -153,14 +153,14 @@ public partial class World : MonoBehaviour
 		);
 
 		// Leaning pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, fillMask, 0.53f, new Vector3(0.25f, 0.005f, 0.25f),
+		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, fillMask, 0.51f, new Vector3(0.25f, 0.005f, 0.25f),
 			0.35f, 3, 6,
-			0.4f, new Vector3(0.4f, 0.05f, 0.4f))
+			0.4f, new Vector3(0.2f, 0.04f, 0.2f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, fillMask, 0.53f, new Vector3(0.25f, 0.005f, 0.25f),
+		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, fillMask, 0.51f, new Vector3(0.25f, 0.005f, 0.25f),
 			0.35f, 3, 6,
-			0.6f, new Vector3(0.4f, 0.05f, 0.4f))
+			0.6f, new Vector3(0.2f, 0.04f, 0.2f))
 		);
 
 		// Meandering tunnel

@@ -93,7 +93,7 @@ public class Block
 			if (blockType == (int)BlockList.BlockType.Artifical)
 				return 1;
 
-			if (blockType == (int)BlockList.BlockType.Crystal || blockType == (int)BlockList.BlockType.Ice)
+			if (blockType == (int)BlockList.BlockType.Crystal)
 				return 0.5f;
 
 			return 0;

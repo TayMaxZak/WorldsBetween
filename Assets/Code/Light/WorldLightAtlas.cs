@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 [ExecuteInEditMode]
 public class WorldLightAtlas : MonoBehaviour
 {
-	public enum LightMapSpace
-	{
-		TexSpace,
-		WorldSpace
-	}
-
 	public static WorldLightAtlas Instance;
 
 	public bool simpleMode = false;
@@ -310,7 +304,7 @@ public class WorldLightAtlas : MonoBehaviour
 		{
 			foreach (LightSource light in pl.Value)
 			{
-				int lightRange = (int)(baseLightRange * light.intensity);
+				int lightRange = (int)(baseLightRange * light.spread);
 
 				for (int x = -lightRange; x <= lightRange; x++)
 				{
@@ -339,7 +333,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 							float noise = Mathf.Lerp(1, SeedlessRandom.NextFloat(), light.noise);
 							if (!World.GetBlock(shadowPos).IsOpaque())
-								WriteToLightmap(newPos, light.lightColor * light.intensity * falloff * noise, !World.GetBlock(newPos).IsFilled(), true);
+								WriteToLightmap(newPos, light.GetLightColor(falloff) * light.brightness * falloff * noise, !World.GetBlock(newPos).IsFilled(), true);
 						}
 					}
 				} // x y z

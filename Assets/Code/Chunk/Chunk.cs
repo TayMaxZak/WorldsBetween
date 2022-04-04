@@ -244,28 +244,21 @@ public class Chunk
 						if (overlapping)
 							break;
 
-						bool cond = (pos.y > World.GetWaterHeight() && World.GetBlock(pos + Vector3Int.down).IsRigid());
+						bool mushroom = (pos.y > World.GetWaterHeight() && World.GetBlock(pos + Vector3Int.down).IsRigid());
 
 						// Create light
-						if (!cond || SeedlessRandom.NextFloat() > 0.25f)
+						if (!mushroom || SeedlessRandom.NextFloat() > 0.25f)
 						{
 							lights.Add(new LightSource()
 							{
 								pos = pos,
 								// Randomize color
-								lightColor = cond ?
-								(Color.Lerp(
-									(SeedlessRandom.NextFloat() < 0.1f ? Color.white : LightSource.colorOrange),
-									(SeedlessRandom.NextFloat() < 0.8f ? LightSource.colorGold : LightSource.colorRed),
-									SeedlessRandom.NextFloatInRange(0, 1f) * SeedlessRandom.NextFloatInRange(0.25f, 0.75f)
-								)) :
-								(5 * Color.Lerp(
-									(SeedlessRandom.NextFloat() < 0.05f ? LightSource.colorGreen : LightSource.colorCyan),
-									(SeedlessRandom.NextFloat() < 0.05f ? LightSource.colorOrange : LightSource.colorBlue),
-									SeedlessRandom.NextFloatInRange(0, 1f)
-								)),
-								intensity = cond ? 1f : 0.3f,
-								noise = cond ? 0.67f : 1f
+								lightColor = mushroom ?
+								(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold) :
+								(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan),
+								brightness = mushroom ? 1f : 2f,
+								spread = mushroom ? 1f : 0.5f,
+								noise = mushroom ? 0.67f : 1f
 							});
 						}
 					}
