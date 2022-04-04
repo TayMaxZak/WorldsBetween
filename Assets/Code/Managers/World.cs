@@ -176,7 +176,7 @@ public partial class World : MonoBehaviour
 		modifiers.Add(new TunnelModifier(3, pointA, pointB, 1f, Vector3.one, new Vector3(8, 8, 8), new Vector3(0.1f, 0.1f, 0.1f)));
 
 		// Decorators
-		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 0.00732421875f, 30));
+		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 120f / (16 * 16 * 16), 120));
 	}
 
 	private void Start()
