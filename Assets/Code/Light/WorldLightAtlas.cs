@@ -304,6 +304,10 @@ public class WorldLightAtlas : MonoBehaviour
 		{
 			foreach (LightSource light in pl.Value)
 			{
+				// TODO: Why is it ever null?
+				if (light == null)
+					continue;
+
 				int lightRange = (int)(baseLightRange * light.spread);
 
 				for (int x = -lightRange; x <= lightRange; x++)

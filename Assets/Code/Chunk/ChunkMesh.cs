@@ -134,7 +134,7 @@ public class ChunkMesh
 					Vector3 vert;
 					Vector3 norm;
 
-					block = chunk.GetBlock(x,y,z);
+					block = chunk.GetBlock(x, y, z);
 
 					// No model for this block
 					if (!block.IsFilled())
@@ -152,7 +152,7 @@ public class ChunkMesh
 					}
 
 					// Useful to predict which directions will require a surface
-					airDirections.Clear();	
+					airDirections.Clear();
 
 					for (int d = 0; d < directions.Length; d++)
 					{
@@ -177,86 +177,137 @@ public class ChunkMesh
 					if (airDirections.Count == 0)
 						continue;
 
-					int surfacesAdded = 0;
-					for (int d = 0; d < directions.Length; d++)
+					BlockModel model = ModelsList.GetModelFor(block.GetBlockType() - 1);
+
+					if (model.blockModelType == BlockModel.BlockModelType.SixFaces)
 					{
-						faceOffset.x = chunk.position.x + x + directions[d].x * chunk.scaleFactor;
-						faceOffset.y = chunk.position.y + y + directions[d].y * chunk.scaleFactor;
-						faceOffset.z = chunk.position.z + z + directions[d].z * chunk.scaleFactor;
-
-						// Only render easily viewable faces for non-near chunks
-						if (chunk.chunkType != Chunk.ChunkType.Close)
+						for (int d = 0; d < directions.Length; d++)
 						{
-							Vector3 checkDir = new Vector3(Mathf.RoundToInt(faceOffset.x), Mathf.RoundToInt(faceOffset.y), Mathf.RoundToInt(faceOffset.z)).normalized;
+							faceOffset.x = chunk.position.x + x + directions[d].x * chunk.scaleFactor;
+							faceOffset.y = chunk.position.y + y + directions[d].y * chunk.scaleFactor;
+							faceOffset.z = chunk.position.z + z + directions[d].z * chunk.scaleFactor;
 
-							if (Vector3.Dot(directions[d], checkDir) > 0.5f)
+							// Only render easily viewable faces for non-near chunks
+							if (chunk.chunkType != Chunk.ChunkType.Close)
+							{
+								Vector3 checkDir = new Vector3(Mathf.RoundToInt(faceOffset.x), Mathf.RoundToInt(faceOffset.y), Mathf.RoundToInt(faceOffset.z)).normalized;
+
+								if (Vector3.Dot(directions[d], checkDir) > 0.5f)
+									continue;
+							}
+
+							MeshData blockMeshData = model.faces[d].meshData;
+
+							// Should a surface be made in this direction
+							if (!airDirections.Contains(d))
 								continue;
+
+							// Show debug rays in some places
+							bool drawDebugRay = false/*SeedlessRandom.NextFloat() > 0.9999f*/;
+
+							// What index are we starting this face from
+							int indexOffset = vertices.Count;
+
+							// Add vertices
+							for (int v = 0; v < blockMeshData.vertices.Length; v++)
+							{
+								Vector3 middle = new Vector3(0.5f * chunk.scaleFactor + x, 0.5f * chunk.scaleFactor + y, 0.5f * chunk.scaleFactor + z);
+
+								vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f);
+								vert *= chunk.scaleFactor;
+
+								Vector3 vertPos = middle + vert;
+
+								// Calculate normals
+								norm = Vector3.zero;
+
+								// Based on adjacent blocks (never fails, angular result)
+								for (int i = -1; i <= 1; i += 2)
+								{
+									for (int j = -1; j <= 1; j += 2)
+									{
+										for (int k = -1; k <= 1; k += 2)
+										{
+											if (!World.GetBlock(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsOpaque())
+											{
+												norm += new Vector3Int(i, j, k);
+
+												if (drawDebugRay)
+													Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.blue, 200);
+											}
+											else if (drawDebugRay)
+												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.red, 200);
+										}
+									}
+								}
+
+								// Stuck between corners, use hard normal always
+								if (norm == Vector3.zero)
+								{
+									normals.Add(block.GetNormalRefractive() * (Vector3)directions[d]);
+								}
+								// Normal case
+								else
+								{
+									// Smooth vs hard determined by block material
+									float hardness = block.GetNormalHardness();
+
+									normals.Add(block.GetNormalRefractive() * Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
+								}
+
+
+								float dot = block.GetMeshSmoothing();
+								Vector3 displacedVert = vertPos + dot * (norm / 2 - norm.normalized * 2) / 2;
+								vertices.Add(displacedVert);
+							}
+
+							// Add triangles
+							for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
+							{
+								triangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
+							}
+
+							int uvCount = 4;
+
+							int uvX = (block.GetBlockType() - 1) % uvCount;
+							int uvY = (uvCount - 1) - (block.GetBlockType() - 1) / uvCount;
+
+							float uvScale = 1f / uvCount;
+
+							// Add UVs
+							for (int i = 0; i < blockMeshData.uv.Length; i++)
+							{
+								uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
+							}
 						}
-
-						MeshData blockMeshData = ModelsList.GetModelFor(0).faces[d].meshData;
-
-						// Should a surface be made in this direction
-						if (!airDirections.Contains(d))
-							continue;
-						surfacesAdded++;
-
-						// Show debug rays in some places
-						bool drawDebugRay = false/*SeedlessRandom.NextFloat() > 0.9999f*/;
+					} // Six Faces
+					else if (model.blockModelType == BlockModel.BlockModelType.SingleModel)
+					{
+						MeshData blockMeshData = model.singleModel.meshData;
 
 						// What index are we starting this face from
 						int indexOffset = vertices.Count;
 
 						// Add vertices
+						float randomYAngle = SeedlessRandom.NextFloatInRange(0, 360);
 						for (int v = 0; v < blockMeshData.vertices.Length; v++)
 						{
-							Vector3 middle = new Vector3(0.5f * chunk.scaleFactor + x, 0.5f * chunk.scaleFactor + y, 0.5f * chunk.scaleFactor + z);
+							Vector3 middle = new Vector3(x, y, z);
 
-							vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f);
+							vert = blockMeshData.vertices[v];
+							vert -= Vector3.one / 2;
+
+							vert = Quaternion.Euler(new Vector3(0, randomYAngle, 0)) * vert; // Spin by random degrees
+							vert *= 1.4f; // TODO: Find fix for floating instead of just scaling up model
+
+							vert += Vector3.one / 2;
 							vert *= chunk.scaleFactor;
 
 							Vector3 vertPos = middle + vert;
+							vertices.Add(vertPos);
 
-							// Calculate normals
-							norm = Vector3.zero;
-
-							// Based on adjacent blocks (never fails, angular result)
-							for (int i = -1; i <= 1; i += 2)
-							{
-								for (int j = -1; j <= 1; j += 2)
-								{
-									for (int k = -1; k <= 1; k += 2)
-									{
-										if (!World.GetBlock(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsOpaque())
-										{
-											norm += new Vector3Int(i, j, k);
-
-											if (drawDebugRay)
-												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.blue, 200);
-										}
-										else if (drawDebugRay)
-											Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.red, 200);
-									}
-								}
-							}
-
-							// Stuck between corners, use hard normal always
-							if (norm == Vector3.zero)
-							{
-								normals.Add(block.GetNormalRefractive() * (Vector3)directions[d]);
-							}
-							// Normal case
-							else
-							{
-								// Smooth vs hard determined by block material
-								float hardness = block.GetNormalHardness();
-
-								normals.Add(block.GetNormalRefractive() * Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
-							}
-
-							
-							float dot = block.GetMeshSmoothing();
-							Vector3 displacedVert = vertPos + dot * (norm / 2 - norm.normalized * 2) / 2;
-							vertices.Add(displacedVert);
+							norm = blockMeshData.normals[v];
+							normals.Add(block.GetNormalRefractive() * norm);
 						}
 
 						// Add triangles
@@ -277,11 +328,7 @@ public class ChunkMesh
 						{
 							uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
 						}
-					}
-
-					// No surfaces created, not actually near air
-					if (surfacesAdded == 0)
-						block.SetNeedsMesh(false);
+					} // Single Model
 				}
 			}
 		}

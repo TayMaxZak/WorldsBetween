@@ -14,7 +14,7 @@ public class FakeChunk : Chunk
 		base.Init(chunkSize);
 	}
 
-	public override void CacheDataFromBlocks()
+	public override void CacheDataFromBlocks(bool thisChunkOnly)
 	{
 		int airCount = 0;
 

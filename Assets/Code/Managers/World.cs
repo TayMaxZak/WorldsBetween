@@ -175,8 +175,8 @@ public partial class World : MonoBehaviour
 		// Last resort tunnel
 		modifiers.Add(new TunnelModifier(3, pointA, pointB, 1f, Vector3.one, new Vector3(8, 8, 8), new Vector3(0.1f, 0.1f, 0.1f)));
 
-		// Random ores
-		modifiers.Add(new NoiseModifier(BlockList.ICE, replaceMask, 0.53f, new Vector3(0.05f, 0.05f, 0.05f)));
+		// Decorators
+		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 0.00732421875f, 30));
 	}
 
 	private void Start()

@@ -11,6 +11,14 @@ public class Modifier
 		public bool replace;
 	}
 
+	public enum ModifierStage
+	{
+		Terrain,
+		Feature,
+		Decorator
+	}
+	public ModifierStage stage;
+
 	public string label = "";
 
 	public bool active = true;

@@ -24,6 +24,8 @@ public class NoiseModifier : Modifier
 		this.mask = mask;
 		this.strength = strength;
 		this.scale = scale;
+
+		stage = ModifierStage.Terrain;
 	}
 
 	public override bool Init()

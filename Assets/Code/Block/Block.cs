@@ -101,7 +101,7 @@ public class Block
 
 		public static float GetNormalRefractive(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Crystal || blockType == (int)BlockList.BlockType.Ice)
+			if (blockType == (int)BlockList.BlockType.Crystal)
 				return -1;
 
 			return 1;
@@ -109,7 +109,7 @@ public class Block
 
 		public static int GetMeshSmoothing(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Natural || blockType == (int)BlockList.BlockType.Ice)
+			if (blockType == (int)BlockList.BlockType.Natural)
 				return 1;
 
 			if (blockType == (int)BlockList.BlockType.Crystal)

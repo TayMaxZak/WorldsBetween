@@ -210,7 +210,7 @@ public class ChunkGenerator
 				break;
 			case Chunk.BuildStage.Generate: // Generate terrain
 				{
-					chunk.AsyncGenerate();
+					chunk.AsyncGenerate(Modifier.ModifierStage.Terrain);
 				}
 				break;
 			case Chunk.BuildStage.MakeMesh: // Cache data and build mesh

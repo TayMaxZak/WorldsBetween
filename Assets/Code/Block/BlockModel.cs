@@ -6,6 +6,13 @@ using UnityEngine;
 [System.Serializable]
 public class BlockModel : ScriptableObject
 {
+	public enum BlockModelType
+	{
+		SixFaces,
+		SingleModel
+	}
+	public BlockModelType blockModelType = BlockModelType.SixFaces;
+
 	public SurfaceModel[] faces = new SurfaceModel[6] {
 		new SurfaceModel("Right"),
 		new SurfaceModel("Left"),
@@ -14,6 +21,8 @@ public class BlockModel : ScriptableObject
 		new SurfaceModel("Front"),
 		new SurfaceModel("Back")
 	};
+
+	public SingleModel singleModel;
 
 	[System.Serializable]
 	public class SurfaceModel
@@ -26,6 +35,21 @@ public class BlockModel : ScriptableObject
 		public ChunkMesh.MeshData meshData;
 
 		public SurfaceModel(string label)
+		{
+			this.label = label;
+		}
+	}
+
+	[System.Serializable]
+	public class SingleModel
+	{
+		public string label;
+		public Mesh mesh;
+
+		[HideInInspector]
+		public ChunkMesh.MeshData meshData;
+
+		public SingleModel(string label)
 		{
 			this.label = label;
 		}

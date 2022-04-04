@@ -92,12 +92,12 @@ public class Chunk
 
 
 	#region Generate
-	public void AsyncGenerate()
+	public void AsyncGenerate(Modifier.ModifierStage stageToDo)
 	{
-		BkgThreadGenerate(this, System.EventArgs.Empty);
+		BkgThreadGenerate(this, System.EventArgs.Empty, stageToDo);
 	}
 
-	protected void BkgThreadGenerate(object sender, System.EventArgs e)
+	protected void BkgThreadGenerate(object sender, System.EventArgs e, Modifier.ModifierStage stageToDo)
 	{
 		isProcessing = true;
 
@@ -107,7 +107,7 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			Generate();
+			Generate(stageToDo);
 		});
 
 		// What to do when worker completes its task
@@ -116,7 +116,7 @@ public class Chunk
 		{
 			isProcessing = false;
 
-			CacheDataFromBlocks();
+			CacheDataFromBlocks(false);
 
 			buildStage = BuildStage.MakeMesh;
 			World.WorldBuilder.QueueNextStage(this);
@@ -135,15 +135,19 @@ public class Chunk
 		SetBlock(x, y, z, sky ? BlockList.EMPTY : BlockList.NATURAL);
 	}
 
-	protected virtual void Generate()
+	protected virtual void Generate(Modifier.ModifierStage stageToDo)
 	{
 		List<Modifier> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)
-			modifiers[i].ApplyModifier(this);
+		{
+			// Only apply terrain modifiers if adjacent chunks are also applying only terrain modifiers
+			if (modifiers[i].stage == stageToDo)
+				modifiers[i].ApplyModifier(this);
+		}
 	}
 
-	public virtual void CacheDataFromBlocks()
+	public virtual void CacheDataFromBlocks(bool thisChunkOnly)
 	{
 		int airCount = 0;
 
@@ -168,6 +172,7 @@ public class Chunk
 		WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSizeWorld / 2, airCount);
 	}
 
+	// TODO: Fix for thisChunkOnly
 	protected void FlagAdjacentsAsMaybeNearAir(int x, int y, int z)
 	{
 		Block block;
@@ -223,47 +228,10 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
+			Generate(Modifier.ModifierStage.Decorator);
+			CacheDataFromBlocks(true);
+
 			args.Result = MakeMesh();
-
-			if (chunkType == ChunkType.Close)
-			{
-				for (int i = 0; i < SeedlessRandom.NextIntInRange(40, 40); i++)
-				{
-					Vector3Int pos = new Vector3Int(SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld), SeedlessRandom.NextIntInRange(0, chunkSizeWorld)) + position;
-
-					// Not inside an opaque block, and located on top of a rigid block
-					if (!World.GetBlock(pos).IsOpaque() && (World.GetBlock(pos + Vector3Int.down).IsRigid() || World.GetBlock(pos + Vector3Int.up).IsRigid()))
-					{
-						// Check existing positions
-						bool overlapping = false;
-						foreach (LightSource l in lights)
-						{
-							if (l.pos == pos)
-								overlapping = true;
-						}
-						if (overlapping)
-							break;
-
-						bool mushroom = (pos.y > World.GetWaterHeight() && World.GetBlock(pos + Vector3Int.down).IsRigid());
-
-						// Create light
-						if (!mushroom || SeedlessRandom.NextFloat() > 0.25f)
-						{
-							lights.Add(new LightSource()
-							{
-								pos = pos,
-								// Randomize color
-								lightColor = mushroom ?
-								(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold) :
-								(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan),
-								brightness = mushroom ? 1f : 2f,
-								spread = mushroom ? 1f : 0.5f,
-								noise = mushroom ? 0.67f : 1f
-							});
-						}
-					}
-				}
-			}
 		});
 
 		// What to do when worker completes its task
@@ -310,5 +278,10 @@ public class Chunk
 	public virtual void OnFinishProcStage()
 	{
 		World.WorldBuilder.ChunkFinishedProcStage();
+	}
+
+	public List<LightSource> GetLights()
+	{
+		return lights;
 	}
 }

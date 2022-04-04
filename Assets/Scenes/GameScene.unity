@@ -214,6 +214,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   models:
   - {fileID: 11400000, guid: f5fb46820e3bdd44aa5e59edce3caa77, type: 2}
+  - {fileID: 11400000, guid: f5fb46820e3bdd44aa5e59edce3caa77, type: 2}
+  - {fileID: 11400000, guid: f5fb46820e3bdd44aa5e59edce3caa77, type: 2}
+  - {fileID: 11400000, guid: 7921bd49437fdab4bbbd0aa193c53e53, type: 2}
+  - {fileID: 11400000, guid: 7921bd49437fdab4bbbd0aa193c53e53, type: 2}
 --- !u!4 &428019559
 Transform:
   m_ObjectHideFlags: 0
@@ -1156,6 +1160,10 @@ PrefabInstance:
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.genRangePlayable
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
