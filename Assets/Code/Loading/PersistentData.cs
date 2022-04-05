@@ -12,6 +12,8 @@ public class PersistentData : MonoBehaviour
 	private string stringSeed = "0";
 	[SerializeField]
 	private long numericSeed = 0;
+	[SerializeField]
+	private int depth = 0;
 
 	private Inventory playerInventory;
 
@@ -45,6 +47,16 @@ public class PersistentData : MonoBehaviour
 	public long GetNumericSeed()
 	{
 		return numericSeed;
+	}
+
+	public void IncreaseDepth(int step)
+	{
+		depth += step;
+	}
+
+	public int GetDepth()
+	{
+		return depth;
 	}
 
 	public void SetPlayerInventory(Inventory inventory)

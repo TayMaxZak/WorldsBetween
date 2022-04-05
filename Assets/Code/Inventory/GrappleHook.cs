@@ -12,6 +12,8 @@ public class GrappleHook : Item
 
 	private Vector3Int cornerPos;
 
+	public float pullStrength = 1;
+
 	private bool attached = false;
 
 	public override void Init()
@@ -61,7 +63,7 @@ public class GrappleHook : Item
 			}
 			else
 			{
-				Player.Instance.mover.AddVelocity((cornerPos - Player.Instance.mover.position) * PhysicsManager.Instance.tickingDelta);
+				Player.Instance.mover.AddVelocity(PhysicsManager.Instance.tickingDelta * pullStrength * (cornerPos - Player.Instance.mover.position));
 			}
 
 			Debug.DrawLine(hand.position, cornerPos, !attached ? Utils.colorCyan : Utils.colorDarkGrayBlue, !attached ? 0.01f : PhysicsManager.Instance.tickingDelta);

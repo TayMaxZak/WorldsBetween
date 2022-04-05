@@ -28,7 +28,7 @@ public class LightSource
 	}
 
 	public static ColorFalloff colorOrange = new ColorFalloff(new Color(1, 0.6f, 0.4f), new Color(1.0f, 0.1f, 0.0f));
-	public static ColorFalloff colorGold = new ColorFalloff(new Color(0.85f, 1, 0.4f), new Color(0.2f, 1.0f, 0.0f));
+	public static ColorFalloff colorGold = new ColorFalloff(new Color(1, 0.85f, 0.4f), new Color(1.0f, 0.2f, 0.0f));
 
 	public static ColorFalloff colorBlue = new ColorFalloff(new Color(0.4f, 0.6f, 1), new Color(0.0f, 0.1f, 1.0f));
 	public static ColorFalloff colorCyan = new ColorFalloff(new Color(0.4f, 0.85f, 1), new Color(0.0f, 0.2f, 1.0f));

@@ -87,6 +87,11 @@ public class Decorator : Modifier
 
 		bool glowshroom = above && pos.y > World.GetWaterHeight();
 
+		// Invert some colors
+		PersistentData data = PersistentData.GetInstanceForRead();
+		if (data && data.GetDepth() > 0)
+			 glowshroom = !glowshroom;
+
 		// Create light
 		chunk.GetLights().Add(new LightSource()
 		{

@@ -42,7 +42,10 @@ public class GoalPoint : MonoBehaviour
 		{
 			PersistentData pd = PersistentData.GetInstanceForRead();
 			if (pd)
+			{
 				pd.SetSeed(pd.GetStringSeed() + 1);
+				pd.IncreaseDepth(1);
+			}
 
 			SceneManager.LoadScene(1);
 		}

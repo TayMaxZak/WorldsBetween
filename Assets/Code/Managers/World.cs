@@ -88,6 +88,9 @@ public partial class World : MonoBehaviour
 
 		Random.InitState((int)seed); // TODO: Use separate class for consistent gen RNG
 
+		int depth = 0;
+		if (data)
+			depth = data.GetDepth();
 
 		// Random generation starts here //
 
@@ -107,7 +110,7 @@ public partial class World : MonoBehaviour
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
-			waterHeight = (int)(Random.value * Random.value * -200);
+			waterHeight = (int)(Random.value * Random.value * -200) + depth * 5;
 			WaterFollow(relativeOrigin);
 		}
 		else
