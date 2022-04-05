@@ -13,9 +13,6 @@ public class Decorator : Modifier
 
 	public Mask mask;
 
-	private int counter;
-	private Chunk curChunk;
-
 	// TODO: Strength as chance to exceed 0.5
 	public Decorator(Block aboveBlock, Block underBlock, Mask mask, float chance, int count)
 	{
@@ -33,27 +30,35 @@ public class Decorator : Modifier
 		if (!active)
 			return;
 
-		curChunk = chunk;
-
 		BlockPosAction toApply = ApplyDecorator;
 
-		counter = count;
-
-		//if (count <= 0) // TODO
-			ApplyToAll(toApply, chunk.scaleFactor, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
+		if (count <= 0)
+			ApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
+		else
+			RandomlyApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
-	protected virtual void ApplyDecorator(Vector3Int pos)
+	protected void RandomlyApplyToAll(BlockPosAction action, Chunk chunk, Vector3Int min, Vector3Int max)
 	{
-		if (count > 0 && counter <= 0)
-			return;
+		for (int counter = count; counter > 0; counter--)
+		{
+			action(
+				new Vector3Int(
+					SeedlessRandom.NextIntInRange(min.x, max.x + 1),
+					SeedlessRandom.NextIntInRange(min.y, max.y + 1),
+					SeedlessRandom.NextIntInRange(min.z, max.z + 1)
+				),
+				chunk
+			);
+		}
+	}
 
+	protected virtual void ApplyDecorator(Vector3Int pos, Chunk chunk)
+	{
 		bool pass = SeedlessRandom.NextFloat() < chance;
 
 		if (!pass)
 			return;
-
-		counter--;
 
 		Block block;
 		bool above = World.GetBlock(pos + Vector3Int.down).IsRigid();
@@ -69,19 +74,21 @@ public class Decorator : Modifier
 		else
 			return;
 
+		block.SetNeedsMesh(true);
+
 		if (mask.fill && !World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
 			World.SetBlock(pos.x, pos.y, pos.z, block);
 
 		if (mask.replace && World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
 			World.SetBlock(pos.x, pos.y, pos.z, block);
 
-		if (curChunk == null || curChunk.chunkType != Chunk.ChunkType.Close)
+		if (chunk == null || chunk.chunkType != Chunk.ChunkType.Close)
 			return;
 
 		bool glowshroom = above && pos.y > World.GetWaterHeight();
 
 		// Create light
-		curChunk.GetLights().Add(new LightSource()
+		chunk.GetLights().Add(new LightSource()
 		{
 			pos = pos,
 			// Randomize color
@@ -90,7 +97,7 @@ public class Decorator : Modifier
 			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan),
 			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroom ? 0.67f : 0.5f),
 			spread = glowshroom ? 0.67f : 0.33f,
-			noise = glowshroom ? 0.5f : 0.25f
+			noise = glowshroom ? 0.75f : 0.25f
 		});
 	}
 }

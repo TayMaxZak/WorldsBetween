@@ -135,16 +135,13 @@ public partial class World : MonoBehaviour
 
 
 		// Big cave
-		modifiers.Add(new TunnelModifier(7, pointA, pointB, 7f, new Vector3(0.04f, 0.04f, 0.04f), new Vector3(48, 48, 48), new Vector3(0.01f, 0.01f, 0.01f)));
+		modifiers.Add(new TunnelModifier(4, pointA, pointB, 2, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.02f, 0.02f, 0.02f)));
 
 		// Buildings
 		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
 			0.35f, 3, 16,
 			0.25f, new Vector3(0.15f, 0.4f, 0.15f))
 		);
-
-		// Main cave
-		modifiers.Add(new TunnelModifier(8, pointA, pointB, 3.5f, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.03f, 0.03f, 0.03f)));
 
 		// Pillars
 		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.2f, 0.005f, 0.2f),
@@ -172,11 +169,16 @@ public partial class World : MonoBehaviour
 			0.05f, new Vector3(0.15f, 0.4f, 0.15f))
 		);
 
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.1f, 0.1f, 0.1f),
+			0.35f, 2, 4,
+			0.25f, new Vector3(0.1f, 0.1f, 0.1f))
+		);
+
 		// Last resort tunnel
 		modifiers.Add(new TunnelModifier(3, pointA, pointB, 1f, Vector3.one, new Vector3(8, 8, 8), new Vector3(0.1f, 0.1f, 0.1f)));
 
 		// Decorators
-		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 120f / (16 * 16 * 16), 120));
+		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 50));
 	}
 
 	private void Start()

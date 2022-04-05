@@ -66,10 +66,10 @@ public class TunnelModifier : Modifier
 
 		BlockPosAction toApply = ApplyTunnel;
 
-		ApplyToAll(toApply, chunk.scaleFactor, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
+		ApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
-	protected virtual void ApplyTunnel(Vector3Int pos)
+	protected virtual void ApplyTunnel(Vector3Int pos, Chunk chunk)
 	{
 		float distanceSqr = GetSqrDistanceAt(WarpPosition(pos), posA, posB);
 
