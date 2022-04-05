@@ -116,10 +116,12 @@ public partial class World : MonoBehaviour
 		else
 			waterHeight = -99999;
 
+		worldHeight = (int)(Random.value * 99999);
+
 		// Points A and B
 		Vector3 floatA = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
 		pointA = new Vector3Int(Mathf.FloorToInt(floatA.x), Mathf.FloorToInt(floatA.y), Mathf.FloorToInt(floatA.z));
-		if (pointA.y < 0)
+		if (pointA.y < 0 && depth < 10)
 			pointA.y = -pointA.y;
 		pointB = -pointA;
 

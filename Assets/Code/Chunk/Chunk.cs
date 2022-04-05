@@ -130,9 +130,16 @@ public class Chunk
 	protected virtual void DefaultBlock(int x, int y, int z)
 	{
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
-		bool sky = coord.y >= World.GetWorldHeight();
+		bool isSky = coord.y >= World.GetWorldHeight();
 
-		SetBlock(x, y, z, sky ? BlockList.EMPTY : BlockList.NATURAL);
+		Block solid = BlockList.NATURAL;
+
+		PersistentData data = PersistentData.GetInstanceForRead();
+		if (data && data.GetDepth() == 10)
+			solid = BlockList.ARTIFICAL;
+
+
+		SetBlock(x, y, z, isSky ? BlockList.EMPTY : solid);
 	}
 
 	protected virtual void Generate(Modifier.ModifierStage stageToDo)

@@ -89,7 +89,7 @@ public class Decorator : Modifier
 
 		// Invert some colors
 		PersistentData data = PersistentData.GetInstanceForRead();
-		if (data && data.GetDepth() > 0)
+		if (data && (data.GetDepth() + 1) % 3 == 0)
 			 glowshroom = !glowshroom;
 
 		// Create light
