@@ -32,6 +32,8 @@ public class WorldBuilder
 
 	[SerializeField]
 	private SpawnFinder spawnFinder;
+	[SerializeField]
+	private GoalFinder goalFinder;
 
 	[Header("Generation")]
 	[SerializeField]
@@ -94,11 +96,13 @@ public class WorldBuilder
 		genStage = GenStage.GenerateChunks;
 
 		spawnFinder.Reset();
+		goalFinder.Reset();
 	}
 
 	public void ResetSpawnFinder()
 	{
 		spawnFinder.Reset();
+		goalFinder.Reset();
 	}
 
 	public void UpdateSpawnFinder()
@@ -107,6 +111,14 @@ public class WorldBuilder
 			return;
 
 		spawnFinder.Tick();
+	}
+
+	public void UpdateGoalFinder()
+	{
+		if (goalFinder.IsBusy() || goalFinder.IsSuccessful())
+			return;
+
+		goalFinder.Tick();
 	}
 
 	public void ContinueGenerating()
@@ -132,7 +144,10 @@ public class WorldBuilder
 		}
 
 		if (genStage >= GenStage.Ready)
+		{
 			UpdateSpawnFinder();
+			UpdateGoalFinder();
+		}
 
 		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
 		{
@@ -330,5 +345,6 @@ public class WorldBuilder
 	public void DrawGizmo()
 	{
 		spawnFinder.DrawGizmo();
+		goalFinder.DrawGizmo();
 	}
 }

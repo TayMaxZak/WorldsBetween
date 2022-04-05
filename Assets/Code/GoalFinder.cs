@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 
 [System.Serializable]
-public class SpawnFinder
+public class GoalFinder
 {
 	private Vector3Int pos;
 	public Vector3Int extents = Vector3Int.one;
@@ -19,11 +19,11 @@ public class SpawnFinder
 	private int airCount = 0;
 	private int solidCount = 0;
 
-	private int minAirCount = 75;
-	private int minSolidCount = 25;
+	private int minAirCount = 6;
+	private int minSolidCount = 9;
 
-	private bool foundPlayerPos = false;
-	private Vector3 playerPos = Vector3.zero;
+	private bool foundGoalPos = false;
+	private Vector3 goalPos = Vector3.zero;
 
 	private bool success = false;
 
@@ -42,8 +42,8 @@ public class SpawnFinder
 		airCount = 0;
 		solidCount = 0;
 
-		foundPlayerPos = false;
-		playerPos = Vector3.zero;
+		foundGoalPos = false;
+		goalPos = Vector3.zero;
 
 		success = false;
 	}
@@ -53,15 +53,15 @@ public class SpawnFinder
 		airCount = 0;
 		solidCount = 0;
 
-		foundPlayerPos = false;
-		playerPos = Vector3.zero;
+		foundGoalPos = false;
+		goalPos = Vector3.zero;
 
 		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = Vector3Int.one * 24;
+		Vector3Int testBounds = Vector3Int.one * 12;
 		pos = new Vector3Int(
-			World.GetPointA().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
-			World.GetPointA().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
-			World.GetPointA().z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
+			World.GetPointB().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
+			World.GetPointB().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
+			World.GetPointB().z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
 		);
 	}
 
@@ -97,13 +97,13 @@ public class SpawnFinder
 			airCount++;
 
 			// Check playerPos conditions
-			if (!foundPlayerPos)
+			if (!foundGoalPos)
 			{
 				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && World.GetBlock(pos + Vector3Int.down).IsRigid())
 				{
-					foundPlayerPos = true;
+					foundGoalPos = true;
 
-					playerPos = pos;
+					goalPos = pos;
 				}
 			}
 		}
@@ -134,14 +134,14 @@ public class SpawnFinder
 		if (airCount < minAirCount || solidCount < minSolidCount)
 			return;
 
-		if (!foundPlayerPos)
+		if (!foundGoalPos)
 			return;
 
 		success = true;
 
 		await Task.Delay(5);
 
-		Player.Instance.InitPlayerActor(playerPos);
+		GoalPoint.Instance.InitGoalActor(goalPos);
 	}
 
 	public bool IsSuccessful()
@@ -156,7 +156,7 @@ public class SpawnFinder
 
 	public void DrawGizmo()
 	{
-		Gizmos.color = success ? Utils.colorBlue : Utils.colorOrange;
+		Gizmos.color = success ? Color.red : Utils.colorPurple;
 
 		Gizmos.DrawWireCube(pos + (Vector3)extents / 2f, extents);
 	}

@@ -135,7 +135,7 @@ public partial class World : MonoBehaviour
 
 
 		// Big cave
-		modifiers.Add(new TunnelModifier(4, pointA, pointB, 2, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.02f, 0.02f, 0.02f)));
+		modifiers.Add(new TunnelModifier(Random.Range(4f, 12f), pointA, pointB, 2, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.02f, 0.02f, 0.02f)));
 
 		// Buildings
 		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
@@ -306,6 +306,11 @@ public partial class World : MonoBehaviour
 	public static Vector3Int GetPointA()
 	{
 		return Instance.pointA;
+	}
+
+	public static Vector3Int GetPointB()
+	{
+		return Instance.pointB;
 	}
 
 	public static void AddChunk(Vector3Int pos, Chunk chunk)
