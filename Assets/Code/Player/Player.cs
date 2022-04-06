@@ -118,7 +118,8 @@ public class Player : MonoBehaviour
 			{
 				Inventory inv = PersistentData.GetInstanceForRead().GetPlayerInventory();
 
-				ChangeHeldItem(inv.GetNth(index));
+				if (inv != null)
+					ChangeHeldItem(inv.GetNth(index));
 			}
 		}
 

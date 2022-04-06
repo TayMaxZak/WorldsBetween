@@ -81,8 +81,14 @@ public partial class World : MonoBehaviour
 		if (data)
 			seed = data.GetNumericSeed();
 		// Generate a random seed
-		else if (randomizeSeed)
-			seed = SeedlessRandom.NextLongInRange(0, long.MaxValue);
+		else
+		{
+			if (randomizeSeed)
+				seed = SeedlessRandom.NextLongInRange(0, long.MaxValue);
+
+			data = PersistentData.GetInstanceForWrite();
+			data.SetNumericSeed(seed);
+		}
 
 		Debug.Log("seed = " + seed + " vs (int)seed = " + (int)seed + " vs string = " + (data ? data.GetStringSeed() : ""));
 
@@ -216,9 +222,14 @@ public partial class World : MonoBehaviour
 	[ContextMenu("Recalculate Light")]
 	public async void RecalcLight()
 	{
-		WorldLightAtlas.Instance.ClearAtlas();
+		//WorldLightAtlas.Instance.ClearAtlas();
 
 		await LightEngine.Begin();
+	}
+
+	public static void RecalculateLight()
+	{
+		Instance.RecalcLight();
 	}
 
 	public static bool Exists()

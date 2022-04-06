@@ -131,6 +131,25 @@ public static class SeedDecoder
 
 		return seedAsNumber;
 	}
+
+	public static string LongToString(long seedAsNumber)
+	{
+		int customBase = 36; // 10 digits + 26 letters
+
+		string seedAsString = "";
+
+		int i = 9;
+		while (seedAsNumber > 0 && i > 0)
+		{
+			i--;
+
+			seedAsString = CharOfValue((byte)(seedAsNumber % customBase)) + seedAsString;
+
+			seedAsNumber /= customBase;
+		}
+
+		return seedAsString;
+	}
 }
 
 namespace ExtensionMethods

@@ -85,24 +85,25 @@ public class Decorator : Modifier
 		if (chunk == null || chunk.chunkType != Chunk.ChunkType.Close)
 			return;
 
-		bool glowshroom = above && pos.y > World.GetWaterHeight();
+		bool glowshroomColor = above && pos.y > World.GetWaterHeight();
+		bool waterColor = pos.y <= World.GetWaterHeight();
 
 		// Invert some colors
 		PersistentData data = PersistentData.GetInstanceForRead();
 		if (data && (data.GetDepth() + 1) % 3 == 0)
-			 glowshroom = !glowshroom;
+			 glowshroomColor = !glowshroomColor;
 
 		// Create light
 		chunk.GetLights().Add(new LightSource()
 		{
 			pos = pos,
 			// Randomize color
-			lightColor = glowshroom ?
+			lightColor = waterColor ? LightSource.colorWhite : (glowshroomColor ?
 			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold) :
-			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan),
-			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroom ? 0.67f : 0.5f),
-			spread = glowshroom ? 0.67f : 0.33f,
-			noise = glowshroom ? 0.75f : 0.25f
+			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan)),
+			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroomColor ? 0.67f : 0.5f),
+			spread = glowshroomColor ? 0.67f : 0.33f,
+			noise = glowshroomColor ? 0.75f : 0.25f
 		});
 	}
 }

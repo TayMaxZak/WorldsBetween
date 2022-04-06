@@ -17,10 +17,10 @@ public class GoalFinder
 	protected delegate void BlockPosAction(Vector3Int pos);
 
 	private int airCount = 0;
-	private int solidCount = 0;
+	private int floorCount = 0;
 
 	private int minAirCount = 6;
-	private int minSolidCount = 9;
+	private int minFloorCount = 9;
 
 	private bool foundGoalPos = false;
 	private Vector3 goalPos = Vector3.zero;
@@ -40,7 +40,7 @@ public class GoalFinder
 		attemptsLeft = attemptsMax;
 
 		airCount = 0;
-		solidCount = 0;
+		floorCount = 0;
 
 		foundGoalPos = false;
 		goalPos = Vector3.zero;
@@ -51,16 +51,16 @@ public class GoalFinder
 	public void Move()
 	{
 		airCount = 0;
-		solidCount = 0;
+		floorCount = 0;
 
 		foundGoalPos = false;
 		goalPos = Vector3.zero;
 
 		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = Vector3Int.one * 12;
+		Vector3Int testBounds = Vector3Int.one * 16;
 		pos = new Vector3Int(
 			World.GetPointB().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
-			World.GetPointB().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
+			World.GetPointB().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1) - 4),
 			World.GetPointB().z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
 		);
 	}
@@ -96,10 +96,11 @@ public class GoalFinder
 		{
 			airCount++;
 
-			// Check playerPos conditions
+			// Check goalPos conditions
 			if (!foundGoalPos)
 			{
-				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && World.GetBlock(pos + Vector3Int.down).IsRigid())
+				// Floor, and 3 total air blocks above it
+				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.up * 2).IsRigid() && World.GetBlock(pos + Vector3Int.down).IsRigid())
 				{
 					foundGoalPos = true;
 
@@ -109,7 +110,9 @@ public class GoalFinder
 		}
 		else
 		{
-			solidCount++;
+			// Solid and 2 air blocks above it
+			if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.up * 2).IsRigid())
+				floorCount++;
 		}
 	}
 
@@ -126,12 +129,12 @@ public class GoalFinder
 			}
 		}
 
-		await Task.Delay(5);
+		await Task.Delay(2);
 	}
 
 	protected async Task CheckConditions()
 	{
-		if (airCount < minAirCount || solidCount < minSolidCount)
+		if (airCount < minAirCount || floorCount < minFloorCount)
 			return;
 
 		if (!foundGoalPos)
@@ -139,7 +142,7 @@ public class GoalFinder
 
 		success = true;
 
-		await Task.Delay(5);
+		await Task.Delay(2);
 
 		GoalPoint.Instance.InitGoalActor(goalPos);
 	}

@@ -49,6 +49,12 @@ public class PersistentData : MonoBehaviour
 		return numericSeed;
 	}
 
+	public void SetNumericSeed(long seed)
+	{
+		numericSeed = seed;
+		stringSeed = SeedDecoder.LongToString(seed);
+	}
+
 	public void IncreaseDepth(int step)
 	{
 		depth += step;

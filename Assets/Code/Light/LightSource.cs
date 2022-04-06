@@ -27,6 +27,8 @@ public class LightSource
 		return Color.Lerp(lightColor.colorClose, lightColor.colorFar, 1 - falloff);
 	}
 
+	public static ColorFalloff colorWhite = new ColorFalloff(new Color(1, 1f, 1f), new Color(0.3f, 0.3f, 1.0f));
+
 	public static ColorFalloff colorOrange = new ColorFalloff(new Color(1, 0.6f, 0.4f), new Color(1.0f, 0.1f, 0.0f));
 	public static ColorFalloff colorGold = new ColorFalloff(new Color(1, 0.85f, 0.4f), new Color(1.0f, 0.2f, 0.0f));
 
