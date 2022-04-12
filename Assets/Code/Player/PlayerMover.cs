@@ -175,23 +175,23 @@ public class PlayerMover : Actor
 	{
 		//float eps = 0.001f;
 
-		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2) + 1; x++)
+		for (float x = (position.x - hitbox.size.x / 2) + hitbox.center.x; x <= (position.x + hitbox.size.x / 2) + 1 + hitbox.center.x; x++)
 		{
-			float y = (position.y + hitbox.size.y / 2) + handOffset;
+			float y = (position.y + handOffset) + hitbox.center.y;
 
-			for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2) + 1; z++)
+			for (float z = (position.z - hitbox.size.z / 2) + hitbox.center.z; z <= (position.z + hitbox.size.z / 2) + 1 + hitbox.center.z; z++)
 			{
-				float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
-				float ty = Mathf.Clamp(y, (position.y + handOffset), (position.y + hitbox.size.y / 2));
-				float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
+				float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2) + hitbox.center.x, (position.x + hitbox.size.x / 2) + hitbox.center.x);
+				float ty = y;
+				float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2) + hitbox.center.z, (position.z + hitbox.size.z / 2) + hitbox.center.z);
 
 				Vector3 testPos = new Vector3((tx), (ty), (tz));
 
-				Vector3 offset = Vector3.down * hitbox.size.y + testVel * deltaTime;
+				Vector3 offset = Vector3.down * handOffset + testVel * deltaTime;
 
 				BlockCastHit hit = PhysicsManager.BlockCastAxial(testPos, testPos + offset);
 
-				Vector3 reflected = Vector3.Reflect(Vector3.down + testVel, hit.normal);
+				Vector3 reflected = Vector3.Reflect(testVel, hit.normal);
 				reflected.Scale(new Vector3(Mathf.Abs(hit.normal.x), Mathf.Abs(hit.normal.y), Mathf.Abs(hit.normal.z)));
 				testVel += reflected;
 
