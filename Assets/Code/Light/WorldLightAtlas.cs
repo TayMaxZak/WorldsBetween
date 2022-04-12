@@ -194,7 +194,7 @@ public class WorldLightAtlas : MonoBehaviour
 		airCountArr[ambIndex] = Mathf.Max(1, count);
 	}
 
-	public void ClearAtlas()
+	public void ClearAtlas(bool updateTex)
 	{
 		for (int z = 0; z < dirSize; z++)
 		{
@@ -206,7 +206,8 @@ public class WorldLightAtlas : MonoBehaviour
 				}
 			}
 		}
-		UpdateDirectTex();
+		if (updateTex)
+			UpdateDirectTex();
 
 		for (int z = 0; z < ambSize; z++)
 		{
@@ -218,7 +219,8 @@ public class WorldLightAtlas : MonoBehaviour
 				}
 			}
 		}
-		UpdateAmbientTex();
+		if (updateTex)
+			UpdateAmbientTex();
 
 		// No need to clear air counts
 	}
@@ -285,7 +287,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 		await ApplyChunkLights();
 
-		Debug.Log("Applied light atlas changes: " + directChanges + " direct, " + ambientChanges + " ambient");
+		Debug.Log("Applied light atlas changes: " + directChanges + " direct, " + ambientChanges + " ambient"); // Why does this say 0 0 sometimes
 
 		UpdateDirectTex();
 		directChanges = 0;
