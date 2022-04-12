@@ -50,13 +50,12 @@ public class GoalPoint : MonoBehaviour
 		bool placeLight = true;
 		if (chunk != null)
 		{
-
 			foreach (LightSource l in chunk.GetLights())
 			{
 				if (l.pos == intPos)
 				{
-					break;
 					placeLight = false;
+					break;
 				}
 			}
 			if (placeLight)
@@ -83,6 +82,9 @@ public class GoalPoint : MonoBehaviour
 
 	public void Update()
 	{
+		if (!activated)
+			return;
+
 		if (Vector3.SqrMagnitude(transform.position - Player.Instance.transform.position) < 3 * 3)
 		{
 			PersistentData pd = PersistentData.GetInstanceForRead();

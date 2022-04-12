@@ -19,7 +19,7 @@ public class GoalFinder
 	private int airCount = 0;
 	private int floorCount = 0;
 
-	private int minAirCount = 6;
+	private int minAirCount = 9;
 	private int minFloorCount = 9;
 
 	private bool foundGoalPos = false;
@@ -129,7 +129,7 @@ public class GoalFinder
 			}
 		}
 
-		await Task.Delay(2);
+		await Task.Delay(1);
 	}
 
 	protected async Task CheckConditions()
@@ -142,8 +142,9 @@ public class GoalFinder
 
 		success = true;
 
-		await Task.Delay(2);
+		await Task.Delay(1);
 
+		GoalPoint.Instance.ActivateGoal();
 		GoalPoint.Instance.InitGoalActor(goalPos);
 	}
 

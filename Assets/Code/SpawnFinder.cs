@@ -19,8 +19,8 @@ public class SpawnFinder
 	private int airCount = 0;
 	private int solidCount = 0;
 
-	private int minAirCount = 75;
-	private int minSolidCount = 25;
+	private int minAirCount = 9;
+	private int minSolidCount = 9;
 
 	private bool foundPlayerPos = false;
 	private Vector3 playerPos = Vector3.zero;
@@ -126,7 +126,7 @@ public class SpawnFinder
 			}
 		}
 
-		await Task.Delay(5);
+		await Task.Delay(1);
 	}
 
 	protected async Task CheckConditions()
@@ -139,7 +139,7 @@ public class SpawnFinder
 
 		success = true;
 
-		await Task.Delay(5);
+		await Task.Delay(1);
 
 		Player.Instance.InitPlayerActor(playerPos);
 	}
