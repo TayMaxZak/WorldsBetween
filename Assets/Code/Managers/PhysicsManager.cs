@@ -146,8 +146,8 @@ public partial class PhysicsManager : MonoBehaviour
 
 		Vector3 lastDir = Vector3.one;
 
-		//Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.08f), Instance.randomColor, 0.5f);
-		//Debug.DrawLine(a, b, Instance.randomColor, 0.5f);
+		Debug.DrawLine(a, a + SeedlessRandom.RandomPoint(0.08f), Instance.randomColor, 0.5f);
+		Debug.DrawLine(a, b, Instance.randomColor, 0.5f);
 
 		while (i < 100)
 		{
@@ -180,7 +180,7 @@ public partial class PhysicsManager : MonoBehaviour
 
 				bool blocked = World.GetBlock(testBlockPos).IsRigid();
 
-				//Debug.DrawLine(oldBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, occluded ? Color.green : Instance.randomColor, occluded ? 2 : 1);
+				Debug.DrawLine(oldBP + Vector3.one * 0.5f, testBlockPos + Vector3.one * 0.5f, blocked ? Color.green : Instance.randomColor, blocked ? 2 : 1);
 
 				if (blocked)
 				{

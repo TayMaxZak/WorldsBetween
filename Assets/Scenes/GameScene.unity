@@ -434,9 +434,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2142271985}
     m_Modifications:
+    - target: {fileID: 223103672788660822, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_CameraType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2713969080777105900, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6470694464778605410, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336242617558766440, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: position.y
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
@@ -448,7 +464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1627,7 +1643,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: randomizeSeed
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRange
@@ -1643,10 +1659,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.goalFinder.extents.y
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.goalFinder.extents.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.spawnFinder.extents.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.spawnFinder.extents.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.spawnFinder.extents.z
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}

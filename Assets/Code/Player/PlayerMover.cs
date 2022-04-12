@@ -8,6 +8,7 @@ public class PlayerMover : Actor
 	public Camera cam;
 
 	private float eyeOffset = 0.8f;
+	private float handOffset = 0.8f;
 	private float swimTiltUp = 16;
 
 	[Header("Vitals Costs")]
@@ -37,6 +38,7 @@ public class PlayerMover : Actor
 		base.Init();
 
 		eyeOffset = cam.transform.localPosition.y;
+		handOffset = Player.Instance.hand.transform.localPosition.y;
 	}
 
 	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
@@ -88,6 +90,116 @@ public class PlayerMover : Actor
 			if (eyesUnderWater)
 				Player.Instance.vitals.UseStamina(holdBreathCost * tickDeltaTime, true, false);
 		}
+	}
+
+	public override void PhysicsTick(float deltaTime, float partialTime)
+	{
+		UpdateBlockPosition();
+
+		// Apply water physics
+		bool newInWater = blockPosition.y + waterHeightOffset < World.GetWaterHeight();
+		//bool newInWater = true;
+
+		// Entered water, break Y velocity on impact
+		if (newInWater && !inWater)
+		{
+			velocity.y *= 0.5f;
+		}
+		inWater = newInWater;
+
+		// Falling
+		Vector3 fallVelocity = (inWater ? 0.08f : 1) * PhysicsManager.Instance.gravity * deltaTime;
+
+		grounded = LegCheck(deltaTime, ref fallVelocity);
+
+		bool surfaceFriction = false;
+		surfaceFriction |= grounded;
+
+		velocity += fallVelocity;
+
+		Vector3 walkVelocity = GetWalkVelocity();
+		if (!dead)
+		{
+			Intersecting(deltaTime, ref walkVelocity);
+
+			// Applying input velocity
+			velocity += walkVelocity;
+		}
+
+		surfaceFriction |= Intersecting(deltaTime, ref velocity);
+
+		surfaceFriction |= velocity.y > 0;
+
+		Move(velocity * deltaTime);
+
+		float friction = surfaceFriction ? 4.5f : 0;
+
+		// Drag
+		if (inWater)
+			velocity *= 1f - (friction * deltaTime + deltaTime * 1.8f);
+		else
+			velocity *= 1f - (friction * deltaTime + deltaTime * 0.2f);
+	}
+
+	protected new bool Intersecting(float deltaTime, ref Vector3 testVel)
+	{
+		//float eps = 0.001f;
+
+		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2) + 1; x++)
+		{
+			for (float y = position.y + handOffset; y <= (position.y + hitbox.size.y / 2) + 1; y++)
+			{
+				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2) + 1; z++)
+				{
+					float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
+					float ty = Mathf.Clamp(y, (position.y + handOffset), (position.y + hitbox.size.y / 2));
+					float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
+
+					Vector3 testPos = new Vector3((tx), (ty), (tz));
+
+					BlockCastHit hit = PhysicsManager.BlockCastAxial(testPos, testPos + testVel * deltaTime);
+
+					Vector3 reflected = Vector3.Reflect(testVel, hit.normal);
+					reflected.Scale(new Vector3(Mathf.Abs(hit.normal.x), Mathf.Abs(hit.normal.y), Mathf.Abs(hit.normal.z)));
+					testVel += reflected;
+
+					if (hit.hit)
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	protected bool LegCheck(float deltaTime, ref Vector3 testVel)
+	{
+		//float eps = 0.001f;
+
+		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2) + 1; x++)
+		{
+			float y = (position.y + hitbox.size.y / 2) + handOffset;
+
+			for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2) + 1; z++)
+			{
+				float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
+				float ty = Mathf.Clamp(y, (position.y + handOffset), (position.y + hitbox.size.y / 2));
+				float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
+
+				Vector3 testPos = new Vector3((tx), (ty), (tz));
+
+				Vector3 offset = Vector3.down * hitbox.size.y + testVel * deltaTime;
+
+				BlockCastHit hit = PhysicsManager.BlockCastAxial(testPos, testPos + offset);
+
+				Vector3 reflected = Vector3.Reflect(Vector3.down + testVel, hit.normal);
+				reflected.Scale(new Vector3(Mathf.Abs(hit.normal.x), Mathf.Abs(hit.normal.y), Mathf.Abs(hit.normal.z)));
+				testVel += reflected;
+
+				if (hit.hit)
+					return true;
+			}
+		}
+		return false;
 	}
 
 	private void Jump()

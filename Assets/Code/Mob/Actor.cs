@@ -20,7 +20,7 @@ public class Actor : MonoBehaviour
 
 	// Hitbox
 	[SerializeField]
-	private BoxCollider hitbox;
+	protected BoxCollider hitbox;
 
 	public bool inWater;
 	protected float waterHeightOffset = -0.5f;
@@ -182,6 +182,6 @@ public class Actor : MonoBehaviour
 	protected void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Utils.colorBlue;
-		Gizmos.DrawWireCube(position, hitbox.size);
+		Gizmos.DrawWireCube(position + hitbox.center, hitbox.size);
 	}
 }
