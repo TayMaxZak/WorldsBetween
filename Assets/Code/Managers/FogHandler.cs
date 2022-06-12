@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class FogHandler : MonoBehaviour
 {
 	private static FogHandler Instance;
@@ -26,6 +27,12 @@ public class FogHandler : MonoBehaviour
 
 	private void Awake()
 	{
+		if (!Application.isPlaying)
+		{
+			ApplyDefaultSettings();
+			return;
+		}
+		
 		// Ensure singleton
 		if (Instance)
 		{
@@ -38,13 +45,13 @@ public class FogHandler : MonoBehaviour
 
 	private void Update()
 	{
-		if (Application.isPlaying)
-		{
-			if (povCamera == null)
-				povCamera = Camera.main;
+		if (!Application.isPlaying)
+			return;
 
-			SetSettings(InWater(povCamera, World.Exists() ? World.GetWaterHeight() : -99999));
-		}
+		if (povCamera == null)
+			povCamera = Camera.main;
+
+		SetSettings(InWater(povCamera, World.Exists() ? World.GetWaterHeight() : -99999));
 	}
 
 	public static bool InWater(Camera test, int waterHeight)
@@ -53,7 +60,7 @@ public class FogHandler : MonoBehaviour
 	}
 
 	[ContextMenu("Apply Default")]
-	private void DefaultSettings()
+	private void ApplyDefaultSettings()
 	{
 		FogSettings settings = normal;
 

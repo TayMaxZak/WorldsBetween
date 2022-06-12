@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using System.Threading.Tasks;
 
 public partial class PhysicsManager : MonoBehaviour
 {

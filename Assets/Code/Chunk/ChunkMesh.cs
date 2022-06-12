@@ -35,51 +35,6 @@ public class ChunkMesh
 		return filter.sharedMesh;
 	}
 
-	//// TODO: Repurpose for textures
-	//public void SetVertexColors(BlockSurface surface)
-	//{
-	//	Vector3 localVertPos;
-	//	Vector3Int worldVertPos = new Vector3Int();
-
-	//	// Loop through all vertices needed
-	//	int loopCounter = 0;
-	//	for (int i = surface.startIndex; i < surface.endIndex; i++)
-	//	{
-	//		loopCounter++;
-
-	//		// Threading
-	//		if (sharedVertices == null)
-	//			return;
-
-	//		// Find actual block to sample for brightness
-	//		localVertPos = sharedVertices[i];
-	//		worldVertPos.x = Mathf.RoundToInt(localVertPos.x + chunk.position.x);
-	//		worldVertPos.y = Mathf.RoundToInt(localVertPos.y + chunk.position.y);
-	//		worldVertPos.z = Mathf.RoundToInt(localVertPos.z + chunk.position.z);
-
-	//		// Assign lighting data: new brightness, last brightness, new hue, last hue
-	//		vertexColors[i] = new Color(0, 0, 0, 0);
-	//	}
-	//}
-
-	//public Color[] GetVertexColors()
-	//{
-	//	return vertexColors;
-	//}
-
-	//public void ApplyVertexColors(Color[] newColors)
-	//{
-	//	vertexColors = newColors;
-
-	//	// Can happen if thread finishes after games ends
-	//	if (filter == null)
-	//		return;
-
-	//	// Apply vertex colors
-	//	Mesh mesh = filter.sharedMesh;
-	//	mesh.colors = vertexColors;
-	//}
-
 	public struct MeshData
 	{
 		public Vector3[] vertices;
