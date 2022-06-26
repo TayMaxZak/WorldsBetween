@@ -4,5 +4,6 @@
 public class ChunkGameObject : MonoBehaviour
 {
 	public Chunk data;
-	public MeshFilter filter;
+	public MeshFilter meshVisual;
+	public MeshCollider meshPhysics;
 }

@@ -183,7 +183,7 @@ public class WorldBuilder
 					chunkGO.data = new Chunk();
 					chunkGO.data.SetPos(chunkPos);
 
-					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);
+					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.meshVisual, chunkGO.meshPhysics);
 
 					chunkGO.data.go = chunkGO;
 
@@ -223,7 +223,7 @@ public class WorldBuilder
 					chunkGO.data = new FakeChunk();
 					chunkGO.data.SetPos(chunkPos);
 
-					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.filter);
+					chunkGO.data.chunkMesh.Init(chunkGO.data, chunkGO.meshVisual, chunkGO.meshPhysics);
 
 					chunkGO.data.go = chunkGO;
 

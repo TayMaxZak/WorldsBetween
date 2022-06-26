@@ -8,7 +8,9 @@ public class ChunkMesh
 
 	private Chunk chunk;
 
-	private MeshFilter filter;
+	private MeshFilter meshVisual;
+
+	private MeshCollider meshPhysics;
 
 	// Save for later
 	private Vector3[] sharedVertices;
@@ -20,19 +22,21 @@ public class ChunkMesh
 	private static readonly Vector3Int[] rotations = new Vector3Int[] { new Vector3Int(0, 90, 0), new Vector3Int(0, -90, 0), new Vector3Int(-90, 0, 0),
 													new Vector3Int(90, 0, 0), new Vector3Int(0, 0, 0), new Vector3Int(0, 180, 0)};
 
-	public void Init(Chunk chunk, MeshFilter filter)
+	public void Init(Chunk chunk, MeshFilter meshVisual, MeshCollider meshPhysics)
 	{
 		this.chunk = chunk;
 
-		this.filter = filter;
+		this.meshVisual = meshVisual;
+
+		this.meshPhysics = meshPhysics;
 
 		// Duplicate original mesh to avoid permanent changes
-		filter.sharedMesh = filter.mesh;
+		meshVisual.sharedMesh = meshVisual.mesh;
 	}
 
 	public Mesh GetSharedMesh()
 	{
-		return filter.sharedMesh;
+		return meshVisual.sharedMesh;
 	}
 
 	public struct MeshData
@@ -294,12 +298,13 @@ public class ChunkMesh
 	public void FinishMesh(Mesh newMesh)
 	{
 		// Can happen if thread finishes after games ends
-		if (filter == null)
+		if (meshVisual == null)
 			return;
 
-		filter.mesh = newMesh;
+		meshVisual.mesh = newMesh;
+		meshPhysics.sharedMesh = newMesh;
 
-		sharedVertices = filter.sharedMesh.vertices;
+		sharedVertices = meshVisual.sharedMesh.vertices;
 
 		vertexColors = new Color[sharedVertices.Length];
 		for (int i = 0; i < vertexColors.Length; i++)
