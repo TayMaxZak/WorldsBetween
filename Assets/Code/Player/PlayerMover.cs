@@ -2,232 +2,349 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[SelectionBase]
 public class PlayerMover : Actor
 {
-	public Camera cam;
-
-	private float eyeOffset = 0.8f;
-	private float handOffset = 0.8f;
-	private float swimTiltUp = 16;
-
-	[Header("Vitals Costs")]
-	public float velDmgMult = 2;
-	public float velDmgLimit = 10;
-	[Header("'")]
-	public float sprintCost = 10;
-	public float holdBreathCost = 2;
-
-	public bool sprinting = false;
-
-	[Header("Speeds")]
 	[SerializeField]
-	private float slowSpeed = 0.7f;
-	[SerializeField]
-	private float sprintSpeed = 1.5f;
-	[SerializeField]
-	private float swimSpeed = 0.3f;
-	[SerializeField]
-	private float jumpSpeed = 9;
+	private LayerMask rayMask;
 
-	protected bool walking;
-	protected bool eyesUnderWater;
+	[HideInInspector]
+	public Vector3 headPosition;
+	private Vector3 prevHeadPosition;
+
+	[SerializeField]
+	private Transform head;
+	[SerializeField]
+	private Vector3 headOffset = new Vector3(0, 0.6f, 0);
+	[SerializeField]
+	private Vector3 climbOffset = new Vector3(0, 0.55f, 0.75f);
+	[SerializeField]
+	private Vector3 feetOffset = new Vector3(0, -0.8f, 0);
+	[SerializeField]
+	private float height = 1.6f;
+	[SerializeField]
+	private float radius = 0.3f;
+
+	[SerializeField]
+	private float maxSafeFall = 3.5f;
+	[SerializeField]
+	private float maxClimbable = 0.6f;
+	[SerializeField]
+	private float raycastMargin = 0.04f;
+	[SerializeField]
+	private float strideLength = 0.7f;
+
+	[SerializeField]
+	private float mouseSens = 150;
+	[SerializeField]
+	private float walkSpeed = 2.5f;
+	[SerializeField]
+	private float peekDistance = 0.4f;
+	[SerializeField]
+	private float jumpSpeed = 0.24f;
+
+	public float airResistance = 0.05f;
+
+	private float minMouseV = -85;
+	private float maxMouseV = 85;
+	private float mouseH = 0;
+	private float mouseV = 0;
+
+	public bool grounded = false;
+	public bool atLedge = false;
+	public bool jump = false;
+	public bool climbing = false;
+
+	private Timer climbingTimer = new Timer(1);
+	[SerializeField]
+	private float fastClimbTime = 0.55f;
+	[SerializeField]
+	private float slowClimbTime = 1.1f;
+
+	private Vector3 initPos;
+
+	protected override void Awake()
+	{
+		base.Awake();
+
+		mouseH = transform.eulerAngles.y;
+		mouseV = head.transform.eulerAngles.x;
+	}
 
 	public override void Init()
 	{
 		base.Init();
 
-		eyeOffset = cam.transform.localPosition.y;
-		handOffset = Player.Instance.hand.transform.localPosition.y;
+		headPosition = head.localPosition;
+		prevHeadPosition = new Vector3(headPosition.x, headPosition.y, headPosition.z);
+
+		initPos = position;
 	}
 
 	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
 	{
-		if (!didInit || !GameManager.GetFinishedLoading())
+		if (!didInit)
 			return;
 
-		if (!Player.Instance.vitals.dead && grounded && Input.GetButtonDown("Jump"))
-			Jump();
+		Cursor.lockState = CursorLockMode.Confined;
+		//Cursor.visible = false;
 
-		// Start sprinting if possible
-		if (!Player.Instance.vitals.dead && Input.GetButtonDown("Sprint"))
+		if (Input.GetButtonDown("Restart"))
 		{
-			if (sprinting || Player.Instance.vitals.currentStamina >= 20)
+			position = initPos;
+
+			velocity = Vector3.zero;
+			fallVelocity = Vector3.zero;
+			inputVelocity = Vector3.zero;
+			climbing = false;
+		}
+
+		MouseLookInput();
+
+		if (!climbing)
+		{
+			DirectionalInput();
+
+			SpacebarInput();
+
+			// Update prev position for lerping
+			if (isPhysicsTick)
+				prevHeadPosition = new Vector3(headPosition.x, headPosition.y, headPosition.z);
+
+			base.UpdateTick(isPhysicsTick, tickDeltaTime, tickPartialTime);
+
+			// Lerp logic position and visual position
+			head.localPosition = Vector3.Lerp(prevHeadPosition, headPosition, 1 - (tickPartialTime / tickDeltaTime));
+		}
+		else
+		{
+			if (isPhysicsTick)
+				climbingTimer.Increment(tickDeltaTime);
+
+			float climbDeltaTime = 1;
+			float climbPartialTime = (climbingTimer.currentTime + tickPartialTime) / climbingTimer.maxTime;
+			if (climbingTimer.maxTime > fastClimbTime)
+				climbPartialTime = 0.2f * (climbPartialTime) + 0.8f * (climbPartialTime * climbPartialTime * climbPartialTime);
+			else
+				climbPartialTime = 0.1f * (climbPartialTime) + 0.9f * (climbPartialTime * climbPartialTime);
+
+			if (climbingTimer.Expired())
 			{
-				if (grounded)
-					sprinting = !sprinting;
-				else
-					sprinting = true;
+				climbing = false;
+				climbPartialTime = 0;
+				inputVelocity = Vector3.zero;
+
+				prevHeadPosition = new Vector3(headPosition.x, headPosition.y, headPosition.z);
+
+				base.UpdateTick(true, tickDeltaTime, 0);
+
+				// Lerp logic position and visual position
+				head.localPosition = Vector3.Lerp(prevHeadPosition, headPosition, 1 - (climbPartialTime / climbDeltaTime));
 			}
-		}
-		// If pressing inputs and out of water, use stamina. Stop sprinting otherwise
-		if (sprinting && isPhysicsTick)
-		{
-			// Not pressing inputs, or in water
-			if (!walking || inWater)
-				sprinting = false;
-			// On ground, so use stamina. If out of stamina, stop sprinting
-			else if (grounded && !Player.Instance.vitals.UseStamina(sprintCost * tickDeltaTime, false, false))
-				sprinting = false;
-		}
+			else
+			{
+				base.UpdateTick(false, climbDeltaTime, climbPartialTime);
 
-		Vector3 prevVel = velocity;
-
-		base.UpdateTick(isPhysicsTick, tickDeltaTime, tickPartialTime);
-
-		Vector3 newVel = velocity;
-
-		// Velocity damage
-		// TODO: Don't deal damage for rapidly increasing speed, only for rapidly decreasing
-		float velDif = (newVel - prevVel).magnitude;
-		float velDmg = Mathf.Max(0, velDif - velDmgLimit) * velDmgMult;
-		Player.Instance.vitals.DealDamage(velDmg);
-
-		eyesUnderWater = blockPosition.y + eyeOffset + waterHeightOffset < World.GetWaterHeight();
-
-		if (isPhysicsTick)
-		{
-			if (eyesUnderWater)
-				Player.Instance.vitals.UseStamina(holdBreathCost * tickDeltaTime, true, false);
+				// Lerp logic position and visual position
+				head.localPosition = Vector3.Lerp(prevHeadPosition, headPosition, 1 - (climbPartialTime / climbDeltaTime));
+			}
 		}
 	}
 
-	public override void PhysicsTick(float deltaTime, float partialTime)
+	private void MouseLookInput()
 	{
-		UpdateBlockPosition();
+		mouseH += Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
+		mouseV -= Input.GetAxis("Mouse Y") * mouseSens * Time.deltaTime;
 
-		// Apply water physics
-		bool newInWater = blockPosition.y + waterHeightOffset < World.GetWaterHeight();
-		//bool newInWater = true;
+		mouseV = Mathf.Clamp(mouseV, minMouseV, maxMouseV);
 
-		// Entered water, break Y velocity on impact
-		if (newInWater && !inWater)
+		transform.localEulerAngles = new Vector3(0, mouseH, 0);
+		head.localEulerAngles = new Vector3(mouseV, 0, 0);
+	}
+
+	private void DirectionalInput()
+	{
+		if (!grounded || climbing)
+			return;
+
+		Vector3 dirInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		dirInput = Vector3.ClampMagnitude(dirInput, 1);
+		dirInput = transform.rotation * dirInput;
+
+		inputVelocity = Vector3.Lerp(inputVelocity, dirInput * walkSpeed, Time.deltaTime * 8);
+	}
+
+	private void SpacebarInput()
+	{
+		if (!grounded || climbing)
+			return;
+
+		if (Input.GetButtonDown("Jump"))
 		{
-			velocity.y *= 0.5f;
+			jump = true;
 		}
-		inWater = newInWater;
+	}
 
-		// Falling
-		Vector3 fallVelocity = (inWater ? 0.08f : 1) * PhysicsManager.Instance.gravity * deltaTime;
+	public override void PhysicsTick(float deltaTime)
+	{
+		// Falling acceleration
+		Vector3 fallAccel = PhysicsManager.Instance.gravity * deltaTime;
 
-		grounded = LegCheck(deltaTime, ref fallVelocity);
+		fallVelocity += fallAccel;
 
-		bool surfaceFriction = false;
-		surfaceFriction |= grounded;
-
-		velocity += fallVelocity;
-
-		Vector3 walkVelocity = GetWalkVelocity();
-		if (!dead)
-		{
-			Intersecting(deltaTime, ref walkVelocity);
-
-			// Applying input velocity
-			velocity += walkVelocity;
-		}
-
-		surfaceFriction |= Intersecting(deltaTime, ref velocity);
-
-		surfaceFriction |= velocity.y > 0;
-
-		Move(velocity * deltaTime);
-
-		float friction = surfaceFriction ? 4.5f : 0;
+		// Move player and check if grounded
+		FallMove(fallVelocity * deltaTime, deltaTime);
 
 		// Drag
-		if (inWater)
-			velocity *= 1f - (friction * deltaTime + deltaTime * 1.8f);
+		fallVelocity *= (1 - deltaTime * airResistance);
+
+		// Apply jump
+		if (jump)
+		{
+			jump = false;
+			velocity += Vector3.up * jumpSpeed;
+		}
+
+		// Move player from jump and other verlocity sources
+		Move(velocity);
+
+		// Drag
+		velocity *= (1 - deltaTime * airResistance);
+
+		// Walk and run input
+		InputMove(inputVelocity * deltaTime, deltaTime);
+	}
+
+	protected void FallMove(Vector3 moveVector, float deltaTime)
+	{
+		bool raycast = Physics.Raycast(new Ray(position + feetOffset + raycastMargin * Vector3.up, Vector3.down), out RaycastHit hit1, moveVector.magnitude, rayMask);
+		bool raycast2 = Physics.Raycast(new Ray(position + feetOffset + Utils.SoftSign(inputVelocity.magnitude) * strideLength * inputVelocity.normalized + raycastMargin * Vector3.up, Vector3.down), out RaycastHit hit2, moveVector.magnitude, rayMask);
+
+		// Raycast from center of body
+		if (raycast || raycast2)
+		{
+			float fallPosChange = Mathf.Min(hit1.Equals(default(RaycastHit)) ? moveVector.magnitude : hit1.distance, hit2.Equals(default(RaycastHit)) ? moveVector.magnitude : hit2.distance);
+
+			if (!climbing)
+				position += Vector3.down * Mathf.Max(0, fallPosChange - raycastMargin);
+
+			fallVelocity = Vector3.zero;
+			velocity.y = 0;
+			grounded = true;
+
+			Debug.DrawLine(position, hit1.point, Utils.colorBlue, 3);
+			Debug.DrawLine(position + Utils.SoftSign(inputVelocity.magnitude) * strideLength * inputVelocity.normalized, hit2.point, Utils.colorBlue, 3);
+		}
 		else
-			velocity *= 1f - (friction * deltaTime + deltaTime * 0.2f);
+		{
+			if (!climbing)
+				position += moveVector;
+
+			grounded = false;
+		}
 	}
 
-	protected new bool Intersecting(float deltaTime, ref Vector3 testVel)
+	protected void InputMove(Vector3 moveVector, float deltaTime)
 	{
-		//float eps = 0.001f;
+		if (climbing)
+			return;
 
-		for (float x = (position.x - hitbox.size.x / 2); x <= (position.x + hitbox.size.x / 2) + 1; x++)
+		Vector3 dirInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		dirInput = Vector3.ClampMagnitude(dirInput, 1);
+
+		if (dirInput.sqrMagnitude > 0.01f)
 		{
-			for (float y = position.y + handOffset; y <= (position.y + hitbox.size.y / 2) + 1; y++)
+			// Guess where player will be after this move. Is it over a climbable obstacle?
+			if (Physics.Raycast(new Ray(position + transform.rotation * climbOffset + raycastMargin * Vector3.up, Vector3.down), out RaycastHit hit, maxClimbable, rayMask))
 			{
-				for (float z = (position.z - hitbox.size.z / 2); z <= (position.z + hitbox.size.z / 2) + 1; z++)
-				{
-					float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2), (position.x + hitbox.size.x / 2));
-					float ty = Mathf.Clamp(y, (position.y + handOffset), (position.y + hitbox.size.y / 2));
-					float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2), (position.z + hitbox.size.z / 2));
+				climbing = true;
+				climbingTimer.maxTime = (grounded ? fastClimbTime : slowClimbTime);
+				climbingTimer.Reset();
 
-					Vector3 testPos = new Vector3((tx), (ty), (tz));
-
-					BlockCastHit hit = PhysicsManager.BlockCastAxial(testPos, testPos + testVel * deltaTime);
-
-					Vector3 reflected = Vector3.Reflect(testVel, hit.normal);
-					reflected.Scale(new Vector3(Mathf.Abs(hit.normal.x), Mathf.Abs(hit.normal.y), Mathf.Abs(hit.normal.z)));
-					testVel += reflected;
-
-					if (hit.hit)
-						return true;
-				}
+				position = hit.point + Vector3.up * height / 2f;
 			}
 		}
-		return false;
-	}
 
-	protected bool LegCheck(float deltaTime, ref Vector3 testVel)
-	{
-		//float eps = 0.001f;
-
-		for (float x = (position.x - hitbox.size.x / 2) + hitbox.center.x; x <= (position.x + hitbox.size.x / 2) + 1 + hitbox.center.x; x++)
+		// Collision check
+		Vector3 adjMoveVector = moveVector;
+		if (moveVector != Vector3.zero)
 		{
-			float y = (position.y + handOffset) + hitbox.center.y;
-
-			for (float z = (position.z - hitbox.size.z / 2) + hitbox.center.z; z <= (position.z + hitbox.size.z / 2) + 1 + hitbox.center.z; z++)
+			if (Physics.CapsuleCast(
+				position + Vector3.up * ((height / 2) - radius),
+				position - Vector3.up * ((height / 2) - radius),
+				radius, moveVector.normalized, out RaycastHit capsuleHit, moveVector.magnitude)
+			)
 			{
-				float tx = Mathf.Clamp(x, (position.x - hitbox.size.x / 2) + hitbox.center.x, (position.x + hitbox.size.x / 2) + hitbox.center.x);
-				float ty = y;
-				float tz = Mathf.Clamp(z, (position.z - hitbox.size.z / 2) + hitbox.center.z, (position.z + hitbox.size.z / 2) + hitbox.center.z);
+				Vector3 reflected = Vector3.Reflect(moveVector, capsuleHit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
 
-				Vector3 testPos = new Vector3((tx), (ty), (tz));
-
-				Vector3 offset = Vector3.down * handOffset + testVel * deltaTime;
-
-				BlockCastHit hit = PhysicsManager.BlockCastAxial(testPos, testPos + offset);
-
-				Vector3 reflected = Vector3.Reflect(testVel, hit.normal);
-				reflected.Scale(new Vector3(Mathf.Abs(hit.normal.x), Mathf.Abs(hit.normal.y), Mathf.Abs(hit.normal.z)));
-				testVel += reflected;
-
-				if (hit.hit)
-					return true;
+				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
 			}
 		}
-		return false;
-	}
 
-	private void Jump()
-	{
-		velocity += Vector3.up * jumpSpeed;
-		grounded = false;
-	}
-
-	protected override Vector3 GetWalkVelocity()
-	{
-		if (Player.Instance.vitals.dead)
+		if (adjMoveVector != Vector3.zero)
 		{
-			walking = false;
-			return Vector3.zero;
+			if (Physics.CapsuleCast(
+				position + Vector3.up * ((height / 2) - radius),
+				position - Vector3.up * ((height / 2) - radius),
+				radius, adjMoveVector.normalized, out RaycastHit capsuleHit, adjMoveVector.magnitude)
+			)
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, capsuleHit.normal);
+				float mag = adjMoveVector.magnitude;
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, mag);
+
+				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
+			}
 		}
 
-		float airborneMult = (!grounded && !inWater) ? 0.1f : 1;
+		if (adjMoveVector != Vector3.zero)
+		{
+			if (Physics.CapsuleCast(
+				position + Vector3.up * ((height / 2) - radius),
+				position - Vector3.up * ((height / 2) - radius),
+				radius, adjMoveVector.normalized, out RaycastHit capsuleHit, adjMoveVector.magnitude)
+			)
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, capsuleHit.normal);
+				float mag = adjMoveVector.magnitude;
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, mag);
 
-		Vector3 inputDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-		inputDirection = Vector3.ClampMagnitude(inputDirection, 1);
+				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
+			}
+		}
 
-		// Determine what speed to use
-		float currentSpeed = (!inWater ? ((sprinting && grounded) ? sprintSpeed : slowSpeed) : swimSpeed) * airborneMult;
+		if (grounded)
+		{
+			// Guess where player will be after this move. Is it over a fall?
+			if (Physics.Raycast(new Ray(position + adjMoveVector + feetOffset + raycastMargin * Vector3.up, Vector3.down), maxSafeFall, rayMask) ||
+				Physics.Raycast(new Ray(position + adjMoveVector + Utils.SoftSign(inputVelocity.magnitude) * strideLength * inputVelocity.normalized + feetOffset + raycastMargin * Vector3.up, Vector3.down), maxSafeFall, rayMask))
+			{
+				atLedge = false;
+			}
+			else
+			{
+				atLedge = true;
+			}
+		}
+		else
+		{
+			atLedge = false;
+		}
 
-		// Rotate input direction
-		Vector3 walkVelocity = !inWater ? (transform.rotation * inputDirection * currentSpeed) : (cam.transform.rotation * Quaternion.Euler(Vector3.right * -swimTiltUp) * inputDirection * currentSpeed);
+		if (atLedge)
+		{
+			headPosition = Vector3.Lerp(headPosition, dirInput * peekDistance + headOffset, deltaTime * 2);
 
-		walking = walkVelocity.sqrMagnitude > 0;
-		return walkVelocity;
+			return;
+		}
+		else
+		{
+			headPosition = Vector3.Lerp(headPosition, headOffset, deltaTime * 4);
+		}
+
+		position += adjMoveVector;
 	}
 }

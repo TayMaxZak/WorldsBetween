@@ -55,7 +55,7 @@ public class Abnometer : Item
 			linear = Mathf.Clamp01((1 - Mathf.Max(Vector3.Magnitude(apparition.transform.position - Player.Instance.transform.position) - 8, 0) / range) - cutoff);
 			linear = Mathf.Clamp01(linear + cutoff * linear);
 			proximity = Mathf.Lerp(oneoverx, linear, 0.5f);
-			dot = Mathf.Clamp01(Vector3.Dot(Player.Instance.mouseLook.transform.forward, (apparition.transform.position - Player.Instance.transform.position).normalized));
+			dot = Mathf.Clamp01(Vector3.Dot(Player.Instance.head.transform.forward, (apparition.transform.position - Player.Instance.transform.position).normalized));
 
 			float toAdd = Mathf.Clamp01(proximity * (1 + 1 * dot));
 			intensity = 1 - (1 - intensity) * (1 - toAdd);

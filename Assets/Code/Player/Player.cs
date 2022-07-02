@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 	private bool activated = false;
 	public PlayerVitals vitals;
 	public PlayerMover mover;
-	public MouseLook mouseLook;
+	public Transform head;
 	public Transform hand;
 	public Camera cam;
 
@@ -35,7 +35,6 @@ public class Player : MonoBehaviour
 
 		vitals.enabled = false;
 		mover.enabled = false;
-		mouseLook.enabled = false;
 
 		if (heldItem)
 		{
@@ -65,7 +64,6 @@ public class Player : MonoBehaviour
 		// Enable related components
 		mover.enabled = true;
 		vitals.enabled = true;
-		mouseLook.enabled = true;
 
 		activated = true;
 	}
@@ -159,11 +157,11 @@ public class Player : MonoBehaviour
 
 		mover.position = initPos;
 		mover.SetVelocity(Vector3.zero);
-		mover.UpdateBlockPosition();
+		//mover.UpdateBlockPosition();
 
-		World.WaterFollow(mover.blockPosition);
+		//World.WaterFollow(mover.blockPosition);
 
-		mouseLook.SetXRotation(0);
+		//mouseLook.SetXRotation(0);
 
 		if (heldItem)
 			heldItem.Init();
