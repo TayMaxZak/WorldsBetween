@@ -24,6 +24,8 @@ public partial class World : MonoBehaviour
 
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
+	[SerializeField]
+	private HeightFinder heightFinder;
 
 	//private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -50,7 +52,7 @@ public partial class World : MonoBehaviour
 	private Vector3Int pointA;
 	private Vector3Int pointB;
 
-	private int worldHeight = 99999;
+	private int baseWorldHeight = 99999;
 	private int waterHeight = 0;
 	private int deadFallHeight = -199;
 
@@ -112,21 +114,22 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.25f;
+		bool hasWater = Random.value < 1.25f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
-			waterHeight = (int)(Random.value * Random.value * -200) + depth * 5;
+			waterHeight = (int)(Random.value * Random.value * -50) + depth * 5;
 			WaterFollow(relativeOrigin);
 		}
 		else
 			waterHeight = -99999;
 
-		worldHeight = (int)(Random.value * 99999);
+		//baseWorldHeight = (int)(Random.value * 99999);
+		baseWorldHeight = 0;
 
 		// Points A and B
 		Vector3 floatA = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
-		pointA = new Vector3Int(Mathf.FloorToInt(floatA.x), Mathf.FloorToInt(floatA.y), Mathf.FloorToInt(floatA.z));
+		pointA = new Vector3Int(Mathf.FloorToInt(floatA.x), baseWorldHeight, Mathf.FloorToInt(floatA.z));
 		if (pointA.y < 0 && depth < 10)
 			pointA.y = -pointA.y;
 		pointB = -pointA;
@@ -143,69 +146,49 @@ public partial class World : MonoBehaviour
 
 		Modifier.Mask fillMask = new Modifier.Mask() { fill = true, replace = false };
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
-
+		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
 		// Big cave
-		modifiers.Add(new TunnelModifier(Random.Range(4f, 12f), pointA, pointB, 2, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.02f, 0.02f, 0.02f)));
+		heightFinder = new HeightFinder(20, new Vector3(0.004f, 0.02f, 0.004f));
+		heightFinder.ribbonCount = 2;
 
-		// Test
-		modifiers.Add(new BlockyNoiseModifier(BlockList.EMPTY, replaceMask, 0.61f, new Vector3(0.25f, 0.005f, 0.25f),
-			0.35f, 3, 6,
-			0.4f, new Vector3(0.2f, 0.04f, 0.2f))
-		);
+		//// Big cave
+		//modifiers.Add(new TunnelModifier(Random.Range(4f, 11f), pointA, pointB, 2.5f, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.02f, 0.02f, 0.02f)));
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.EMPTY, replaceMask, 0.91f, new Vector3(0.25f, 0.005f, 0.25f),
-			0.35f, 3, 6,
-			0.4f, new Vector3(0.2f, 0.04f, 0.2f))
-		);
-
-		// Buildings
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
-			0.35f, 3, 16,
-			0.25f, new Vector3(0.15f, 0.4f, 0.15f))
-		);
-
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
-			0.35f, 3, 16,
-			0.25f, new Vector3(0.15f, 0.4f, 0.15f))
-		);
+		//// Buildings
+		//modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
+		//	0.35f, 3, 16,
+		//	0.25f, new Vector3(0.15f, 0.4f, 0.15f))
+		//);
 
 		// Pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.2f, 0.005f, 0.2f),
-			0.35f, 4, 10,
+		modifiers.Add(new BlockyNoiseModifier(BlockList.NATURAL, fillMask, 0.53f, new Vector3(0.2f, 0.002f, 0.2f),
+			0.35f, 1, 4,
 			0.05f, new Vector3(0.15f, 0.15f, 0.15f))
 		);
 
-		// Leaning pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, fillMask, 0.51f, new Vector3(0.25f, 0.005f, 0.25f),
-			0.35f, 3, 6,
-			0.4f, new Vector3(0.2f, 0.04f, 0.2f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.NATURAL, fillMask, 0.62f, new Vector3(0.2f, 0.002f, 0.2f),
+			0.35f, 1, 4,
+			0.05f, new Vector3(0.15f, 0.15f, 0.15f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.CRYSTAL, fillMask, 0.51f, new Vector3(0.25f, 0.005f, 0.25f),
-			0.35f, 3, 6,
-			0.6f, new Vector3(0.2f, 0.04f, 0.2f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, anyMask, 0.55f, new Vector3(0.04f, 0.01f, 0.04f),
+			0.35f, 6, 12,
+			0.15f, new Vector3(0.05f, 0.125f, 0.05f))
 		);
 
-		// Meandering tunnel
-		modifiers.Add(new TunnelModifier(4, pointA, pointB, 1f, Vector3.one, new Vector3(48, 48, 48), new Vector3(0.01f, 0.01f, 0.01f)));
-		
-		// Pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.1f, 0.005f, 0.1f),
-			0.35f, 4, 10,
-			0.05f, new Vector3(0.15f, 0.4f, 0.15f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, anyMask, 0.61f, new Vector3(0.1f, 0.02f, 0.1f),
+			0.45f, 7, 4,
+			0.2f, new Vector3(0.1f, 0.02f, 0.1f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.1f, 0.1f, 0.1f),
-			0.35f, 2, 4,
-			0.25f, new Vector3(0.1f, 0.1f, 0.1f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, anyMask, 0.64f, new Vector3(0.15f, 0.005f, 0.15f),
+			0.45f, 7, 4,
+			0.3f, new Vector3(0.1f, 0.05f, 0.1f))
 		);
-
-		// Last resort tunnel
-		//modifiers.Add(new TunnelModifier(3, pointA, pointB, 1f, Vector3.one, new Vector3(8, 8, 8), new Vector3(0.1f, 0.1f, 0.1f)));
 
 		// Decorators
-		//modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 50));
+		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 30));
 	}
 
 	private void Start()
@@ -375,9 +358,9 @@ public partial class World : MonoBehaviour
 		return Instance.waterHeight;
 	}
 
-	public static int GetWorldHeight()
+	public static int GetWorldHeight(Vector3Int input)
 	{
-		return Instance.worldHeight;
+		return Mathf.RoundToInt(Instance.heightFinder.GetHeight(Instance.baseWorldHeight, input));
 	}
 
 	public static int GetWorldSize()

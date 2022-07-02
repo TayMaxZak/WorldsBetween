@@ -13,6 +13,7 @@ public class Modifier
 
 	public enum ModifierStage
 	{
+		Height,
 		Terrain,
 		Feature,
 		Decorator

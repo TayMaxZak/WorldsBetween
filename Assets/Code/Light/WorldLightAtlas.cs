@@ -314,11 +314,11 @@ public class WorldLightAtlas : MonoBehaviour
 
 				for (int x = -lightRange; x <= lightRange; x++)
 				{
-					for (int y = -lightRange; y <= lightRange; y++)
+					for (int y = -lightRange * 2; y <= lightRange * 2; y++)
 					{
 						for (int z = -lightRange; z <= lightRange; z++)
 						{
-							if ((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f) + (z - 0.5f) * (z - 0.5f) > lightRange * lightRange)
+							if ((x - 0.5f) * (x - 0.5f) + ((y - 0.5f) * (y - 0.5f)) / 4f + (z - 0.5f) * (z - 0.5f) > lightRange * lightRange)
 								continue;
 
 							Vector3Int newPos = new Vector3Int(
@@ -327,7 +327,7 @@ public class WorldLightAtlas : MonoBehaviour
 								Mathf.FloorToInt(light.pos.z + z)
 							);
 
-							float dist = Mathf.Sqrt((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f) + (z - 0.5f) * (z - 0.5f));
+							float dist = Mathf.Sqrt((x - 0.5f) * (x - 0.5f) + ((y - 0.5f) * (y - 0.5f)) / 4f + (z - 0.5f) * (z - 0.5f));
 							float falloff = Mathf.Clamp01(1 - dist * (1f / lightRange));
 							falloff = falloff * falloff;
 

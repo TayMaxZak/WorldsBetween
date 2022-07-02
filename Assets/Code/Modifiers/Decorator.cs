@@ -64,6 +64,10 @@ public class Decorator : Modifier
 		bool above = World.GetBlock(pos + Vector3Int.down).IsRigid();
 		bool under = World.GetBlock(pos + Vector3Int.up).IsRigid();
 
+		// TODO: Placeholder
+		if (above)
+			return;
+
 		if (above && under)
 			return;
 
@@ -99,11 +103,11 @@ public class Decorator : Modifier
 			pos = pos,
 			// Randomize color
 			lightColor = waterColor ? LightSource.colorWhite : (glowshroomColor ?
-			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold) :
-			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan)),
-			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroomColor ? 0.67f : 0.5f),
-			spread = glowshroomColor ? 0.67f : 0.33f,
-			noise = glowshroomColor ? 0.75f : 0.25f
+			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan) :
+			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold)),
+			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroomColor ? 1 : 2),
+			spread = glowshroomColor ? 1 : 1,
+			noise = glowshroomColor ? 0 : 0
 		});
 	}
 }

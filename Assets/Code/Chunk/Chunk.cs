@@ -130,7 +130,8 @@ public class Chunk
 	protected virtual void DefaultBlock(int x, int y, int z)
 	{
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
-		bool isSky = coord.y >= World.GetWorldHeight();
+
+		bool isSky = coord.y >= World.GetWorldHeight(coord);
 
 		Block solid = BlockList.NATURAL;
 

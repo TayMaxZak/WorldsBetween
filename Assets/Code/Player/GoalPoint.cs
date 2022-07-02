@@ -76,8 +76,8 @@ public class GoalPoint : MonoBehaviour
 
 		Shader.SetGlobalVector("GoalPosition", transform.position);
 
-		if (placeLight)
-			World.RecalculateLight();
+		//if (placeLight)
+		//	World.RecalculateLight();
 	}
 
 	public void Update()

@@ -90,6 +90,8 @@ public class Block
 
 		public static float GetNormalHardness(int blockType)
 		{
+			//return 1;
+
 			if (blockType == (int)BlockList.BlockType.Artifical)
 				return 1;
 
@@ -109,6 +111,8 @@ public class Block
 
 		public static int GetMeshSmoothing(int blockType)
 		{
+			return 0;
+
 			if (blockType == (int)BlockList.BlockType.Natural)
 				return 1;
 
