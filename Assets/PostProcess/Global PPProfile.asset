@@ -97,8 +97,8 @@ MonoBehaviour:
   active: 1
   m_AdvancedMode: 0
   postExposure:
-    m_OverrideState: 1
-    m_Value: 1
+    m_OverrideState: 0
+    m_Value: 0.5
   contrast:
     m_OverrideState: 0
     m_Value: -10
@@ -117,7 +117,7 @@ MonoBehaviour:
     max: 180
   saturation:
     m_OverrideState: 1
-    m_Value: 20
+    m_Value: -20
     min: -100
     max: 100
 --- !u!114 &11400000
@@ -157,11 +157,11 @@ MonoBehaviour:
     m_Value: 1
   gaussianStart:
     m_OverrideState: 1
-    m_Value: 25
+    m_Value: 20
     min: 0
   gaussianEnd:
     m_OverrideState: 1
-    m_Value: 75
+    m_Value: 40
     min: 0
   gaussianMaxRadius:
     m_OverrideState: 1
@@ -169,8 +169,8 @@ MonoBehaviour:
     min: 0.5
     max: 4.5
   highQualitySampling:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1
   focusDistance:
     m_OverrideState: 0
     m_Value: 10
