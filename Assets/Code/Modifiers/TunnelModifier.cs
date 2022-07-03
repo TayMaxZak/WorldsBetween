@@ -34,6 +34,8 @@ public class TunnelModifier : Modifier
 
 		this.offsetNoiseAmt = offsetNoiseAmt;
 		this.offsetNoiseScale = offsetNoiseScale;
+
+		stage = ModifierStage.Terrain;
 	}
 
 	public override bool Init()

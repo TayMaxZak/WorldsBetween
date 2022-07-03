@@ -25,7 +25,7 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
 	[SerializeField]
-	private HeightFinder heightFinder;
+	private List<SurfaceShaper> surfaceShapers = new List<SurfaceShaper>();
 
 	//private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -114,11 +114,11 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 1.25f;
+		bool hasWater = Random.value < 0.25f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
-			waterHeight = (int)(Random.value * Random.value * -50) + depth * 5;
+			waterHeight = (int)(Random.value * Random.value * -100) + depth * 5;
 			WaterFollow(relativeOrigin);
 		}
 		else
@@ -138,6 +138,8 @@ public partial class World : MonoBehaviour
 		MakeModifiers();
 		foreach (Modifier mod in modifiers)
 			mod.Init();
+		foreach (SurfaceShaper shaper in surfaceShapers)
+			shaper.Init();
 	}
 
 	private void MakeModifiers()
@@ -148,47 +150,31 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		// Big cave
-		heightFinder = new HeightFinder(20, new Vector3(0.004f, 0.02f, 0.004f));
-		heightFinder.ribbonCount = 2;
-
-		//// Big cave
-		//modifiers.Add(new TunnelModifier(Random.Range(4f, 11f), pointA, pointB, 2.5f, new Vector3(0.03f, 0.03f, 0.03f), new Vector3(32, 32, 32), new Vector3(0.02f, 0.02f, 0.02f)));
-
-		//// Buildings
-		//modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.04f, 0.06f, 0.04f),
-		//	0.35f, 3, 16,
-		//	0.25f, new Vector3(0.15f, 0.4f, 0.15f))
-		//);
+		// Surface
+		surfaceShapers.Add(new SurfaceShaper(5, new Vector3(0.03f, 0.03f, 0.03f)));
+		SurfaceShaper shaper = new SurfaceShaper(5, new Vector3(0.05f, 0.05f, 0.05f));
+		shaper.gate = 0.5f;
+		surfaceShapers.Add(shaper);
 
 		// Pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.NATURAL, fillMask, 0.53f, new Vector3(0.2f, 0.002f, 0.2f),
-			0.35f, 1, 4,
-			0.05f, new Vector3(0.15f, 0.15f, 0.15f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.7f, new Vector3(0.1f, 0.0f, 0.1f),
+			0.3f, 1, 8,
+			0.35f, new Vector3(0.15f, 0.05f, 0.15f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.NATURAL, fillMask, 0.62f, new Vector3(0.2f, 0.002f, 0.2f),
-			0.35f, 1, 4,
-			0.05f, new Vector3(0.15f, 0.15f, 0.15f))
+		// Overhangs
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.05f, 0.4f, 0.05f),
+			0.02f, 4, 32,
+			0.1f, new Vector3(0.5f, 0.5f, 0.5f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, anyMask, 0.55f, new Vector3(0.04f, 0.01f, 0.04f),
-			0.35f, 6, 12,
-			0.15f, new Vector3(0.05f, 0.125f, 0.05f))
-		);
-
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, anyMask, 0.61f, new Vector3(0.1f, 0.02f, 0.1f),
-			0.45f, 7, 4,
-			0.2f, new Vector3(0.1f, 0.02f, 0.1f))
-		);
-
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, anyMask, 0.64f, new Vector3(0.15f, 0.005f, 0.15f),
-			0.45f, 7, 4,
-			0.3f, new Vector3(0.1f, 0.05f, 0.1f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.05f, 0.3f, 0.05f),
+			0.02f, 4, 32,
+			0.1f, new Vector3(0.5f, 0.5f, 0.5f))
 		);
 
 		// Decorators
-		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 30));
+		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 10));
 	}
 
 	private void Start()
@@ -360,7 +346,12 @@ public partial class World : MonoBehaviour
 
 	public static int GetWorldHeight(Vector3Int input)
 	{
-		return Mathf.RoundToInt(Instance.heightFinder.GetHeight(Instance.baseWorldHeight, input));
+		float height = Instance.baseWorldHeight;
+
+		foreach (SurfaceShaper shaper in Instance.surfaceShapers)
+			height += shaper.GetHeight(input);
+
+		return Mathf.RoundToInt(height);
 	}
 
 	public static int GetWorldSize()
