@@ -17,10 +17,13 @@ public class Player : MonoBehaviour
 	public Item heldItem;
 
 	private Vector3 initPos;
-	private Timer respawn = new Timer(1);
+	private Timer hintTimer = new Timer(1);
 	private Timer quit = new Timer(1);
 
 	private bool firstOrSecond = true;
+
+
+	public GameObject hint;
 
 	private void Awake()
 	{
@@ -44,6 +47,7 @@ public class Player : MonoBehaviour
 			ChangeHeldItem(heldItem);
 		}
 	}
+
 
 	public void InitPlayerActor(Vector3 blockPos)
 	{
@@ -95,15 +99,12 @@ public class Player : MonoBehaviour
 
 
 		// Debug respawn
-		if (Input.GetButton("Astrum"))
+		hintTimer.Increment(Time.deltaTime);
+		if (hintTimer.Expired() && Input.GetButton("Astrum"))
 		{
-			respawn.Increment(Time.deltaTime);
-
-			if (respawn.Expired())
-				Respawn();
+			GoalPointHint();
+			hintTimer.Reset();
 		}
-		else
-			respawn.currentTime = respawn.maxTime;
 
 
 		// Open equipment menu
@@ -149,6 +150,11 @@ public class Player : MonoBehaviour
 			heldItem.Equip(hand);
 			UIManager.SetHeldItem(heldItem);
 		}
+	}
+
+	private void GoalPointHint()
+	{
+		Instantiate(hint, Player.Instance.head.position - Vector3.up * 0.5f, hand.rotation);
 	}
 
 	private void Respawn()

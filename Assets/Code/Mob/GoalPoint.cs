@@ -74,7 +74,7 @@ public class GoalPoint : MonoBehaviour
 		//else
 		//	placeLight = false;
 
-		Shader.SetGlobalVector("GoalPosition", transform.position);
+		World.SetGoalPoint(transform.position);
 
 		//if (placeLight)
 		//	World.RecalculateLight();

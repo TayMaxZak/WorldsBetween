@@ -260,7 +260,7 @@ public class PlayerMover : Actor
 				climbingTimer.maxTime = (grounded ? fastClimbTime : slowClimbTime);
 				climbingTimer.Reset();
 
-				position = hit.point + Vector3.up * height / 2f;
+				position = hit.point + Vector3.up * (height / 2f);
 			}
 		}
 
@@ -271,7 +271,7 @@ public class PlayerMover : Actor
 			if (Physics.CapsuleCast(
 				position + Vector3.up * ((height / 2) - radius),
 				position - Vector3.up * ((height / 2) - radius),
-				radius, moveVector.normalized, out RaycastHit capsuleHit, moveVector.magnitude)
+				radius, moveVector.normalized, out RaycastHit capsuleHit, moveVector.magnitude, rayMask)
 			)
 			{
 				Vector3 reflected = Vector3.Reflect(moveVector, capsuleHit.normal);

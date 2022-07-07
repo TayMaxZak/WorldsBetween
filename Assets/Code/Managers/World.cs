@@ -51,6 +51,7 @@ public partial class World : MonoBehaviour
 	private Vector3Int relativeOrigin;
 	private Vector3Int pointA;
 	private Vector3Int pointB;
+	private Vector3 goalPoint;
 
 	private int baseWorldHeight = 99999;
 	private int waterHeight = 0;
@@ -312,6 +313,17 @@ public partial class World : MonoBehaviour
 	public static Vector3Int GetPointB()
 	{
 		return Instance.pointB;
+	}
+
+	public static void SetGoalPoint(Vector3 pos)
+	{
+		Instance.goalPoint = pos;
+		Shader.SetGlobalVector("GoalPosition", pos);
+	}
+
+	public static Vector3 GetGoalPoint()
+	{
+		return Instance.goalPoint;
 	}
 
 	public static void AddChunk(Vector3Int pos, Chunk chunk)
