@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
 	public Camera cam;
 
 	public Item heldItem;
+	public GameObject itemModel;
 
 	private Vector3 initPos;
 	private Timer hintTimer = new Timer(1);
@@ -128,6 +129,7 @@ public class Player : MonoBehaviour
 			return;
 
 		heldItem.Update();
+		heldItem.ModelUpdate(itemModel);
 
 		bool lmb = Input.GetButtonDown("Use Item Main");
 		bool rmb = Input.GetButtonDown("Use Item Alt");

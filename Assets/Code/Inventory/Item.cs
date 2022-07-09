@@ -57,6 +57,12 @@ public class Item : ScriptableObject
 
 	}
 
+	// Called from the player every frame while held
+	public virtual void ModelUpdate(GameObject model)
+	{
+
+	}
+
 	// Called occasionally while in inventory or held
 	public virtual void InventoryTick(float deltaTime)
 	{
