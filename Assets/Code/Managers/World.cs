@@ -152,30 +152,28 @@ public partial class World : MonoBehaviour
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
 		// Surface
-		surfaceShapers.Add(new SurfaceShaper(5, new Vector3(0.03f, 0.03f, 0.03f)));
-		SurfaceShaper shaper = new SurfaceShaper(5, new Vector3(0.05f, 0.05f, 0.05f));
-		shaper.gate = 0.5f;
-		surfaceShapers.Add(shaper);
+		SurfaceShaper shaper3 = new SurfaceShaper(5, new Vector3(0.05f, 0.05f, 0.05f));
+		surfaceShapers.Add(shaper3);
 
 		// Pillars
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.7f, new Vector3(0.1f, 0.0f, 0.1f),
-			0.3f, 1, 8,
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.05f, 0.005f, 0.05f),
+			0.3f, 2, 8,
 			0.35f, new Vector3(0.15f, 0.05f, 0.15f))
 		);
 
 		// Overhangs
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.05f, 0.4f, 0.05f),
-			0.02f, 4, 32,
-			0.1f, new Vector3(0.5f, 0.5f, 0.5f))
+		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.6f, new Vector3(0.1f, 0.5f, 0.1f),
+			0.005f, 32, 48,
+			0.1f, new Vector3(0.4f, 0.4f, 0.4f))
 		);
 
-		modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.05f, 0.3f, 0.05f),
-			0.02f, 4, 32,
-			0.1f, new Vector3(0.5f, 0.5f, 0.5f))
-		);
+		//modifiers.Add(new BlockyNoiseModifier(BlockList.ARTIFICAL, fillMask, 0.55f, new Vector3(0.05f, 0.3f, 0.05f),
+		//	0.02f, 4, 32,
+		//	0.1f, new Vector3(0.5f, 0.5f, 0.5f))
+		//);
 
 		// Decorators
-		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 10));
+		modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.LUREWORMS, fillMask, 1, 25));
 	}
 
 	private void Start()

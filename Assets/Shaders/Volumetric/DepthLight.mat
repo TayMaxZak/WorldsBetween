@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Item
-  m_Shader: {fileID: -6465566751694194690, guid: bf7e7c66fef938746ae20b85f6bd53df, type: 3}
+  m_Name: DepthLight
+  m_Shader: {fileID: -6465566751694194690, guid: f44a006c32ca3694a9fc86d856550412, type: 3}
   m_ShaderKeywords: UNITY_APPLY_FOG
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -56,18 +56,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GetWorldLight_024129b7954e469c846c2c00555ee47b_Texture3D77be46432b5d4df7806093585855609d_3803525559:
-        m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetWorldLight_024129b7954e469c846c2c00555ee47b_Texture3Da5289fee67494ceaac5fde6af3a3b4ec_618959861:
-        m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
+        m_Texture: {fileID: 11700000, guid: 4dafe330dff7d3240a9228bd534a92ad, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GetWorldLight_47e7dcb053cb48d5865d777091612e8d_Texture3Da5289fee67494ceaac5fde6af3a3b4ec_618959861:
-        m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetWorldLight_b7d1b7f8d98a4405aec60a7847a44d3f_Texture3D77be46432b5d4df7806093585855609d_3803525559:
         m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -83,10 +75,6 @@ Material:
         m_Texture: {fileID: 11700000, guid: 0d0fd3bbfd6885d40a724b194bd3a013, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _GetWorldLight_e225fd9ea0f44785894aac59cad36114_Texture3D77be46432b5d4df7806093585855609d_3803525559:
-        m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -99,6 +87,38 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Sample4Slices_1b1d831e50c8489393ef322dcfae22e6_Texture3D1_305670922:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sample4Slices_2f45c78897dc409b8e2c0e0778c5f3ec_Texture3D1_305670922:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sample4Slices_4d0577ee748b443ab0165c8e9eb504d4_Texture3D1_305670922:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sample4Slices_5f303de0dafd4ebf84d5d0c1904857f6_Texture3D1_305670922:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sample4Slices_9af90154a99547b1895abf088a2b87a0_Texture3D1_305670922:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DLOD_730a6391492a4f6682bd8d306e71d579_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DLOD_f62039a495424a7db2e3765df5ba8261_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DLOD_fcebe0b5df23449c878c22ed03f01cb4_Texture_1:
+        m_Texture: {fileID: 2800000, guid: e857766248345d846a1dd40de51ec3cf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_365163be33854b1396800d8d093b1476_Texture_1:
         m_Texture: {fileID: 2800000, guid: 71512b6ab6690504abbeb79ff92803fc, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -109,6 +129,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_a02e2cfbeefc4d869bca2a4415c61cab_Texture_1:
         m_Texture: {fileID: 2800000, guid: 6db0e1d4a0f5ea543ac27d3ec0590367, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_efda9cdc273f4fc5a9ecb2252dcf87ce_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_f60a016985454f95b16d15720811ca2e_Texture_1:
@@ -155,8 +179,20 @@ Material:
         m_Texture: {fileID: 2800000, guid: 3485d1a66b5aa4c42bc2e52327bfb9b4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _WorldFog_a3944e690b9f49feb75ebd0894eb820a_Texture3D58ac1c4537c74882a61e63f7db9746eb_628223483:
-        m_Texture: {fileID: 0}
+    - _VolumeSlice_2dec0524453242e7b32a835970ac182d_Texture3D1_818266614:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VolumeSlice_75f7275fd6cb48018bbcb336180cd0e6_Texture3D1_818266614:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VolumeSlice_c608819cef964a409265f917b72485f7_Texture3D1_818266614:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VolumeSlice_dd8e2afc1030472d989112b0405c94a8_Texture3D1_818266614:
+        m_Texture: {fileID: 11700000, guid: affde36e49b8f214489c14e890074879, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WorldSample_a7145d50d5c0414d9167896b4a4e416b_Texture3D083c0877ebc64b2ba7d1fbaff2018b66_3133226644:
@@ -181,17 +217,27 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - BOOLEAN_C331D87F5A164EEB9FD460118FA5D42A: 0
-    - Boolean_8b8e4312d2d2463cb46dedca84457260: 0
     - Boolean_fda4ec78a2894e6f8c8409c530765bc7: 0
     - PartialTime: 0
-    - Vector1_1ef6bb1aa1484743a110375920c30cc0: 1
-    - Vector1_2c9480dfdb7c4d51bc7a92fc48b9eae3: 2
+    - Vector1_1: 0.265
+    - Vector1_1eb5716a7cd44c968e783273a667b780: 7.7
+    - Vector1_1ef6bb1aa1484743a110375920c30cc0: 0.33
+    - Vector1_2c9480dfdb7c4d51bc7a92fc48b9eae3: 0
     - Vector1_6a7a131802454753a474950a8671b918: 1
-    - Vector1_8038f102d2bf4c5282dbd8eae99439f8: 0.9
-    - Vector1_95a72b9d0a254319a58646c1dc9d995b: 0.5
+    - Vector1_82648bf1266f40a6b3d102de9b1f946b: 0
     - Vector1_BE32BCCB: 0
+    - Vector1_a6011146fee84023ae2d22184638e49c: 2.7
+    - Vector1_a6011146fee84023ae2d22184638e49c_1: 1.12
+    - Vector1_a6011146fee84023ae2d22184638e49c_2: 0.047
+    - Vector1_a6011146fee84023ae2d22184638e49c_3: 77.8
+    - Vector1_a6011146fee84023ae2d22184638e49c_4: 0
+    - Vector1_a6011146fee84023ae2d22184638e49c_5: 100
+    - Vector1_a6011146fee84023ae2d22184638e49c_6: 0
+    - Vector1_b4c3679be03544d2a3a84aec81500dfc: 155
+    - Vector1_d492e16333d1444b95e43b53d221e6bd: 1
+    - Vector1_d492e16333d1444b95e43b53d221e6bd_1: 1
     - Vector1_d6259a37a26e4a8ca7bd46b1db4055e6: 128
-    - Vector1_f2d071963b7046b89792280095fee6e1: 2
+    - Vector1_f06813e71cfd45d896e41834f89c4ace: 0
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -214,7 +260,10 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_afec31f9cb4d45fb8d6b7ca6614de7ba: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
+    - Color_7b83442e480847ab8819d34ecaeee29c: {r: 0.10844337, g: 0.10786756, b: 0.22641507, a: 1}
+    - Color_b3292922cb3b463ca09e901ebfb97e46: {r: 0.41037738, g: 0.923823, b: 1, a: 1}
+    - Color_b3292922cb3b463ca09e901ebfb97e46_1: {r: 0.74056596, g: 0.9999998, b: 1, a: 1}
+    - Color_b3292922cb3b463ca09e901ebfb97e46_2: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

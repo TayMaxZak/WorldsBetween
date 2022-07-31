@@ -19,7 +19,7 @@ RenderSettings:
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 0
-  m_LinearFogEnd: 35
+  m_LinearFogEnd: 100.92
   m_AmbientSkyColor: {r: 0.198, g: 0.176, b: 0.22, a: 1}
   m_AmbientEquatorColor: {r: 0.21176472, g: 0.18823531, b: 0.23529413, a: 1}
   m_AmbientGroundColor: {r: 0.21176472, g: 0.18823531, b: 0.23529413, a: 1}
@@ -392,65 +392,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].time
-      value: 0.1796389
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[2].time
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.35869566
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].value
-      value: 0.76044446
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].inSlope
-      value: -1.7982737
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].inSlope
-      value: -1.2540765
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[2].inSlope
-      value: -1.5925179
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].outSlope
-      value: -1.7982737
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].inWeight
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].outSlope
-      value: -1.2540765
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[2].inWeight
-      value: 0.19111109
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[2].outSlope
-      value: -1.5925179
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].outWeight
-      value: 0.15111111
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077018217046407775, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[1].outWeight
-      value: 0.33333334
+    - target: {fileID: 193329371607060365, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.875
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
@@ -897,7 +841,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.genRangePlayable
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
@@ -1714,7 +1658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339e35b12209a3f478b2b07db09bebe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightColor: {r: 0.06, g: 0.06, b: 0.06, a: 1}
+  lightColor: {r: 0.16, g: 0.16, b: 0.16, a: 1}
 --- !u!1 &2052118886
 GameObject:
   m_ObjectHideFlags: 0
@@ -2261,7 +2205,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3964215064020241165
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2659,7 +2603,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
       propertyPath: normal.fogEnd
-      value: 35
+      value: 100.92
       objectReference: {fileID: 0}
     - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
       propertyPath: normal.fogStart

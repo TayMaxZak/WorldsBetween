@@ -57,7 +57,7 @@ public class GoalFinder
 		goalPos = Vector3.zero;
 
 		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = Vector3Int.one * 16;
+		Vector3Int testBounds = new Vector3Int(16, 16, 16);
 		pos = new Vector3Int(
 			World.GetPointB().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
 			World.GetPointB().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1) - 4),
