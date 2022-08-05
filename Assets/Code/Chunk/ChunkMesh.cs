@@ -177,10 +177,9 @@ public class ChunkMesh
 
 								Vector3 vertPos = middle + vert;
 
-								// Calculate normals
-								norm = Vector3.zero;
+								// Calculate normals based on adjacent blocks (never fails, angular result)
 
-								// Based on adjacent blocks (never fails, angular result)
+								norm = Vector3.zero;
 								for (int i = -1; i <= 1; i += 2)
 								{
 									for (int j = -1; j <= 1; j += 2)
@@ -204,6 +203,8 @@ public class ChunkMesh
 								if (norm == Vector3.zero)
 								{
 									normals.Add(block.GetNormalRefractive() * (Vector3)directions[d]);
+
+									vertices.Add(vertPos);
 								}
 								// Normal case
 								else
@@ -212,12 +213,19 @@ public class ChunkMesh
 									float hardness = block.GetNormalHardness();
 
 									normals.Add(block.GetNormalRefractive() * Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
+
+									//Vector3 displacedVert = vertPos + amt * (norm / 2 - norm.normalized * 2) / 2;
+
+									// Distances to clamp by
+									float cornerDistance = 0.867f; // 0.867f
+									float faceDistance = 0.5f; // 0.5f
+									float dot = Mathf.Clamp01(Vector3.Dot(vert.normalized, norm.normalized)) < 0.9f ? 0f : 1f;
+									float clampDistance = Mathf.Lerp(cornerDistance, faceDistance, dot);
+									Vector3 clampedVert = middle + Vector3.ClampMagnitude(vert, clampDistance);
+
+									Vector3 displacedVert = Vector3.Lerp(vertPos, clampedVert, block.GetMeshSmoothing());
+									vertices.Add(displacedVert);
 								}
-
-
-								float dot = block.GetMeshSmoothing();
-								Vector3 displacedVert = vertPos + dot * (norm / 2 - norm.normalized * 2) / 2;
-								vertices.Add(displacedVert);
 							}
 
 							// Add triangles
