@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6042555085825754433}
   - component: {fileID: 6233231840159841262}
   - component: {fileID: 4003551530765449911}
+  - component: {fileID: 7447910355326945914}
   m_Layer: 10
   m_Name: FakeChunk
   m_TagString: Untagged
@@ -46,12 +47,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
+    chunkType: 1
     position: {x: 0, y: 0, z: 0}
-    procStage: 0
+    scaleFactor: 2
+    chunkSizeWorld: 32
+    buildStage: 0
     isProcessing: 0
     didInit: 0
     go: {fileID: 0}
-  filter: {fileID: 6233231840159841262}
+  meshVisual: {fileID: 6233231840159841262}
+  meshPhysics: {fileID: 7447910355326945914}
 --- !u!33 &6233231840159841262
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -101,3 +106,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &7447910355326945914
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6042555085825754439}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}

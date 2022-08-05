@@ -44,14 +44,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normal:
-    fogColor: {r: 0.8349056, g: 0.9607641, b: 1, a: 1}
-    fogStart: 100
-    fogEnd: 300
-    skyTopColor: {r: 0.49047703, g: 0.5486294, b: 0.6226415, a: 1}
-    skyBottomColor: {r: 0, g: 0, b: 0, a: 1}
+    fogColor: {r: 1, g: 1, b: 1, a: 1}
+    fogStart: 20
+    fogEnd: 200
+    skyTopColor: {r: 1, g: 1, b: 1, a: 1}
+    skyBottomColor: {r: 1, g: 1, b: 1, a: 1}
   underwater:
     fogColor: {r: 0.10588235, g: 0.14094773, b: 0.27450982, a: 1}
     fogStart: 0
     fogEnd: 30
-    skyTopColor: {r: 1, g: 1, b: 1, a: 1}
+    skyTopColor: {r: 0.21176472, g: 0.18823531, b: 0.23529413, a: 1}
     skyBottomColor: {r: 0.10588236, g: 0.14117648, b: 0.27450982, a: 1}

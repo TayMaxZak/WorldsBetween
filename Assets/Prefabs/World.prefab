@@ -52,7 +52,7 @@ MonoBehaviour:
     active: 1
     multiQ: 1
     queues: 64
-    enqueueTaskSize: 100
+    enqueueTaskSize: 4
     generatorTaskSize: 32
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
     fakeChunkPrefab: {fileID: 6042555085825754433, guid: 4b4b891d8840f164199b476385ce3f7e, type: 3}
@@ -63,9 +63,9 @@ MonoBehaviour:
     genRangePlayable: 4
     genRangeFake: 0
   lightEngine:
-    raysPerBatch: 125
-    progressStep: 0.5
+    raysPerBatch: 100
+    progressStep: 1
   randomizeSeed: 1
-  seed: 0
+  seed: 867737012291347584
   chunkSize: 16
   isInfinite: 0

@@ -729,10 +729,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: seed
-      value: 867737012291347584
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
       value: 
       objectReference: {fileID: 2035213415}
@@ -740,30 +736,6 @@ PrefabInstance:
       propertyPath: waterSystem
       value: 
       objectReference: {fileID: 1369908092}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: randomizeSeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: lightEngine.progressStep
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: lightEngine.raysPerBatch
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.genRangeFake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.enqueueTaskSize
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.genRangePlayable
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
       value: World
@@ -2566,18 +2538,6 @@ PrefabInstance:
     - target: {fileID: 7899593665628932644, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
-      propertyPath: normal.skyTopColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
-      propertyPath: normal.skyTopColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7899593665628932645, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
-      propertyPath: normal.skyTopColor.r
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a555cfc8d05c224fa420022f7b504d8, type: 3}
