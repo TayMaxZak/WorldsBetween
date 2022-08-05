@@ -9,22 +9,22 @@ public static class BlockList
 	{
 		Utility,
 
-		Natural,
-		Artifical,
-		Crystal,
+		Rock,
+		Concrete,
+		DirtGrass,
 		Glowshrooms,
-		Lureworms,
+		CeilLight,
 
 	}
 
 	public static Block EMPTY = new Block(false, false, false, BlockType.Utility);
 	public static Block BORDER = new Block(false, true, false, BlockType.Utility);
 
-	public static Block NATURAL = new Block(true, true, true, BlockType.Natural);
-	public static Block ARTIFICAL = new Block(true, true, true, BlockType.Artifical);
-	public static Block CRYSTAL = new Block(true, true, true, BlockType.Crystal);
+	public static Block ROCK = new Block(true, true, true, BlockType.Rock);
+	public static Block CONCRETE = new Block(true, true, true, BlockType.Concrete);
+	public static Block DIRTGRASS = new Block(true, true, true, BlockType.DirtGrass);
 
 	public static Block GLOWSHROOMS = new Block(true, false, false, BlockType.Glowshrooms);
-	public static Block LUREWORMS = new Block(true, false, false, BlockType.Lureworms);
+	public static Block CEILIGHT = new Block(true, false, false, BlockType.CeilLight);
 
 }

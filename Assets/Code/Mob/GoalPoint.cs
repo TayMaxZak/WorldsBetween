@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[SelectionBase]
 public class GoalPoint : MonoBehaviour
 {
 	public static GoalPoint Instance;

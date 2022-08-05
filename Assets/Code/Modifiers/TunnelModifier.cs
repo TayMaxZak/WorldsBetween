@@ -52,12 +52,12 @@ public class TunnelModifier : Modifier
 
 	protected void SeedNoise(ref Vector3 offset)
 	{
-		float offsetAmount = 999999;
+		float offsetAmount = 9999;
 
 		offset = new Vector3(
-			Random.value + (int)(Random.value * offsetAmount),
-			Random.value + (int)(Random.value * offsetAmount),
-			Random.value + (int)(Random.value * offsetAmount)
+			Random.value + (float)(Random.value * offsetAmount),
+			Random.value + (float)(Random.value * offsetAmount),
+			Random.value + (float)(Random.value * offsetAmount)
 		);
 	}
 
@@ -138,7 +138,7 @@ public class TunnelModifier : Modifier
 		float yPlane = Mathf.PerlinNoise(z, x);
 		float zPlane = Mathf.PerlinNoise(x, y);
 
-		float noise = Mathf.Clamp01(1.33f * (xPlane + yPlane + zPlane) / 3f);
+		float noise = Mathf.Clamp01((4 / 3f) * (xPlane + yPlane + zPlane) / 3f);
 		//float noise = Mathf.Clamp01((zPlane));
 
 		return noise;

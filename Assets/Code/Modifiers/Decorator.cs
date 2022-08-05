@@ -61,19 +61,19 @@ public class Decorator : Modifier
 			return;
 
 		Block block;
-		bool above = World.GetBlock(pos + Vector3Int.down).IsRigid();
-		bool under = World.GetBlock(pos + Vector3Int.up).IsRigid();
+		bool placeOnTop = World.GetBlock(pos + Vector3Int.down).IsRigid();
+		bool placeUnder = World.GetBlock(pos + Vector3Int.up).IsRigid();
 
-		// TODO: Placeholder
-		if (above)
+		//// TODO: Placeholder
+		//if (placeOnTop)
+		//	return;
+
+		if (placeOnTop && placeUnder)
 			return;
 
-		if (above && under)
-			return;
-
-		if (above)
+		if (placeOnTop)
 			block = aboveBlock;
-		else if (under)
+		else if (placeUnder)
 			block = underBlock;
 		else
 			return;
@@ -89,7 +89,7 @@ public class Decorator : Modifier
 		if (chunk == null || chunk.chunkType != Chunk.ChunkType.Close)
 			return;
 
-		bool glowshroomColor = above && pos.y > World.GetWaterHeight();
+		bool glowshroomColor = placeOnTop && pos.y > World.GetWaterHeight();
 		bool waterColor = pos.y <= World.GetWaterHeight();
 
 		// Invert some colors
@@ -105,7 +105,7 @@ public class Decorator : Modifier
 			lightColor = waterColor ? LightSource.colorWhite : (glowshroomColor ?
 			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan) :
 			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold)),
-			brightness = SeedlessRandom.NextFloatInRange(0.67f, 1.33f) * (glowshroomColor ? 1 : 2),
+			brightness = SeedlessRandom.NextFloatInRange((2 / 3f), (4 / 3f)) * (glowshroomColor ? 1 : 2),
 			spread = glowshroomColor ? 1 : 1,
 			noise = glowshroomColor ? 0 : 0
 		});

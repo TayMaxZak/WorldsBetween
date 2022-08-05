@@ -39,12 +39,12 @@ public class NoiseModifier : Modifier
 
 	protected void SeedNoise()
 	{
-		float offsetAmount = 999999;
+		float offsetAmount = 9999;
 
 		randomOffset = new Vector3(
-			Random.value + (int)(Random.value * offsetAmount),
-			Random.value + (int)(Random.value * offsetAmount),
-			Random.value + (int)(Random.value * offsetAmount)
+			Random.value + (float)(Random.value * offsetAmount),
+			Random.value + (float)(Random.value * offsetAmount),
+			Random.value + (float)(Random.value * offsetAmount)
 		);
 	}
 
@@ -79,15 +79,15 @@ public class NoiseModifier : Modifier
 
 	protected float GetNoiseAt(Vector3 pos)
 	{
-		float x = pos.x * scale.x + randomOffset.x;
-		float y = pos.y * scale.y + randomOffset.y;
-		float z = pos.z * scale.z + randomOffset.z;
+		float x = (float)pos.x * scale.x;
+		float y = (float)pos.y * scale.y;
+		float z = (float)pos.z * scale.z;
 
-		float xPlane = Mathf.PerlinNoise(y, z);
-		float yPlane = Mathf.PerlinNoise(z, x);
-		float zPlane = Mathf.PerlinNoise(x, y);
+		float xPlane = Mathf.PerlinNoise(y + randomOffset.x, z + randomOffset.x);
+		float yPlane = Mathf.PerlinNoise(z + randomOffset.y, x + randomOffset.y);
+		float zPlane = Mathf.PerlinNoise(x + randomOffset.z, y + randomOffset.z);
 
-		float noise = Mathf.Clamp01(1.33f * (xPlane + yPlane + zPlane) / 3f);
+		float noise = Mathf.Clamp01((4 / 3f) * (xPlane + yPlane + zPlane) / 3f);
 
 		for (int ribs = ribbonCount; ribs > 0; ribs--)
 			noise = Mathf.Clamp01(Mathf.Abs(noise * ribbonGateMult - 0.5f) * 2f);

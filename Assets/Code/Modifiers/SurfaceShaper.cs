@@ -11,7 +11,7 @@ public class SurfaceShaper
 	public float gate = 0;
 	public int ribbonCount = 0;
 
-	private Vector3 randomOffset = Vector3.zero;
+	protected Vector3 randomOffset = Vector3.zero;
 
 	// TODO: Strength as chance to exceed 0.5
 	public SurfaceShaper(float strength, Vector3 scale)
@@ -48,7 +48,7 @@ public class SurfaceShaper
 		return pos;
 	}
 
-	protected float GetNoiseAt(Vector3 pos)
+	protected virtual float GetNoiseAt(Vector3 pos)
 	{
 		float x = pos.x * scale.x + randomOffset.x;
 		float y = pos.y * scale.y + randomOffset.y;
@@ -58,7 +58,7 @@ public class SurfaceShaper
 		float yPlane = Mathf.PerlinNoise(z, x);
 		float zPlane = Mathf.PerlinNoise(x, y);
 
-		float noise = Mathf.Clamp01(1.33f * (xPlane + yPlane + zPlane) / 3f);
+		float noise = Mathf.Clamp01((4 / 3f) * (xPlane + yPlane + zPlane) / 3f);
 
 		for (int ribs = ribbonCount; ribs > 0; ribs--)
 			noise = Mathf.Clamp01(Mathf.Abs(noise * ribbonGateMult - 0.5f) * 2f);

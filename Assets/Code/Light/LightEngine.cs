@@ -303,7 +303,11 @@ public class LightEngine
 
 			// Should block light? Check if inside opaque block if at block resolution
 			bool occupied = World.GetBlock(blockCur.x, blockCur.y, blockCur.z).IsOpaque();
-
+			// Stop after we hit something
+			if (occupied)
+			{
+				break;
+			}
 			// Remember this result
 			if (rayPoints == null)
 				rayPoints = new Queue<LightRayResultPoint>();
@@ -318,11 +322,7 @@ public class LightEngine
 				});
 			}
 
-			// Stop after we hit something
-			if (occupied)
-			{
-				break;
-			}
+
 
 			// Move cursor
 			//progress += 1;

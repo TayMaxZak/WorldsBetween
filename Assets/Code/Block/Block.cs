@@ -92,32 +92,32 @@ public class Block
 		{
 			//return 1;
 
-			if (blockType == (int)BlockList.BlockType.Artifical)
+			if (blockType == (int)BlockList.BlockType.Concrete)
 				return 1;
 
-			if (blockType == (int)BlockList.BlockType.Crystal)
-				return 0.5f;
+			if (blockType == (int)BlockList.BlockType.Rock)
+				return 0.0f;
 
-			return 0;
+			if (blockType == (int)BlockList.BlockType.DirtGrass)
+				return 0;
+
+			return 1;
 		}
 
 		public static float GetNormalRefractive(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Crystal)
-				return -1;
-
 			return 1;
 		}
 
 		public static int GetMeshSmoothing(int blockType)
 		{
-			return 0;
+			//return 0;
 
-			if (blockType == (int)BlockList.BlockType.Natural)
+			if (blockType == (int)BlockList.BlockType.Rock)
 				return 1;
 
-			if (blockType == (int)BlockList.BlockType.Crystal)
-				return -1;
+			if (blockType == (int)BlockList.BlockType.DirtGrass)
+				return 1;
 
 			return 0;
 		}

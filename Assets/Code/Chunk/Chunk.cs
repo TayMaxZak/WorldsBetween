@@ -131,16 +131,17 @@ public class Chunk
 	{
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
 
-		bool isSky = coord.y >= World.GetWorldHeight(coord);
+		Block solid = BlockList.ROCK;
+		Block top = BlockList.DIRTGRASS;
 
-		Block solid = BlockList.NATURAL;
+		//PersistentData data = PersistentData.GetInstanceForRead();
+		//if (data && data.GetDepth() == 10)
+		//	solid = BlockList.ARTIFICAL;
 
-		PersistentData data = PersistentData.GetInstanceForRead();
-		if (data && data.GetDepth() == 10)
-			solid = BlockList.ARTIFICAL;
-
-
-		SetBlock(x, y, z, isSky ? BlockList.EMPTY : solid);
+		if (coord.y >= World.GetWorldHeight(coord))
+			SetBlock(x, y, z, BlockList.EMPTY);
+		else
+			SetBlock(x, y, z, coord.y + 1 >= World.GetWorldHeight(coord + Vector3Int.up) ? top : solid);
 	}
 
 	protected virtual void Generate(Modifier.ModifierStage stageToDo)
