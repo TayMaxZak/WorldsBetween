@@ -121,8 +121,8 @@ public class ChunkMesh
 							chunk.position.z + z + directions[d].z * chunk.scaleFactor
 						);
 
-						if (chunk.chunkType == Chunk.ChunkType.Close && !World.Contains(faceOffset + Vector3.one / 2))
-							continue;
+						//if (chunk.chunkType == Chunk.ChunkType.Close && !World.Contains(faceOffset + Vector3.one / 2))
+						//	continue;
 
 						Block adj = World.GetBlock(faceOffset.x, faceOffset.y, faceOffset.z);
 
@@ -265,7 +265,7 @@ public class ChunkMesh
 							vert -= Vector3.one / 2;
 
 							vert = Quaternion.Euler(new Vector3(0, randomYAngle, 0)) * vert; // Spin by random degrees
-							vert *= 1.4f; // TODO: Find fix for floating instead of just scaling up model
+							//vert *= 1.4f; // TODO: Find fix for floating instead of just scaling up model
 
 							vert += Vector3.one / 2;
 							vert *= chunk.scaleFactor;

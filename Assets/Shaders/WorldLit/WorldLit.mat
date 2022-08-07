@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BlockOpaque
-  m_Shader: {fileID: -6465566751694194690, guid: a036358338e012948a3acfbc983c265e, type: 3}
+  m_Name: WorldLit
+  m_Shader: {fileID: -6465566751694194690, guid: bf7e7c66fef938746ae20b85f6bd53df, type: 3}
   m_ShaderKeywords: UNITY_APPLY_FOG
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,10 +19,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - Texture2D_b2565499f0db43ff828a565829bd18a9:
-        m_Texture: {fileID: 2800000, guid: 36c679d8afbfc3a4a95e736ce256ecac, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - Texture3D_1:
         m_Texture: {fileID: 11700000, guid: 13d9074a20d03724b9d3caa3967e2cdd, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -64,6 +60,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GetWorldLight_024129b7954e469c846c2c00555ee47b_Texture3Da5289fee67494ceaac5fde6af3a3b4ec_618959861:
+        m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetWorldLight_6a8043c4d240422a9df24e65ed12c97c_Texture3D77be46432b5d4df7806093585855609d_3803525559:
         m_Texture: {fileID: 11700000, guid: bf2e8bea16f92a34bb6a41f5da47e074, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -184,13 +184,11 @@ Material:
     - Boolean_8b8e4312d2d2463cb46dedca84457260: 0
     - Boolean_fda4ec78a2894e6f8c8409c530765bc7: 0
     - PartialTime: 0
-    - Vector1_2c9480dfdb7c4d51bc7a92fc48b9eae3: 0.42
-    - Vector1_8038f102d2bf4c5282dbd8eae99439f8: 0.67
+    - Vector1_2c9480dfdb7c4d51bc7a92fc48b9eae3: 0
     - Vector1_95a72b9d0a254319a58646c1dc9d995b: 0.2
-    - Vector1_9d01b5c4901a407186b8cc3d0920ffe8: 1
     - Vector1_BE32BCCB: 0
     - Vector1_d6259a37a26e4a8ca7bd46b1db4055e6: 128
-    - Vector1_f2d071963b7046b89792280095fee6e1: 2
+    - Vector1_f2d071963b7046b89792280095fee6e1: 1
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -214,9 +212,6 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - Color_afec31f9cb4d45fb8d6b7ca6614de7ba: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - GoalPosition: {r: 0, g: 0, b: 0, a: 0}
-    - Vector2_1: {r: 0, g: 0, b: 0, a: 0}
-    - Vector2_47bfdb22b58f4e779d11847e3a95c5aa: {r: 1, g: 1, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
