@@ -38,6 +38,26 @@ void CalculateMainLight_float(float3 WorldPos, out float3 Direction, out float3 
     ShadowAtten = mainLight.shadowAttenuation;
 #endif
 }
+//
+//void CalculateAdditionalLights_float(float3 WorldPosition, float3 WorldNormal, float3 WorldView, float3 MainColor, out float3 Color) {
+//    Color = MainColor;
+//
+//#ifndef SHADERGRAPH_PREVIEW
+//    int pixelLightCount = GetAdditionalLightsCount();
+//    for (int i = 0; i < pixelLightCount; ++i) {
+//        Light light = GetAdditionalLight(i, WorldPosition);
+//        half NdotL = saturate(dot(WorldNormal, light.direction));
+//        half atten = light.distanceAttenuation * light.shadowAttenuation;
+//        half thisDiffuse = atten * NdotL;
+//        half thisSpecular = LightingSpecular(thisDiffuse, light.direction, WorldNormal, WorldView, 1, Smoothness);
+//        Color += light.color * (thisDiffuse + thisSpecular);
+//    }
+//#endif
+//
+//    half total = Diffuse + Specular;
+//    // If no light touches this pixel, set the color to the main light's color
+//    Color = total <= 0 ? MainColor : Color / total;
+//}
 
 void AddAdditionalLights_float(float Smoothness, float3 WorldPosition, float3 WorldNormal, float3 WorldView,
     float MainDiffuse, float MainSpecular, float3 MainColor,
