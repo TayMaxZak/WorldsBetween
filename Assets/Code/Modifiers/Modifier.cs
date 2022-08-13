@@ -40,7 +40,7 @@ public class Modifier
 		
 	}
 
-	protected delegate void BlockPosAction(Vector3Int pos, Chunk chunk);
+	protected delegate bool BlockPosAction(Vector3Int pos, Chunk chunk);
 
 	protected void ApplyToAll(BlockPosAction action, Chunk chunk, Vector3Int min, Vector3Int max)
 	{

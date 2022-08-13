@@ -151,46 +151,47 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		float mult = 0.5f;
+		float mult = 0.25f;
 
 		float verticalScale = 1 / 8f;
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			20,
+			25,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-20,
+			-25,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			10,
+			15,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
 		));
 		verticalScale = 1 / 2f;
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-10,
+			-15,
 			new Vector3(0.001f, 0.001f * verticalScale, 0.001f) * mult,
 			new Vector3(0.15f, 0.15f * verticalScale, 0.15f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
 		));
 
 		verticalScale = 1 / 1.5f;
-		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.7f, new Vector3(0.025f, 0.025f * verticalScale, 0.025f)));
-		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.7f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f)));
+		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.67f, new Vector3(0.025f, 0.025f * verticalScale, 0.025f)));
+		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.67f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f)));
 
 		verticalScale = 1 / 3f;
-		modifiers.Add(new NoiseModifier(BlockList.CONCRETE, anyMask, 0.52f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f)));
-		modifiers.Add(new NoiseModifier(BlockList.CONCRETE, anyMask, 0.52f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f)));
+		modifiers.Add(new NoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f)));
+		modifiers.Add(new NoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f)));
 
-		//modifiers.Add(new Decorator(BlockList.GLOWSHROOMS, BlockList.CEILIGHT, fillMask, 10, 10));
+		modifiers.Add(new Decorator(BlockList.GRASS, BlockList.EMPTY, fillMask, 1f, 256));
+		modifiers.Add(new Decorator(BlockList.MUSHROOMS, BlockList.EMPTY, fillMask, 0.5f, 16));
 	}
 
 	private void Start()

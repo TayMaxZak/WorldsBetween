@@ -265,7 +265,8 @@ public class ChunkMesh
 							vert -= Vector3.one / 2;
 
 							vert = Quaternion.Euler(new Vector3(0, randomYAngle, 0)) * vert; // Spin by random degrees
-							//vert *= 1.4f; // TODO: Find fix for floating instead of just scaling up model
+							vert *= 1.414f;
+							vert -= new Vector3(0, 0.25f, 0);
 
 							vert += Vector3.one / 2;
 							vert *= chunk.scaleFactor;

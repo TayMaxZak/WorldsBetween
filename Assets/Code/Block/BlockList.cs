@@ -12,8 +12,8 @@ public static class BlockList
 		Rock,
 		Concrete,
 		DirtGrass,
-		Glowshrooms,
-		CeilLight,
+		Grass,
+		Mushrooms,
 
 	}
 
@@ -24,7 +24,7 @@ public static class BlockList
 	public static Block CONCRETE = new Block(true, true, true, BlockType.Concrete);
 	public static Block DIRTGRASS = new Block(true, true, true, BlockType.DirtGrass);
 
-	public static Block GLOWSHROOMS = new Block(true, false, false, BlockType.Glowshrooms);
-	public static Block CEILIGHT = new Block(true, false, false, BlockType.CeilLight);
+	public static Block GRASS = new Block(true, false, false, BlockType.Grass);
+	public static Block MUSHROOMS = new Block(true, false, false, BlockType.Mushrooms);
 
 }

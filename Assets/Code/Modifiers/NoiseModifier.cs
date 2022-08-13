@@ -58,7 +58,7 @@ public class NoiseModifier : Modifier
 		ApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
-	protected virtual void ApplyNoise(Vector3Int pos, Chunk chunk)
+	protected virtual bool ApplyNoise(Vector3Int pos, Chunk chunk)
 	{
 		float noise = GetNoiseAt(WarpPosition(pos));
 
@@ -70,6 +70,8 @@ public class NoiseModifier : Modifier
 			if (mask.replace && World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
 				World.SetBlock(pos.x, pos.y, pos.z, block);
 		}
+
+		return true;
 	}
 
 	protected virtual Vector3 WarpPosition(Vector3 pos)

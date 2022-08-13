@@ -40,28 +40,34 @@ public class Decorator : Modifier
 
 	protected void RandomlyApplyToAll(BlockPosAction action, Chunk chunk, Vector3Int min, Vector3Int max)
 	{
-		for (int counter = count; counter > 0; counter--)
+		int counter = count;
+		int failsafe = 0;
+
+		while (counter > 0 && failsafe < 4096)
 		{
-			action(
-				new Vector3Int(
+			failsafe++;
+
+			if (action(new Vector3Int(
 					SeedlessRandom.NextIntInRange(min.x, max.x + 1),
 					SeedlessRandom.NextIntInRange(min.y, max.y + 1),
 					SeedlessRandom.NextIntInRange(min.z, max.z + 1)
-				),
-				chunk
-			);
+				), chunk
+			))
+			{
+				counter--;
+			}
 		}
 	}
 
-	protected virtual void ApplyDecorator(Vector3Int pos, Chunk chunk)
+	protected virtual bool ApplyDecorator(Vector3Int pos, Chunk chunk)
 	{
 		bool pass = SeedlessRandom.NextFloat() < chance;
 
 		if (!pass)
-			return;
+			return false;
 
 		Block block;
-		bool placeOnTop = World.GetBlock(pos + Vector3Int.down).IsRigid();
+		bool placeOnTop = World.GetBlock(pos + Vector3Int.down).GetBlockType() == (int)BlockList.BlockType.DirtGrass;
 		bool placeUnder = World.GetBlock(pos + Vector3Int.up).IsRigid();
 
 		//// TODO: Placeholder
@@ -69,14 +75,14 @@ public class Decorator : Modifier
 		//	return;
 
 		if (placeOnTop && placeUnder)
-			return;
+			return false;
 
 		if (placeOnTop)
 			block = aboveBlock;
 		else if (placeUnder)
 			block = underBlock;
 		else
-			return;
+			return false;
 
 		block.SetNeedsMesh(true);
 
@@ -86,28 +92,30 @@ public class Decorator : Modifier
 		if (mask.replace && World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
 			World.SetBlock(pos.x, pos.y, pos.z, block);
 
-		if (chunk == null || chunk.chunkType != Chunk.ChunkType.Close)
-			return;
+		//if (chunk == null || chunk.chunkType != Chunk.ChunkType.Close)
+		//	return;
 
-		bool glowshroomColor = placeOnTop && pos.y > World.GetWaterHeight();
-		bool waterColor = pos.y <= World.GetWaterHeight();
+		return true;
 
-		// Invert some colors
-		PersistentData data = PersistentData.GetInstanceForRead();
-		if (data && (data.GetDepth() + 1) % 3 == 0)
-			 glowshroomColor = !glowshroomColor;
+		//bool glowshroomColor = placeOnTop && pos.y > World.GetWaterHeight();
+		//bool waterColor = pos.y <= World.GetWaterHeight();
 
-		// Create light
-		chunk.GetLights().Add(new LightSource()
-		{
-			pos = pos,
-			// Randomize color
-			lightColor = waterColor ? LightSource.colorWhite : (glowshroomColor ?
-			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan) :
-			(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold)),
-			brightness = SeedlessRandom.NextFloatInRange((2 / 3f), (4 / 3f)) * (glowshroomColor ? 1 : 2),
-			spread = glowshroomColor ? 1 : 1,
-			noise = glowshroomColor ? 0 : 0
-		});
+		//// Invert some colors
+		//PersistentData data = PersistentData.GetInstanceForRead();
+		//if (data && (data.GetDepth() + 1) % 3 == 0)
+		//	 glowshroomColor = !glowshroomColor;
+
+		//// Create light
+		//chunk.GetLights().Add(new LightSource()
+		//{
+		//	pos = pos,
+		//	// Randomize color
+		//	lightColor = waterColor ? LightSource.colorWhite : (glowshroomColor ?
+		//	(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorBlue : LightSource.colorCyan) :
+		//	(SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold)),
+		//	brightness = SeedlessRandom.NextFloatInRange((2 / 3f), (4 / 3f)) * (glowshroomColor ? 1 : 2),
+		//	spread = glowshroomColor ? 1 : 1,
+		//	noise = glowshroomColor ? 0 : 0
+		//});
 	}
 }
