@@ -162,7 +162,7 @@ public class ChunkMesh
 								continue;
 
 							// Show debug rays in some places
-							bool drawDebugRay = false/*SeedlessRandom.NextFloat() > 0.9999f*/;
+							bool drawDebugRay = false/*SeedlessRandom.NextFloat() > 0.99f*/;
 
 							// What index are we starting this face from
 							int indexOffset = vertices.Count;
@@ -177,8 +177,8 @@ public class ChunkMesh
 
 								Vector3 vertPos = middle + vert;
 
-								// Calculate normals based on adjacent blocks (never fails, angular result)
-
+								// Calculate normals based on adjacent blocks
+								int empty = 0;
 								norm = Vector3.zero;
 								for (int i = -1; i <= 1; i += 2)
 								{
@@ -186,15 +186,20 @@ public class ChunkMesh
 									{
 										for (int k = -1; k <= 1; k += 2)
 										{
-											if (!World.GetBlock(Mathf.FloorToInt(chunk.position.x + vertPos.x + i * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.y + vertPos.y + j * 0.5f * chunk.scaleFactor), Mathf.FloorToInt(chunk.position.z + vertPos.z + k * 0.5f)).IsOpaque())
+											if (!World.GetBlock(
+												Mathf.FloorToInt(chunk.position.x + vertPos.x + (i * 0.5f - 0.0f) * chunk.scaleFactor),
+												Mathf.FloorToInt(chunk.position.y + vertPos.y + (j * 0.5f - 0.0f) * chunk.scaleFactor),
+												Mathf.FloorToInt(chunk.position.z + vertPos.z + (k * 0.5f - 0.0f) * chunk.scaleFactor)
+												).IsOpaque())
 											{
+												empty++;
 												norm += new Vector3Int(i, j, k);
 
 												if (drawDebugRay)
-													Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.blue, 200);
+													Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.1f, Color.blue, 200);
 											}
 											else if (drawDebugRay)
-												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.5f, Color.red, 200);
+												Debug.DrawRay(vertPos + chunk.position, new Vector3(i, j, k) * 0.1f, Color.red, 200);
 										}
 									}
 								}
@@ -214,14 +219,22 @@ public class ChunkMesh
 
 									normals.Add(block.GetNormalRefractive() * Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
 
-									//Vector3 displacedVert = vertPos + amt * (norm / 2 - norm.normalized * 2) / 2;
+									// Distances for normal offset
+									float normalAmt = 0.45f; // 1 - sqrt(3) =  0.134f
+									float normalDir = 0;
 
-									// Distances to clamp by
-									float cornerDistance = 0.867f; // 0.867f
-									float faceDistance = 0.5f; // 0.5f
-									float dot = Mathf.Clamp01(Vector3.Dot(vert.normalized, norm.normalized)) < 0.9f ? 0f : 1f;
-									float clampDistance = Mathf.Lerp(cornerDistance, faceDistance, dot);
-									Vector3 clampedVert = middle + Vector3.ClampMagnitude(vert, clampDistance);
+									if (empty < 4)
+										normalDir = 1;
+									else if (empty > 4)
+										normalDir = -1;
+									else
+										normalDir = 0;
+
+									if (drawDebugRay)
+										Debug.Log(empty);
+
+									//float clampDistance = Mathf.Lerp(cornerDistance, faceDistance, dot);
+									Vector3 clampedVert = middle + vert + normalAmt * normalDir * norm.normalized;
 
 									Vector3 displacedVert = Vector3.Lerp(vertPos, clampedVert, block.GetMeshSmoothing());
 									vertices.Add(displacedVert);
