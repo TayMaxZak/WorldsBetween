@@ -151,13 +151,13 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		float mult = 0.25f;
+		float mult = 0.33f;
 
-		float verticalScale = 1 / 8f;
+		float verticalScale = 1 / 4f;
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			125,
+			75,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
@@ -182,18 +182,18 @@ public partial class World : MonoBehaviour
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
 		));
 
-		verticalScale = 1 / 2.5f;
+		verticalScale = 1 / 1.5f;
 		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.62f, new Vector3(0.025f, 0.025f * verticalScale, 0.025f)));
 		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.62f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f)));
 
-		verticalScale = 1 / 13f;
+		verticalScale = 1 / 5f;
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f),
-			0.1f, 4, 8, 0.2f, new Vector3(0.1f, 0.1f * verticalScale, 0.1f)));
+			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f),
-			0.1f, 4, 8, 0.2f, new Vector3(0.1f, 0.1f * verticalScale, 0.1f)));
+			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
 
-		modifiers.Add(new Decorator(BlockList.GRASS, BlockList.EMPTY, fillMask, 1f, 256));
-		modifiers.Add(new Decorator(BlockList.MUSHROOMS, BlockList.EMPTY, fillMask, 0.5f, 16));
+		modifiers.Add(new Decorator(BlockList.GRASS, BlockList.EMPTY, fillMask, 0.75f, 1));
+		//modifiers.Add(new Decorator(BlockList.MUSHROOMS, BlockList.EMPTY, fillMask, 0.1f, 16));
 	}
 
 	private void Start()

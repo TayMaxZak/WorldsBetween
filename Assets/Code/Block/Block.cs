@@ -90,15 +90,14 @@ public class Block
 
 		public static float GetNormalHardness(int blockType)
 		{
-			//return 1;
-
 			if (blockType == (int)BlockList.BlockType.Concrete)
 				return 1;
 
 			if (blockType == (int)BlockList.BlockType.Rock)
-				return 0.0f;
-
+				return 0;
 			if (blockType == (int)BlockList.BlockType.DirtGrass)
+				return 0;
+			if (blockType == (int)BlockList.BlockType.Mud)
 				return 0;
 
 			return 1;
@@ -117,6 +116,9 @@ public class Block
 				return 1;
 
 			if (blockType == (int)BlockList.BlockType.DirtGrass)
+				return 1;
+
+			if (blockType == (int)BlockList.BlockType.Mud)
 				return 1;
 
 			return 0;

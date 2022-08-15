@@ -22,9 +22,13 @@ public class TunnelModifier : Modifier
 	private Vector3 randomOffsetY = Vector3.zero;
 	private Vector3 randomOffsetZ = Vector3.zero;
 
+	private Block block;
+
 	// TODO: Strength as chance to exceed 0.5
-	public TunnelModifier(float radius, Vector3 posA, Vector3 posB, float radiusNoiseAmt, Vector3 radiusNoiseScale, Vector3 offsetNoiseAmt, Vector3 offsetNoiseScale)
+	public TunnelModifier(Block block, float radius, Vector3 posA, Vector3 posB, float radiusNoiseAmt, Vector3 radiusNoiseScale, Vector3 offsetNoiseAmt, Vector3 offsetNoiseScale)
 	{
+		this.block = block;
+
 		this.radius = radius;
 		this.posA = posA;
 		this.posB = posB;
@@ -86,7 +90,7 @@ public class TunnelModifier : Modifier
 
 		if (distanceSqr < modifiedRadius * modifiedRadius)
 		{
-			World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
+			World.SetBlock(pos.x, pos.y, pos.z, block);
 		}
 
 		return true;

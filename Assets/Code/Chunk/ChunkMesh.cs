@@ -92,6 +92,8 @@ public class ChunkMesh
 					Vector3Int faceOffset = new Vector3Int();
 					Vector3 vert;
 					Vector3 norm;
+					// Random pos jitter per block
+					Vector3 posJitter = new Vector3(SeedlessRandom.NextFloatInRange(-0.33f, 0.33f), SeedlessRandom.NextFloatInRange(-0.25f, -0.5f), SeedlessRandom.NextFloatInRange(-0.33f, 0.33f));
 
 					block = chunk.GetBlock(x, y, z);
 
@@ -220,7 +222,7 @@ public class ChunkMesh
 									normals.Add(block.GetNormalRefractive() * Vector3.Lerp(norm.normalized, directions[d], hardness).normalized);
 
 									// Distances for normal offset
-									float normalAmt = 0.45f; // 1 - sqrt(3) =  0.134f
+									float normalAmt = 0.4f; // 1 - sqrt(3) =  0.134f
 									float normalDir = 0;
 
 									if (empty < 4)
@@ -279,7 +281,9 @@ public class ChunkMesh
 
 							vert = Quaternion.Euler(new Vector3(0, randomYAngle, 0)) * vert; // Spin by random degrees
 							vert *= 1.414f;
-							vert -= new Vector3(0, 0.25f, 0);
+							vert += posJitter;
+							// Random displacement per vertex
+							vert += new Vector3(SeedlessRandom.NextFloatInRange(-0.25f, 0.25f), SeedlessRandom.NextFloatInRange(-0.25f, 0.25f), SeedlessRandom.NextFloatInRange(-0.25f, 0.25f));
 
 							vert += Vector3.one / 2;
 							vert *= chunk.scaleFactor;

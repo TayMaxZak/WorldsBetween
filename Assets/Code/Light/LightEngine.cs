@@ -260,7 +260,8 @@ public class LightEngine
 			// Check world bounds here
 			if (!World.Contains(cur))
 			{
-				Debug.DrawLine(source, cur, sun.lightColor, 0.5f);
+				if (SeedlessRandom.NextFloat() < 0.25f)
+					Debug.DrawLine(source, cur, sun.lightColor, 0.5f);
 
 				return new LightRayResult()
 				{
@@ -274,7 +275,8 @@ public class LightEngine
 			Chunk chunk = World.GetChunk(blockCur);
 			if (chunk == null)
 			{
-				Debug.DrawLine(source, cur, sun.lightColor, 0.5f);
+				if (SeedlessRandom.NextFloat() < 0.25f)
+					Debug.DrawLine(source, cur, sun.lightColor, 0.5f);
 
 				return new LightRayResult()
 				{
@@ -344,7 +346,8 @@ public class LightEngine
 		} // y
 
 		Vector3 rand = SeedlessRandom.RandomPoint(0.1f);
-		Debug.DrawLine(source, cur + rand, sun.lightColor, 0.5f);
+		if (SeedlessRandom.NextFloat() < 0.25f)
+			Debug.DrawLine(source, cur + rand, sun.lightColor, 0.5f);
 
 		return new LightRayResult()
 		{

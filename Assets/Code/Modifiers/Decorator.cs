@@ -40,23 +40,36 @@ public class Decorator : Modifier
 
 	protected void RandomlyApplyToAll(BlockPosAction action, Chunk chunk, Vector3Int min, Vector3Int max)
 	{
-		int counter = count;
-		int failsafe = 0;
-
-		while (counter > 0 && failsafe < 4096)
+		for (int x = min.x; x <= max.x; x++)
 		{
-			failsafe++;
-
-			if (action(new Vector3Int(
-					SeedlessRandom.NextIntInRange(min.x, max.x + 1),
-					SeedlessRandom.NextIntInRange(min.y, max.y + 1),
-					SeedlessRandom.NextIntInRange(min.z, max.z + 1)
-				), chunk
-			))
+			for (int y = min.y; y <= max.y; y++)
 			{
-				counter--;
+				for (int z = min.z; z <= max.z; z++)
+				{
+					action(new Vector3Int(x, y, z), chunk);
+				}
 			}
 		}
+
+		//int counter = count;
+		//int failsafe = 0;
+
+		//while (counter > 0 && failsafe < 4096 * 4)
+		//{
+		//	failsafe++;
+
+
+
+		//	//if (action(new Vector3Int(
+		//	//		SeedlessRandom.NextIntInRange(min.x, max.x + 1),
+		//	//		SeedlessRandom.NextIntInRange(min.y, max.y + 1),
+		//	//		SeedlessRandom.NextIntInRange(min.z, max.z + 1)
+		//	//	), chunk
+		//	//))
+		//	//{
+		//	//	counter--;
+		//	//}
+		//}
 	}
 
 	protected virtual bool ApplyDecorator(Vector3Int pos, Chunk chunk)
@@ -70,9 +83,9 @@ public class Decorator : Modifier
 		bool placeOnTop = World.GetBlock(pos + Vector3Int.down).GetBlockType() == (int)BlockList.BlockType.DirtGrass;
 		bool placeUnder = World.GetBlock(pos + Vector3Int.up).IsRigid();
 
-		//// TODO: Placeholder
-		//if (placeOnTop)
-		//	return;
+		// TODO: Placeholder
+		if (!placeOnTop || pos.y <= World.GetWaterHeight())
+			return false;
 
 		if (placeOnTop && placeUnder)
 			return false;

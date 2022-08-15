@@ -84,7 +84,7 @@ public class Chunk
 				{
 					SetBlock(x, y, z, BlockList.EMPTY);
 
-					DefaultBlock(x, y, z);
+					//DefaultBlock(x, y, z);
 				}
 			}
 		}
@@ -142,10 +142,27 @@ public class Chunk
 			SetBlock(x, y, z, BlockList.EMPTY);
 		else
 			SetBlock(x, y, z, coord.y + 1 >= World.GetWorldHeight(coord + Vector3Int.up) ? top : solid);
+
+		if (coord.y <= World.GetWaterHeight())
+			SetBlock(x, y, z, BlockList.MUD);
 	}
 
 	protected virtual void Generate(Modifier.ModifierStage stageToDo)
 	{
+		if (stageToDo == Modifier.ModifierStage.Terrain)
+		{
+			for (int x = 0; x < chunkSizeWorld; x += scaleFactor)
+			{
+				for (int y = 0; y < chunkSizeWorld; y += scaleFactor)
+				{
+					for (int z = 0; z < chunkSizeWorld; z += scaleFactor)
+					{
+						DefaultBlock(x, y, z);
+					}
+				}
+			}
+		}
+
 		List<Modifier> modifiers = World.GetModifiers();
 
 		for (int i = 0; i < modifiers.Count; i++)

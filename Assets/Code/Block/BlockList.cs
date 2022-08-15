@@ -12,15 +12,16 @@ public static class BlockList
 		Rock,
 		Concrete,
 		DirtGrass,
-		Grass,
+		Mud,
 		Mushrooms,
-
+		Grass,
 	}
 
 	public static Block EMPTY = new Block(false, false, false, BlockType.Utility);
 	public static Block BORDER = new Block(false, true, false, BlockType.Utility);
 
 	public static Block ROCK = new Block(true, true, true, BlockType.Rock);
+	public static Block MUD = new Block(true, true, true, BlockType.Mud);
 	public static Block CONCRETE = new Block(true, true, true, BlockType.Concrete);
 	public static Block DIRTGRASS = new Block(true, true, true, BlockType.DirtGrass);
 
