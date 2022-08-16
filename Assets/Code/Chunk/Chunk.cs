@@ -132,7 +132,7 @@ public class Chunk
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
 
 		Block solid = BlockList.ROCK;
-		Block top = BlockList.DIRTGRASS;
+		Block top = coord.y <= World.GetWaterHeight() ? BlockList.MUD : BlockList.DIRTGRASS;
 
 		//PersistentData data = PersistentData.GetInstanceForRead();
 		//if (data && data.GetDepth() == 10)
@@ -140,11 +140,10 @@ public class Chunk
 
 		if (coord.y >= World.GetWorldHeight(coord))
 			SetBlock(x, y, z, BlockList.EMPTY);
+		//else if (coord.y + 2 >= World.GetWorldHeight(coord + Vector3Int.up * 2))
+		//	SetBlock(x, y, z, coord.y + 1 >= World.GetWorldHeight(coord + Vector3Int.up) ? top : BlockList.MUD);
 		else
 			SetBlock(x, y, z, coord.y + 1 >= World.GetWorldHeight(coord + Vector3Int.up) ? top : solid);
-
-		if (coord.y <= World.GetWaterHeight())
-			SetBlock(x, y, z, BlockList.MUD);
 	}
 
 	protected virtual void Generate(Modifier.ModifierStage stageToDo)

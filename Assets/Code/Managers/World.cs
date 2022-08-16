@@ -157,34 +157,37 @@ public partial class World : MonoBehaviour
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			75,
+			35,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-25,
+			-35,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			15,
+			35,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * mult,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
 		));
 		verticalScale = 1 / 2f;
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-15,
+			-35,
 			new Vector3(0.001f, 0.001f * verticalScale, 0.001f) * mult,
 			new Vector3(0.15f, 0.15f * verticalScale, 0.15f) * mult,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
 		));
 
-		verticalScale = 1 / 1.5f;
-		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.62f, new Vector3(0.025f, 0.025f * verticalScale, 0.025f)));
-		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.62f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f)));
+		verticalScale = 1 / 1;
+		NoiseModifier noise = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.6f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
+		noise.ribbonCount = 2;
+		modifiers.Add(noise);
+		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.65f, new Vector3(0.01f, 0.01f * 2, 0.01f)));
+		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.65f, new Vector3(0.03f, 0.03f * 2, 0.03f)));
 
 		verticalScale = 1 / 5f;
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.06f, 0.06f * verticalScale, 0.06f),
@@ -192,7 +195,7 @@ public partial class World : MonoBehaviour
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f),
 			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
 
-		modifiers.Add(new Decorator(BlockList.GRASS, BlockList.EMPTY, fillMask, 0.75f, 1));
+		modifiers.Add(new Decorator(BlockList.GRASS, BlockList.EMPTY, fillMask, 0.5f, 1));
 		//modifiers.Add(new Decorator(BlockList.MUSHROOMS, BlockList.EMPTY, fillMask, 0.1f, 16));
 	}
 
