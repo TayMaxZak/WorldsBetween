@@ -62,7 +62,9 @@ public class WorldBuilder
 		chunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>()
 		{
 			{ Chunk.BuildStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
-			{ Chunk.BuildStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.GenerateTerrain, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.GenerateFeature, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.GenerateDecorator, new ChunkGenerator(delay, queues, generatorTaskSize) },
 			{ Chunk.BuildStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
 		chunkRoot = new GameObject();
@@ -71,7 +73,9 @@ public class WorldBuilder
 		fakeChunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>()
 		{
 			{ Chunk.BuildStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
-			{ Chunk.BuildStage.Generate, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.GenerateTerrain, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.GenerateFeature, new ChunkGenerator(delay, queues, generatorTaskSize) },
+			{ Chunk.BuildStage.GenerateDecorator, new ChunkGenerator(delay, queues, generatorTaskSize) },
 			{ Chunk.BuildStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
 		};
 		fakeChunkRoot = new GameObject();

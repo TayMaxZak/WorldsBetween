@@ -16,7 +16,9 @@ public class Chunk
 	public enum BuildStage
 	{
 		Init,
-		Generate,
+		GenerateTerrain,
+		GenerateFeature,
+		GenerateDecorator,
 		MakeMesh,
 		Done
 	}
@@ -118,7 +120,12 @@ public class Chunk
 
 			CacheDataFromBlocks(false);
 
-			buildStage = BuildStage.MakeMesh;
+			if (buildStage == BuildStage.GenerateTerrain)
+				buildStage = BuildStage.GenerateFeature;
+			else if (buildStage == BuildStage.GenerateFeature)
+				buildStage = BuildStage.GenerateDecorator;
+			else if (buildStage == BuildStage.GenerateDecorator)
+				buildStage = BuildStage.MakeMesh;
 			World.WorldBuilder.QueueNextStage(this);
 
 			OnFinishProcStage();
@@ -253,7 +260,7 @@ public class Chunk
 		bw.DoWork += new DoWorkEventHandler(
 		delegate (object o, DoWorkEventArgs args)
 		{
-			Generate(Modifier.ModifierStage.Decorator);
+			//Generate(Modifier.ModifierStage.Decorator);
 			CacheDataFromBlocks(true);
 
 			args.Result = MakeMesh();

@@ -19,7 +19,9 @@ public class ChunkGenerator
 	private int edgeChunks = 0;
 
 	private static readonly List<Chunk.BuildStage> requireAdjacents = new List<Chunk.BuildStage> {
-		Chunk.BuildStage.Generate,
+		Chunk.BuildStage.GenerateTerrain,
+		Chunk.BuildStage.GenerateFeature,
+		Chunk.BuildStage.GenerateDecorator,
 		Chunk.BuildStage.MakeMesh,
 	};
 
@@ -202,15 +204,25 @@ public class ChunkGenerator
 				{
 					chunk.Init(World.GetChunkSize());
 
-					chunk.buildStage = Chunk.BuildStage.Generate;
+					chunk.buildStage = Chunk.BuildStage.GenerateTerrain;
 					World.WorldBuilder.QueueNextStage(chunk);
 
 					chunk.OnFinishProcStage();
 				}
 				break;
-			case Chunk.BuildStage.Generate: // Generate terrain
+			case Chunk.BuildStage.GenerateTerrain: // Generate terrain
 				{
 					chunk.AsyncGenerate(Modifier.ModifierStage.Terrain);
+				}
+				break;
+			case Chunk.BuildStage.GenerateFeature: // Generate terrain
+				{
+					chunk.AsyncGenerate(Modifier.ModifierStage.Feature);
+				}
+				break;
+			case Chunk.BuildStage.GenerateDecorator: // Generate terrain
+				{
+					chunk.AsyncGenerate(Modifier.ModifierStage.Decorator);
 				}
 				break;
 			case Chunk.BuildStage.MakeMesh: // Cache data and build mesh
