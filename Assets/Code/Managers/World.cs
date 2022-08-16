@@ -183,9 +183,9 @@ public partial class World : MonoBehaviour
 		));
 
 		verticalScale = 1 / 1;
-		NoiseModifier noise = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.6f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
-		noise.ribbonCount = 2;
-		modifiers.Add(noise);
+		//NoiseModifier noise = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.6f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
+		//noise.ribbonCount = 2;
+		//modifiers.Add(noise);
 		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.65f, new Vector3(0.01f, 0.01f * 2, 0.01f)));
 		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.65f, new Vector3(0.03f, 0.03f * 2, 0.03f)));
 
@@ -194,6 +194,8 @@ public partial class World : MonoBehaviour
 			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.55f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f),
 			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
+
+		modifiers.Add(new RockFeature(BlockList.ROCK, fillMask, 0.5f));
 
 		modifiers.Add(new Decorator(BlockList.GRASS, BlockList.EMPTY, fillMask, 0.5f, 1));
 		//modifiers.Add(new Decorator(BlockList.MUSHROOMS, BlockList.EMPTY, fillMask, 0.1f, 16));
