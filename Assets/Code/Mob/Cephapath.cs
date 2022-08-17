@@ -318,7 +318,7 @@ public class Cephapath : MonoBehaviour
 
 	private bool MoveTentacle(Tentacle t, Vector3 dir, bool adjust)
 	{
-		Vector3 newOffset = SeedlessRandom.RandomPoint(1).normalized;
+		Vector3 newOffset = SeedlessRandom.RandomPoint(1f).normalized;
 		newOffset *= Mathf.Sign(Vector3.Dot((newOffset - dir * 0.1f).normalized, dir));
 		t.targetPointNew = Vector3.Lerp(t.targetPointNew, transform.position + newOffset * grabDistance, 0.7f);
 

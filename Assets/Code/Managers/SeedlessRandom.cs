@@ -46,4 +46,9 @@ public class SeedlessRandom
 	{
 		return new Vector3(NextFloatInRange(-size, size), NextFloatInRange(-size, size), NextFloatInRange(-size, size));
 	}
+
+	public static Vector3Int RandomPoint(int size)
+	{
+		return new Vector3Int(NextIntInRange(-size, size + 1), NextIntInRange(-size, size + 1), NextIntInRange(-size, size + 1));
+	}
 }

@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class RockFeature : Modifier
+public class GrassDecorator : Modifier
 {
 	public float chance = 1;
 	public int count = 0;
 
-	public Block toPlace = BlockList.ROCK;
+	public Block toPlace = BlockList.GRASS;
 	public Block placeOn = BlockList.DIRTGRASS;
 
 	public Mask mask;
 
-	public RockFeature(Block toPlace, Block placeOn, Mask mask, float chance)
+	// TODO: Strength as chance to exceed 0.5
+	public GrassDecorator(Block toPlace, Block placeOn, Mask mask, float chance)
 	{
 		this.toPlace = toPlace;
 		this.placeOn = placeOn;
@@ -52,36 +53,21 @@ public class RockFeature : Modifier
 
 	protected virtual bool ApplyDecorator(Vector3Int pos, Chunk chunk)
 	{
-		float compare = SeedlessRandom.NextFloat();
-		bool pass = compare < chance;
+		bool pass = SeedlessRandom.NextFloat() < chance;
 
 		if (!pass)
 			return false;
 
 		Block block;
-		bool floorBelow = World.GetBlock(pos + Vector3Int.down).GetBlockType() == placeOn.GetBlockType();
+		bool placeOnTop = World.GetBlock(pos + Vector3Int.down).GetBlockType() == placeOn.GetBlockType();
+		//bool placeUnder = World.GetBlock(pos + Vector3Int.up).IsRigid();
 
-		bool placedBelow = World.GetBlock(pos + Vector3Int.down).GetBlockType() == toPlace.GetBlockType();
-
-		if (!floorBelow && !placedBelow)
+		// TODO: Placeholder
+		if (!placeOnTop || pos.y <= World.GetWaterHeight())
 			return false;
-		//if ((!rockBelow && !rockAbove) || (rockBelow && rockAbove))
+
+		//if (placeOnTop && placeUnder)
 		//	return false;
-
-		bool placedNear = World.GetBlock(pos + Vector3Int.left).GetBlockType() == toPlace.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.right).GetBlockType() == toPlace.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.forward).GetBlockType() == toPlace.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.back).GetBlockType() == toPlace.GetBlockType();
-
-		bool floorNear = World.GetBlock(pos + Vector3Int.left).GetBlockType() == placeOn.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.right).GetBlockType() == placeOn.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.forward).GetBlockType() == placeOn.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.back).GetBlockType() == placeOn.GetBlockType();
-
-		bool pass2 = (placedNear && floorBelow) || (floorNear && placedBelow);
-
-		if (!pass2)
-			return false;
 
 		block = toPlace;
 
