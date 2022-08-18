@@ -57,6 +57,8 @@ public partial class World : MonoBehaviour
 	private int waterHeight = 0;
 	private int deadFallHeight = -199;
 
+	private WorldProperties worldProperties;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -75,6 +77,15 @@ public partial class World : MonoBehaviour
 
 		LightEngine = lightEngine;
 		LightEngine.Init(sunObject);
+	}
+
+	public struct WorldProperties
+	{
+		public float terrainHeightMult;
+		public float terrainScale;
+
+		public bool hasWater;
+		public int waterHeight;
 	}
 
 	private void WorldInit()
@@ -111,7 +122,7 @@ public partial class World : MonoBehaviour
 		//	Random.Range(0, tiltDirOptions) * (360f / tiltDirOptions),
 		//	0
 		//);
-		sunObject.transform.localEulerAngles = new Vector3(90f, 0, 0);
+		//sunObject.transform.localEulerAngles = new Vector3(90f, 0, 0);
 		sunObject.OnEnable();
 
 		// Water/no water, water height
@@ -135,6 +146,15 @@ public partial class World : MonoBehaviour
 			pointA.y = -pointA.y;
 		pointB = -pointA;
 
+		// Save world properties
+		worldProperties = new WorldProperties
+		{
+			hasWater = hasWater,
+			waterHeight = waterHeight,
+			terrainHeightMult = Random.Range(0.25f, 2f) * Random.Range(0.25f, 2f),
+			terrainScale = Random.Range(0.1f, 0.5f) * Random.Range(0.5f, 1f)
+		};
+
 		// Modifiers
 		MakeModifiers();
 		foreach (Modifier mod in modifiers)
@@ -151,33 +171,33 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		float generalScale = 0.25f;
-		float verticalScale = 1 / 1f;
-		float heightMult = 2;
+		float generalScale = worldProperties.terrainScale;
+		float terrainHeightMult = worldProperties.terrainHeightMult;
 
+		float verticalScale = 1 / 1f;
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			25 * heightMult,
+			25 * terrainHeightMult,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * generalScale,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * generalScale,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * generalScale
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-25 * heightMult,
+			-25 * terrainHeightMult,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * generalScale,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * generalScale,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * generalScale
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			15 * heightMult,
+			15 * terrainHeightMult,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * generalScale,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * generalScale,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * generalScale
 		));
 		verticalScale = 1 / 2f;
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-15 * heightMult,
+			-15 * terrainHeightMult,
 			new Vector3(0.001f, 0.001f * verticalScale, 0.001f) * generalScale,
 			new Vector3(0.15f, 0.15f * verticalScale, 0.15f) * generalScale,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * generalScale
@@ -196,11 +216,11 @@ public partial class World : MonoBehaviour
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.54f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f),
 			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
 
-		
+
 		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.ROCK, fillMask, 0.25f));
 		modifiers.Add(new StackEdgeFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 0.25f));
 		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.CONCRETE, fillMask, 0.25f));
-		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 3, 1, 10));
+		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, (int)(2 * terrainHeightMult), 1, 10));
 		//modifiers.Add(new TreeFeature(BlockList.MUD, BlockList.GRASS, fillMask, 0.005f));
 
 		modifiers.Add(new GrassDecorator(BlockList.MUSHROOMS, BlockList.DIRTGRASS, fillMask, 0.005f));

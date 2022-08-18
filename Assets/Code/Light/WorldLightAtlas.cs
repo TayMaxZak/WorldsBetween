@@ -285,7 +285,7 @@ public class WorldLightAtlas : MonoBehaviour
 		if (directChanges == 0 && ambientChanges == 0)
 			return;
 
-		await ApplyChunkLights();
+		//await ApplyChunkLights();
 
 		Debug.Log("Applied light atlas changes: " + directChanges + " direct, " + ambientChanges + " ambient"); // Why does this say 0 0 sometimes
 

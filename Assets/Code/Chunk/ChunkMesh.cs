@@ -58,7 +58,6 @@ public class ChunkMesh
 				colors32 = new Color32[vertices.Length];
 			else
 				colors32 = mesh.colors32;
-			Debug.Log("A " + "v " + vertices.Length + " c " + colors32.Length);
 
 			triangles = new Dictionary<int, int[]>();
 			triangles[0] = mesh.triangles;

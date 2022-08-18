@@ -34,6 +34,8 @@ public class Sun : MonoBehaviour
 		right = transform.right;
 		up = transform.up;
 
+		forward = Vector3.down;
+
 		Shader.SetGlobalVector("SunDirection", forward);
 		Shader.SetGlobalColor("SunColor", lightColor);
 	}
