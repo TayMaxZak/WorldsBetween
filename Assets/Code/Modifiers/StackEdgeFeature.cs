@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class RockFeature : Modifier
+public class StackEdgeFeature : Modifier
 {
 	public float chance = 1;
 	public int count = 0;
@@ -13,7 +13,7 @@ public class RockFeature : Modifier
 
 	public Mask mask;
 
-	public RockFeature(Block toPlace, Block placeOn, Mask mask, float chance)
+	public StackEdgeFeature(Block toPlace, Block placeOn, Mask mask, float chance)
 	{
 		this.toPlace = toPlace;
 		this.placeOn = placeOn;

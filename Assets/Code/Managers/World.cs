@@ -151,10 +151,10 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		float mult = 0.33f;
+		float mult = 0.25f;
 
-		float heightScale = 4;
-		float verticalScale = 1 / 4f;
+		float heightScale = 10;
+		float verticalScale = 1 / 2f;
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
@@ -196,9 +196,11 @@ public partial class World : MonoBehaviour
 		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.54f, new Vector3(0.02f, 0.02f * verticalScale, 0.02f),
 			0.1f, 4, 8, 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
 
-		modifiers.Add(new RockFeature(BlockList.DIRTGRASS, BlockList.ROCK, fillMask, 0.5f));
-		modifiers.Add(new RockFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 0.5f));
-		modifiers.Add(new RockFeature(BlockList.DIRTGRASS, BlockList.CONCRETE, fillMask, 0.2f));
+		
+		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.ROCK, fillMask, 0.25f));
+		modifiers.Add(new StackEdgeFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 0.25f));
+		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.CONCRETE, fillMask, 0.25f));
+		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 3, 1, 10));
 		//modifiers.Add(new TreeFeature(BlockList.MUD, BlockList.GRASS, fillMask, 0.005f));
 
 		modifiers.Add(new GrassDecorator(BlockList.MUSHROOMS, BlockList.DIRTGRASS, fillMask, 0.005f));
