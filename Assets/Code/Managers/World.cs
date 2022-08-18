@@ -151,36 +151,36 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		float mult = 0.25f;
+		float generalScale = 0.25f;
+		float verticalScale = 1 / 1f;
+		float heightMult = 2;
 
-		float heightScale = 10;
-		float verticalScale = 1 / 2f;
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			25 * heightScale,
-			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
-			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult,
-			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
+			25 * heightMult,
+			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * generalScale,
+			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * generalScale,
+			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * generalScale
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-25 * heightScale,
-			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * mult,
-			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * mult,
-			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult
+			-25 * heightMult,
+			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * generalScale,
+			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * generalScale,
+			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * generalScale
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			15 * heightScale,
-			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * mult,
-			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * mult,
-			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
+			15 * heightMult,
+			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * generalScale,
+			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * generalScale,
+			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * generalScale
 		));
 		verticalScale = 1 / 2f;
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-15 * heightScale,
-			new Vector3(0.001f, 0.001f * verticalScale, 0.001f) * mult,
-			new Vector3(0.15f, 0.15f * verticalScale, 0.15f) * mult,
-			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * mult
+			-15 * heightMult,
+			new Vector3(0.001f, 0.001f * verticalScale, 0.001f) * generalScale,
+			new Vector3(0.15f, 0.15f * verticalScale, 0.15f) * generalScale,
+			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * generalScale
 		));
 
 		verticalScale = 1 / 2f;

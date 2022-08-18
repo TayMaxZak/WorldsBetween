@@ -44,6 +44,7 @@ public class ChunkMesh
 		public Vector3[] vertices;
 		public Vector3[] normals;
 		public Vector2[] uv;
+		public Color32[] colors32;
 
 		public Dictionary<int, int[]> triangles;
 
@@ -53,15 +54,22 @@ public class ChunkMesh
 			normals = mesh.normals;
 			uv = mesh.uv;
 
+			if (mesh.colors32.Length == 0)
+				colors32 = new Color32[vertices.Length];
+			else
+				colors32 = mesh.colors32;
+			Debug.Log("A " + "v " + vertices.Length + " c " + colors32.Length);
+
 			triangles = new Dictionary<int, int[]>();
 			triangles[0] = mesh.triangles;
 		}
 
-		public MeshData(Vector3[] vertices, Vector3[] normals, Vector2[] uv, Dictionary<int, int[]> triangles)
+		public MeshData(Vector3[] vertices, Vector3[] normals, Vector2[] uv, Color32[] colors32, Dictionary<int, int[]> triangles)
 		{
 			this.vertices = vertices;
 			this.normals = normals;
 			this.uv = uv;
+			this.colors32 = colors32;
 
 			this.triangles = triangles;
 		}
@@ -80,6 +88,8 @@ public class ChunkMesh
 
 		List<Vector2> uv = new List<Vector2>();
 
+		List<Color32> colors32 = new List<Color32>();
+
 		List<int> airDirections = new List<int>();
 
 		int chunkSize = chunk.chunkSizeWorld;
@@ -93,7 +103,7 @@ public class ChunkMesh
 					Vector3 vert;
 					Vector3 norm;
 					// Random pos jitter per block
-					Vector3 posJitter = new Vector3(SeedlessRandom.NextFloatInRange(-0.33f, 0.33f), SeedlessRandom.NextFloatInRange(-0.25f, -0.5f), SeedlessRandom.NextFloatInRange(-0.33f, 0.33f));
+					Vector3 posJitter = new Vector3(SeedlessRandom.NextFloatInRange(-0.33f, 0.33f), SeedlessRandom.NextFloatInRange(-0.25f, -0.3f), SeedlessRandom.NextFloatInRange(-0.33f, 0.33f));
 
 					block = chunk.GetBlock(x, y, z);
 
@@ -261,6 +271,12 @@ public class ChunkMesh
 							{
 								uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
 							}
+
+							for (int c = 0; c < blockMeshData.colors32.Length; c++)
+							{
+								// Vertex colors
+								colors32.Add(blockMeshData.colors32[c]);
+							}
 						}
 					} // Six Faces
 					else if (model.blockModelType == BlockModel.BlockModelType.SingleModel)
@@ -313,12 +329,18 @@ public class ChunkMesh
 						{
 							uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
 						}
+
+						for (int c = 0; c < blockMeshData.colors32.Length; c++)
+						{
+							// Vertex colors
+							colors32.Add(blockMeshData.colors32[c]);
+						}
 					} // Single Model
 				}
 			}
 		}
 
-		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
+		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), colors32.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
 	}
 
 	public void FinishMesh(Mesh newMesh)
@@ -332,9 +354,9 @@ public class ChunkMesh
 
 		sharedVertices = meshVisual.sharedMesh.vertices;
 
-		vertexColors = new Color[sharedVertices.Length];
-		for (int i = 0; i < vertexColors.Length; i++)
-			vertexColors[i] = borderColor;
+		//vertexColors = new Color[sharedVertices.Length];
+		//for (int i = 0; i < vertexColors.Length; i++)
+		//	vertexColors[i] = borderColor;
 
 		//ApplyVertexColors(vertexColors);
 	}

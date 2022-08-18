@@ -280,6 +280,7 @@ public class Chunk
 				vertices = data.vertices,
 				normals = data.normals,
 				uv = data.uv,
+				colors32 = data.colors32,
 				subMeshCount = 2
 			};
 			newMesh.SetTriangles(data.triangles[0], 0);
