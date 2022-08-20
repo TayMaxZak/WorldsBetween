@@ -33,9 +33,7 @@ public class BumpFeature : Modifier
 
 		BlockPosAction toApply = ApplyDecorator;
 
-		if (count <= 0)
-			ApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
-		else
+		if (count > 0)
 			RandomlyApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
@@ -65,18 +63,18 @@ public class BumpFeature : Modifier
 		//if (mask.replace && !World.GetBlock(pos).IsFilled())
 		//	return false;
 
-		bool placedNear = World.GetBlock(pos + Vector3Int.left).GetBlockType() == placeOn.GetBlockType()
+		bool placedNear = /*World.GetBlock(pos + Vector3Int.left).GetBlockType() == placeOn.GetBlockType()
 				|| World.GetBlock(pos + Vector3Int.right).GetBlockType() == placeOn.GetBlockType()
 				|| World.GetBlock(pos + Vector3Int.forward).GetBlockType() == placeOn.GetBlockType()
 				|| World.GetBlock(pos + Vector3Int.back).GetBlockType() == placeOn.GetBlockType()
 				|| World.GetBlock(pos + Vector3Int.up).GetBlockType() == placeOn.GetBlockType()
-				|| World.GetBlock(pos + Vector3Int.down).GetBlockType() == placeOn.GetBlockType();
+				|| */World.GetBlock(pos + Vector3Int.down).GetBlockType() == placeOn.GetBlockType();
 
 		if (!placedNear)
 			return false;
 		
 		for (int i = 0; i < fill; i++)
-			PlaceBlock(pos + SeedlessRandom.RandomPoint(radius));
+			PlaceBlock(pos + Vector3Int.down + SeedlessRandom.RandomPoint(radius));
 
 		return true;
 	}

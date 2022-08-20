@@ -26,7 +26,8 @@ public class WorldLightAtlas : MonoBehaviour
 	public int directScale = 1;
 
 	private int ambSize;
-	public int ambientScale = 16;
+	public bool halfScaleAmbient = false;
+	private int ambientScale = 16;
 
 	private static int directChanges = 0;
 
@@ -44,6 +45,8 @@ public class WorldLightAtlas : MonoBehaviour
 
 		// One pixel for every 2 blocks in each dimension (per 8 blocks total)
 		dirSize = fullSize / directScale;
+
+		ambientScale = halfScaleAmbient ? 8 : 16;
 		// One pixel per chunk (per 4096 blocks total)
 		ambSize = fullSize / ambientScale;
 
@@ -190,8 +193,26 @@ public class WorldLightAtlas : MonoBehaviour
 	{
 		Vector3Int posA = WorldToTex(pos);
 		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
-		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
-		airCountArr[ambIndex] = Mathf.Max(1, count);
+
+		if (halfScaleAmbient)
+		{
+			for (int x = 0; x < 2; x++)
+			{
+				for (int y = 0; y < 2; y++)
+				{
+					for (int z = 0; z < 2; z++)
+					{
+						int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x + x, ambPos.y + y, ambPos.z + z);
+						airCountArr[ambIndex] = Mathf.Max(1, count);
+					}
+				}
+			}
+		}
+		else
+		{
+			int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
+			airCountArr[ambIndex] = Mathf.Max(1, count);
+		}
 	}
 
 	public void ClearAtlas(bool updateTex)
