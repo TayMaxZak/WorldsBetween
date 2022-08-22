@@ -250,7 +250,7 @@ public partial class World : MonoBehaviour
 		modifiers.Add(new StackEdgeFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 0.25f));
 		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.CONCRETE, fillMask, 0.25f));
 		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, (int)(2 * terrainHeightMult), 1, 27));
-		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.ROCK, fillMask, (int)(10 * terrainHeightMult), 2, 32));
+		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.ROCK, fillMask, (int)(10 * terrainHeightMult), 2, 125));
 		//modifiers.Add(new TreeFeature(BlockList.MUD, BlockList.GRASS, fillMask, 0.005f));
 
 		modifiers.Add(new GrassDecorator(BlockList.GRASS, BlockList.CONCRETE, fillMask, 0.02f));

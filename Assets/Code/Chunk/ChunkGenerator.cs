@@ -179,16 +179,19 @@ public class ChunkGenerator
 				await Task.Delay(Mathf.CeilToInt(penaltyDelay));
 			}
 
-			Vector3 midPos1 = Vector3.Lerp(chunk.position + Vector3.one * 8, prevChunkPos, 0.67f) + prevChunkPos.normalized * 3;
-			Vector3 midPos2 = Vector3.Lerp(chunk.position + Vector3.one * 8, prevChunkPos, 0.33f) + prevChunkPos.normalized * 1.5f;
+			if (SeedlessRandom.NextFloat() > 0.9f)
+			{
+				Vector3 midPos1 = Vector3.Lerp(chunk.position + Vector3.one * 8, prevChunkPos, 0.67f) + prevChunkPos.normalized * 3;
+				Vector3 midPos2 = Vector3.Lerp(chunk.position + Vector3.one * 8, prevChunkPos, 0.33f) + prevChunkPos.normalized * 1.5f;
 
-			Color debugColor = GetDebugColor(queue.GetHashCode());
+				Color debugColor = GetDebugColor(queue.GetHashCode());
 
-			Debug.DrawLine(chunk.position + Vector3.one * 8, midPos2, debugColor, 0.5f);
+				Debug.DrawLine(chunk.position + Vector3.one * 8, midPos2, debugColor, 0.1f);
 
-			Debug.DrawLine(midPos2, midPos1, debugColor, 0.3f);
+				Debug.DrawLine(midPos2, midPos1, debugColor, 0.1f);
 
-			Debug.DrawLine(midPos1, prevChunkPos, debugColor, 0.1f);
+				Debug.DrawLine(midPos1, prevChunkPos, debugColor, 0.1f);
+			}
 
 			prevChunkPos = chunk.position + Vector3.one * 8;
 		}
