@@ -180,7 +180,7 @@ public class WorldLightAtlas : MonoBehaviour
 		int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
 
 		// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
-		float ambChangeStrength = (directScale * directScale * directScale) * 256f / airCountArr[ambIndex];
+		float ambChangeStrength = (directScale * directScale * directScale) * ((float)ambientScale * ambientScale) / airCountArr[ambIndex];
 
 		ambientChanges++;
 
@@ -191,8 +191,7 @@ public class WorldLightAtlas : MonoBehaviour
 
 	public void SetAirCount(Vector3Int pos, int count)
 	{
-		Vector3Int posA = WorldToTex(pos);
-		Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
+
 
 		if (halfScaleAmbient)
 		{
@@ -202,7 +201,10 @@ public class WorldLightAtlas : MonoBehaviour
 				{
 					for (int z = 0; z < 2; z++)
 					{
-						int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x + x, ambPos.y + y, ambPos.z + z);
+						Vector3Int posA = WorldToTex(pos - new Vector3Int(x, y, z) * 8);
+						Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
+
+						int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
 						airCountArr[ambIndex] = Mathf.Max(1, count);
 					}
 				}
@@ -210,6 +212,9 @@ public class WorldLightAtlas : MonoBehaviour
 		}
 		else
 		{
+			Vector3Int posA = WorldToTex(pos);
+			Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
+
 			int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
 			airCountArr[ambIndex] = Mathf.Max(1, count);
 		}

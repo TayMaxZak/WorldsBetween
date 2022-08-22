@@ -84,6 +84,8 @@ public partial class World : MonoBehaviour
 		public float terrainHeightMult;
 		public float terrainHeightScale;
 		public float terrainScale;
+		public float caveMult;
+		public bool bonusCrack;
 
 		public float buildingMult;
 		public float buildingHeightScale;
@@ -158,14 +160,16 @@ public partial class World : MonoBehaviour
 			hasWater = hasWater,
 			waterHeight = waterHeight,
 
-			terrainHeightMult = Random.Range(0.25f, 2.5f) * Random.Range(0.25f, 2.5f),
-			terrainHeightScale = Random.Range(0.25f, 2.5f) * Random.Range(0.25f, 2.5f),
-			terrainScale = Random.Range(0.1f, 0.5f) * Random.Range(0.5f, 1f),
+			terrainHeightMult = Random.Range(0.05f, 4f),
+			terrainHeightScale = Random.Range(0.01f, 2f),
+			terrainScale = Random.Range(0.1f, 1f) * Random.Range(0.2f, 1f) * Random.Range(0.5f, 1f),
+			caveMult = Random.Range(0.5f, 2f) * Random.Range(0.5f, 2f),
 
-			buildingMult = Random.Range(0f, 1f),
-			buildingScale = Random.Range(0.1f, 1f),
-			buildingHeightScale = Random.Range(0.5f, 2f) * Random.Range(0.5f, 2f),
-			buildingBlockScale = Random.Range(0.33f, 1.67f) * Random.Range(0.67f, 1.33f),
+			buildingMult = Random.Range(0f, 3f),
+			bonusCrack = Random.value < 0.5f,
+			buildingScale = Random.Range(0.67f, 1.5f),
+			buildingHeightScale = Random.Range(0.01f, 0.99f),
+			buildingBlockScale = Random.Range(0.67f, 1.3f),
 		};
 
 		// Modifiers
@@ -192,26 +196,26 @@ public partial class World : MonoBehaviour
 		surfaceShapers.Add(new SurfaceShaper(-8, new Vector3(0.02f, 0.1f * verticalScale, 0.02f)));
 		//surfaceShapers.Add(new SurfaceShaper(32, new Vector3(0.05f, 0.1f * verticalScale, 0.05f)));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			25 * terrainHeightMult,
+			25 * terrainHeightMult / terrainScale,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * terrainScale,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * terrainScale,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * terrainScale
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-25 * terrainHeightMult,
+			-25 * terrainHeightMult / terrainScale,
 			new Vector3(0.005f, 0.005f * verticalScale, 0.005f) * terrainScale,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * terrainScale,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * terrainScale
 		));
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			15 * terrainHeightMult,
+			15 * terrainHeightMult / terrainScale,
 			new Vector3(0.01f, 0.01f * verticalScale, 0.01f) * terrainScale,
 			new Vector3(0.1f, 0.1f * verticalScale, 0.1f) * terrainScale,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * terrainScale
 		));
 		verticalScale = 1 / 2f;
 		surfaceShapers.Add(new DoubleNoiseSurfaceShaper(
-			-15 * terrainHeightMult,
+			-15 * terrainHeightMult / terrainScale,
 			new Vector3(0.001f, 0.001f * verticalScale, 0.001f) * terrainScale,
 			new Vector3(0.15f, 0.15f * verticalScale, 0.15f) * terrainScale,
 			new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * terrainScale
@@ -221,30 +225,35 @@ public partial class World : MonoBehaviour
 		NoiseModifier noise = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.52f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
 		noise.ribbonCount = 2;
 		modifiers.Add(noise);
+		if (worldProperties.bonusCrack)
+		{
+			NoiseModifier noise2 = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.52f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
+			noise2.ribbonCount = 2;
+			modifiers.Add(noise2);
+		}
 		verticalScale = 3 / 2f;
-		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.55f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f)));
-		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.55f, new Vector3(0.03f, 0.03f * verticalScale, 0.03f)));
+		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.01f, 0.01f * verticalScale, 0.01f)));
+		modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.03f, 0.03f * verticalScale, 0.03f)));
 
 		float buildingMult = worldProperties.buildingMult;
 		float buildingScale = worldProperties.buildingScale;
-		float buildingHeightScale = worldProperties.buildingHeightScale;
 		float buildingBlockScale = worldProperties.buildingBlockScale;
 
-		verticalScale = 1 / 4f;
-		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.5f + 0.06f * buildingMult, new Vector3(0.06f, 0.06f * buildingHeightScale, 0.06f) * buildingScale,
-			0.1f, (int)(8 * buildingBlockScale), (int)(12* buildingBlockScale), 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
-		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.5f + 0.03f * buildingMult, new Vector3(0.02f, 0.02f * buildingHeightScale, 0.02f) * buildingScale,
-			0.1f, (int)(4 * buildingBlockScale), (int)(7 * buildingBlockScale), 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f)));
+		verticalScale = worldProperties.buildingHeightScale;
+		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.5f + 0.06f * buildingMult, new Vector3(0.03f, 0.01f * verticalScale, 0.03f) * buildingScale,
+			0.05f, (int)(8 * buildingBlockScale), (int)(16 * buildingBlockScale), 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f) * buildingScale));
+		modifiers.Add(new BlockyNoiseModifier(BlockList.CONCRETE, anyMask, 0.5f + 0.02f * buildingMult, new Vector3(0.02f, 0.005f * verticalScale, 0.02f) * buildingScale,
+			0.15f, (int)(4 * buildingBlockScale), (int)(8 * buildingBlockScale), 0.1f, new Vector3(0.2f, 0.2f * verticalScale, 0.2f) * buildingScale));
 
 
 		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.ROCK, fillMask, 0.25f));
 		modifiers.Add(new StackEdgeFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, 0.25f));
 		modifiers.Add(new StackEdgeFeature(BlockList.DIRTGRASS, BlockList.CONCRETE, fillMask, 0.25f));
-		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, (int)(2 * terrainHeightMult), 1, 16));
-		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.ROCK, fillMask, (int)(10 * terrainHeightMult), 1, 16));
+		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.DIRTGRASS, fillMask, (int)(2 * terrainHeightMult), 1, 27));
+		modifiers.Add(new BumpFeature(BlockList.ROCK, BlockList.ROCK, fillMask, (int)(10 * terrainHeightMult), 2, 32));
 		//modifiers.Add(new TreeFeature(BlockList.MUD, BlockList.GRASS, fillMask, 0.005f));
 
-		modifiers.Add(new GrassDecorator(BlockList.GRASS, BlockList.CONCRETE, fillMask, 0.05f));
+		modifiers.Add(new GrassDecorator(BlockList.GRASS, BlockList.CONCRETE, fillMask, 0.02f));
 		modifiers.Add(new GrassDecorator(BlockList.MUSHROOMS, BlockList.DIRTGRASS, fillMask, 0.005f));
 		modifiers.Add(new GrassDecorator(BlockList.MUSHROOMS, BlockList.ROCK, fillMask, 0.005f));
 		modifiers.Add(new GrassDecorator(BlockList.GRASS, BlockList.DIRTGRASS, fillMask, 0.6f));

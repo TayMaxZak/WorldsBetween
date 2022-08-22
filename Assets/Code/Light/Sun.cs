@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Sun : MonoBehaviour
 {
-	[ColorUsage(false, true)]
+	//[ColorUsage(false, true)]
+	[HideInInspector]
 	public Color lightColor = Color.white;
 
 	private Vector3 forward;
@@ -15,26 +16,28 @@ public class Sun : MonoBehaviour
 	{
 		Gizmos.color = lightColor;
 
-		Vector3 pos = -transform.forward * 50;
+		Vector3 pos = -forward * 50;
 
 		Gizmos.DrawSphere(pos, 1);
 
-		Gizmos.DrawLine(pos, pos + transform.forward * 20);
+		Gizmos.DrawLine(pos, pos + forward * 20);
 
-		Gizmos.DrawLine(pos + transform.right, pos + transform.right + transform.forward * 10);
-		Gizmos.DrawLine(pos - transform.right, pos - transform.right + transform.forward * 10);
-		Gizmos.DrawLine(pos + transform.up, pos + transform.up + transform.forward * 10);
-		Gizmos.DrawLine(pos - transform.up, pos - transform.up + transform.forward * 10);
+		Gizmos.DrawLine(pos + right, pos + right + forward * 10);
+		Gizmos.DrawLine(pos - right, pos - right + forward * 10);
+		Gizmos.DrawLine(pos + up, pos + up + forward * 10);
+		Gizmos.DrawLine(pos - up, pos - up + forward * 10);
 	}
 
 	[ContextMenu("Update Sun")]
 	public void OnEnable()
 	{
+		lightColor = GetComponent<Light>().color;
+
 		forward = transform.forward;
 		right = transform.right;
 		up = transform.up;
 
-		forward = Vector3.down;
+		//forward = Vector3.down;
 
 		Shader.SetGlobalVector("SunDirection", forward);
 		Shader.SetGlobalColor("SunColor", lightColor);

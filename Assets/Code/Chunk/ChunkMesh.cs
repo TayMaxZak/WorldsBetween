@@ -91,6 +91,7 @@ public class ChunkMesh
 
 		List<int> airDirections = new List<int>();
 
+
 		int chunkSize = chunk.chunkSizeWorld;
 		for (int x = 0; x < chunkSize; x += chunk.scaleFactor)
 		{
