@@ -38,6 +38,12 @@ public class Utils
 		return a;
 	}
 
+	public static Vector3Int Scale(Vector3Int a, Vector3Int b)
+	{
+		a.Scale(b);
+		return a;
+	}
+
 	public static int MaxAbs(Vector3Int a)
 	{
 		return Mathf.Max(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));

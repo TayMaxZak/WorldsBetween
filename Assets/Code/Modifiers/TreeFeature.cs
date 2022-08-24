@@ -8,13 +8,15 @@ public class TreeFeature : Modifier
 	public float chance = 1;
 	public int count = 0;
 
-	public Block trunk = BlockList.MUD;
-	public Block leaves = BlockList.GRASS;
+	public Block placeOn = BlockList.EMPTY;
+	public Block trunk = BlockList.EMPTY;
+	public Block leaves = BlockList.EMPTY;
 
 	public Mask mask;
 
-	public TreeFeature(Block trunk, Block leaves, Mask mask, float chance)
+	public TreeFeature(Block placeOn, Block trunk, Block leaves, Mask mask, float chance)
 	{
+		this.placeOn = placeOn;
 		this.trunk = trunk;
 		this.leaves = leaves;
 		this.chance = chance;
@@ -79,12 +81,12 @@ public class TreeFeature : Modifier
 		if (!pass)
 			return false;
 
-		bool grassBelow = World.GetBlock(pos + Vector3Int.down).GetBlockType() == (int)BlockList.BlockType.DirtGrass;
+		bool grassBelow = World.GetBlock(pos + Vector3Int.down).GetBlockType() == placeOn.GetBlockType();
 
-		bool grassNear = World.GetBlock(pos + Vector3Int.down + Vector3Int.left).GetBlockType() == (int)BlockList.BlockType.DirtGrass
-						|| World.GetBlock(pos + Vector3Int.down + Vector3Int.right).GetBlockType() == (int)BlockList.BlockType.DirtGrass
-						|| World.GetBlock(pos + Vector3Int.down + Vector3Int.forward).GetBlockType() == (int)BlockList.BlockType.DirtGrass
-						|| World.GetBlock(pos + Vector3Int.down + Vector3Int.back).GetBlockType() == (int)BlockList.BlockType.DirtGrass;
+		bool grassNear = World.GetBlock(pos + Vector3Int.down + Vector3Int.left).GetBlockType() == placeOn.GetBlockType()
+						|| World.GetBlock(pos + Vector3Int.down + Vector3Int.right).GetBlockType() == placeOn.GetBlockType()
+						|| World.GetBlock(pos + Vector3Int.down + Vector3Int.forward).GetBlockType() == placeOn.GetBlockType()
+						|| World.GetBlock(pos + Vector3Int.down + Vector3Int.back).GetBlockType() == placeOn.GetBlockType();
 
 		if (!grassBelow || !grassNear)
 			return false;

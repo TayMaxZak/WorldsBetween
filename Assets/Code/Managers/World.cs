@@ -243,7 +243,7 @@ public partial class World : MonoBehaviour
 		//modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.01f, 0.01f * verticalScale, 0.01f)));
 		//modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.03f, 0.03f * verticalScale, 0.03f)));
 
-		structure = new StructureModifier(50);
+		structure = new StructureModifier(64);
 		modifiers.Add(structure);
 
 		//float buildingMult = worldProperties.buildingMult;

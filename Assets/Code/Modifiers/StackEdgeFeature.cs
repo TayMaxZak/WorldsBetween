@@ -8,8 +8,8 @@ public class StackEdgeFeature : Modifier
 	public float chance = 1;
 	public int count = 0;
 
-	public Block toPlace = BlockList.ROCK;
-	public Block placeOn = BlockList.DIRTGRASS;
+	public Block toPlace = BlockList.EMPTY;
+	public Block placeOn = BlockList.EMPTY;
 
 	public Mask mask;
 

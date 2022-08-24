@@ -9,6 +9,7 @@ public class StructureModifier : Modifier
 	{
 		public Bounds innerBounds;
 		public Bounds outerBounds;
+		public Bounds lightBounds;
 
 		public StructureRoom(Bounds bounds)
 		{
@@ -21,8 +22,9 @@ public class StructureModifier : Modifier
 	public Vector3Int lastRoomPos;
 
 	public Block wallBlock = BlockList.CONCRETE;
-	public Block floorBlock = BlockList.MUD;
-	public Block ceilingBlock = BlockList.DIRTGRASS;
+	public Block lightBlock = BlockList.LIGHT;
+	public Block floorBlock = BlockList.CARPET;
+	public Block ceilingBlock = BlockList.ROCK;
 
 	public Mask mask = new Mask() { fill = false };
 
@@ -66,28 +68,30 @@ public class StructureModifier : Modifier
 	{
 		Vector3Int pos = Vector3Int.zero;
 		Vector3Int size = new Vector3Int(8, 4, 8);
+		
 
 		for (int i = 0; i < maxRoomCount; i++)
 		{
+			Vector3Int direction = RandomDirection();
 			Vector3Int newsize = new Vector3Int(Random.Range(2, 21), Random.Range(2, 9), Random.Range(2, 21));
-			pos += new Vector3Int(RandomDirection(true) * Mathf.Abs(size.x + newsize.x) / 2, -1 * Mathf.Abs(size.y - newsize.y) / 2, RandomDirection(true) * Mathf.Abs(size.z + newsize.z) / 2);
+			pos += Utils.Scale(direction, (size + newsize) / 2);
 			size = newsize;
 
 			Bounds bounds = new Bounds(pos, size);
+			StructureRoom room = new StructureRoom(bounds);
 
-			/*if (i == 0)
+			if (i == 0)
 			{
 				bounds.SetMinMax(bounds.min, new Vector3(bounds.max.x, 9999, bounds.max.z));
 			}
-			else */if (i % 1 == 0)
+			else
+			if (i % 2 == 0)
 			{
-				Bounds skylightBounds = new Bounds(pos, size);
-				skylightBounds.size = Vector3.one * 1;
-				skylightBounds.SetMinMax(skylightBounds.min, new Vector3(skylightBounds.max.x, 9999, skylightBounds.max.z));
-				rooms.Add(new StructureRoom(skylightBounds));
+				Bounds skylightBounds = new Bounds(pos + Vector3Int.up, new Vector3Int(1, size.y, 1));
+				room.lightBounds = skylightBounds;
 			}
 
-			rooms.Add(new StructureRoom(bounds));
+			rooms.Add(room);
 
 			if (i == maxRoomCount - 1)
 				lastRoomPos = pos;
@@ -110,10 +114,21 @@ public class StructureModifier : Modifier
 
 		foreach (StructureRoom room in rooms)
 		{
-			if (room.innerBounds.Contains(checkPos))
+			if (!room.outerBounds.Contains(checkPos))
+				continue;
+			else if (room.innerBounds.Contains(checkPos))
 				World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
-			else if (room.outerBounds.Contains(checkPos) && World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
-				World.SetBlock(pos.x, pos.y, pos.z, BlockList.CONCRETE);
+			else if (World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
+			{
+				if (room.lightBounds.Contains(checkPos))
+					World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
+				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
+					World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
+				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
+					World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
+				else
+					World.SetBlock(pos.x, pos.y, pos.z, wallBlock);
+			}
 		}
 
 		return true;
@@ -124,11 +139,17 @@ public class StructureModifier : Modifier
 		return pos;
 	}
 
-	protected int RandomDirection(bool includeZero)
+	protected Vector3Int RandomDirection(Vector3Int exclude = new Vector3Int(), bool includeVertical = false)
 	{
-		if (includeZero)
-			return Random.Range(-1, 2);
+		int index = Random.Range(0, 4);
+
+		if (index == 0)
+			return Vector3Int.forward;
+		else if (index == 1)
+			return Vector3Int.right;
+		else if (index == 2)
+			return Vector3Int.back;
 		else
-			return Random.Range(0, 2) * 2 - 1;
+			return Vector3Int.left;
 	}
 }

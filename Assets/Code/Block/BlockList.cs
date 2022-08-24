@@ -10,9 +10,10 @@ public static class BlockList
 		Utility,
 
 		Concrete,
+		Carpet,
+		Light,
 		Rock,
-		DirtGrass,
-		Mud,
+
 		Mushrooms,
 		Grass,
 	}
@@ -20,10 +21,10 @@ public static class BlockList
 	public static Block EMPTY = new Block(false, false, false, BlockType.Utility);
 	public static Block BORDER = new Block(false, false, false, BlockType.Utility);
 
-	public static Block ROCK = new Block(true, true, true, BlockType.Rock);
-	public static Block MUD = new Block(true, true, true, BlockType.Mud);
 	public static Block CONCRETE = new Block(true, true, true, BlockType.Concrete);
-	public static Block DIRTGRASS = new Block(true, true, true, BlockType.DirtGrass);
+	public static Block CARPET = new Block(true, true, true, BlockType.Carpet);
+	public static Block LIGHT = new Block(true, true, true, BlockType.Light);
+	public static Block ROCK = new Block(true, true, true, BlockType.Rock);
 
 	public static Block GRASS = new Block(true, false, false, BlockType.Grass);
 	public static Block MUSHROOMS = new Block(true, false, false, BlockType.Mushrooms);
