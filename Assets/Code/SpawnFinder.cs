@@ -57,7 +57,7 @@ public class SpawnFinder
 		playerPos = Vector3.zero;
 
 		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = new Vector3Int(16, 16, 16);
+		Vector3Int testBounds = new Vector3Int(8, 8, 8);
 		pos = new Vector3Int(
 			World.GetPointA().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
 			World.GetPointA().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),

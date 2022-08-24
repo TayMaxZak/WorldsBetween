@@ -18,6 +18,7 @@ public class StructureModifier : Modifier
 	}
 	public List<StructureRoom> rooms;
 	private int maxRoomCount = 10;
+	public Vector3Int lastRoomPos;
 
 	public Block wallBlock = BlockList.CONCRETE;
 	public Block floorBlock = BlockList.MUD;
@@ -69,7 +70,7 @@ public class StructureModifier : Modifier
 		for (int i = 0; i < maxRoomCount; i++)
 		{
 			Vector3Int newsize = new Vector3Int(Random.Range(2, 21), Random.Range(2, 9), Random.Range(2, 21));
-			pos += new Vector3Int(RandomDirection(true) * Mathf.Abs(size.x + newsize.x) / 2, RandomDirection(false) * Mathf.Abs(size.y - newsize.y) / 2, RandomDirection(true) * Mathf.Abs(size.z + newsize.z) / 2);
+			pos += new Vector3Int(RandomDirection(true) * Mathf.Abs(size.x + newsize.x) / 2, -1 * Mathf.Abs(size.y - newsize.y) / 2, RandomDirection(true) * Mathf.Abs(size.z + newsize.z) / 2);
 			size = newsize;
 
 			Bounds bounds = new Bounds(pos, size);
@@ -87,6 +88,9 @@ public class StructureModifier : Modifier
 			}
 
 			rooms.Add(new StructureRoom(bounds));
+
+			if (i == maxRoomCount - 1)
+				lastRoomPos = pos;
 		}
 	}
 

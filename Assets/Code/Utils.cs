@@ -22,6 +22,11 @@ public class Utils
 		return (xa - xb) * (xa - xb) + (ya - yb) * (ya - yb) + (za - zb) * (za - zb);
 	}
 
+	public static int DistSquared(Vector3Int a, Vector3Int b)
+	{
+		return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
+	}
+
 	public static int DistManhattan(int xa, int ya, int za, int xb, int yb, int zb)
 	{
 		return Mathf.Abs(xa - xb) + Mathf.Abs(ya - yb) + Mathf.Abs(za - zb);

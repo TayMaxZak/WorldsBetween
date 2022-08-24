@@ -12,6 +12,7 @@ public class WorldBuilder
 		CreateChunks,
 		EnqueueChunks,
 		GenerateChunks,
+		FindPoints,
 		Ready
 	}
 	public GenStage genStage = GenStage.AwaitInitialGen;
@@ -127,11 +128,20 @@ public class WorldBuilder
 
 	public void ContinueGenerating()
 	{
-		if (genStage < GenStage.EnqueueChunks || !active)
+		if (genStage < GenStage.EnqueueChunks || !active || genStage > GenStage.FindPoints)
 			return;
 
 		chunksToGen = 0;
 		generatorsUsed = 0;
+
+		if (genStage == GenStage.FindPoints)
+		{
+			UpdateSpawnFinder();
+			UpdateGoalFinder();
+
+			if (spawnFinder.IsSuccessful() && goalFinder.IsSuccessful())
+				genStage = GenStage.Ready;
+		}
 
 		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in chunkGenerators)
 		{
@@ -147,21 +157,15 @@ public class WorldBuilder
 				entry.Value.Generate();
 		}
 
-		if (genStage >= GenStage.Ready)
-		{
-			UpdateSpawnFinder();
-			UpdateGoalFinder();
-		}
+		//foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
+		//{
+		//	fakeChunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
 
-		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
-		{
-			fakeChunkGenerators.TryGetValue(entry.Key > 0 ? entry.Key - 1 : 0, out ChunkGenerator prev);
+		//	bool empty = entry.Key == Chunk.BuildStage.Init;
 
-			bool empty = entry.Key == Chunk.BuildStage.Init;
-
-			if (empty || (prev.GetSize() == 0))
-				entry.Value.Generate();
-		}
+		//	if (empty || (prev.GetSize() == 0))
+		//		entry.Value.Generate();
+		//}
 	}
 
 	public void InstantiateChunks()

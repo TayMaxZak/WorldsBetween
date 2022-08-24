@@ -120,7 +120,7 @@ public partial class GameManager : MonoBehaviour
 	{
 		finishedBuilding = true;
 
-		World.WorldBuilder.genStage = WorldBuilder.GenStage.Ready;
+		World.WorldBuilder.genStage = WorldBuilder.GenStage.FindPoints;
 	}
 
 	public async void StartLighting()

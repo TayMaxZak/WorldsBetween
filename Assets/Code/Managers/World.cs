@@ -26,6 +26,7 @@ public partial class World : MonoBehaviour
 	private List<Modifier> modifiers = new List<Modifier>();
 	[SerializeField]
 	private List<SurfaceShaper> surfaceShapers = new List<SurfaceShaper>();
+	private StructureModifier structure;
 
 	//private Dictionary<Vector3Int, LinkedList<LightSource>> lightSources = new Dictionary<Vector3Int, LinkedList<LightSource>>();
 
@@ -134,7 +135,7 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.25f;
+		bool hasWater = Random.value < 0.05f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
@@ -154,9 +155,10 @@ public partial class World : MonoBehaviour
 		//if (pointA.y < 0 && depth < 10)
 		//	pointA.y = -pointA.y;
 		//pointB = -pointA;
-		Vector3 floatB = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
+		//Vector3 floatB = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
 		pointA = Vector3Int.zero;
-		pointB = new Vector3Int(Mathf.FloorToInt(floatB.x), 0, Mathf.FloorToInt(floatB.z));
+		pointB = Vector3Int.zero;
+		//pointB = new Vector3Int(Mathf.FloorToInt(floatB.x), 0, Mathf.FloorToInt(floatB.z));
 
 		// Save world properties
 		worldProperties = new WorldProperties
@@ -182,6 +184,8 @@ public partial class World : MonoBehaviour
 			mod.Init();
 		foreach (SurfaceShaper shaper in surfaceShapers)
 			shaper.Init();
+		pointB = structure.lastRoomPos;
+		Debug.Log(pointB);
 	}
 
 	private void MakeModifiers()
@@ -239,7 +243,8 @@ public partial class World : MonoBehaviour
 		//modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.01f, 0.01f * verticalScale, 0.01f)));
 		//modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.03f, 0.03f * verticalScale, 0.03f)));
 
-		modifiers.Add(new StructureModifier(25));
+		structure = new StructureModifier(50);
+		modifiers.Add(structure);
 
 		//float buildingMult = worldProperties.buildingMult;
 		//float buildingScale = worldProperties.buildingScale;
@@ -263,6 +268,8 @@ public partial class World : MonoBehaviour
 		//modifiers.Add(new GrassDecorator(BlockList.MUSHROOMS, BlockList.DIRTGRASS, fillMask, 0.005f));
 		//modifiers.Add(new GrassDecorator(BlockList.MUSHROOMS, BlockList.ROCK, fillMask, 0.005f));
 		//modifiers.Add(new GrassDecorator(BlockList.GRASS, BlockList.DIRTGRASS, fillMask, 0.6f));
+
+
 	}
 
 	private void Start()
