@@ -31,7 +31,7 @@ public class Sun : MonoBehaviour
 	[ContextMenu("Update Sun")]
 	public void OnEnable()
 	{
-		lightColor = GetComponent<Light>().color;
+		lightColor = GetComponent<Light>().color * GetComponent<Light>().intensity;
 
 		forward = transform.forward;
 		right = transform.right;
