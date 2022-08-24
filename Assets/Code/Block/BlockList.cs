@@ -9,8 +9,8 @@ public static class BlockList
 	{
 		Utility,
 
-		Rock,
 		Concrete,
+		Rock,
 		DirtGrass,
 		Mud,
 		Mushrooms,

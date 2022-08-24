@@ -269,7 +269,7 @@ public class ChunkMesh
 							// Add UVs
 							for (int i = 0; i < blockMeshData.uv.Length; i++)
 							{
-								uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
+								uv.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
 							}
 
 							for (int c = 0; c < blockMeshData.colors32.Length; c++)
@@ -327,7 +327,7 @@ public class ChunkMesh
 						// Add UVs
 						for (int i = 0; i < blockMeshData.uv.Length; i++)
 						{
-							uv.Add((blockMeshData.uv[i] + new Vector2(uvX, uvY)) * uvScale);
+							uv.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
 						}
 
 						for (int c = 0; c < blockMeshData.colors32.Length; c++)
