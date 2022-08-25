@@ -11,6 +11,8 @@ public class LightEngine
 	public struct LightRay
 	{
 		public Vector3 source;
+		public Vector3 dir;
+		public LightSource.ColorFalloff lightColor;
 		public int stepSize;
 	}
 
@@ -32,7 +34,12 @@ public class LightEngine
 	private readonly Queue<LightRay> sourceQueue = new Queue<LightRay>();
 	private readonly Queue<LightRay> retrySourceQueue = new Queue<LightRay>();
 
-	private Sun sun;
+	//private Sun sun;
+
+	[SerializeField]
+	private int raysPerLightSource = 40;
+	[SerializeField]
+	private float intensityPerRay = 0.05f;
 
 	[SerializeField]
 	private int raysPerBatch = 40;
@@ -51,35 +58,88 @@ public class LightEngine
 
 	public void Init(Sun sun)
 	{
-		this.sun = sun;
+		//this.sun = sun;
 	}
+
+	//public async Task Begin()
+	//{
+	//	//int step = WorldLightAtlas.Instance.directScale;
+	//	int step = 2;
+	//	int extent = World.GetWorldSize() / 2 - 1;
+
+	//	sourceQueue.Clear();
+	//	retrySourceQueue.Clear();
+
+	//	int sourceCount = 0;
+	//	for (float x = -extent; x <= extent; x += step)
+	//	{
+	//		for (float y = -extent; y <= extent; y += step)
+	//		{
+	//			for (float z = -extent; z <= extent; z += step)
+	//			{
+	//				if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
+	//					continue;
+
+	//				Vector3 pos = new Vector3(x, y, z);
+
+	//				if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
+	//					continue;
+
+	//				sourceCount++;
+	//			}
+	//		}
+	//	}
+
+	//	completedBlurryRays = 0;
+	//	targetBlurryRays = sourceCount;
+	//	blurryLightFinished = false;
+
+	//	curProgress = 0;
+	//	maxProgress = sourceCount * (step * step);
+	//	allLightFinished = false;
+
+	//	Debug.Log(maxProgress + " light rays to be cast");
+
+	//	for (float x = -extent; x <= extent; x += step)
+	//	{
+	//		for (float y = -extent; y <= extent; y += step)
+	//		{
+	//			for (float z = -extent; z <= extent; z += step)
+	//			{
+	//				if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
+	//					continue;
+
+	//				Vector3 pos = new Vector3(x, y, z);
+
+	//				if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
+	//					continue;
+
+	//				sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = step });
+	//			}
+	//		}
+
+	//		Iterate();
+	//		await Task.Delay(1);
+	//	}
+
+	//	//Iterate();
+	//}
 
 	public async Task Begin()
 	{
 		//int step = WorldLightAtlas.Instance.directScale;
-		int step = 2;
+		int step = 1;
 		int extent = World.GetWorldSize() / 2 - 1;
 
 		sourceQueue.Clear();
 		retrySourceQueue.Clear();
 
 		int sourceCount = 0;
-		for (float x = -extent; x <= extent; x += step)
+		foreach (var chunk in World.GetAllChunks())
 		{
-			for (float y = -extent; y <= extent; y += step)
+			foreach (LightSource light in chunk.Value.GetLights())
 			{
-				for (float z = -extent; z <= extent; z += step)
-				{
-					if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
-						continue;
-
-					Vector3 pos = new Vector3(x, y, z);
-
-					if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
-						continue;
-
-					sourceCount++;
-				}
+				sourceCount += raysPerLightSource;
 			}
 		}
 
@@ -93,26 +153,18 @@ public class LightEngine
 
 		Debug.Log(maxProgress + " light rays to be cast");
 
-		for (float x = -extent; x <= extent; x += step)
+		foreach (var chunk in World.GetAllChunks())
 		{
-			for (float y = -extent; y <= extent; y += step)
+			foreach (LightSource light in chunk.Value.GetLights())
 			{
-				for (float z = -extent; z <= extent; z += step)
-				{
-					if (Mathf.Abs(x) != extent && Mathf.Abs(y) != extent && Mathf.Abs(z) != extent)
-						continue;
+				Debug.DrawRay(light.pos, Vector3.up, Color.blue, 5);
 
-					Vector3 pos = new Vector3(x, y, z);
-
-					if (Vector3.Dot(pos, sun.GetDirection()) >= 0)
-						continue;
-
-					sourceQueue.Enqueue(new LightRay() { source = pos, stepSize = step });
-				}
+				for (int i = 0; i < raysPerLightSource; i++)
+					sourceQueue.Enqueue(new LightRay() { source = light.pos, dir = SeedlessRandom.RandomPoint().normalized, lightColor = light.lightColor, stepSize = step }); ;
 			}
 
 			Iterate();
-			await Task.Delay(1);
+			//await Task.Delay(1);
 		}
 
 		//Iterate();
@@ -177,10 +229,10 @@ public class LightEngine
 		delegate (object o, DoWorkEventArgs args)
 		{
 			args.Result = new LightRayResult[] {
-				SendLightRay(lightRay.source),
-				SendLightRay(lightRay.source + Vector3.right),
-				SendLightRay(lightRay.source + Vector3.forward),
-				SendLightRay(lightRay.source + Vector3.right + Vector3.forward)
+				SendLightRay(lightRay),
+				//SendLightRay(lightRay.source + Vector3.right),
+				//SendLightRay(lightRay.source + Vector3.forward),
+				//SendLightRay(lightRay.source + Vector3.right + Vector3.forward)
 			};
 		});
 
@@ -192,9 +244,9 @@ public class LightEngine
 			raysBusy--;
 
 			RespondToRay(((LightRayResult[])args.Result)[0]);
-			RespondToRay(((LightRayResult[])args.Result)[1]);
-			RespondToRay(((LightRayResult[])args.Result)[2]);
-			RespondToRay(((LightRayResult[])args.Result)[3]);
+			//RespondToRay(((LightRayResult[])args.Result)[1]);
+			//RespondToRay(((LightRayResult[])args.Result)[2]);
+			//RespondToRay(((LightRayResult[])args.Result)[3]);
 
 			Iterate();
 		});
@@ -222,7 +274,7 @@ public class LightEngine
 					// Fill in surrounding pixel(s)
 					Vector3 offsetPos = point.pos;
 
-					WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x), Mathf.RoundToInt(offsetPos.y), Mathf.RoundToInt(offsetPos.z)), point.color, point.airLight);
+					WorldLightAtlas.Instance.WriteToLightmap(new Vector3Int(Mathf.RoundToInt(offsetPos.x), Mathf.RoundToInt(offsetPos.y), Mathf.RoundToInt(offsetPos.z)), point.color, point.airLight, true);
 				} // count > 0
 			} // !null
 
@@ -239,12 +291,12 @@ public class LightEngine
 		}
 	}
 
-	private LightRayResult SendLightRay(Vector3 source)
+	private LightRayResult SendLightRay(LightRay ray)
 	{
 		Queue<LightRayResultPoint> rayPoints = null;
 
 		float progress = 0;
-		Vector3 cur = source;
+		Vector3 cur = ray.source;
 
 		Vector3Int blockCur = new Vector3Int(
 			Mathf.FloorToInt(cur.x),
@@ -252,20 +304,21 @@ public class LightEngine
 			Mathf.FloorToInt(cur.z)
 		);
 
-		int currentStep = 0;
-		while (currentStep < 1000)
+		int curStep = 0;
+		float maxStep = 16;
+		while (curStep < maxStep)
 		{
-			currentStep++;
+			curStep++;
 
 			// Check world bounds here
 			if (!World.Contains(cur))
 			{
-				if (SeedlessRandom.NextFloat() < 0.2f)
-					Debug.DrawLine(source, cur, sun.lightColor, 0.3f);
+				if (SeedlessRandom.NextFloat() < 0.1f)
+					Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 0.2f);
 
 				return new LightRayResult()
 				{
-					source = source,
+					source = ray.source,
 					stepSize = 1,
 
 					success = true,
@@ -275,12 +328,12 @@ public class LightEngine
 			Chunk chunk = World.GetChunk(blockCur);
 			if (chunk == null)
 			{
-				if (SeedlessRandom.NextFloat() < 0.2f)
-					Debug.DrawLine(source, cur, sun.lightColor, 0.3f);
+				if (SeedlessRandom.NextFloat() < 0.1f)
+					Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 0.2f);
 
 				return new LightRayResult()
 				{
-					source = source,
+					source = ray.source,
 					stepSize = 1,
 
 					success = true,
@@ -291,11 +344,11 @@ public class LightEngine
 			// Chunk is not ready
 			if (chunk.buildStage < Chunk.BuildStage.Done)
 			{
-				Debug.DrawLine(source, World.GetRelativeOrigin(), Color.red, 5);
+				Debug.DrawLine(ray.source, World.GetRelativeOrigin(), Color.red, 5);
 
 				return new LightRayResult()
 				{
-					source = source,
+					source = ray.source,
 					stepSize = 1,
 
 					success = false,
@@ -314,12 +367,13 @@ public class LightEngine
 			if (rayPoints == null)
 				rayPoints = new Queue<LightRayResultPoint>();
 			// Only count result if not starting inside a corner
-			if (currentStep != 0)
+			if (curStep != 0)
 			{
+				float falloff = (1 - (curStep / maxStep) * (curStep / maxStep));
 				rayPoints.Enqueue(new LightRayResultPoint()
 				{
 					pos = cur,
-					color = sun.lightColor,
+					color = intensityPerRay * falloff * Color.Lerp(ray.lightColor.colorClose, ray.lightColor.colorFar, 1 - falloff),
 					airLight = !occupied
 				});
 			}
@@ -333,9 +387,9 @@ public class LightEngine
 			progress += progressStep;
 
 			cur = new Vector3(
-				source.x + (progress * sun.GetDirection().x),
-				source.y + (progress * sun.GetDirection().y),
-				source.z + (progress * sun.GetDirection().z)
+				ray.source.x + (progress * ray.dir.x),
+				ray.source.y + (progress * ray.dir.y),
+				ray.source.z + (progress * ray.dir.z)
 			);
 
 			blockCur = new Vector3Int(
@@ -346,12 +400,12 @@ public class LightEngine
 		} // y
 
 		Vector3 rand = SeedlessRandom.RandomPoint(0.1f);
-		if (SeedlessRandom.NextFloat() < 0.2f)
-			Debug.DrawLine(source, cur + rand, sun.lightColor, 0.3f);
+		if (SeedlessRandom.NextFloat() < 0.1f)
+			Debug.DrawLine(ray.source, cur + rand, ray.lightColor.colorClose, 0.2f);
 
 		return new LightRayResult()
 		{
-			source = source,
+			source = ray.source,
 			stepSize = 1,
 
 			success = true,

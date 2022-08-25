@@ -128,11 +128,11 @@ public class WorldBuilder
 
 	public void ContinueGenerating()
 	{
-		if (genStage < GenStage.EnqueueChunks || !active || genStage > GenStage.FindPoints)
-			return;
-
 		chunksToGen = 0;
 		generatorsUsed = 0;
+
+		if (genStage < GenStage.EnqueueChunks || !active || genStage > GenStage.FindPoints)
+			return;
 
 		if (genStage == GenStage.FindPoints)
 		{

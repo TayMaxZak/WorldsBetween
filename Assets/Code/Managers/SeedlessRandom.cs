@@ -42,7 +42,7 @@ public class SeedlessRandom
 		return min + (long)((max - min) * random.Value.NextDouble());
 	}
 
-	public static Vector3 RandomPoint(float size)
+	public static Vector3 RandomPoint(float size = 1)
 	{
 		return new Vector3(NextFloatInRange(-size, size), NextFloatInRange(-size, size), NextFloatInRange(-size, size));
 	}

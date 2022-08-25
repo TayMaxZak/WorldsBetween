@@ -68,24 +68,27 @@ public class StructureModifier : Modifier
 	{
 		Vector3Int pos = Vector3Int.zero;
 		Vector3Int size = new Vector3Int(8, 4, 8);
-		
+
 
 		for (int i = 0; i < maxRoomCount; i++)
 		{
-			Vector3Int direction = RandomDirection();
-			Vector3Int newsize = new Vector3Int(Random.Range(2, 21), Random.Range(2, 9), Random.Range(2, 21));
-			pos += Utils.Scale(direction, (size + newsize) / 2);
-			size = newsize;
+			if (i > 0)
+			{
+				Vector3Int direction = RandomDirection();
+				Vector3Int newsize = new Vector3Int(Random.Range(2, 21), Random.Range(2, 9), Random.Range(2, 21));
+				pos += Utils.Scale(direction, (size + newsize) / 2);
+				size = newsize;
+			}
 
 			Bounds bounds = new Bounds(pos, size);
-			StructureRoom room = new StructureRoom(bounds);
-
 			if (i == 0)
 			{
 				bounds.SetMinMax(bounds.min, new Vector3(bounds.max.x, 9999, bounds.max.z));
 			}
-			else
-			if (i % 2 == 0)
+			StructureRoom room = new StructureRoom(bounds);
+
+
+			if (i > 0 && i % 3 == 0)
 			{
 				Bounds skylightBounds = new Bounds(pos + Vector3Int.up, new Vector3Int(1, size.y, 1));
 				room.lightBounds = skylightBounds;
@@ -116,12 +119,19 @@ public class StructureModifier : Modifier
 		{
 			if (!room.outerBounds.Contains(checkPos))
 				continue;
-			else if (room.innerBounds.Contains(checkPos))
-				World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
-			else if (World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
+			else if (World.GetBlock(pos.x, pos.y, pos.z).IsFilled() && World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != lightBlock.GetBlockType())
 			{
-				if (room.lightBounds.Contains(checkPos))
+				if (room.innerBounds.Contains(checkPos))
+				{
+					World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
+				}
+				else if (room.lightBounds.Contains(checkPos))
+				{
 					World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
+
+					LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
+					chunk.GetLights().Add(new LightSource(pos, color));
+				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
 					World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))

@@ -22,6 +22,12 @@ public class LightSource
 	public float spread = 1; // How far the light goes
 	public float noise = 0; // Randomness of light
 
+	public LightSource(Vector3Int pos, ColorFalloff lightColor)
+	{
+		this.pos = pos;
+		this.lightColor = lightColor;
+	}
+
 	public Color GetLightColor(float falloff)
 	{
 		return Color.Lerp(lightColor.colorClose, lightColor.colorFar, 1 - falloff);
