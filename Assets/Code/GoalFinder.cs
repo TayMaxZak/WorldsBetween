@@ -100,7 +100,7 @@ public class GoalFinder
 			if (!foundGoalPos)
 			{
 				// Floor, and 3 total air blocks above it
-				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.up * 2).IsRigid() && World.GetBlock(pos + Vector3Int.down).IsRigid())
+				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && /*!World.GetBlock(pos + Vector3Int.up * 2).IsRigid() && */World.GetBlock(pos + Vector3Int.down).IsRigid())
 				{
 					foundGoalPos = true;
 

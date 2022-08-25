@@ -138,7 +138,7 @@ public class Chunk
 	{
 		Vector3Int coord = new Vector3Int(position.x + x, position.y + y, position.z + z);
 
-		Block solid = BlockList.CONCRETE;
+		Block solid = BlockList.ROCK;
 		Block top = coord.y <= World.GetWaterHeight() ? BlockList.LIGHT : BlockList.CARPET;
 
 		//PersistentData data = PersistentData.GetInstanceForRead();

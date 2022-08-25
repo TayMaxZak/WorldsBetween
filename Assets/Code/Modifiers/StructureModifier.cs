@@ -28,7 +28,12 @@ public class StructureModifier : Modifier
 
 	public Mask mask = new Mask() { fill = false };
 
-	private Vector3 randomOffset = Vector3.zero;
+	private readonly Vector3Int[] DIRS = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward, Vector3Int.back };
+
+	private readonly Vector3Int[] DIRS_FROM_LEFT = new Vector3Int[] { Vector3Int.left, Vector3Int.forward, Vector3Int.back };
+	private readonly Vector3Int[] DIRS_FROM_RIGHT = new Vector3Int[] { Vector3Int.right, Vector3Int.forward, Vector3Int.back };
+	private readonly Vector3Int[] DIRS_FROM_FORWARD = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward };
+	private readonly Vector3Int[] DIRS_FROM_BACK = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.back };
 
 	// TODO: Strength as chance to exceed 0.5
 	public StructureModifier(int roomCount /*Block wallBlock, Block floorBlock, Block ceilingBlock*/)
@@ -46,59 +51,61 @@ public class StructureModifier : Modifier
 	{
 		base.Init();
 
-		SeedNoise();
-
 		MakeRooms();
 
 		return true;
 	}
 
-	protected void SeedNoise()
-	{
-		float offsetAmount = 9999;
-
-		randomOffset = new Vector3(
-			Random.value + (float)(Random.value * offsetAmount),
-			Random.value + (float)(Random.value * offsetAmount),
-			Random.value + (float)(Random.value * offsetAmount)
-		);
-	}
-
 	protected void MakeRooms()
 	{
 		Vector3Int pos = Vector3Int.zero;
-		Vector3Int size = new Vector3Int(8, 4, 8);
-
+		Vector3Int size = new Vector3Int(8, 12, 8);
+		Vector3Int direction = RandomDirection(false);
 
 		for (int i = 0; i < maxRoomCount; i++)
 		{
 			if (i > 0)
 			{
-				Vector3Int direction = RandomDirection();
-				Vector3Int newsize = new Vector3Int(Random.Range(2, 21), Random.Range(2, 9), Random.Range(2, 21));
-				pos += Utils.Scale(direction, (size + newsize) / 2);
+				Vector3Int newsize = new Vector3Int(Random.Range(4, 21), Random.Range(2, 9), Random.Range(4, 21));
+				pos += Utils.Scale(direction, new Vector3Int(Mathf.CeilToInt((size.x + newsize.x) / 2f), Mathf.CeilToInt((size.y + newsize.y) / 2f), Mathf.CeilToInt((size.z + newsize.z) / 2f)));
 				size = newsize;
-			}
 
-			Bounds bounds = new Bounds(pos, size);
-			if (i == 0)
-			{
-				bounds.SetMinMax(bounds.min, new Vector3(bounds.max.x, 9999, bounds.max.z));
+				direction = RandomDirection(true, direction);
 			}
+			Bounds bounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f), size);
+
+			//if (i > 0)
+			//{
+			//	bool intersecting = false;
+			//	for (int j = i; j >= 1; j--)
+			//	{
+			//		if (rooms[j - 1].innerBounds.Intersects(bounds))
+			//		{
+			//			intersecting = true;
+			//			break;
+			//		}
+			//	}
+			//	if (intersecting)
+			//		break;
+			//}
+
 			StructureRoom room = new StructureRoom(bounds);
 
-
-			if (i > 0 && i % 3 == 0)
+			if (i == 0)
 			{
-				Bounds skylightBounds = new Bounds(pos + Vector3Int.up, new Vector3Int(1, size.y, 1));
+				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(3, size.y, 3));
+				room.lightBounds = skylightBounds;
+			}
+			else if (i % 1 == 0)
+			{
+				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(1, size.y, 1));
 				room.lightBounds = skylightBounds;
 			}
 
 			rooms.Add(room);
-
-			if (i == maxRoomCount - 1)
-				lastRoomPos = pos;
 		}
+
+		lastRoomPos = pos;
 	}
 
 	public override void ApplyModifier(Chunk chunk)
@@ -135,8 +142,11 @@ public class StructureModifier : Modifier
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
 					World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
-					World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
-				else
+				{
+					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
+						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
+				}
+				else if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != floorBlock.GetBlockType())
 					World.SetBlock(pos.x, pos.y, pos.z, wallBlock);
 			}
 		}
@@ -149,17 +159,35 @@ public class StructureModifier : Modifier
 		return pos;
 	}
 
-	protected Vector3Int RandomDirection(Vector3Int exclude = new Vector3Int(), bool includeVertical = false)
+	protected int RandomSign()
 	{
-		int index = Random.Range(0, 4);
+		int index = Random.Range(0, 2) * 2 - 1;
 
-		if (index == 0)
-			return Vector3Int.forward;
-		else if (index == 1)
-			return Vector3Int.right;
-		else if (index == 2)
-			return Vector3Int.back;
+		return index;
+	}
+
+	protected Vector3Int RandomDirection(bool exclude, Vector3Int toExclude = new Vector3Int())
+	{
+		if (!exclude)
+		{
+			int index = Random.Range(0, 4);
+
+			return DIRS[index];
+		}
 		else
-			return Vector3Int.left;
+		{
+			int index = Random.Range(0, 2);
+
+			if (toExclude == Vector3Int.left)
+				return DIRS_FROM_LEFT[index];
+			else if (toExclude == Vector3Int.right)
+				return DIRS_FROM_RIGHT[index];
+			else if (toExclude == Vector3Int.forward)
+				return DIRS_FROM_FORWARD[index];
+			else if (toExclude == Vector3Int.back)
+				return DIRS_FROM_BACK[index];
+			else
+				return Vector3Int.zero;
+		}
 	}
 }

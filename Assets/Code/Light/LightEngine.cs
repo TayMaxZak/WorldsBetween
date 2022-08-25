@@ -157,7 +157,7 @@ public class LightEngine
 		{
 			foreach (LightSource light in chunk.Value.GetLights())
 			{
-				Debug.DrawRay(light.pos, Vector3.up, Color.blue, 5);
+				Debug.DrawRay(light.pos, Vector3.up, light.lightColor.colorClose, 5);
 
 				for (int i = 0; i < raysPerLightSource; i++)
 					sourceQueue.Enqueue(new LightRay() { source = light.pos, dir = SeedlessRandom.RandomPoint().normalized, lightColor = light.lightColor, stepSize = step }); ;
