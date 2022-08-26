@@ -27,7 +27,7 @@ public class GoalPoint : MonoBehaviour
 		Debug.Log("Init goal actor at " + blockPos);
 
 		// Set physical position
-		transform.position = blockPos + new Vector3(0.5f, 1.5f, 0.5f);
+		transform.position = blockPos + new Vector3(0.5f, 1f, 0.5f);
 
 		NewPosition();
 	}

@@ -15,14 +15,14 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.7, g: 0.8194444, b: 0.93333334, a: 1}
+  m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 50
   m_LinearFogEnd: 500
-  m_AmbientSkyColor: {r: 0.83066666, g: 0.92752206, b: 0.93333334, a: 1}
-  m_AmbientEquatorColor: {r: 0.7, g: 0.8194444, b: 0.93333334, a: 1}
-  m_AmbientGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
+  m_AmbientEquatorColor: {r: 0, g: 0, b: 0, a: 1}
+  m_AmbientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
@@ -351,10 +351,6 @@ PrefabInstance:
     - target: {fileID: 193329371607060365, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.875
-      objectReference: {fileID: 0}
-    - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-      propertyPath: walkSpeed
-      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400518, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: m_RootOrder
@@ -689,6 +685,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: seed
+      value: 4184219649
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
       value: 
       objectReference: {fileID: 2035213415}
@@ -696,6 +696,10 @@ PrefabInstance:
       propertyPath: waterSystem
       value: 
       objectReference: {fileID: 1369908092}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: randomizeSeed
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name
       value: World
@@ -2785,10 +2789,6 @@ PrefabInstance:
     - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
       propertyPath: ambientScale
       value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8966476411509665596, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
-      propertyPath: halfScaleAmbient
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8966476411509665597, guid: 54d9a6a67e7bea146bf0b373ccfb4a7e, type: 3}
       propertyPath: m_RootOrder

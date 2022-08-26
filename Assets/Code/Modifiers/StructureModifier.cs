@@ -10,6 +10,7 @@ public class StructureModifier : Modifier
 		public Bounds innerBounds;
 		public Bounds outerBounds;
 		public Bounds lightBounds;
+		public bool lightOff;
 
 		public StructureRoom(Bounds bounds)
 		{
@@ -66,6 +67,7 @@ public class StructureModifier : Modifier
 		for (int i = 0; i < maxRoomCount; i++)
 		{
 			prevPos = pos;
+
 			if (i > 0)
 			{
 				Vector3Int newsize = new Vector3Int(2 * Random.Range(2, 11), Random.Range(3, 9), 2 * Random.Range(2, 11));
@@ -73,10 +75,10 @@ public class StructureModifier : Modifier
 				size = newsize;
 
 				direction = RandomDirection(true, direction);
-			}
 
-			if (i == Random.Range(0, maxRoomCount) || i == Random.Range(0, maxRoomCount))
-				pos += RandomSign() * 2 * Vector3Int.up;
+				if (Random.Range(0, 8) == 0)
+					pos += RandomSign() * Vector3Int.up;
+			}
 
 			Bounds bounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f), size);
 
@@ -95,9 +97,12 @@ public class StructureModifier : Modifier
 				//if (intersecting)
 				//	break;
 
-				Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * World.GetWorldSize());
+				// Check if any part of room is outside of world bounds (- 2 for the walls on both sides)
+				Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
 				if (!worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max))
+				{
 					break;
+				}
 			}
 
 			StructureRoom room = new StructureRoom(bounds);
@@ -115,6 +120,8 @@ public class StructureModifier : Modifier
 				room.lightBounds = skylightBounds;
 			}
 
+			if (Random.value < 0.1f)
+				room.lightOff = true;
 			rooms.Add(room);
 		}
 
@@ -151,8 +158,11 @@ public class StructureModifier : Modifier
 					{
 						World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
 
-						LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
-						chunk.GetLights().Add(new LightSource(pos, color));
+						if (SeedlessRandom.NextFloat() < 0.75 && !room.lightOff)
+						{
+							LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
+							chunk.GetLights().Add(new LightSource(pos, color));
+						}
 					}
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))

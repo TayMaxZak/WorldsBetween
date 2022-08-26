@@ -163,7 +163,7 @@ public class LightEngine
 		{
 			foreach (LightSource light in chunk.Value.GetLights())
 			{
-				Debug.DrawRay(light.pos, Vector3.up, light.lightColor.colorClose, 5);
+				Debug.DrawRay(light.pos, Vector3.up, light.lightColor.colorClose, 15);
 
 				for (int i = 0; i < raysPerLightSource; i++)
 					sourceQueue.Enqueue(new LightRay() { source = light.pos, dir = SeedlessRandom.RandomPoint().normalized, hasBounced = false, lightColor = light.lightColor, stepSize = step }); ;
@@ -374,10 +374,13 @@ public class LightEngine
 			bool reflect = World.GetWaterHeight() >= cur.y;
 			if (reflect && !ray.hasBounced)
 			{
+				if (SeedlessRandom.NextFloat() < intensityPerRay)
+					Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 5f);
+
 				ray.hasBounced = true;
 
-				//ray.dir.y *= -1;
-				ray.dir = (ray.dir + SeedlessRandom.RandomPoint().normalized).normalized;
+				ray.dir.y *= -1;
+				//ray.dir = (ray.dir + SeedlessRandom.RandomPoint().normalized).normalized;
 				ray.lightColor.colorClose *= waterBounceTint;
 				ray.lightColor.colorFar *= waterBounceTint;
 			}
@@ -397,29 +400,17 @@ public class LightEngine
 				});
 			}
 
-
 			// Move cursor
 			//progress += 1;
 			//progress += 0.5f;
 			//progress += 0.7071067f;
 			progress += progressStep;
 
-
-			if (SeedlessRandom.NextFloat() < intensityPerRay)
-			{
-				Debug.DrawLine(cur, new Vector3(
-				ray.source.x + (progress * ray.dir.x),
-				ray.source.y + (progress * ray.dir.y),
-				ray.source.z + (progress * ray.dir.z)
-				), ray.lightColor.colorClose, 2f);
-			}
-
 			cur = new Vector3(
 				ray.source.x + (progress * ray.dir.x),
 				ray.source.y + (progress * ray.dir.y),
 				ray.source.z + (progress * ray.dir.z)
 			);
-
 
 			blockCur = new Vector3Int(
 				Mathf.RoundToInt(cur.x),
@@ -428,9 +419,8 @@ public class LightEngine
 			);
 		} // y
 
-		Vector3 rand = SeedlessRandom.RandomPoint(0.1f);
-		//if (SeedlessRandom.NextFloat() < intensityPerRay)
-		//	Debug.DrawLine(ray.source, cur + rand, ray.lightColor.colorClose, 1f);
+		if (SeedlessRandom.NextFloat() < intensityPerRay)
+			Debug.DrawLine(ray.source + Vector3.one * 0.5f, cur + Vector3.one * 0.5f, ray.lightColor.colorClose, 5f);
 
 		return new LightRayResult()
 		{

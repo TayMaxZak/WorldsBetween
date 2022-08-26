@@ -63,8 +63,11 @@ public class GrassDecorator : Modifier
 		//bool placeUnder = World.GetBlock(pos + Vector3Int.up).IsRigid();
 
 		// TODO: Placeholder
-		if (!placeOnTop || pos.y <= World.GetWaterHeight())
+		if (!placeOnTop)
 			return false;
+
+		//if (pos.y <= World.GetWaterHeight())
+		//	return false;
 
 		//if (placeOnTop && placeUnder)
 		//	return false;
