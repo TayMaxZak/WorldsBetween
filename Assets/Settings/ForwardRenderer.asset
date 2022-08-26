@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
   m_Name: DepthLightO
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     passTag: DepthLightO
     Event: 550
@@ -102,6 +102,6 @@ MonoBehaviour:
     Source: 0
     NormalSamples: 1
     Intensity: 1
-    DirectLightingStrength: 1
+    DirectLightingStrength: 0.5
     Radius: 0.1
-    SampleCount: 4
+    SampleCount: 8

@@ -61,51 +61,64 @@ public class StructureModifier : Modifier
 		Vector3Int pos = Vector3Int.zero;
 		Vector3Int size = new Vector3Int(8, 12, 8);
 		Vector3Int direction = RandomDirection(false);
+		Vector3Int prevPos = pos;
 
 		for (int i = 0; i < maxRoomCount; i++)
 		{
+			prevPos = pos;
 			if (i > 0)
 			{
-				Vector3Int newsize = new Vector3Int(Random.Range(4, 21), Random.Range(2, 9), Random.Range(4, 21));
+				Vector3Int newsize = new Vector3Int(2 * Random.Range(2, 11), Random.Range(3, 9), 2 * Random.Range(2, 11));
 				pos += Utils.Scale(direction, new Vector3Int(Mathf.CeilToInt((size.x + newsize.x) / 2f), Mathf.CeilToInt((size.y + newsize.y) / 2f), Mathf.CeilToInt((size.z + newsize.z) / 2f)));
 				size = newsize;
 
 				direction = RandomDirection(true, direction);
 			}
+
+			if (i == Random.Range(0, maxRoomCount) || i == Random.Range(0, maxRoomCount))
+				pos += RandomSign() * 2 * Vector3Int.up;
+
 			Bounds bounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f), size);
 
-			//if (i > 0)
-			//{
-			//	bool intersecting = false;
-			//	for (int j = i; j >= 1; j--)
-			//	{
-			//		if (rooms[j - 1].innerBounds.Intersects(bounds))
-			//		{
-			//			intersecting = true;
-			//			break;
-			//		}
-			//	}
-			//	if (intersecting)
-			//		break;
-			//}
+			if (i > 0)
+			{
+				//bool intersecting = false;
+				//for (int j = i; j >= 1; j--)
+				//{
+				//	if (rooms[j - 1].innerBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
+				//	{
+				//		intersecting = true;
+				//		break;
+				//	}
+				//}
+
+				//if (intersecting)
+				//	break;
+
+				Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * World.GetWorldSize());
+				if (!worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max))
+					break;
+			}
 
 			StructureRoom room = new StructureRoom(bounds);
 
 			if (i == 0)
 			{
-				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(3, size.y, 3));
+				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(6, size.y, 6));
 				room.lightBounds = skylightBounds;
 			}
 			else if (i % 1 == 0)
 			{
-				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(1, size.y, 1));
+				int lightSize = Random.value < 0.4 ? 4 : 2;
+
+				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up/* + new Vector3(0.5f, 0, 0.5f)*/, new Vector3Int(lightSize, size.y, lightSize));
 				room.lightBounds = skylightBounds;
 			}
 
 			rooms.Add(room);
 		}
 
-		lastRoomPos = pos;
+		lastRoomPos = prevPos;
 	}
 
 	public override void ApplyModifier(Chunk chunk)
@@ -134,19 +147,25 @@ public class StructureModifier : Modifier
 				}
 				else if (room.lightBounds.Contains(checkPos))
 				{
-					World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
+					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
+					{
+						World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
 
-					LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
-					chunk.GetLights().Add(new LightSource(pos, color));
+						LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
+						chunk.GetLights().Add(new LightSource(pos, color));
+					}
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
-					World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
+				{
+					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
+						World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
+				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
 				{
 					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
 				}
-				else if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != floorBlock.GetBlockType())
+				else /*if (pos.y > room.innerBounds.min.y || World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != floorBlock.GetBlockType())*/
 					World.SetBlock(pos.x, pos.y, pos.z, wallBlock);
 			}
 		}

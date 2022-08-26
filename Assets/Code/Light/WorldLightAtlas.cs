@@ -191,33 +191,31 @@ public class WorldLightAtlas : MonoBehaviour
 
 	public void SetAirCount(Vector3Int pos, int count)
 	{
+		//if (halfScaleAmbient)
+		//{
+		//	for (int x = 0; x < 2; x++)
+		//	{
+		//		for (int y = 0; y < 2; y++)
+		//		{
+		//			for (int z = 0; z < 2; z++)
+		//			{
+		//				Vector3Int posA = WorldToTex(pos - new Vector3Int(x, y, z) * 8);
+		//				Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 
+		//				int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
+		//				airCountArr[ambIndex] = Mathf.Max(1, count);
+		//			}
+		//		}
+		//	}
+		//}
+		//else
+		//{
+		//	Vector3Int posA = WorldToTex(pos);
+		//	Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
 
-		if (halfScaleAmbient)
-		{
-			for (int x = 0; x < 2; x++)
-			{
-				for (int y = 0; y < 2; y++)
-				{
-					for (int z = 0; z < 2; z++)
-					{
-						Vector3Int posA = WorldToTex(pos - new Vector3Int(x, y, z) * 8);
-						Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
-
-						int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
-						airCountArr[ambIndex] = Mathf.Max(1, count);
-					}
-				}
-			}
-		}
-		else
-		{
-			Vector3Int posA = WorldToTex(pos);
-			Vector3Int ambPos = new Vector3Int(posA.x / ambientScale, posA.y / ambientScale, posA.z / ambientScale);
-
-			int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
-			airCountArr[ambIndex] = Mathf.Max(1, count);
-		}
+		//	int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
+		//	airCountArr[ambIndex] = Mathf.Max(1, count);
+		//}
 	}
 
 	public void ClearAtlas(bool updateTex)

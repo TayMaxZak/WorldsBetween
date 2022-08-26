@@ -135,11 +135,12 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.05f;
+		bool hasWater = Random.value < 0.5f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
-			waterHeight = (int)(Random.value * Random.value * -100) + depth * 5;
+			//waterHeight = 0;
+			waterHeight = (int)(Random.value * Random.value * -32);
 			WaterFollow(relativeOrigin);
 		}
 		else
@@ -185,7 +186,6 @@ public partial class World : MonoBehaviour
 		foreach (SurfaceShaper shaper in surfaceShapers)
 			shaper.Init();
 		pointB = structure.lastRoomPos;
-		Debug.Log(pointB);
 	}
 
 	private void MakeModifiers()
@@ -229,10 +229,10 @@ public partial class World : MonoBehaviour
 		//	new Vector3(0.05f, 0.05f * verticalScale, 0.05f) * terrainScale
 		//));
 
-		//verticalScale = 1 / 2f;
-		////NoiseModifier noise = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.52f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
-		////noise.ribbonCount = 2;
-		////modifiers.Add(noise);
+		verticalScale = 1 / 2f;
+		NoiseModifier noise = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.52f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
+		noise.ribbonCount = 2;
+		modifiers.Add(noise);
 		//if (worldProperties.bonusCrack)
 		//{
 		//	NoiseModifier noise2 = new NoiseModifier(BlockList.EMPTY, replaceMask, 0.52f, new Vector3(0.01f, 0.01f * verticalScale, 0.01f));
@@ -243,7 +243,7 @@ public partial class World : MonoBehaviour
 		//modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.01f, 0.01f * verticalScale, 0.01f)));
 		//modifiers.Add(new NoiseModifier(BlockList.EMPTY, replaceMask, 0.5f + 0.05f * worldProperties.caveMult, new Vector3(0.03f, 0.03f * verticalScale, 0.03f)));
 
-		structure = new StructureModifier(20);
+		structure = new StructureModifier(40);
 		modifiers.Add(structure);
 
 		//float buildingMult = worldProperties.buildingMult;

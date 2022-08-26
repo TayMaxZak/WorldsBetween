@@ -201,7 +201,7 @@ public class Chunk
 			}
 		}
 
-		WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSizeWorld / 2, airCount);
+		//WorldLightAtlas.Instance.SetAirCount(position + Vector3Int.one * chunkSizeWorld / 2, airCount);
 	}
 
 	// TODO: Fix for thisChunkOnly
