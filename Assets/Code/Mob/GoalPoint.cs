@@ -86,7 +86,7 @@ public class GoalPoint : MonoBehaviour
 		if (!activated)
 			return;
 
-		if (Vector3.SqrMagnitude(transform.position - Player.Instance.transform.position) < 3 * 3)
+		if (Vector3.SqrMagnitude(transform.position - Player.Instance.transform.position) < 1 * 1)
 		{
 			PersistentData pd = PersistentData.GetInstanceForRead();
 			if (pd)

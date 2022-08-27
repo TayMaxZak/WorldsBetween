@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cephapath : MonoBehaviour
+public class Cephapath : Actor
 {
 	public class Tentacle
 	{
@@ -81,7 +81,7 @@ public class Cephapath : MonoBehaviour
 
 	private bool hasBlinked = false;
 
-	private void Awake()
+	public override void Init()
 	{
 		if (!enabled)
 			return;
@@ -272,43 +272,43 @@ public class Cephapath : MonoBehaviour
 
 	private void Move()
 	{
-		float dotCutoff = 0.5f;
-
 		float deltaTime = Time.deltaTime;
 
-		transform.position += speed * deltaTime * transform.forward;
+		transform.forward = smoothDir;
+		transform.position += speed * deltaTime * smoothDir;
 
-		randomDirTimer.Increment(deltaTime);
-		if (randomDirTimer.Expired() || !hasBlinked)
-		{
-			randomDirTimer.Reset();
+		//// Blinking
+		//float dotCutoff = 0.5f;
+		//randomDirTimer.Increment(deltaTime);
+		//if (randomDirTimer.Expired() || !hasBlinked)
+		//{
+		//	randomDirTimer.Reset();
 
-			if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
-			{
-				Vector3 newPos = new Vector3(
-					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize(),
-					0.5f * World.GetWorldSize(),
-					SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize()
-				);
+		//	if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
+		//	{
+		//		Vector3 newPos = new Vector3(
+		//			SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize(),
+		//			0.5f * World.GetWorldSize(),
+		//			SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize()
+		//		);
 
-				if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
-				{
-					transform.position = newPos;
+		//		if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
+		//		{
+		//			transform.position = newPos;
 
-					transform.eulerAngles = new Vector3(
-						SeedlessRandom.NextFloatInRange(-10, 10),
-						SeedlessRandom.NextFloatInRange(0, 360),
-						0
-					);
+		//			transform.eulerAngles = new Vector3(
+		//				SeedlessRandom.NextFloatInRange(-10, 10),
+		//				SeedlessRandom.NextFloatInRange(0, 360),
+		//				0
+		//			);
 
-					foreach (Tentacle t in tentacles)
-						InitTentacle(t);
+		//			foreach (Tentacle t in tentacles)
+		//				InitTentacle(t);
 
-					hasBlinked = true;
-				}
-			}
-
-		}
+		//			hasBlinked = true;
+		//		}
+		//	}
+		//}
 	}
 
 	private void MoveTentacle(Tentacle t)

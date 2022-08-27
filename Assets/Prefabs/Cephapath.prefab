@@ -15448,7 +15448,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -25592,7 +25592,7 @@ Transform:
   m_GameObject: {fileID: 9004443760993121361}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_Children:
   - {fileID: 9004443760891183956}
   - {fileID: 1577499678517381515}
@@ -25627,6 +25627,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18d468a32a1354e4dbca69329b846da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  dead: 0
   dioramaMode: 0
   dioramaSharpness: 0
   dioramaWiggle: 0.1
@@ -25638,9 +25640,9 @@ MonoBehaviour:
   speed: 2
   damage: 5
   grabChance: 1
-  tentacleCount: 20
-  grabDistance: 25
-  damageDistance: 9
+  tentacleCount: 7
+  grabDistance: 5
+  damageDistance: 3
   timeScale: 1
   dashTimer:
     maxTime: 3

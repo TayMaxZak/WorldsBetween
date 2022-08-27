@@ -49,10 +49,13 @@ public partial class World : MonoBehaviour
 	public bool isInfinite = true;
 
 	[Header("World Settings")]
+	[SerializeField]
+	private GameObject encounterObject;
 	private Vector3Int relativeOrigin;
 	private Vector3Int pointA;
 	private Vector3Int pointB;
 	private Vector3 goalPoint;
+	private Vector3 encounterPoint;
 
 	private int baseWorldHeight = 99999;
 	private int waterHeight = 0;
@@ -185,7 +188,11 @@ public partial class World : MonoBehaviour
 			mod.Init();
 		foreach (SurfaceShaper shaper in surfaceShapers)
 			shaper.Init();
+
 		pointB = structure.lastRoomPos;
+
+		encounterPoint = Vector3.Lerp(pointA, pointB, 0.6f);
+		Instantiate(encounterObject, encounterPoint, Quaternion.identity);
 	}
 
 	private void MakeModifiers()
