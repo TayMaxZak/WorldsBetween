@@ -249,7 +249,7 @@ public class PlayerMover : Actor
 				climbingTimer.maxTime = (grounded ? fastClimbTime : slowClimbTime);
 				climbingTimer.Reset();
 
-				position = hit.point + Vector3.up * (height / 2f);
+				position = hit.point + Vector3.up * (height / 2f + 0.1f);
 			}
 		}
 
@@ -257,13 +257,38 @@ public class PlayerMover : Actor
 		Vector3 adjMoveVector = moveVector;
 		if (moveVector != Vector3.zero)
 		{
-			if (BoxCast(moveVector, out RaycastHit hit))
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
 			{
-				Vector3 reflected = Vector3.Reflect(moveVector, hit.normal);
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
 				adjMoveVector += reflected;
 				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
-
-				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
+			}
+		}
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
+			}
+		}
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
+			}
+		}
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
 			}
 		}
 
@@ -304,10 +329,16 @@ public class PlayerMover : Actor
 		Debug.DrawLine(position + Vector3.up * ((height / 2) - radius), position - Vector3.up * ((height / 2) - radius), PhysicsManager.Instance.randomColor, 2);
 		Debug.DrawLine(moveVector + position + Vector3.up * ((height / 2) - radius), moveVector + position - Vector3.up * ((height / 2) - radius), PhysicsManager.Instance.randomColor, 2);
 
-		return Physics.CapsuleCast(
-			position + Vector3.up * ((height / 2) - radius),
-			position - Vector3.up * ((height / 2) - radius),
-			radius, moveVector.normalized, out hit, moveVector.magnitude, rayMask
+		//return Physics.CapsuleCast(
+		//	position + Vector3.up * ((height / 2) - radius),
+		//	position - Vector3.up * ((height / 2) - radius),
+		//	radius, moveVector.normalized, out hit, moveVector.magnitude, rayMask
+		//);
+
+		return Physics.BoxCast(
+			position,
+			new Vector3(radius, height / 2, radius),
+			moveVector.normalized, out hit, Quaternion.identity, moveVector.magnitude, rayMask
 		);
 	}
 }

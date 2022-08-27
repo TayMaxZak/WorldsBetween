@@ -348,6 +348,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7336242617558766422, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336242617558766422, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336242617558766422, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
+      value: 0.019607844
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336242617558766422, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: InitialModule.startColor.minColor.a
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7336242617558766422, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8417224532618400513, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
       propertyPath: jumpSpeed
       value: 4
@@ -690,7 +710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: seed
-      value: 2349981543100424192
+      value: -764692479
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
@@ -702,7 +722,7 @@ PrefabInstance:
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: randomizeSeed
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: encounterObject

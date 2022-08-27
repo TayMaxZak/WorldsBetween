@@ -398,20 +398,6 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "76971d05e3f9494cb818d57cfa0f21f0"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "024129b7954e469c846c2c00555ee47b"
-                },
-                "m_SlotId": -1315746119
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
                     "m_Id": "7ab1bd27723142d4be1a26c62b551d1b"
                 },
                 "m_SlotId": 0
@@ -519,20 +505,6 @@
                     "m_Id": "440ad613fab64532b7a93577ecb61362"
                 },
                 "m_SlotId": 0
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
-                    "m_Id": "e00494eaf01d42e79a7f2affc75f9217"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "024129b7954e469c846c2c00555ee47b"
-                },
-                "m_SlotId": -633088293
             }
         },
         {
@@ -1947,6 +1919,9 @@
             "m_Id": "68db60f5c9aa4d3d8c87b56417e30d74"
         },
         {
+            "m_Id": "9dd63c927aa14f8c8a87b477f5130ad8"
+        },
+        {
             "m_Id": "4b98b38ce2034ac58dd812dfa63b06d3"
         },
         {
@@ -1968,13 +1943,15 @@
         "5e95fab4-ff19-4797-a4f3-3a27c709f30e",
         "1a4a7b52-c981-4620-bb8e-ee4f66dbd05d",
         "273aa9e9-114b-44ae-a0fc-13bcff4d94bc",
-        "d8ee7674-c5f4-4882-8779-5ba5c680c978"
+        "d8ee7674-c5f4-4882-8779-5ba5c680c978",
+        "a681be52-2c5c-4084-a489-993a1bfb50df"
     ],
     "m_PropertyIds": [
         -1685275347,
         1036729647,
         628223483,
-        1176125070
+        1176125070,
+        333315593
     ]
 }
 
@@ -2953,6 +2930,29 @@
         "e32": 0.0,
         "e33": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "9dd63c927aa14f8c8a87b477f5130ad8",
+    "m_Id": 333315593,
+    "m_DisplayName": "FogSettings",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Vector3_a6605ccc314d4bedaad6eb0f9597e4a0",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 100.0,
+        "y": 200.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
 }
 
 {
