@@ -84,18 +84,18 @@ public class StructureModifier : Modifier
 
 			if (i > 0)
 			{
-				//bool intersecting = false;
-				//for (int j = i; j >= 1; j--)
-				//{
-				//	if (rooms[j - 1].innerBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
-				//	{
-				//		intersecting = true;
-				//		break;
-				//	}
-				//}
+				bool intersecting = false;
+				for (int j = i; j >= 1; j--)
+				{
+					if (rooms[j - 1].lightBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
+					{
+						intersecting = true;
+						break;
+					}
+				}
 
-				//if (intersecting)
-				//	break;
+				if (intersecting)
+					break;
 
 				// Check if any part of room is outside of world bounds (- 2 for the walls on both sides)
 				Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
@@ -109,19 +109,20 @@ public class StructureModifier : Modifier
 
 			if (i == 0)
 			{
-				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(6, size.y, 6));
-				room.lightBounds = skylightBounds;
+				Bounds lightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(6, size.y, 6));
+				room.lightBounds = lightBounds;
 			}
 			else if (i % 1 == 0)
 			{
 				int lightSize = Random.value < 0.4 ? 4 : 2;
 
-				Bounds skylightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up/* + new Vector3(0.5f, 0, 0.5f)*/, new Vector3Int(lightSize, size.y, lightSize));
-				room.lightBounds = skylightBounds;
+				Bounds lightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up/* + new Vector3(0.5f, 0, 0.5f)*/, new Vector3Int(lightSize, size.y, lightSize));
+				room.lightBounds = lightBounds;
+
+				if (Random.value < 0.1f)
+					room.lightOff = true;
 			}
 
-			if (Random.value < 0.1f)
-				room.lightOff = true;
 			rooms.Add(room);
 		}
 

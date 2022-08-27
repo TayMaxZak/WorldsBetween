@@ -50,6 +50,8 @@ public partial class PhysicsManager : MonoBehaviour
 
 		foreach (Actor actor in actors)
 			actor.UpdateTick(ticking, physicsTickTimer.maxTime, physicsTickTimer.currentTime);
+
+		randomColor = new Color(SeedlessRandom.NextFloat(), SeedlessRandom.NextFloat(), SeedlessRandom.NextFloat(), 1);
 	}
 
 	public void Register(Actor actor)

@@ -77,7 +77,7 @@ public class PlayerMover : Actor
 		headPosition = head.localPosition;
 		prevHeadPosition = new Vector3(headPosition.x, headPosition.y, headPosition.z);
 
-		initPos = position;
+		initPos = position + Vector3.up;
 	}
 
 	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
@@ -93,7 +93,7 @@ public class PlayerMover : Actor
 			position = initPos;
 
 			velocity = Vector3.zero;
-			fallVelocity = Vector3.zero;
+			//fallVelocity = Vector3.zero;
 			inputVelocity = Vector3.zero;
 			climbing = false;
 		}
@@ -189,13 +189,13 @@ public class PlayerMover : Actor
 		// Falling acceleration
 		Vector3 fallAccel = PhysicsManager.Instance.gravity * deltaTime;
 
-		fallVelocity += fallAccel;
+		velocity += fallAccel;
 
 		// Move player and check if grounded
-		FallMove(fallVelocity * deltaTime, deltaTime);
+		FallMove(velocity * deltaTime, deltaTime);
 
 		// Drag
-		fallVelocity *= (1 - deltaTime * airResistance);
+		//fallVelocity *= (1 - deltaTime * airResistance);
 
 		// Apply jump
 		if (jump)
@@ -204,8 +204,8 @@ public class PlayerMover : Actor
 			velocity += Vector3.up * jumpSpeed;
 		}
 
-		// Move player from jump and other verlocity sources
-		Move(velocity);
+		// Move player from jump and other velocity sources
+		Move(velocity * deltaTime);
 
 		// Drag
 		velocity *= (1 - deltaTime * airResistance);
@@ -216,28 +216,17 @@ public class PlayerMover : Actor
 
 	protected void FallMove(Vector3 moveVector, float deltaTime)
 	{
-		bool raycast = Physics.Raycast(new Ray(position + feetOffset + raycastMargin * Vector3.up, Vector3.down), out RaycastHit hit1, moveVector.magnitude, rayMask);
-		bool raycast2 = Physics.Raycast(new Ray(position + feetOffset + Utils.SoftSign(inputVelocity.magnitude) * strideLength * inputVelocity.normalized + raycastMargin * Vector3.up, Vector3.down), out RaycastHit hit2, moveVector.magnitude, rayMask);
-
 		// Raycast from center of body
-		if (raycast || raycast2)
+		if (BoxCast(moveVector, out RaycastHit hit))
 		{
-			float fallPosChange = Mathf.Min(hit1.Equals(default(RaycastHit)) ? moveVector.magnitude : hit1.distance, hit2.Equals(default(RaycastHit)) ? moveVector.magnitude : hit2.distance);
-
-			if (!climbing)
-				position += Vector3.down * Mathf.Max(0, fallPosChange - raycastMargin);
-
-			fallVelocity = Vector3.zero;
+			//fallVelocity = Vector3.zero;
 			velocity.y = 0;
 			grounded = true;
-
-			Debug.DrawLine(position, hit1.point, Utils.colorBlue, 3);
-			Debug.DrawLine(position + Utils.SoftSign(inputVelocity.magnitude) * strideLength * inputVelocity.normalized, hit2.point, Utils.colorBlue, 3);
 		}
 		else
 		{
-			if (!climbing)
-				position += moveVector;
+			//if (!climbing)
+			//	position += moveVector;
 
 			grounded = false;
 		}
@@ -268,49 +257,11 @@ public class PlayerMover : Actor
 		Vector3 adjMoveVector = moveVector;
 		if (moveVector != Vector3.zero)
 		{
-			if (Physics.CapsuleCast(
-				position + Vector3.up * ((height / 2) - radius),
-				position - Vector3.up * ((height / 2) - radius),
-				radius, moveVector.normalized, out RaycastHit capsuleHit, moveVector.magnitude, rayMask)
-			)
+			if (BoxCast(moveVector, out RaycastHit hit))
 			{
-				Vector3 reflected = Vector3.Reflect(moveVector, capsuleHit.normal);
+				Vector3 reflected = Vector3.Reflect(moveVector, hit.normal);
 				adjMoveVector += reflected;
 				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
-
-				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
-			}
-		}
-
-		if (adjMoveVector != Vector3.zero)
-		{
-			if (Physics.CapsuleCast(
-				position + Vector3.up * ((height / 2) - radius),
-				position - Vector3.up * ((height / 2) - radius),
-				radius, adjMoveVector.normalized, out RaycastHit capsuleHit, adjMoveVector.magnitude)
-			)
-			{
-				Vector3 reflected = Vector3.Reflect(adjMoveVector, capsuleHit.normal);
-				float mag = adjMoveVector.magnitude;
-				adjMoveVector += reflected;
-				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, mag);
-
-				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
-			}
-		}
-
-		if (adjMoveVector != Vector3.zero)
-		{
-			if (Physics.CapsuleCast(
-				position + Vector3.up * ((height / 2) - radius),
-				position - Vector3.up * ((height / 2) - radius),
-				radius, adjMoveVector.normalized, out RaycastHit capsuleHit, adjMoveVector.magnitude)
-			)
-			{
-				Vector3 reflected = Vector3.Reflect(adjMoveVector, capsuleHit.normal);
-				float mag = adjMoveVector.magnitude;
-				adjMoveVector += reflected;
-				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, mag);
 
 				//Debug.DrawLine(new Vector3(position.x, capsuleHit.point.y, position.z), capsuleHit.point, Random.value > 0.6f ? Utils.colorCyan : Utils.colorBlue, 12);
 			}
@@ -346,5 +297,17 @@ public class PlayerMover : Actor
 		}
 
 		position += adjMoveVector;
+	}
+
+	private bool BoxCast(Vector3 moveVector, out RaycastHit hit)
+	{
+		Debug.DrawLine(position + Vector3.up * ((height / 2) - radius), position - Vector3.up * ((height / 2) - radius), PhysicsManager.Instance.randomColor, 2);
+		Debug.DrawLine(moveVector + position + Vector3.up * ((height / 2) - radius), moveVector + position - Vector3.up * ((height / 2) - radius), PhysicsManager.Instance.randomColor, 2);
+
+		return Physics.CapsuleCast(
+			position + Vector3.up * ((height / 2) - radius),
+			position - Vector3.up * ((height / 2) - radius),
+			radius, moveVector.normalized, out hit, moveVector.magnitude, rayMask
+		);
 	}
 }

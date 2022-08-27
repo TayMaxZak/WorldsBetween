@@ -10,9 +10,9 @@ public class Actor : MonoBehaviour
 	private Vector3 prevPosition;
 
 	// Velocity
-	protected Vector3 velocity;
-	protected Vector3 fallVelocity;
-	protected Vector3 inputVelocity;
+	public Vector3 velocity;
+	//protected Vector3 fallVelocity;
+	public Vector3 inputVelocity;
 
 	protected bool inWater;
 	protected float waterHeightOffset = -0.5f;
@@ -64,11 +64,11 @@ public class Actor : MonoBehaviour
 		//UpdateBlockPosition();
 
 		// Falling
-		Vector3 fallAccel = PhysicsManager.Instance.gravity * deltaTime;
+		//Vector3 fallAccel = PhysicsManager.Instance.gravity * deltaTime;
 
-		fallVelocity += fallAccel;
+		//fallVelocity += fallAccel;
 
-		Move(fallVelocity * deltaTime);
+		//Move(fallVelocity * deltaTime);
 	}
 
 	protected virtual void Move(Vector3 velocity)
