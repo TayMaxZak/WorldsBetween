@@ -9,8 +9,8 @@ public class BumpFeature : Modifier
 	public int radius = 1;
 	public int fill = 10;
 
-	public Block toPlace = BlockList.ROCK;
-	public Block placeOn = BlockList.ROCK;
+	public Block toPlace = BlockList.EMPTY;
+	public Block placeOn = BlockList.EMPTY;
 
 	public Mask mask;
 

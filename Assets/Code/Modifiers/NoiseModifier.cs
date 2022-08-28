@@ -68,7 +68,10 @@ public class NoiseModifier : Modifier
 				World.SetBlock(pos.x, pos.y, pos.z, block);
 
 			if (mask.replace && World.GetBlock(pos.x, pos.y, pos.z).IsFilled())
+			{
 				World.SetBlock(pos.x, pos.y, pos.z, block);
+				chunk.RemoveLightAt(pos);
+			}
 		}
 
 		return true;

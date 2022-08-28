@@ -133,8 +133,8 @@ public class ChunkMesh
 							chunk.position.z + z + directions[d].z * chunk.scaleFactor
 						);
 
-						//if (chunk.chunkType == Chunk.ChunkType.Close && !World.Contains(faceOffset + Vector3.one / 2))
-						//	continue;
+						if (chunk.chunkType == Chunk.ChunkType.Close && !World.Contains(faceOffset + Vector3.one / 2))
+							continue;
 
 						Block adj = World.GetBlock(faceOffset.x, faceOffset.y, faceOffset.z);
 

@@ -25,7 +25,7 @@ public class StructureModifier : Modifier
 	public Block wallBlock = BlockList.CONCRETE;
 	public Block lightBlock = BlockList.LIGHT;
 	public Block floorBlock = BlockList.CARPET;
-	public Block ceilingBlock = BlockList.ROCK;
+	public Block ceilingBlock = BlockList.CEILING;
 
 	public Mask mask = new Mask() { fill = false };
 
@@ -141,7 +141,7 @@ public class StructureModifier : Modifier
 
 	protected virtual bool CheckRooms(Vector3Int pos, Chunk chunk)
 	{
-		Vector3 checkPos = pos + Vector3.one * 0.5f;
+		Vector3 checkPos = pos + Vector3.one / 2f;
 
 		foreach (StructureRoom room in rooms)
 		{
@@ -163,7 +163,7 @@ public class StructureModifier : Modifier
 					{
 						World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
 
-						if (SeedlessRandom.NextFloat() < 1 && !room.lightOff)
+						if (/*SeedlessRandom.NextFloat() < 0.6f && */!room.lightOff)
 						{
 							LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
 							chunk.AddLight(new LightSource(pos, color));
@@ -172,15 +172,15 @@ public class StructureModifier : Modifier
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
 				{
-					if (checkBlock != wallBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
+					if (checkBlock != lightBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
 				{
-					if (checkBlock != wallBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
+					if (checkBlock != lightBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
 				}
-				else /*if (pos.y > room.innerBounds.min.y || World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != floorBlock.GetBlockType())*/
+				else if (checkBlock != floorBlock.GetBlockType() && checkBlock != ceilingBlock.GetBlockType())
 				{
 					if (checkBlock == lightBlock.GetBlockType())
 						chunk.RemoveLightAt(pos);

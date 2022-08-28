@@ -143,7 +143,7 @@ public partial class World : MonoBehaviour
 		if (hasWater)
 		{
 			//waterHeight = 0;
-			waterHeight = (int)(Random.value * Random.value * -32);
+			waterHeight = (int)(Random.value * Random.value * -16);
 			WaterFollow(relativeOrigin);
 		}
 		else
@@ -203,7 +203,9 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(64));
+		modifiers.Add(structure = new StructureModifier(20));
+
+		modifiers.Add(new StructureFixer(structure));
 	}
 
 	private void Start()
@@ -284,7 +286,7 @@ public partial class World : MonoBehaviour
 	public static Block GetBlock(int x, int y, int z)
 	{
 		if (y < Instance.deadFallHeight)
-			return BlockList.ROCK;
+			return BlockList.RIGID_BORDER;
 
 		Chunk chunk = GetChunk(x, y, z);
 
