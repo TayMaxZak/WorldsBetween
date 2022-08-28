@@ -20,6 +20,7 @@ public class StructureModifier : Modifier
 	}
 	public List<StructureRoom> rooms;
 	private int maxRoomCount = 10;
+	public float fillPercent = 0;
 	public Vector3Int lastRoomPos;
 
 	public Block wallBlock = BlockList.CONCRETE;
@@ -64,7 +65,8 @@ public class StructureModifier : Modifier
 		Vector3Int direction = RandomDirection(false);
 		Vector3Int prevPos = pos;
 
-		for (int i = 0; i < maxRoomCount; i++)
+		int i;
+		for (i = 0; i < maxRoomCount; i++)
 		{
 			prevPos = pos;
 
@@ -127,6 +129,9 @@ public class StructureModifier : Modifier
 		}
 
 		lastRoomPos = prevPos;
+		fillPercent = (float)i / maxRoomCount;
+
+		Debug.Log(i + " rooms created, " + (maxRoomCount - i) + " short. Fill percent: " + fillPercent);
 	}
 
 	public override void ApplyModifier(Chunk chunk)

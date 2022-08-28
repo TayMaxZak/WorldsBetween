@@ -192,7 +192,8 @@ public partial class World : MonoBehaviour
 		pointB = structure.lastRoomPos;
 
 		encounterPoint = Vector3.Lerp(pointA, pointB, 0.6f);
-		//Instantiate(encounterObject, encounterPoint, Quaternion.identity);
+		if (structure.fillPercent > 0.6f)
+			Instantiate(encounterObject, encounterPoint, Quaternion.identity);
 	}
 
 	private void MakeModifiers()
@@ -203,7 +204,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(20));
+		modifiers.Add(structure = new StructureModifier(32));
 
 		modifiers.Add(new StructureFixer(structure));
 	}

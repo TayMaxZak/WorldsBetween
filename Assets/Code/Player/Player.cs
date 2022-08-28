@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 	public PlayerMover mover;
 	public Transform head;
 	public Transform hand;
+	public Light flashlight;
 	public Camera cam;
 
 	public Item heldItem;

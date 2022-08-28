@@ -9,21 +9,13 @@ public class Flashlight : Item
 
 	public bool on;
 
-	public float maxRange = 20;
+	//public float maxIntensity = 1;
 
-	public float distLerpSpeed = 5;
-	public float turnLerpSpeed = 20;
+	//public float flickerAmount = 0.1f;
+	//private Timer flickerTimer = new Timer(0.2f);
 
-	private Vector3 beamEndPos;
-
-	private Vector3 targetForward;
-	private Vector3 currentForward;
-
-	private float targetDist;
-	private float currentDist;
-
-	private static readonly Vector3 offPosA = new Vector3(10000, 10000, 10000);
-	private static readonly Vector3 offPosB = new Vector3(10000, 10000, 10001);
+	//private float curIntensity;
+	//private float lastIntensity;
 
 	public override void Use(UseHow useHow)
 	{
@@ -31,7 +23,7 @@ public class Flashlight : Item
 
 		on = !on;
 
-		UpdateShader(on);
+		UpdateLight(on);
 	}
 
 	// Turn off when put away
@@ -39,7 +31,7 @@ public class Flashlight : Item
 	{
 		base.Unequip();
 
-		UpdateShader(false);
+		UpdateLight(false);
 	}
 
 	public override void Update()
@@ -49,39 +41,27 @@ public class Flashlight : Item
 		if (!equipped || !on)
 			return;
 
-		currentForward = Vector3.Lerp(currentForward, targetForward, Time.deltaTime * turnLerpSpeed);
-		currentDist = Mathf.Lerp(currentDist, targetDist, Time.deltaTime * distLerpSpeed);
+		//flickerTimer.Increment(Time.deltaTime);
+		//if (flickerTimer.Expired())
+		//{
+		//	flickerTimer.Reset();
 
-		if (PhysicsManager.Instance.ticking)
-		{
-			BlockCastHit hit = PhysicsManager.BlockCastAxial(hand.position, hand.position + hand.forward * maxRange);
+		//	lastIntensity = curIntensity;
+		//	curIntensity = SeedlessRandom.NextFloatInRange(maxIntensity - flickerAmount, maxIntensity);
+		//}
 
-			targetForward = hand.forward;
-
-			if (hit.hit)
-				targetDist = (hit.worldPos - hand.position).magnitude;
-			else
-				targetDist = maxRange;
-		}
-
-		// Smoothed position is sent to shader
-		beamEndPos = hand.position + currentForward * currentDist;
-		UpdateShader(on);
+		//Player.Instance.flashlight.intensity = Mathf.Lerp(curIntensity, lastIntensity, flickerTimer.currentTime);
 	}
 
-	private void UpdateShader(bool display)
+	private void UpdateLight(bool display)
 	{
 		if (display)
 		{
-			Shader.SetGlobalVector("FlashlightA", hand.position);
-
-			Shader.SetGlobalVector("FlashlightB", beamEndPos);
+			Player.Instance.flashlight.enabled = true;
 		}
 		else
 		{
-			Shader.SetGlobalVector("FlashlightA", offPosA);
-
-			Shader.SetGlobalVector("FlashlightB", offPosB);
+			Player.Instance.flashlight.enabled = false;
 		}
 	}
 }
