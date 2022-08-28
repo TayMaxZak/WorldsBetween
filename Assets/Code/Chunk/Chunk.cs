@@ -317,4 +317,21 @@ public class Chunk
 	{
 		return lights;
 	}
+
+	public void AddLight(LightSource light)
+	{
+		lights.Add(light);
+	}
+
+	public void RemoveLightAt(Vector3Int pos)
+	{
+		LightSource toRemove = null;
+		foreach (LightSource light in lights)
+		{
+			if (light.pos == pos)
+				toRemove = light;
+		}
+		if (toRemove != null)
+			lights.Remove(toRemove);
+	}
 }

@@ -438,5 +438,7 @@ public partial class World : MonoBehaviour
 		Gizmos.DrawLine(pointB, pointB + SeedlessRandom.RandomPoint(1) + dif);
 
 		worldBuilder.DrawGizmo();
+		if (structure != null)
+			structure.DrawGizmo();
 	}
 }

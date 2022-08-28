@@ -145,39 +145,48 @@ public class StructureModifier : Modifier
 
 		foreach (StructureRoom room in rooms)
 		{
+			int checkBlock = World.GetBlock(pos.x, pos.y, pos.z).GetBlockType();
+
 			if (!room.outerBounds.Contains(checkPos))
 				continue;
-			else if (World.GetBlock(pos.x, pos.y, pos.z).IsFilled() && World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != lightBlock.GetBlockType())
+
+			else if (World.GetBlock(pos.x, pos.y, pos.z).IsFilled()/* && checkBlock != lightBlock.GetBlockType()*/)
 			{
 				if (room.innerBounds.Contains(checkPos))
 				{
-					World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
+					if (checkBlock != lightBlock.GetBlockType())
+						World.SetBlock(pos.x, pos.y, pos.z, BlockList.EMPTY);
 				}
 				else if (room.lightBounds.Contains(checkPos))
 				{
-					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
+					if (checkBlock != wallBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
 					{
 						World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
 
-						if (SeedlessRandom.NextFloat() < 0.75 && !room.lightOff)
+						if (SeedlessRandom.NextFloat() < 1 && !room.lightOff)
 						{
 							LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
-							chunk.GetLights().Add(new LightSource(pos, color));
+							chunk.AddLight(new LightSource(pos, color));
 						}
 					}
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
 				{
-					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
+					if (checkBlock != wallBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
 				{
-					if (World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != wallBlock.GetBlockType())
+					if (checkBlock != wallBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
 				}
 				else /*if (pos.y > room.innerBounds.min.y || World.GetBlock(pos.x, pos.y, pos.z).GetBlockType() != floorBlock.GetBlockType())*/
+				{
+					if (checkBlock == lightBlock.GetBlockType())
+						chunk.RemoveLightAt(pos);
+
 					World.SetBlock(pos.x, pos.y, pos.z, wallBlock);
+				}
 			}
 		}
 
@@ -218,6 +227,19 @@ public class StructureModifier : Modifier
 				return DIRS_FROM_BACK[index];
 			else
 				return Vector3Int.zero;
+		}
+	}
+
+	public void DrawGizmo()
+	{
+		if (rooms == null)
+			return;
+
+		Gizmos.color = Color.white;
+
+		foreach (StructureRoom room in rooms)
+		{
+			Gizmos.DrawWireCube(room.innerBounds.center, room.innerBounds.size);
 		}
 	}
 }

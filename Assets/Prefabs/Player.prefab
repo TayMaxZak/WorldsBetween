@@ -1915,6 +1915,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: -1, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  inputVelocity: {x: 0, y: 0, z: 0}
   dead: 0
   rayMask:
     serializedVersion: 2
@@ -1933,7 +1935,7 @@ MonoBehaviour:
   mouseSens: 150
   walkSpeed: 4
   peekDistance: 0.4
-  jumpSpeed: 0.24
+  jumpSpeed: 4
   airResistance: 0.05
   grounded: 0
   atLedge: 0
@@ -2217,7 +2219,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.03
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: InitialModule.startSize.minScalar
@@ -2228,12 +2230,28 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
+      value: 0.019607844
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: InitialModule.startColor.minColor.a
-      value: 0.101960786
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445086984, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5374829732445087029, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: m_Name
       value: Dust
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445087029, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5374829732445087030, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: m_RootOrder
