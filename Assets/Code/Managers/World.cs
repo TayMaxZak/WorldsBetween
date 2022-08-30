@@ -211,7 +211,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(12));
+		modifiers.Add(structure = new StructureModifier(24));
 
 		modifiers.Add(new StructureFixer(structure));
 	}
@@ -373,7 +373,6 @@ public partial class World : MonoBehaviour
 	{
 		Instantiate(Instance.encounterObject, Instance.encounterPoint, Quaternion.identity);
 		AudioManager.PlayMusicCue(AudioManager.CueType.EncounterPossible);
-		Debug.Log("encounter!");
 	}
 
 	public static void SetEncounterPoint(Vector3 pos)

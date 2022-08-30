@@ -145,8 +145,11 @@ public class EncounterFinder
 
 		await Task.Delay(1);
 
-		World.SetEncounterPoint(encounterPos);
-		World.SpawnEncounter();
+		if (World.HasEncounter())
+		{
+			World.SetEncounterPoint(encounterPos);
+			World.SpawnEncounter();
+		}
 	}
 
 	public bool IsSuccessful()

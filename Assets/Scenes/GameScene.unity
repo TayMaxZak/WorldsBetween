@@ -475,7 +475,7 @@ MonoBehaviour:
   poolSize: 20
   musicPlayer: {fileID: 657413208}
   musicCues:
-  - {fileID: 11400000, guid: fc0e59b74b4d76d4fb0a390d682233f8, type: 2}
+  - {fileID: 11400000, guid: 69c3f060f869b4a45ba9893b5b9799f9, type: 2}
   - {fileID: 11400000, guid: e0f8442a57ec6b04582c2dcc3aed749a, type: 2}
   - {fileID: 11400000, guid: bfa8b7232b9a1004aafc9ec29fd658e8, type: 2}
   currentMusicCue: {fileID: 0}
@@ -505,7 +505,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -774286881198688754, guid: b180cc2f862cf1b4e9badb77bf796717, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1249,7 +1249,7 @@ PrefabInstance:
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: randomizeSeed
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: encounterObject

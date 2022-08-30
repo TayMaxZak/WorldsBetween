@@ -10,4 +10,6 @@ public class MusicCue : ScriptableObject
 	public AudioClip clip = null;
 
 	public MusicCue next = null;
+
+	public bool interrupts = false;
 }

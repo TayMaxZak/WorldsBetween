@@ -152,6 +152,8 @@ public class AudioManager : MonoBehaviour
 	public static void PlayMusicCue(CueType cue)
 	{
 		Instance.currentMusicCue = Instance.musicCues[(int)cue];
+		if (Instance.currentMusicCue.interrupts)
+			Instance.musicPlayer.Stop();
 	}
 
 	public static void StopMusicCue()
