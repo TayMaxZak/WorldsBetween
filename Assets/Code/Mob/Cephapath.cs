@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Cephapath : Actor
 {
+	[SerializeField]
+	private LayerMask rayMask;
+
 	public class Tentacle
 	{
 		public LineRenderer line;
@@ -40,12 +43,16 @@ public class Cephapath : Actor
 
 	[Header("Stats")]
 	[SerializeField]
-	private float speed = 1;
+	private float maxSpeed = 5;
+	[SerializeField]
+	private float accel = 0.3f;
+	private float curSpeed = 0;
 	public float damage = 10;
 	public float grabChance = 0.75f;
 
 	[Header("Ranges")]
 	public int tentacleCount = 20;
+	public float encounterDistance = 24;
 	public float grabDistance = 32;
 	public float damageDistance = 16;
 
@@ -81,6 +88,8 @@ public class Cephapath : Actor
 
 	private bool hasBlinked = false;
 
+	private bool hasBeenSpotted = false;
+
 	public override void Init()
 	{
 		if (!enabled)
@@ -97,7 +106,7 @@ public class Cephapath : Actor
 			// Reset all timers
 			dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
 
-			Move();
+			Move(transform.forward, 1);
 		}
 
 		foreach (Tentacle t in tentacles)
@@ -197,8 +206,6 @@ public class Cephapath : Actor
 		if (!target)
 			return;
 
-		Move();
-
 		// Vector towards player
 		Vector3 diff = target.position - transform.position;
 		float distance = diff.magnitude;
@@ -206,9 +213,20 @@ public class Cephapath : Actor
 		if (smoothDir == Vector3.zero)
 			smoothDir = dir;
 
+		Move(dir, distance);
+
 		// Handle player interaction
 		if (!Player.Instance.vitals.dead)
 		{
+			if (!hasBeenSpotted)
+			{
+				if (distance < encounterDistance && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f && !Physics.Raycast(transform.position, dir, distance, rayMask))
+				{
+					hasBeenSpotted = true;
+					AudioManager.PlayMusicCue(AudioManager.CueType.EncounterStarting);
+				}
+			}
+
 			// Close enough to do bad things
 			float badnessStrength = 1 - Mathf.Clamp01(Mathf.Max(distance - damageDistance, 0) / damageDistance);
 
@@ -270,12 +288,16 @@ public class Cephapath : Actor
 		}
 	}
 
-	private void Move()
+	private void Move(Vector3 dir, float distance)
 	{
 		float deltaTime = Time.deltaTime;
 
 		transform.forward = smoothDir;
-		transform.position += speed * deltaTime * smoothDir;
+		if (hasBeenSpotted && !Physics.Raycast(transform.position, dir, distance, rayMask))
+			curSpeed = Mathf.Lerp(curSpeed, maxSpeed, deltaTime * accel);
+		else
+			curSpeed = Mathf.Lerp(curSpeed, 0, deltaTime * accel);
+		transform.position += curSpeed * deltaTime * smoothDir;
 
 		//// Blinking
 		//float dotCutoff = 0.5f;

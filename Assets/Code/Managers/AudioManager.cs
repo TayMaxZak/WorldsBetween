@@ -21,6 +21,19 @@ public class AudioManager : MonoBehaviour
 
 	private AudioListener listener;
 
+	public enum CueType
+	{
+		EncounterPossible,
+		EncounterStarting,
+		EncounterHappening
+	}
+	[SerializeField]
+	private MusicCue[] musicCues;
+
+	[SerializeField]
+	private MusicCue currentMusicCue;
+	private MusicCue scheduledMusicCue;
+
 	private void Awake()
 	{
 		if (!Instance)
@@ -43,6 +56,19 @@ public class AudioManager : MonoBehaviour
 		}
 
 		listener = FindObjectOfType<AudioListener>();
+	}
+
+	private void Update()
+	{
+		if (!Instance.musicPlayer.isPlaying)
+		{
+			if (currentMusicCue)
+			{
+				Instance.musicPlayer.clip = currentMusicCue.clip;
+				Instance.musicPlayer.Play();
+				currentMusicCue = currentMusicCue.next;
+			}
+		}
 	}
 
 	public static AudioSource PlaySound(Sound toPlay, Vector3 position)
@@ -82,7 +108,7 @@ public class AudioManager : MonoBehaviour
 					if (oldSource)
 					{
 						bool lessImportant = oldSource.priority > toPlay.preset.priority;
-						bool furtherAway = 
+						bool furtherAway =
 							(oldSource.transform.position - Instance.listener.transform.position).sqrMagnitude > (position - Instance.listener.transform.position).sqrMagnitude;
 
 						if (lessImportant || (oldSource.priority == toPlay.preset.priority && furtherAway))
@@ -123,10 +149,9 @@ public class AudioManager : MonoBehaviour
 		return source;
 	}
 
-	public static void PlayMusicCue()
+	public static void PlayMusicCue(CueType cue)
 	{
-		if (!Instance.musicPlayer.isPlaying)
-			Instance.musicPlayer.Play();
+		Instance.currentMusicCue = Instance.musicCues[(int)cue];
 	}
 
 	public static void StopMusicCue()

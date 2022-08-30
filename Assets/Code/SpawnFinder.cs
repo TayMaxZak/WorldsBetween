@@ -156,7 +156,7 @@ public class SpawnFinder
 
 	public void DrawGizmo()
 	{
-		Gizmos.color = success ? Utils.colorBlue : Utils.colorOrange;
+		Gizmos.color = Utils.colorBlue;
 
 		Gizmos.DrawWireCube(pos + (Vector3)extents / 2f, extents);
 	}

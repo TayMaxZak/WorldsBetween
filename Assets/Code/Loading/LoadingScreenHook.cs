@@ -101,6 +101,11 @@ public class LoadingScreenHook : MonoBehaviour
 			if (updateProgress)
 				AudioManager.SetAmbientVolume(1 - groupOpacity);
 		}
+		else
+		{
+			group.alpha = 1;
+			AudioManager.SetAmbientVolume(0);
+		}
 	}
 
 	private void UpdateProgress(float progress)

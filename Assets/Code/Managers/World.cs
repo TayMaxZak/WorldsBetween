@@ -56,6 +56,7 @@ public partial class World : MonoBehaviour
 	private Vector3Int pointB;
 	private Vector3 goalPoint;
 	private Vector3 encounterPoint;
+	public bool hasEncounter;
 
 	private int baseWorldHeight = 99999;
 	private int waterHeight = 0;
@@ -193,7 +194,13 @@ public partial class World : MonoBehaviour
 
 		encounterPoint = Vector3.Lerp(pointA, pointB, 0.6f);
 		if (structure.fillPercent > 0.6f)
-			Instantiate(encounterObject, encounterPoint, Quaternion.identity);
+		{
+			hasEncounter = true;
+		}
+		else
+		{
+			hasEncounter = false;
+		}
 	}
 
 	private void MakeModifiers()
@@ -204,7 +211,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(32));
+		modifiers.Add(structure = new StructureModifier(12));
 
 		modifiers.Add(new StructureFixer(structure));
 	}
@@ -231,7 +238,7 @@ public partial class World : MonoBehaviour
 		while (WorldBuilder.IsGenerating())
 			await Task.Delay(20);
 
-		WorldBuilder.ResetSpawnFinder();
+		WorldBuilder.ResetFinders();
 
 		RecalcLight();
 	}
@@ -355,6 +362,28 @@ public partial class World : MonoBehaviour
 	public static Vector3 GetGoalPoint()
 	{
 		return Instance.goalPoint;
+	}
+
+	public static bool HasEncounter()
+	{
+		return Instance.hasEncounter;
+	}
+
+	public static void SpawnEncounter()
+	{
+		Instantiate(Instance.encounterObject, Instance.encounterPoint, Quaternion.identity);
+		AudioManager.PlayMusicCue(AudioManager.CueType.EncounterPossible);
+		Debug.Log("encounter!");
+	}
+
+	public static void SetEncounterPoint(Vector3 pos)
+	{
+		Instance.encounterPoint = pos;
+	}
+
+	public static Vector3 GetEncounterPoint()
+	{
+		return Instance.encounterPoint;
 	}
 
 	public static void AddChunk(Vector3Int pos, Chunk chunk)

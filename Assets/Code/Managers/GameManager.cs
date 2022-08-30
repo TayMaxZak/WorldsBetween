@@ -64,6 +64,7 @@ public partial class GameManager : MonoBehaviour
 			loadingProgress = (builderProgress * 1 + lighterProgress * 1) / (1 + 1);
 			// Get display progress by interpolating
 			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 3);
+			loadingProgressSmooth = Mathf.Clamp(loadingProgressSmooth, 0, 100);
 
 			if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks && !startedBuilding)
 				ShowProgress();
@@ -80,7 +81,7 @@ public partial class GameManager : MonoBehaviour
 				FinishLighting();
 
 			// Start transition from loading
-			if (CloseEnough(loadingProgress, 1))
+			if (CloseEnough(loadingProgress, 1) && World.WorldBuilder.genStage == WorldBuilder.GenStage.Ready)
 				FinishLoading(1000);
 
 			RotateCameraWhileLoading();

@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 
 [System.Serializable]
-public class GoalFinder
+public class EncounterFinder
 {
 	private Vector3Int pos;
 	public Vector3Int extents = Vector3Int.one;
@@ -22,8 +22,8 @@ public class GoalFinder
 	private int minAirCount = 9;
 	private int minFloorCount = 9;
 
-	private bool foundGoalPos = false;
-	private Vector3 goalPos = Vector3.zero;
+	private bool foundEncounterPos = false;
+	private Vector3 encounterPos = Vector3.zero;
 
 	private bool success = false;
 
@@ -42,8 +42,8 @@ public class GoalFinder
 		airCount = 0;
 		floorCount = 0;
 
-		foundGoalPos = false;
-		goalPos = Vector3.zero;
+		foundEncounterPos = false;
+		encounterPos = Vector3.zero;
 
 		success = false;
 	}
@@ -53,15 +53,16 @@ public class GoalFinder
 		airCount = 0;
 		floorCount = 0;
 
-		foundGoalPos = false;
-		goalPos = Vector3.zero;
+		foundEncounterPos = false;
+		encounterPos = Vector3.zero;
 
 		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = new Vector3Int(8, 8, 8);
+		Vector3Int testBounds = new Vector3Int(16, 16, 16);
+		Vector3 middlePoint = Vector3.Lerp(World.GetPointA(), World.GetPointB(), 0.6f);
 		pos = new Vector3Int(
-			World.GetPointB().x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
-			World.GetPointB().y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1) - 4),
-			World.GetPointB().z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
+			(int)middlePoint.x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
+			(int)middlePoint.y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1) - 4),
+			(int)middlePoint.z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
 		);
 	}
 
@@ -90,28 +91,28 @@ public class GoalFinder
 		if (!World.Contains(pos))
 			return;
 
-		bool notWaterOrNoChoice = pos.y > World.GetWaterHeight() || attemptsLeft <= 0;
+		bool inWaterOrNoChoice = pos.y <= World.GetWaterHeight() || attemptsLeft <= 0;
 
-		if (notWaterOrNoChoice && !World.GetBlock(pos).IsRigid())
+		if (inWaterOrNoChoice && !World.GetBlock(pos).IsRigid())
 		{
 			airCount++;
 
 			// Check goalPos conditions
-			if (!foundGoalPos)
+			if (!foundEncounterPos)
 			{
-				// Floor, and 3 total air blocks above it
-				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && /*!World.GetBlock(pos + Vector3Int.up * 2).IsRigid() && */World.GetBlock(pos + Vector3Int.down).IsRigid())
+				// Floor, and 23 total air blocks above it
+				if (World.GetBlock(pos + Vector3Int.up).IsRigid() && /*!World.GetBlock(pos + Vector3Int.up * 2).IsRigid() && */!World.GetBlock(pos + Vector3Int.down).IsRigid())
 				{
-					foundGoalPos = true;
+					foundEncounterPos = true;
 
-					goalPos = pos;
+					encounterPos = pos;
 				}
 			}
 		}
 		else
 		{
 			// Solid and 2 air blocks above it
-			if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.up * 2).IsRigid())
+			if (!World.GetBlock(pos + Vector3Int.down).IsRigid() && !World.GetBlock(pos + Vector3Int.down * 2).IsRigid())
 				floorCount++;
 		}
 	}
@@ -137,15 +138,15 @@ public class GoalFinder
 		if (airCount < minAirCount || floorCount < minFloorCount)
 			return;
 
-		if (!foundGoalPos)
+		if (!foundEncounterPos)
 			return;
 
 		success = true;
 
 		await Task.Delay(1);
 
-		GoalPoint.Instance.ActivateGoal();
-		GoalPoint.Instance.InitGoalActor(goalPos);
+		World.SetEncounterPoint(encounterPos);
+		World.SpawnEncounter();
 	}
 
 	public bool IsSuccessful()
@@ -160,7 +161,7 @@ public class GoalFinder
 
 	public void DrawGizmo()
 	{
-		Gizmos.color = Utils.colorPurple;
+		Gizmos.color = Utils.colorOrange;
 
 		Gizmos.DrawWireCube(pos + (Vector3)extents / 2f, extents);
 	}

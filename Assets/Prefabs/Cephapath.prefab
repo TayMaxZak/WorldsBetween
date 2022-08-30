@@ -25628,7 +25628,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  inputVelocity: {x: 0, y: 0, z: 0}
   dead: 0
+  rayMask:
+    serializedVersion: 2
+    m_Bits: 1024
   dioramaMode: 0
   dioramaSharpness: 0
   dioramaWiggle: 0.1
@@ -25637,12 +25642,14 @@ MonoBehaviour:
   target: {fileID: 0}
   tentaclePrefab: {fileID: 8390588029003683492, guid: 9c18bacdce9aab5418d04d5510185e55, type: 3}
   tentacleRoot: {fileID: 8513241437453654586}
-  speed: 2
+  maxSpeed: 4
+  accel: 0.25
   damage: 5
   grabChance: 1
   tentacleCount: 7
-  grabDistance: 5
-  damageDistance: 3
+  encounterDistance: 50
+  grabDistance: 7
+  damageDistance: 5
   timeScale: 1
   dashTimer:
     maxTime: 3
