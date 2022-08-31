@@ -90,36 +90,27 @@ LineRenderer:
   - {x: 5.837355, y: 18.71832, z: 69.44497}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.4
+    widthMultiplier: 0.5
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: -2.7487683
-        outSlope: -2.7487683
+        inSlope: -1.3170732
+        outSlope: -1.3170732
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.8856646
-      - serializedVersion: 3
-        time: 0.26336795
-        value: 0.4411258
-        inSlope: -1.3265516
-        outSlope: -1.3265516
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.3659137
-        outWeight: 0.33333334
+        outWeight: 0.22777778
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: -0.31911635
-        outSlope: -0.31911635
+        inSlope: -3.0857143
+        outSlope: -3.0857143
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.117456995
+        inWeight: 0.25
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -153,8 +144,8 @@ LineRenderer:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 1
-    numCapVertices: 1
+    numCornerVertices: 0
+    numCapVertices: 0
     alignment: 0
     textureMode: 1
     shadowBias: 0.5

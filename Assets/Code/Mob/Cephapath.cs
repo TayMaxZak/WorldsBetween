@@ -34,6 +34,7 @@ public class Cephapath : Actor
 	public AudioSource grabLoop;
 	public Sound dashSound;
 	public Transform target;
+	public Vector3 targetPoint;
 
 	[SerializeField]
 	private LineRenderer tentaclePrefab;
@@ -118,11 +119,11 @@ public class Cephapath : Actor
 	private void InitTentacle(Tentacle t)
 	{
 		// Initialize previous values manually
-		t.targetPointNew = transform.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
+		t.targetPointNew = tentacleRoot.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
 		t.offsetDirNew = SeedlessRandom.RandomPoint(6);
 
-		t.targetPoint = transform.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
-		t.curveTipPoint = transform.position + SeedlessRandom.RandomPoint(grabDistance);
+		t.targetPoint = tentacleRoot.position + SeedlessRandom.RandomPoint(grabDistance).normalized;
+		t.curveTipPoint = tentacleRoot.position + SeedlessRandom.RandomPoint(grabDistance);
 
 		MoveTentacle(t);
 
@@ -165,7 +166,7 @@ public class Cephapath : Actor
 		OnEnable();
 	}
 
-	private void Update()
+	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
 	{
 		if (dioramaMode)
 		{
@@ -220,7 +221,7 @@ public class Cephapath : Actor
 		{
 			if (!hasBeenSpotted)
 			{
-				if (distance < encounterDistance && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f && !Physics.Raycast(transform.position, dir, distance, rayMask))
+				if (distance < encounterDistance/* && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f*/ && !Physics.Raycast(transform.position, dir, distance, rayMask))
 				{
 					hasBeenSpotted = true;
 					AudioManager.PlayMusicCue(AudioManager.CueType.EncounterStarting);
@@ -253,7 +254,7 @@ public class Cephapath : Actor
 			// Main tentacle logic
 			{
 				// Does this tentacle need to be adjusted now?
-				bool moveNow = (t.targetPoint - transform.position).sqrMagnitude > grabDistance * grabDistance;
+				bool moveNow = (t.targetPoint - tentacleRoot.position).sqrMagnitude > grabDistance * grabDistance || Physics.Raycast(tentacleRoot.position, (t.targetPoint - tentacleRoot.position).normalized, out RaycastHit hit, (t.targetPoint - tentacleRoot.position).magnitude, rayMask);
 				// If not moving all of them, remember that this adjusted out of sync
 				if (!moveTentacles)
 					t.movedOutOfSync |= moveNow;
@@ -272,18 +273,18 @@ public class Cephapath : Actor
 			float delta = DeltaTime();
 
 			// Move towards new target point
-			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 2);
+			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 4);
 
 			// Overall smoothing
-			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta);
-			t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, DeltaTime());
+			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 2);
+			t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, delta);
 
 			// Drag behind tips to make a curve
 			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta);
 
-			//bool inWater = transform.position.y < World.GetWaterHeight();
+			bool inWater = transform.position.y < World.GetWaterHeight();
 			//float smoothOrSharp = inWater ? 1 : 0;
-			float smoothOrSharp = i % 3 == 0 ? 0 : 1;
+			float smoothOrSharp = 1;
 			RenderTentacle(t, dir, smoothDir, (1 - smoothOrSharp) * (1 - smoothOrSharp));
 		}
 	}
@@ -340,9 +341,15 @@ public class Cephapath : Actor
 
 	private bool MoveTentacle(Tentacle t, Vector3 dir, bool adjust)
 	{
-		Vector3 newOffset = SeedlessRandom.RandomPoint(1f).normalized;
-		newOffset *= Mathf.Sign(Vector3.Dot((newOffset - dir * 0.1f).normalized, dir));
-		t.targetPointNew = Vector3.Lerp(t.targetPointNew, transform.position + newOffset * grabDistance, 0.7f);
+		Vector3 newOffset = (SeedlessRandom.RandomPoint(1f).normalized + (dir * Mathf.Clamp01(curSpeed)) * 10).normalized;
+		//newOffset *= Mathf.Sign(Vector3.Dot((newOffset - dir * 0.1f).normalized, dir));
+
+		Physics.Raycast(tentacleRoot.position, newOffset, out RaycastHit hit, grabDistance, rayMask);
+
+		if (hit.collider)
+			t.targetPointNew = Vector3.Lerp(hit.point, tentacleRoot.position, 0.05f);
+		else
+			t.targetPointNew = Vector3.Lerp(newOffset * grabDistance + tentacleRoot.position, tentacleRoot.position, 0.5f);
 
 		t.offsetDirNew = Vector3.Lerp(t.offsetDirNew, SeedlessRandom.RandomPoint(6), 0.5f);
 
@@ -378,7 +385,7 @@ public class Cephapath : Actor
 	private void RenderTentacle(Tentacle t, Vector3 dir, Vector3 smoothDir, float sharpness)
 	{
 		// Perpindicular to dir
-		Vector3 perpin = Vector3.Cross(dir, (t.targetPoint - transform.position).normalized);
+		Vector3 perpin = Vector3.Cross(dir, (t.targetPoint - tentacleRoot.position).normalized);
 
 		for (int i = 0; i < t.line.positionCount; i++)
 		{
@@ -388,7 +395,7 @@ public class Cephapath : Actor
 			float curveStrength = percent * percent;
 			float waveyStrength = 0.5f * Mathf.Lerp(curveStrength, 1, 0.25f) * Mathf.Sin(percent * grabDistance - TotalTime() * (tentacleWaveSpeed));
 
-			Vector3 surfacePoint = transform.position + (t.targetPoint - transform.position).normalized * 0.5f;
+			Vector3 surfacePoint = tentacleRoot.position + (t.targetPoint - tentacleRoot.position).normalized * 0.5f;
 
 			// Attach to world position
 			Vector3 vibrate = dashVibrate * sharpness * vibrateMult * vibrateMult * SeedlessRandom.NextFloatInRange(-1, 1) * perpin;
