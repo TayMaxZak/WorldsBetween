@@ -11,6 +11,7 @@ public class PlayerMover : Actor
 	public Vector3 headPosition;
 	private Vector3 prevHeadPosition;
 
+	[Header("Size")]
 	[SerializeField]
 	private Transform head;
 	[SerializeField]
@@ -24,6 +25,7 @@ public class PlayerMover : Actor
 	[SerializeField]
 	private float radius = 0.3f;
 
+	[Header("Distances")]
 	[SerializeField]
 	private float maxSafeFall = 3.5f;
 	[SerializeField]
@@ -32,16 +34,29 @@ public class PlayerMover : Actor
 	private float raycastMargin = 0.04f;
 	[SerializeField]
 	private float strideLength = 0.7f;
-
-	[SerializeField]
-	private float mouseSens = 150;
-	[SerializeField]
-	private float walkSpeed = 2.5f;
 	[SerializeField]
 	private float peekDistance = 0.4f;
+
+	[Header("Speeds")]
+	[SerializeField]
+	private float mouseSens = 150;
+	private float curSpeed;
+	[SerializeField]
+	private float walkSpeed = 3.5f;
+	[SerializeField]
+	private float sprintSpeed = 7f;
+	[SerializeField]
+	private float sprintAccel = 4;
+	[SerializeField]
+	private float sprintDeccel = 2;
+
 	[SerializeField]
 	private float jumpSpeed = 0.24f;
-
+	private Timer climbingTimer = new Timer(1);
+	[SerializeField]
+	private float fastClimbTime = 0.55f;
+	[SerializeField]
+	private float slowClimbTime = 1.1f;
 	public float airResistance = 0.05f;
 
 	private float minMouseV = -85;
@@ -49,16 +64,16 @@ public class PlayerMover : Actor
 	private float mouseH = 0;
 	private float mouseV = 0;
 
+	[Header("State")]
 	public bool grounded = false;
 	public bool atLedge = false;
 	public bool jump = false;
 	public bool climbing = false;
+	public bool sprinting = false;
 
-	private Timer climbingTimer = new Timer(1);
+	[Header("Costs")]
 	[SerializeField]
-	private float fastClimbTime = 0.55f;
-	[SerializeField]
-	private float slowClimbTime = 1.1f;
+	private float sprintCost = 5;
 
 	private Vector3 initPos;
 
@@ -102,9 +117,9 @@ public class PlayerMover : Actor
 
 		if (!climbing)
 		{
-			DirectionalInput();
+			ButtonInput();
 
-			SpacebarInput();
+			DirectionalInput();
 
 			// Update prev position for lerping
 			if (isPhysicsTick)
@@ -170,10 +185,17 @@ public class PlayerMover : Actor
 		dirInput = Vector3.ClampMagnitude(dirInput, 1);
 		dirInput = transform.rotation * dirInput;
 
-		inputVelocity = Vector3.Lerp(inputVelocity, dirInput * walkSpeed, Time.deltaTime * 8);
+		if (dirInput == Vector3.zero)
+			sprinting = false;
+		if (sprinting && Player.Instance.vitals.vitalsTickTimer.currentTime == Player.Instance.vitals.vitalsTickTimer.maxTime)
+			sprinting = Player.Instance.vitals.UseStamina(sprintCost * Player.Instance.vitals.vitalsTickTimer.maxTime, false, false);
+
+		curSpeed = Mathf.Lerp(curSpeed, sprinting ? sprintSpeed : walkSpeed, Time.deltaTime * (sprinting ? sprintAccel : sprintDeccel));
+
+		inputVelocity = Vector3.Lerp(inputVelocity, dirInput * curSpeed, Time.deltaTime * (sprinting ? 2 : 12));
 	}
 
-	private void SpacebarInput()
+	private void ButtonInput()
 	{
 		if (!grounded || climbing)
 			return;
@@ -181,6 +203,10 @@ public class PlayerMover : Actor
 		if (Input.GetButtonDown("Jump"))
 		{
 			jump = true;
+		}
+		if (Input.GetButtonDown("Sprint"))
+		{
+			sprinting = !sprinting;
 		}
 	}
 

@@ -102,12 +102,14 @@ public class Cephapath : Actor
 			if (!target)
 				target = Player.Instance.mover.transform;
 
-			grabLoop.volume = 0;
-
 			// Reset all timers
 			dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
 
 			Move(transform.forward, 1);
+		}
+		else
+		{
+			grabLoop.volume = 0;
 		}
 
 		foreach (Tentacle t in tentacles)
@@ -232,10 +234,13 @@ public class Cephapath : Actor
 			float badnessStrength = 1 - Mathf.Clamp01(Mathf.Max(distance - damageDistance, 0) / damageDistance);
 
 			// Update audio
-			grabLoop.volume = (1 - distance / grabDistance) * 0.5f;
+			//grabLoop.volume = (1 - distance / grabDistance) * 0.5f;
 			grabLoop.pitch = 1 + badnessStrength * 0.3f;
 
 			playerDeadReset = true;
+
+			// Deal damage
+			Player.Instance.vitals.DealDamage(damage * badnessStrength * DeltaTime());
 		}
 		// Player is dead
 		else if (playerDeadReset)
@@ -254,7 +259,7 @@ public class Cephapath : Actor
 			// Main tentacle logic
 			{
 				// Does this tentacle need to be adjusted now?
-				bool moveNow = (t.targetPoint - tentacleRoot.position).sqrMagnitude > grabDistance * grabDistance || Physics.Raycast(tentacleRoot.position, (t.targetPoint - tentacleRoot.position).normalized, out RaycastHit hit, (t.targetPoint - tentacleRoot.position).magnitude, rayMask);
+				bool moveNow = (t.targetPoint - (tentacleRoot.position + 2 * Mathf.Clamp01(curSpeed) * dir)).sqrMagnitude > grabDistance * grabDistance || Physics.Raycast(tentacleRoot.position, (t.targetPoint - tentacleRoot.position).normalized, out RaycastHit hit, (t.targetPoint - tentacleRoot.position).magnitude, rayMask);
 				// If not moving all of them, remember that this adjusted out of sync
 				if (!moveTentacles)
 					t.movedOutOfSync |= moveNow;
@@ -284,7 +289,7 @@ public class Cephapath : Actor
 
 			bool inWater = transform.position.y < World.GetWaterHeight();
 			//float smoothOrSharp = inWater ? 1 : 0;
-			float smoothOrSharp = 1;
+			float smoothOrSharp = 0;
 			RenderTentacle(t, dir, smoothDir, (1 - smoothOrSharp) * (1 - smoothOrSharp));
 		}
 	}
@@ -294,7 +299,7 @@ public class Cephapath : Actor
 		float deltaTime = Time.deltaTime;
 
 		transform.forward = smoothDir;
-		if (hasBeenSpotted && !Physics.Raycast(transform.position, dir, distance, rayMask))
+		if (hasBeenSpotted/* && !Physics.Raycast(transform.position, dir, distance, rayMask)*/)
 			curSpeed = Mathf.Lerp(curSpeed, maxSpeed, deltaTime * accel);
 		else
 			curSpeed = Mathf.Lerp(curSpeed, 0, deltaTime * accel);
@@ -341,7 +346,8 @@ public class Cephapath : Actor
 
 	private bool MoveTentacle(Tentacle t, Vector3 dir, bool adjust)
 	{
-		Vector3 newOffset = (SeedlessRandom.RandomPoint(1f).normalized + (dir * Mathf.Clamp01(curSpeed)) * 10).normalized;
+		Vector3 newTargetPos = SeedlessRandom.RandomPoint().normalized * 2 + 2 * Mathf.Clamp01(curSpeed) * dir + tentacleRoot.position;
+		Vector3 newOffset = (newTargetPos - tentacleRoot.position).normalized;
 		//newOffset *= Mathf.Sign(Vector3.Dot((newOffset - dir * 0.1f).normalized, dir));
 
 		Physics.Raycast(tentacleRoot.position, newOffset, out RaycastHit hit, grabDistance, rayMask);
@@ -349,7 +355,7 @@ public class Cephapath : Actor
 		if (hit.collider)
 			t.targetPointNew = Vector3.Lerp(hit.point, tentacleRoot.position, 0.05f);
 		else
-			t.targetPointNew = Vector3.Lerp(newOffset * grabDistance + tentacleRoot.position, tentacleRoot.position, 0.5f);
+			t.targetPointNew = Vector3.Lerp(newOffset * grabDistance + tentacleRoot.position, tentacleRoot.position, 0.05f);
 
 		t.offsetDirNew = Vector3.Lerp(t.offsetDirNew, SeedlessRandom.RandomPoint(6), 0.5f);
 
@@ -369,7 +375,7 @@ public class Cephapath : Actor
 
 	private void RenderTentacle(Tentacle t)
 	{
-		RenderTentacle(t, Vector3.zero, Vector3.zero, 0);
+		RenderTentacle(t, Vector3.zero, Vector3.zero, 1);
 	}
 
 	private float DeltaTime()

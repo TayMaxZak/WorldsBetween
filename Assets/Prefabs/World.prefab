@@ -53,13 +53,15 @@ MonoBehaviour:
     multiQ: 1
     queues: 100
     enqueueTaskSize: 150
-    generatorTaskSize: 50
+    generatorTaskSize: 10
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
     fakeChunkPrefab: {fileID: 6042555085825754433, guid: 4b4b891d8840f164199b476385ce3f7e, type: 3}
     spawnFinder:
       extents: {x: 3, y: 4, z: 3}
     goalFinder:
       extents: {x: 3, y: 4, z: 3}
+    encounterFinder:
+      extents: {x: 1, y: 1, z: 1}
     genRangePlayable: 6
     genRangeFake: 0
   lightEngine:
@@ -74,3 +76,4 @@ MonoBehaviour:
   chunkSize: 16
   isInfinite: 0
   encounterObject: {fileID: 0}
+  hasEncounter: 0

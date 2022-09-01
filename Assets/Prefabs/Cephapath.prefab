@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 7201988969552812884}
   - component: {fileID: 439283615485948312}
   - component: {fileID: 532455700808184480}
-  - component: {fileID: 5379230626910656956}
+  - component: {fileID: 1887219916438733879}
   m_Layer: 0
   m_Name: Rim
   m_TagString: Untagged
@@ -344,7 +344,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1016340210756151756}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -1.53, z: -0}
+  m_LocalPosition: {x: -0, y: -1.453, z: -0.15}
   m_LocalScale: {x: 1.403962, y: 1.4039619, z: 1.4039623}
   m_Children: []
   m_Father: {fileID: 5256382069818101297}
@@ -399,8 +399,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5379230626910656956
-SphereCollider:
+--- !u!65 &1887219916438733879
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -410,8 +410,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1.0000001, z: 1.0000002}
+  m_Center: {x: 0, y: -0.00000011920929, z: -0.000000014901161}
 --- !u!1 &1325087137268541266
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,7 +439,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1325087137268541266}
   m_LocalRotation: {x: 0.70710576, y: -0, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: 0, y: 0, z: 0.278}
+  m_LocalPosition: {x: 0, y: 0, z: 0.31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1577499678517381515}
@@ -522,7 +522,7 @@ GameObject:
   - component: {fileID: 1235217712779290417}
   - component: {fileID: 9134094480141700512}
   - component: {fileID: 3664788281692900227}
-  - component: {fileID: 1436376676202056170}
+  - component: {fileID: 1832465460706313858}
   m_Layer: 0
   m_Name: Abdomen
   m_TagString: Untagged
@@ -593,8 +593,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1436376676202056170
-SphereCollider:
+--- !u!65 &1832465460706313858
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -604,8 +604,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.8, y: 0.8, z: 0.8}
+  m_Center: {x: 0, y: -0.00000017881393, z: 0}
 --- !u!1 &3920601650734650871
 GameObject:
   m_ObjectHideFlags: 0
@@ -15405,10 +15405,10 @@ AudioSource:
   m_GameObject: {fileID: 6472865124142903204}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: b180cc2f862cf1b4e9badb77bf796717, type: 2}
   m_audioClip: {fileID: 8300000, guid: c78f42128068bd64089b353af17dad82, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -15417,9 +15417,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 15
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -15641,7 +15641,7 @@ GameObject:
   - component: {fileID: 2242830385921312245}
   - component: {fileID: 2273804853511636023}
   - component: {fileID: 590559087718895554}
-  - component: {fileID: 7842578308822282682}
+  - component: {fileID: 5792371080150567286}
   m_Layer: 0
   m_Name: Link
   m_TagString: Untagged
@@ -15657,7 +15657,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7161880573009716034}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.22, z: -0}
+  m_LocalPosition: {x: 0, y: -1.071, z: -0.177}
   m_LocalScale: {x: 1.1562039, y: 1.9820644, z: 1.156204}
   m_Children: []
   m_Father: {fileID: 5256382069818101297}
@@ -15712,8 +15712,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7842578308822282682
-SphereCollider:
+--- !u!65 &5792371080150567286
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -15723,8 +15723,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1.0000002, z: 1.0000002}
+  m_Center: {x: 0, y: -0.00000017881393, z: -0.000000044703484}
 --- !u!1 &7282197719478101657
 GameObject:
   m_ObjectHideFlags: 0
@@ -25644,13 +25644,13 @@ MonoBehaviour:
   targetPoint: {x: 0, y: 0, z: 0.5}
   tentaclePrefab: {fileID: 8390588029003683492, guid: 9c18bacdce9aab5418d04d5510185e55, type: 3}
   tentacleRoot: {fileID: 8513241437453654586}
-  maxSpeed: 3
+  maxSpeed: 6
   accel: 0.25
   damage: 5
   grabChance: 1
   tentacleCount: 7
   encounterDistance: 50
-  grabDistance: 10
+  grabDistance: 15
   damageDistance: 5
   timeScale: 1
   dashTimer:

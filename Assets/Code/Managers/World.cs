@@ -139,7 +139,7 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 0.25f;
+		bool hasWater = Random.value < 0.333f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{

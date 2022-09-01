@@ -1962,7 +1962,7 @@ MonoBehaviour:
   mover: {fileID: 8417224532618400513}
   dead: 0
   vitalsTickTimer:
-    maxTime: 0.05
+    maxTime: 0.01
   currentHealth: 100
   maxHealth: 100
   canNearDie: 1
@@ -1973,8 +1973,7 @@ MonoBehaviour:
   maxStamina: 100
   stopStaminaRegen:
     maxTime: 1
-  staminaRegen: 10
-  staminaRegenSlow: 10
+  staminaRegen: 25
   deathSound: {fileID: 11400000, guid: eb68c2c4a78521c46bd95ba5f41f0cd0, type: 2}
   nearDeathSound: {fileID: 11400000, guid: 8af0dd925ca7a334083d2b3c9bab26cb, type: 2}
   showVitals: 0
@@ -2010,17 +2009,22 @@ MonoBehaviour:
   maxClimbable: 0.6
   raycastMargin: 0.04
   strideLength: 0.7
-  mouseSens: 150
-  walkSpeed: 4
   peekDistance: 0.4
+  mouseSens: 150
+  walkSpeed: 3.5
+  sprintSpeed: 8
+  sprintAccel: 3.5
+  sprintDeccel: 2
   jumpSpeed: 4
+  fastClimbTime: 0.55
+  slowClimbTime: 1.1
   airResistance: 0.05
   grounded: 0
   atLedge: 0
   jump: 0
   climbing: 0
-  fastClimbTime: 0.55
-  slowClimbTime: 1.1
+  sprinting: 0
+  sprintCost: 10
 --- !u!65 &731691462813523884
 BoxCollider:
   m_ObjectHideFlags: 0

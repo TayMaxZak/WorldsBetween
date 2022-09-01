@@ -23,7 +23,6 @@ public class PlayerVitals : MonoBehaviour
 
 	public Timer stopStaminaRegen = new Timer(3);
 	public float staminaRegen = 10;
-	public float staminaRegenSlow = 1;
 
 
 	[Header("UI/UX")]
@@ -63,11 +62,8 @@ public class PlayerVitals : MonoBehaviour
 		if (stopStaminaRegen.Expired())
 		{
 			// Stamina only regens up to current health or max stamina
-			float staminaCap = Mathf.Min(currentHealth, maxStamina);
-			if (currentStamina < staminaCap)
-				currentStamina += Mathf.Min(staminaRegen * deltaTime, staminaCap - currentStamina);
-			else if (currentStamina < maxStamina)
-				currentStamina += Mathf.Min(staminaRegenSlow * deltaTime, maxStamina - currentStamina);
+			if (currentStamina < maxStamina)
+				currentStamina += Mathf.Min(staminaRegen * deltaTime, maxStamina - currentStamina);
 		}
 
 		if (stopHealthRegen.Expired())
@@ -131,7 +127,7 @@ public class PlayerVitals : MonoBehaviour
 		if (dead)
 			return;
 
-		UseStamina(amount, false, true);
+		//UseStamina(amount, false, true);
 
 		HurtHealth(amount);
 	}
