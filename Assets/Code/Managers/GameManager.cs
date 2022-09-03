@@ -27,6 +27,8 @@ public partial class GameManager : MonoBehaviour
 	private float newPanSpeed;
 	private Timer panSpeedRandomizer = new Timer(3);
 
+	public float timeSpentLoading = 0;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -57,6 +59,8 @@ public partial class GameManager : MonoBehaviour
 		}
 		else
 		{
+			timeSpentLoading += Time.deltaTime;
+
 			// Calculate progress
 			float builderProgress = World.WorldBuilder.GetGenProgress();
 			float lighterProgress = World.LightEngine.GetGenProgress();
@@ -82,7 +86,7 @@ public partial class GameManager : MonoBehaviour
 
 			// Start transition from loading
 			if (CloseEnough(loadingProgress, 1) && World.WorldBuilder.genStage == WorldBuilder.GenStage.Ready)
-				FinishLoading(1000);
+				FinishLoading();
 
 			RotateCameraWhileLoading();
 		}
@@ -138,7 +142,7 @@ public partial class GameManager : MonoBehaviour
 		WorldLightAtlas.Instance.ApplyChanges();
 	}
 
-	public async void FinishLoading(int delay)
+	public async void FinishLoading()
 	{
 		if (startedFadingOut || finishedLoading)
 			return;
@@ -147,19 +151,22 @@ public partial class GameManager : MonoBehaviour
 		// Transition from loading state to game state
 		loadingScreen.StartFadingOut();
 
-		await Task.Delay(delay);
+		await Task.Delay(1000);
 
 
 		// Init actors
 		PhysicsManager.Instance.InitAll();
 		// Activate player
 		Player.Instance.ActivatePlayer();
+		// Start appropriate music
+		if (World.HasEncounter())
+			AudioManager.PlayMusicCue(AudioManager.CueType.EncounterPossible);
 
 		finishedLoading = true;
 
 
 		// Disable loading screen completely after some time
-		await Task.Delay(delay * 4);
+		await Task.Delay(4000);
 
 		if (loadingScreen)
 			loadingScreen.Hide();

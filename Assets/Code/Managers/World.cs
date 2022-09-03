@@ -353,6 +353,11 @@ public partial class World : MonoBehaviour
 		return Instance.pointB;
 	}
 
+	public static Vector3 GetRoomPoint(float t)
+	{
+		return Instance.structure.rooms[(int)(Instance.structure.rooms.Count * t)].innerBounds.center;
+	}
+
 	public static void SetGoalPoint(Vector3 pos)
 	{
 		Instance.goalPoint = pos;
@@ -372,7 +377,6 @@ public partial class World : MonoBehaviour
 	public static void SpawnEncounter()
 	{
 		Instantiate(Instance.encounterObject, Instance.encounterPoint, Quaternion.identity);
-		AudioManager.PlayMusicCue(AudioManager.CueType.EncounterPossible);
 	}
 
 	public static void SetEncounterPoint(Vector3 pos)
