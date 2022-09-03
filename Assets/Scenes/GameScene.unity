@@ -238,6 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadingScreen: {fileID: 6292042240279805736}
+  timeSpentLoading: 0
 --- !u!4 &173910858
 Transform:
   m_ObjectHideFlags: 0
@@ -252,17 +253,6 @@ Transform:
   m_Father: {fileID: 1600001840}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &306488917 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6469835766400089069, guid: 02f7ff4735f366444b0c148546ac9242, type: 3}
-  m_PrefabInstance: {fileID: 805622447}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &428019559 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5019037439867976134, guid: f323d8665bac74744ac986e0a66f8570, type: 3}
@@ -380,10 +370,10 @@ MonoBehaviour:
   poolSize: 20
   musicPlayer: {fileID: 657413208}
   musicCues:
+  - {fileID: 11400000, guid: f75e377de48fc9f4a9d3a7dcbcf9ef91, type: 2}
   - {fileID: 11400000, guid: 69c3f060f869b4a45ba9893b5b9799f9, type: 2}
   - {fileID: 11400000, guid: e0f8442a57ec6b04582c2dcc3aed749a, type: 2}
   - {fileID: 11400000, guid: bfa8b7232b9a1004aafc9ec29fd658e8, type: 2}
-  currentMusicCue: {fileID: 0}
 --- !u!4 &657413207
 Transform:
   m_ObjectHideFlags: 0
@@ -410,7 +400,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -774286881198688754, guid: b180cc2f862cf1b4e9badb77bf796717, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.4
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -771,7 +761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5103ff69f7763dc4c9fb01a1e628be93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthText: {fileID: 306488917}
+  vitalsCanvas: {fileID: 430986512}
   staminaSlider: {fileID: 807027474}
   staminaWidth: 320
   heldItemImage: {fileID: 3964215063533455037}
@@ -920,7 +910,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: seed
-      value: 1634308097
+      value: 1439629349
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: sunObject
@@ -939,20 +929,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.queues
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lightEngine.raysPerBatch
       value: 3200
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lightEngine.intensityPerRay
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
-      propertyPath: worldBuilder.genRangePlayable
-      value: 6
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: lightEngine.raysPerLightSource
-      value: 2400
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
+      propertyPath: worldBuilder.generatorTaskSize
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: worldBuilder.encounterFinder.extents.x

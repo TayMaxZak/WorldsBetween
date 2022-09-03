@@ -17,6 +17,20 @@ public class Flashlight : Item
 	//private float curIntensity;
 	//private float lastIntensity;
 
+	public override void Init()
+	{
+		base.Init();
+
+		on = false;
+
+		UpdateLight(on);
+	}
+
+	public override void Die()
+	{
+		UpdateLight(false);
+	}
+
 	public override void Use(UseHow useHow)
 	{
 		base.Use(useHow);

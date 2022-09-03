@@ -12,7 +12,8 @@ public class UIManager : MonoBehaviour
 
 	//public Animator watchAnim;
 
-	public TMPro.TextMeshProUGUI healthText;
+	private bool showVitals;
+	public GameObject vitalsCanvas;
 
 	public Image staminaSlider;
 	public float staminaWidth = 1;
@@ -34,19 +35,36 @@ public class UIManager : MonoBehaviour
 		else
 			Destroy(gameObject);
 
-		SetDeathUI(false);
+		SetDie(false);
 	}
 
-	public static void SetWatchRaised(bool raised)
+	public static void SetDie(bool isDie)
 	{
-		//Instance.watchRaised = raised;
-
-		//Instance.watchAnim.SetBool("Raised", raised);
+		SetDeathUI(isDie);
+		//SetDeathPostProcess(isDie ? 1 : 0);
 	}
 
-	public static void SetCurrentHealth(int health)
+	public static void SetShowVitals(bool show)
 	{
-		Instance.healthText.text = "" + health;
+		Instance.showVitals = show;
+		Instance.vitalsCanvas.SetActive(show);
+	}
+
+	//public static void SetWatchRaised(bool raised)
+	//{
+	//	//Instance.watchRaised = raised;
+
+	//	//Instance.watchAnim.SetBool("Raised", raised);
+	//}
+
+	public static void SetCurrentHealth(float health)
+	{
+		SetDamagePostProcess(1 - health);
+
+		float nearDeath = 1 - health;
+		nearDeath = Mathf.Clamp01((nearDeath - 0.75f) * 4);
+		nearDeath *= nearDeath * nearDeath * nearDeath;
+		SetDeathPostProcess(0.7f * nearDeath);
 	}
 
 	public static void SetCurrentStamina(float stamina)
@@ -54,17 +72,17 @@ public class UIManager : MonoBehaviour
 		Instance.staminaSlider.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, stamina * Instance.staminaWidth);
 	}
 
-	public static void SetDeathPostProcess(float death)
+	private static void SetDeathPostProcess(float death)
 	{
 		Instance.deathPostProcess.weight = death;
 	}
 
-	public static void SetDamagePostProcess(float damage)
+	private static void SetDamagePostProcess(float damage)
 	{
 		Instance.damagePostProcess.weight = damage;
 	}
 
-	public static void SetDeathUI(bool show)
+	private static void SetDeathUI(bool show)
 	{
 		Instance.deathCanvas.SetActive(show);
 	}

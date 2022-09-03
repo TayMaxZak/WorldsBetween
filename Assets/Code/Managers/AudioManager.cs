@@ -23,6 +23,7 @@ public class AudioManager : MonoBehaviour
 
 	public enum CueType
 	{
+		Die,
 		EncounterPossible,
 		EncounterStarting,
 		EncounterHappening
@@ -30,9 +31,7 @@ public class AudioManager : MonoBehaviour
 	[SerializeField]
 	private MusicCue[] musicCues;
 
-	[SerializeField]
 	private MusicCue currentMusicCue;
-	private MusicCue scheduledMusicCue;
 
 	private void Awake()
 	{
@@ -65,6 +64,8 @@ public class AudioManager : MonoBehaviour
 			if (currentMusicCue)
 			{
 				Instance.musicPlayer.clip = currentMusicCue.clip;
+				Instance.musicPlayer.volume = currentMusicCue.volume;
+
 				Instance.musicPlayer.Play();
 				currentMusicCue = currentMusicCue.next;
 			}
@@ -158,6 +159,7 @@ public class AudioManager : MonoBehaviour
 
 	public static void StopMusicCue()
 	{
+		Instance.currentMusicCue = null;
 		Instance.musicPlayer.Stop();
 	}
 

@@ -58,6 +58,7 @@ public class PlayerMover : Actor
 	[SerializeField]
 	private float slowClimbTime = 1.1f;
 	public float airResistance = 0.05f;
+	public float waterResistance = 0.5f;
 
 	private float minMouseV = -85;
 	private float maxMouseV = 85;
@@ -85,6 +86,18 @@ public class PlayerMover : Actor
 		mouseV = head.transform.eulerAngles.x;
 	}
 
+	public void Respawn()
+	{
+		position = initPos;
+
+		velocity = Vector3.zero;
+		//fallVelocity = Vector3.zero;
+		inputVelocity = Vector3.zero;
+		climbing = false;
+
+		mouseV = 0;
+	}
+
 	public override void Init()
 	{
 		base.Init();
@@ -97,23 +110,16 @@ public class PlayerMover : Actor
 
 	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
 	{
-		if (!didInit)
+		if (!didInit || !GameManager.GetFinishedLoading())
 			return;
 
 		Cursor.lockState = CursorLockMode.Confined;
 		//Cursor.visible = false;
 
-		if (Input.GetButtonDown("Restart"))
-		{
-			position = initPos;
-
-			velocity = Vector3.zero;
-			//fallVelocity = Vector3.zero;
-			inputVelocity = Vector3.zero;
-			climbing = false;
-		}
-
 		MouseLookInput();
+
+		if (Player.Instance.vitals.dead)
+			return;
 
 		if (!climbing)
 		{
@@ -167,8 +173,16 @@ public class PlayerMover : Actor
 
 	private void MouseLookInput()
 	{
-		mouseH += Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
-		mouseV -= Input.GetAxis("Mouse Y") * mouseSens * Time.deltaTime;
+		if (!Player.Instance.vitals.dead)
+		{
+			mouseH += Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
+			mouseV -= Input.GetAxis("Mouse Y") * mouseSens * Time.deltaTime;
+		}
+		else
+		{
+			float dampen = 1 - Mathf.Clamp01(mouseV / minMouseV);
+			mouseV -= dampen * 0.15f * mouseSens * Time.deltaTime;
+		}
 
 		mouseV = Mathf.Clamp(mouseV, minMouseV, maxMouseV);
 
@@ -185,7 +199,7 @@ public class PlayerMover : Actor
 		dirInput = Vector3.ClampMagnitude(dirInput, 1);
 		dirInput = transform.rotation * dirInput;
 
-		if (dirInput == Vector3.zero)
+		if (dirInput == Vector3.zero || inWater)
 			sprinting = false;
 		if (sprinting && Player.Instance.vitals.vitalsTickTimer.currentTime == Player.Instance.vitals.vitalsTickTimer.maxTime)
 			sprinting = Player.Instance.vitals.UseStamina(sprintCost * Player.Instance.vitals.vitalsTickTimer.maxTime, false, false);
@@ -234,7 +248,7 @@ public class PlayerMover : Actor
 		Move(velocity * deltaTime);
 
 		// Drag
-		velocity *= (1 - deltaTime * airResistance);
+		velocity *= (1 - deltaTime * (inWater ? waterResistance : airResistance));
 
 		// Walk and run input
 		InputMove(inputVelocity * deltaTime, deltaTime);
@@ -275,7 +289,7 @@ public class PlayerMover : Actor
 				climbingTimer.maxTime = (grounded ? fastClimbTime : slowClimbTime);
 				climbingTimer.Reset();
 
-				position = hit.point + Vector3.up * (height / 2f + 0.1f);
+				position = hit.point + Vector3.up * (height / 2f + 0.02f);
 			}
 		}
 

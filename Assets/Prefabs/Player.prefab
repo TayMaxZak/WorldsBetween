@@ -1968,13 +1968,13 @@ MonoBehaviour:
   canNearDie: 1
   stopHealthRegen:
     maxTime: 4
-  healthRegen: 4
+  healthRegen: 10
   currentStamina: 100
   maxStamina: 100
   stopStaminaRegen:
     maxTime: 1
   staminaRegen: 25
-  deathSound: {fileID: 11400000, guid: eb68c2c4a78521c46bd95ba5f41f0cd0, type: 2}
+  damagedSound: {fileID: 0}
   nearDeathSound: {fileID: 11400000, guid: 8af0dd925ca7a334083d2b3c9bab26cb, type: 2}
   showVitals: 0
   heartbeatLoop: {fileID: 799638841425147642}
@@ -2001,7 +2001,7 @@ MonoBehaviour:
   headPosition: {x: 0, y: 0, z: 0}
   head: {fileID: 1258937105071290515}
   headOffset: {x: 0, y: 0.6, z: 0}
-  climbOffset: {x: 0, y: 0.55, z: 0.75}
+  climbOffset: {x: 0, y: 0.6, z: 0.75}
   feetOffset: {x: 0, y: -0.8, z: 0}
   height: 1.6
   radius: 0.3

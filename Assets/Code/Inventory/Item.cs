@@ -31,6 +31,12 @@ public class Item : ScriptableObject
 
 	}
 
+	// Called when the player dies
+	public virtual void Die()
+	{
+
+	}
+
 	// Called when the player clicks while this item is held
 	public virtual void Use(UseHow useHow)
 	{

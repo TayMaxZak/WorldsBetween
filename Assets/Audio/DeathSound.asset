@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54b325fca674a7b45a4271a02adc9dd9, type: 3}
+  m_Script: {fileID: 11500000, guid: c343ae1553cb49643bc51b10bcdac915, type: 3}
   m_Name: DeathSound
   m_EditorClassIdentifier: 
+  volume: 0.5
   clip: {fileID: 8300000, guid: 67f6e93aed8939a4a921ac8c82b15831, type: 3}
-  preset: {fileID: -7837934151874488307, guid: 19ef9d98d15046e489d3752d956ed8e4, type: 3}
-  pitchRange:
-    min: 1
-    max: 1
+  next: {fileID: 0}
+  interrupts: 1

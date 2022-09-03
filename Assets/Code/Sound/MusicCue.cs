@@ -7,6 +7,8 @@ using UnityEngine;
 [System.Serializable]
 public class MusicCue : ScriptableObject
 {
+	public float volume = 0.5f;
+
 	public AudioClip clip = null;
 
 	public MusicCue next = null;

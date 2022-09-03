@@ -89,7 +89,7 @@ public class Player : MonoBehaviour
 		else
 			quit.currentTime = quit.maxTime;
 
-		if (vitals.dead && (Input.GetButtonDown("Quit") || Input.GetButtonDown("Astrum")))
+		if ((vitals.dead && Input.GetButtonDown("Quit")) || Input.GetButtonDown("Restart"))
 			Respawn();
 
 
@@ -160,12 +160,17 @@ public class Player : MonoBehaviour
 		Instantiate(hint, Player.Instance.head.position - Vector3.up * 0.5f, hand.rotation);
 	}
 
+	public void Die()
+	{
+		if (heldItem)
+			heldItem.Die();
+	}
+
 	private void Respawn()
 	{
 		vitals.Respawn();
+		mover.Respawn();
 
-		mover.position = initPos;
-		mover.SetVelocity(Vector3.zero);
 		//mover.UpdateBlockPosition();
 
 		//World.WaterFollow(mover.blockPosition);

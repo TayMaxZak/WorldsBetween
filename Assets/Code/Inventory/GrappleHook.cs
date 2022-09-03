@@ -23,6 +23,11 @@ public class GrappleHook : Item
 		attached = false;
 	}
 
+	public override void Die()
+	{
+		attached = false;
+	}
+
 	public override void Use(UseHow useHow)
 	{
 		base.Use(useHow);

@@ -26,7 +26,7 @@ public class PlayerVitals : MonoBehaviour
 
 
 	[Header("UI/UX")]
-	public Sound deathSound;
+	public Sound damagedSound;
 
 	public Sound nearDeathSound;
 
@@ -40,10 +40,10 @@ public class PlayerVitals : MonoBehaviour
 		if (dead)
 			return;
 
-		if (Input.GetButtonDown("Vitals"))
-			showVitals = !showVitals;
+		//if (Input.GetButtonDown("Vitals"))
+		//	showVitals = !showVitals;
 
-		UIManager.SetWatchRaised(showVitals);
+		//UIManager.SetWatchRaised(showVitals);
 
 		stopHealthRegen.Increment(Time.deltaTime);
 		stopStaminaRegen.Increment(Time.deltaTime);
@@ -77,7 +77,7 @@ public class PlayerVitals : MonoBehaviour
 
 	private void UpdateUIUX()
 	{
-		UIManager.SetCurrentHealth(Mathf.RoundToInt(currentHealth));
+		UIManager.SetCurrentHealth(currentHealth / maxHealth);
 		UIManager.SetCurrentStamina(currentStamina / maxStamina);
 
 		if (dead)
@@ -85,15 +85,8 @@ public class PlayerVitals : MonoBehaviour
 			heartbeatLoop.volume = 0;
 			breathingLoop.volume = 0;
 
-			UIManager.SetDeathPostProcess(1);
-
-			UIManager.SetDamagePostProcess(1);
-
-			UIManager.SetWatchRaised(false);
-
-			UIManager.SetDeathUI(true);
-
-			AudioManager.StopMusicCue();
+			UIManager.SetDie(true);
+			UIManager.SetShowVitals(false);
 		}
 		else
 		{
@@ -102,8 +95,6 @@ public class PlayerVitals : MonoBehaviour
 			float heartbeatPitch = heartbeatVolume * heartbeatVolume;
 			float damageAmount = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume) * (1 - heartbeatVolume);
 			heartbeatVolume = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume);
-
-			UIManager.SetDamagePostProcess(damageAmount);
 
 			heartbeatLoop.volume = heartbeatVolume * 0.4f;
 			heartbeatLoop.pitch = 0.99f + heartbeatPitch * 0.21f;
@@ -115,10 +106,11 @@ public class PlayerVitals : MonoBehaviour
 			breathingLoop.volume = breathingVolume * 0.2f;
 			breathingLoop.pitch = 1.04f;
 
-			float nearDeath = (1 - currentHealth / maxHealth);
-			nearDeath = Mathf.Clamp01((nearDeath - 0.75f) * 4);
-			nearDeath *= nearDeath * nearDeath * nearDeath;
-			UIManager.SetDeathPostProcess(0.7f * nearDeath);
+			UIManager.SetDie(false);
+			if (currentStamina >= maxStamina - 0.01)
+				UIManager.SetShowVitals(false);
+			else
+				UIManager.SetShowVitals(true);
 		}
 	}
 
@@ -205,7 +197,7 @@ public class PlayerVitals : MonoBehaviour
 
 	private void TryDie(float initialHealth, float finalHealth)
 	{
-		if (!canNearDie || finalHealth < -initialHealth)
+		if (!canNearDie || finalHealth < -initialHealth || initialHealth < maxHealth / 5f)
 			Die();
 		else
 			NearDie();
@@ -213,8 +205,9 @@ public class PlayerVitals : MonoBehaviour
 
 	private void Die()
 	{
-		if (deathSound)
-			AudioManager.PlaySound(deathSound, transform.position);
+		AudioManager.PlayMusicCue(AudioManager.CueType.Die);
+
+		Player.Instance.Die();
 
 		dead = true;
 
@@ -239,8 +232,6 @@ public class PlayerVitals : MonoBehaviour
 	public void Respawn()
 	{
 		dead = false;
-
-		UIManager.SetDeathUI(false);
 
 		currentHealth = maxHealth;
 		currentStamina = maxStamina;

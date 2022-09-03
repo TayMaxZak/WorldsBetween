@@ -231,20 +231,25 @@ public class Cephapath : Actor
 			}
 
 			// Close enough to do bad things
-			float badnessStrength = 1 - Mathf.Clamp01(Mathf.Max(distance - damageDistance, 0) / damageDistance);
+			float badnessStrength = 1 - Mathf.Clamp01(Mathf.Max(distance - grabDistance, 0) / grabDistance);
 
 			// Update audio
 			//grabLoop.volume = (1 - distance / grabDistance) * 0.5f;
-			grabLoop.pitch = 1 + badnessStrength * 0.3f;
+			grabLoop.pitch = 1 + badnessStrength * 0.5f;
 
 			playerDeadReset = true;
 
 			// Deal damage
-			Player.Instance.vitals.DealDamage(damage * badnessStrength * DeltaTime());
+			if (distance < damageDistance)
+				Player.Instance.vitals.DealDamage(damage * DeltaTime());
 		}
 		// Player is dead
 		else if (playerDeadReset)
 		{
+			hasBeenSpotted = false;
+
+			transform.position = initPosition;
+
 			playerDeadReset = false;
 		}
 
@@ -410,7 +415,7 @@ public class Cephapath : Actor
 
 			Vector3 baseShape = Vector3.Lerp(surfacePoint, actualTip, percent);
 
-			Vector3 position = baseShape + kneeStrength * kneeStrength * t.offsetDir + waveyStrength * perpin + vibrate;
+			Vector3 position = baseShape + kneeStrength * kneeStrength * t.offsetDir * 0.33f + waveyStrength * perpin + vibrate;
 
 			t.line.SetPosition(i, position);
 		}

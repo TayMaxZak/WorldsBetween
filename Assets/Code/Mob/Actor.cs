@@ -53,6 +53,8 @@ public class Actor : MonoBehaviour
 		// Physics stuff
 		if (isPhysicsTick)
 		{
+			inWater = position.y - 1 <= World.GetWaterHeight();
+
 			PhysicsTick(tickDeltaTime);
 
 			//UpdateBlockPosition();
