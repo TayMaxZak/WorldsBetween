@@ -58,7 +58,7 @@ public class EncounterFinder
 
 		// Move to a new location in the world near-ish the origin
 		Vector3Int testBounds = new Vector3Int(10, 10, 10);
-		Vector3 middlePoint = World.GetRoomPoint(0.6f);
+		Vector3 middlePoint = World.GetHalfwayPoint();
 		pos = new Vector3Int(
 			(int)middlePoint.x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
 			(int)middlePoint.y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1) - 4),

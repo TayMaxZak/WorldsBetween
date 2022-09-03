@@ -103,8 +103,8 @@ public class Block
 
 		public static int GetMeshSmoothing(int blockType)
 		{
-			if (blockType == (int)BlockList.BlockType.Rock)
-				return 1;
+			//if (blockType == (int)BlockList.BlockType.Rock)
+			//	return 1;
 
 			return 0;
 		}

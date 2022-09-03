@@ -11,6 +11,7 @@ public class StructureModifier : Modifier
 		public Bounds outerBounds;
 		public Bounds lightBounds;
 		public bool lightOff;
+		public RoomData genData;
 
 		public StructureRoom(Bounds bounds)
 		{
@@ -18,10 +19,32 @@ public class StructureModifier : Modifier
 			outerBounds = new Bounds(bounds.center, bounds.size + Vector3.one * 2);
 		}
 	}
+
+	public struct RoomData
+	{
+		// First room of structure
+		public bool starter;
+		// Center of room. May be adjusted by 0.5 for odd-sized rooms
+		public Vector3Int pos;
+		// Total width, height, and length of room
+		public Vector3Int size;
+		// Direction from which this room was started. Don't backtrack
+		public Vector3Int returnDirection;
+		// Override random direction picking
+		public bool forceDirection;
+
+		public int debugIndex;
+		public Color debugColor;
+	}
 	public List<StructureRoom> rooms;
+
 	private int maxRoomCount = 10;
-	public float fillPercent = 0;
-	public Vector3Int lastRoomPos;
+	private int actualRoomCount;
+	[SerializeField]
+	private float fillPercent = 0;
+	public StructureRoom startRoom;
+	public StructureRoom furthestRoom;
+	public StructureRoom encounterRoom;
 
 	public Block wallBlock = BlockList.CONCRETE;
 	public Block lightBlock = BlockList.LIGHT;
@@ -32,10 +55,10 @@ public class StructureModifier : Modifier
 
 	private readonly Vector3Int[] DIRS = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward, Vector3Int.back };
 
-	private readonly Vector3Int[] DIRS_FROM_LEFT = new Vector3Int[] { Vector3Int.left, Vector3Int.forward, Vector3Int.back };
-	private readonly Vector3Int[] DIRS_FROM_RIGHT = new Vector3Int[] { Vector3Int.right, Vector3Int.forward, Vector3Int.back };
-	private readonly Vector3Int[] DIRS_FROM_FORWARD = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward };
-	private readonly Vector3Int[] DIRS_FROM_BACK = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.back };
+	private readonly Vector3Int[] DIRS_FROM_LEFT = new Vector3Int[] { Vector3Int.right, Vector3Int.forward, Vector3Int.back };
+	private readonly Vector3Int[] DIRS_FROM_RIGHT = new Vector3Int[] { Vector3Int.left, Vector3Int.forward, Vector3Int.back };
+	private readonly Vector3Int[] DIRS_FROM_FORWARD = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.back };
+	private readonly Vector3Int[] DIRS_FROM_BACK = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward };
 
 	// TODO: Strength as chance to exceed 0.5
 	public StructureModifier(int roomCount /*Block wallBlock, Block floorBlock, Block ceilingBlock*/)
@@ -60,78 +83,156 @@ public class StructureModifier : Modifier
 
 	protected void MakeRooms()
 	{
-		Vector3Int pos = Vector3Int.zero;
-		Vector3Int size = new Vector3Int(8, 12, 8);
-		Vector3Int direction = RandomDirection(false);
-		Vector3Int prevPos = pos;
+		startRoom = MakeRoom(new RoomData() { starter = true, returnDirection = RandomDirection(false), forceDirection = true });
+		furthestRoom = startRoom;
 
-		int i;
-		for (i = 0; i < maxRoomCount; i++)
+		startRoom.genData.debugColor = Color.cyan;
+		FinishRoom(startRoom);
+		RecursiveRoom(startRoom);
+
+		if (actualRoomCount < maxRoomCount)
 		{
-			prevPos = pos;
-
-			if (i > 0)
+			startRoom.genData = new RoomData()
 			{
-				Vector3Int newsize = new Vector3Int(2 * Random.Range(2, 11), Random.Range(3, 9), 2 * Random.Range(2, 11));
-				pos += Utils.Scale(direction, new Vector3Int(Mathf.CeilToInt((size.x + newsize.x) / 2f), Mathf.CeilToInt((size.y + newsize.y) / 2f), Mathf.CeilToInt((size.z + newsize.z) / 2f)));
-				size = newsize;
+				starter = startRoom.genData.starter,
+				pos = startRoom.genData.pos,
+				size = startRoom.genData.size,
+				returnDirection = -startRoom.genData.returnDirection,
+				forceDirection = true,
 
-				direction = RandomDirection(true, direction);
+				debugIndex = startRoom.genData.debugIndex,
+				debugColor = Utils.colorOrange
+			};
+			RecursiveRoom(startRoom);
+		}
+		fillPercent = (float)actualRoomCount / maxRoomCount;
 
-				if (Random.Range(0, 8) == 0)
-					pos += RandomSign() * Vector3Int.up;
-			}
+		FindEncounterRoom();
+	}
 
-			Bounds bounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f), size);
+	protected void FinishRoom(StructureRoom room)
+	{
+		actualRoomCount++;
+		rooms.Add(room);
 
-			if (i > 0)
-			{
-				bool intersecting = false;
-				for (int j = i; j >= 1; j--)
-				{
-					if (rooms[j - 1].lightBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
-					{
-						intersecting = true;
-						break;
-					}
-				}
+		if (Utils.AbsSum(room.genData.pos) > Utils.AbsSum(furthestRoom.genData.pos))
+			furthestRoom = room;
+	}
 
-				if (intersecting)
-					break;
+	protected void FindEncounterRoom()
+	{
+		float targetDistance = Utils.AbsSum(furthestRoom.genData.pos) * 0.6f;
+		encounterRoom = startRoom;
 
-				// Check if any part of room is outside of world bounds (- 2 for the walls on both sides)
-				Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
-				if (!worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max))
-				{
-					break;
-				}
-			}
+		foreach (StructureRoom room in rooms)
+		{
+			if (Mathf.Abs(Utils.AbsSum(room.genData.pos) - targetDistance) < Mathf.Abs(Utils.AbsSum(encounterRoom.genData.pos) - targetDistance))
+				encounterRoom = room;
+		}
+	}
 
-			StructureRoom room = new StructureRoom(bounds);
+	protected void RecursiveRoom(StructureRoom prevRoom)
+	{
+		StructureRoom newRoom = MakeRoom(prevRoom.genData);
 
-			if (i == 0)
-			{
-				Bounds lightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up, new Vector3Int(6, size.y, 6));
-				room.lightBounds = lightBounds;
-			}
-			else if (i % 1 == 0)
-			{
-				int lightSize = Random.value < 0.4 ? 4 : 2;
-
-				Bounds lightBounds = new Bounds(pos + Vector3Int.up * Mathf.CeilToInt(size.y / 2f) + Vector3Int.up/* + new Vector3(0.5f, 0, 0.5f)*/, new Vector3Int(lightSize, size.y, lightSize));
-				room.lightBounds = lightBounds;
-
-				if (Random.value < 0.1f)
-					room.lightOff = true;
-			}
-
-			rooms.Add(room);
+		if (newRoom == null)
+		{
+			// Try again once
+			newRoom = MakeRoom(prevRoom.genData);
+			// Still failed
+			if (newRoom == null)
+				return;
 		}
 
-		lastRoomPos = prevPos;
-		fillPercent = (float)i / maxRoomCount;
+		FinishRoom(newRoom);
 
-		Debug.Log(i + " rooms created, " + (maxRoomCount - i) + " short. Fill percent: " + fillPercent);
+		if (actualRoomCount < maxRoomCount)
+			RecursiveRoom(newRoom);
+		if (actualRoomCount < maxRoomCount && Random.value < 0.25f)
+			RecursiveRoom(newRoom);
+	}
+
+	protected StructureRoom MakeRoom(RoomData prevRoom)
+	{
+		Vector3Int newPos;
+		Vector3Int newSize;
+		Vector3Int offsetDirection;
+		Vector3Int offset = Vector3Int.up;
+
+		if (prevRoom.starter)
+		{
+			newSize = new Vector3Int(8, 12, 8);
+
+			offsetDirection = -prevRoom.returnDirection;
+
+			newPos = Vector3Int.zero;
+		}
+		else
+		{
+			newSize = new Vector3Int(2 * Random.Range(2, 11), Random.Range(3, 9), 2 * Random.Range(2, 11));
+
+			if (!prevRoom.forceDirection)
+				offsetDirection = RandomDirection(true, prevRoom.returnDirection);
+			else
+				offsetDirection = -prevRoom.returnDirection;
+
+			offset = Utils.Scale(offsetDirection, new Vector3Int(
+				Mathf.CeilToInt((prevRoom.size.x + newSize.x) / 2f),
+				Mathf.CeilToInt((prevRoom.size.y + newSize.y) / 2f),
+				Mathf.CeilToInt((prevRoom.size.z + newSize.z) / 2f))
+			);
+			newPos = prevRoom.pos + offset;
+		}
+
+		if (Random.Range(0, 8) == 0)
+			newPos += RandomSign() * Vector3Int.up;
+
+		Bounds bounds = new Bounds(newPos + Vector3Int.up * Mathf.CeilToInt(newSize.y / 2f), newSize);
+
+		bool intersecting = false;
+		foreach (StructureRoom otherRoom in rooms)
+		{
+			if (otherRoom.lightBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
+			{
+				intersecting = true;
+				break;
+			}
+		}
+
+		// Check if any part of room is outside of world bounds (- 2 for the walls on both sides)
+		Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
+
+		if (intersecting || !worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max))
+		{
+			Debug.DrawRay(newPos, -offset, Color.black, 30);
+			return null;
+		}
+		else
+		{
+			Debug.DrawRay(newPos, -offset, prevRoom.debugColor, 30);
+		}
+
+		StructureRoom room = new StructureRoom(bounds);
+
+		int lightSize = prevRoom.starter ? 6 : Random.value < 0.4 ? 4 : 2;
+
+		Bounds lightBounds = new Bounds(newPos + Vector3Int.up * Mathf.CeilToInt(newSize.y / 2f) + Vector3Int.up, new Vector3Int(lightSize, newSize.y, lightSize));
+		room.lightBounds = lightBounds;
+
+		if (Random.value < 0.1f && !prevRoom.starter)
+			room.lightOff = true;
+
+		room.genData = new RoomData() {
+			starter = false,
+			pos = newPos,
+			size = newSize,
+			returnDirection = -offsetDirection,
+			forceDirection = prevRoom.debugIndex == 0 ? true : false,
+			debugIndex = prevRoom.starter ? 0 : prevRoom.debugIndex + 1,
+			debugColor = prevRoom.debugColor
+		};
+
+		return room;
 	}
 
 	public override void ApplyModifier(Chunk chunk)
@@ -139,12 +240,12 @@ public class StructureModifier : Modifier
 		if (!active)
 			return;
 
-		BlockPosAction toApply = CheckRooms;
+		BlockPosAction toApply = ApplyRooms;
 
 		ApplyToAll(toApply, chunk, chunk.position, chunk.position + Vector3Int.one * (World.GetChunkSize() - 1));
 	}
 
-	protected virtual bool CheckRooms(Vector3Int pos, Chunk chunk)
+	protected virtual bool ApplyRooms(Vector3Int pos, Chunk chunk)
 	{
 		Vector3 checkPos = pos + Vector3.one / 2f;
 
@@ -198,11 +299,6 @@ public class StructureModifier : Modifier
 		return true;
 	}
 
-	protected virtual Vector3 WarpPosition(Vector3 pos)
-	{
-		return pos;
-	}
-
 	protected int RandomSign()
 	{
 		int index = Random.Range(0, 2) * 2 - 1;
@@ -235,15 +331,19 @@ public class StructureModifier : Modifier
 		}
 	}
 
+	public float GetFillPercent()
+	{
+		return fillPercent;
+	}
+
 	public void DrawGizmo()
 	{
 		if (rooms == null)
 			return;
 
-		Gizmos.color = Color.white;
-
 		foreach (StructureRoom room in rooms)
 		{
+			Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)room.genData.debugIndex / actualRoomCount);
 			Gizmos.DrawWireCube(room.innerBounds.center, room.innerBounds.size);
 		}
 	}

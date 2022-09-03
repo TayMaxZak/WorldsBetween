@@ -64,6 +64,11 @@ public class Utils
 		return (a.x) + (a.y) + (a.z);
 	}
 
+	public static int AbsSum(Vector3Int a)
+	{
+		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
+	}
+
 	public static float SoftSign(float val)
 	{
 		return Mathf.Clamp(val * 10000, -1, 1);

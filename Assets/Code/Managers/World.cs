@@ -190,10 +190,10 @@ public partial class World : MonoBehaviour
 		foreach (SurfaceShaper shaper in surfaceShapers)
 			shaper.Init();
 
-		pointB = structure.lastRoomPos;
+		pointB = structure.furthestRoom.genData.pos;
+		encounterPoint = structure.encounterRoom.genData.pos;
 
-		encounterPoint = Vector3.Lerp(pointA, pointB, 0.6f);
-		if (structure.fillPercent > 0.6f)
+		if (structure.GetFillPercent() > 0.6f)
 		{
 			hasEncounter = true;
 		}
@@ -211,7 +211,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(24));
+		modifiers.Add(structure = new StructureModifier(48));
 
 		modifiers.Add(new StructureFixer(structure));
 	}
@@ -353,9 +353,9 @@ public partial class World : MonoBehaviour
 		return Instance.pointB;
 	}
 
-	public static Vector3 GetRoomPoint(float t)
+	public static Vector3Int GetHalfwayPoint()
 	{
-		return Instance.structure.rooms[(int)(Instance.structure.rooms.Count * t)].innerBounds.center;
+		return Instance.structure.encounterRoom.genData.pos;
 	}
 
 	public static void SetGoalPoint(Vector3 pos)

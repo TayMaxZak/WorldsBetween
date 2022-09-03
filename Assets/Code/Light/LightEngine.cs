@@ -374,7 +374,7 @@ public class LightEngine
 			bool reflect = World.GetWaterHeight() >= cur.y;
 			if (reflect && !ray.hasBounced)
 			{
-				if (SeedlessRandom.NextFloat() < intensityPerRay)
+				if (SeedlessRandom.NextFloat() < intensityPerRay / 10f)
 					Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 5f);
 
 				ray.hasBounced = true;
@@ -419,7 +419,7 @@ public class LightEngine
 			);
 		} // y
 
-		if (SeedlessRandom.NextFloat() < intensityPerRay)
+		if (SeedlessRandom.NextFloat() < intensityPerRay / 10f)
 			Debug.DrawLine(ray.source + Vector3.one * 0.5f, cur + Vector3.one * 0.5f, ray.lightColor.colorClose, 5f);
 
 		return new LightRayResult()
