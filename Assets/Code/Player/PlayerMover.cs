@@ -272,6 +272,50 @@ public class PlayerMover : Actor
 		}
 	}
 
+	protected override void Move(Vector3 moveVector)
+	{
+		// Collision check
+		Vector3 adjMoveVector = moveVector;
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
+			}
+		}
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
+			}
+		}
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
+			}
+		}
+		if (moveVector != Vector3.zero)
+		{
+			if (BoxCast(adjMoveVector, out RaycastHit hit))
+			{
+				Vector3 reflected = Vector3.Reflect(adjMoveVector, hit.normal);
+				adjMoveVector += reflected;
+				adjMoveVector = Vector3.ClampMagnitude(adjMoveVector, moveVector.magnitude);
+			}
+		}
+
+		position += adjMoveVector;
+	}
+
 	protected void InputMove(Vector3 moveVector, float deltaTime)
 	{
 		if (climbing)

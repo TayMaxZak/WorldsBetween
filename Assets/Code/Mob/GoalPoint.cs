@@ -24,8 +24,6 @@ public class GoalPoint : MonoBehaviour
 
 	public void InitGoalActor(Vector3 blockPos)
 	{
-		Debug.Log("Init goal actor at " + blockPos);
-
 		// Set physical position
 		transform.position = blockPos + new Vector3(0.5f, 1f, 0.5f);
 
@@ -34,8 +32,6 @@ public class GoalPoint : MonoBehaviour
 
 	public void ActivateGoal()
 	{
-		Debug.Log("Activated goal");
-
 		activated = true;
 	}
 

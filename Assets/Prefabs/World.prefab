@@ -51,9 +51,9 @@ MonoBehaviour:
     genStage: 0
     active: 1
     multiQ: 1
-    queues: 100
+    queues: 50
     enqueueTaskSize: 150
-    generatorTaskSize: 10
+    generatorTaskSize: 20
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
     fakeChunkPrefab: {fileID: 6042555085825754433, guid: 4b4b891d8840f164199b476385ce3f7e, type: 3}
     spawnFinder:
@@ -61,19 +61,19 @@ MonoBehaviour:
     goalFinder:
       extents: {x: 3, y: 4, z: 3}
     encounterFinder:
-      extents: {x: 1, y: 1, z: 1}
-    genRangePlayable: 6
+      extents: {x: 3, y: 3, z: 3}
+    genRangePlayable: 4
     genRangeFake: 0
   lightEngine:
-    raysPerLightSource: 1600
-    intensityPerRay: 0.016
+    raysPerLightSource: 1000
+    intensityPerRay: 0.02
     lengthPerRay: 16
-    raysPerBatch: 1600
+    raysPerBatch: 3000
     progressStep: 1
     waterBounceTint: {r: 0.32, g: 0.67162794, b: 0.8, a: 1}
   randomizeSeed: 0
-  seed: 2090344211521260032
+  seed: 8691746087129486336
   chunkSize: 16
   isInfinite: 0
-  encounterObject: {fileID: 0}
+  encounterObject: {fileID: 9004443760993121361, guid: 2f48f70319323f544848a8479661ec4c, type: 3}
   hasEncounter: 0

@@ -17,10 +17,10 @@ public class EncounterFinder
 	protected delegate void BlockPosAction(Vector3Int pos);
 
 	private int airCount = 0;
-	private int floorCount = 0;
+	private int solidCount = 0;
 
 	private int minAirCount = 9;
-	private int minFloorCount = 9;
+	private int maxSolidCount = 1;
 
 	private bool foundEncounterPos = false;
 	private Vector3 encounterPos = Vector3.zero;
@@ -40,7 +40,7 @@ public class EncounterFinder
 		attemptsLeft = attemptsMax;
 
 		airCount = 0;
-		floorCount = 0;
+		solidCount = 0;
 
 		foundEncounterPos = false;
 		encounterPos = Vector3.zero;
@@ -51,17 +51,17 @@ public class EncounterFinder
 	public void Move()
 	{
 		airCount = 0;
-		floorCount = 0;
+		solidCount = 0;
 
 		foundEncounterPos = false;
 		encounterPos = Vector3.zero;
 
-		// Move to a new location in the world near-ish the origin
-		Vector3Int testBounds = new Vector3Int(10, 10, 10);
+		// Move to a new location in the world near-ish the halfway room
+		Vector3Int testBounds = new Vector3Int(8, 8, 8);
 		Vector3 middlePoint = World.GetHalfwayPoint();
 		pos = new Vector3Int(
 			(int)middlePoint.x + (int)(testBounds.x * (((float)random.NextDouble() * 2) - 1)),
-			(int)middlePoint.y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1) - 4),
+			(int)middlePoint.y + (int)(testBounds.y * (((float)random.NextDouble() * 2) - 1)),
 			(int)middlePoint.z + (int)(testBounds.z * (((float)random.NextDouble() * 2) - 1))
 		);
 	}
@@ -97,11 +97,13 @@ public class EncounterFinder
 		{
 			airCount++;
 
-			// Check goalPos conditions
+			// Check encounterPos conditions
 			if (!foundEncounterPos)
 			{
-				// Floor, and 23 total air blocks above it
-				if (World.GetBlock(pos + Vector3Int.up).IsRigid() && /*!World.GetBlock(pos + Vector3Int.up * 2).IsRigid() && */!World.GetBlock(pos + Vector3Int.down).IsRigid())
+				// Roughly has space around it
+				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.down).IsRigid() &&
+					!World.GetBlock(pos + Vector3Int.left).IsRigid() && !World.GetBlock(pos + Vector3Int.right).IsRigid() &&
+					!World.GetBlock(pos + Vector3Int.forward).IsRigid() && !World.GetBlock(pos + Vector3Int.back).IsRigid())
 				{
 					foundEncounterPos = true;
 
@@ -111,9 +113,7 @@ public class EncounterFinder
 		}
 		else
 		{
-			// Solid and 2 air blocks above it
-			if (!World.GetBlock(pos + Vector3Int.down).IsRigid() && !World.GetBlock(pos + Vector3Int.down * 2).IsRigid())
-				floorCount++;
+			solidCount++;
 		}
 	}
 
@@ -135,7 +135,7 @@ public class EncounterFinder
 
 	protected async Task CheckConditions()
 	{
-		if (airCount < minAirCount || floorCount < minFloorCount)
+		if (airCount < minAirCount || solidCount > maxSolidCount)
 			return;
 
 		if (!foundEncounterPos)

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 745650465230320993}
   - component: {fileID: 6647928587239408168}
   m_Layer: 0
-  m_Name: DamageRange
+  m_Name: Ambient
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,10 +41,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b6e6249bb419fd7438f2c712d31aff30, type: 3}
+  m_audioClip: {fileID: 8300000, guid: ef971e9eb649d0746b0ab18e6a46e5b9, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0
-  m_Pitch: 1
+  m_Volume: 0.25
+  m_Pitch: 0.5
   Loop: 1
   Mute: 0
   Spatialize: 0
@@ -52,7 +52,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 100
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -87,7 +87,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -14942,7 +14942,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 15
+  MaxDistance: 24
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -25010,7 +25010,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9004443760993121360}
   - component: {fileID: 9004443760993121363}
-  - component: {fileID: 2965416316574277912}
+  - component: {fileID: 133624186835678076}
   m_Layer: 0
   m_Name: Cephapath
   m_TagString: Untagged
@@ -25056,35 +25056,42 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   inputVelocity: {x: 0, y: 0, z: 0}
   dead: 0
-  rayMask:
+  blockRayMask:
     serializedVersion: 2
     m_Bits: 1024
+  blockOrPlayerRayMask:
+    serializedVersion: 2
+    m_Bits: 33792
   dioramaMode: 0
   dioramaSharpness: 0
   dioramaWiggle: 0.1
   grabLoop: {fileID: 3301212293627015285}
   dashSound: {fileID: 0}
   target: {fileID: 0}
-  targetPoint: {x: 0, y: 0, z: 0.5}
+  targetPoint: {x: 0, y: 0, z: -0.5}
   tentaclePrefab: {fileID: 8390588029003683492, guid: 9c18bacdce9aab5418d04d5510185e55, type: 3}
   tentacleRoot: {fileID: 8513241437453654586}
-  maxSpeed: 6
-  accel: 0.33
-  damage: 20
-  grabChance: 1
-  tentacleCount: 7
+  maxSpeed: 5
+  accel: 0.5
+  damagePerSecond: 10
+  grabDamage: 10
+  grabPull: 5
+  tentacleCount: 14
   encounterDistance: 48
-  grabDistance: 15
+  tentacleLength: 24
   damageDistance: 5
   timeScale: 1
   dashTimer:
     maxTime: 3
   randomDirTimer:
     maxTime: 0.5
+  grabTimer:
+    maxTime: 1
   dashVibrate: 0
   tentacleWaveSpeed: 0.6
+  sharpness: 0
   initPosition: {x: 0, y: 0, z: 0}
---- !u!54 &2965416316574277912
+--- !u!54 &133624186835678076
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25093,8 +25100,8 @@ Rigidbody:
   m_GameObject: {fileID: 9004443760993121361}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 2
-  m_AngularDrag: 0.25
+  m_Drag: 1
+  m_AngularDrag: 1
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0

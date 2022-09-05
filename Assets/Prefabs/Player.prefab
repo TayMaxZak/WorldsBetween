@@ -1903,7 +1903,7 @@ GameObject:
   - component: {fileID: 731691462813523884}
   m_Layer: 15
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2012,13 +2012,14 @@ MonoBehaviour:
   peekDistance: 0.4
   mouseSens: 150
   walkSpeed: 3.5
-  sprintSpeed: 8
+  sprintSpeed: 7
   sprintAccel: 3.5
   sprintDeccel: 2
   jumpSpeed: 4
   fastClimbTime: 0.55
   slowClimbTime: 1.1
-  airResistance: 0.05
+  airResistance: 1
+  waterResistance: 4
   grounded: 0
   atLedge: 0
   jump: 0
@@ -2037,7 +2038,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.7, y: 1.6, z: 0.7}
-  m_Center: {x: 0, y: 0.8, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8667887551928177456
 GameObject:
   m_ObjectHideFlags: 0
