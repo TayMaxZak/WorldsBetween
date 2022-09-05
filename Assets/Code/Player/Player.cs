@@ -90,7 +90,10 @@ public class Player : MonoBehaviour
 			quit.currentTime = quit.maxTime;
 
 		if ((vitals.dead && Input.GetButtonDown("Quit")) || Input.GetButtonDown("Restart"))
-			Respawn();
+		{
+			SceneManager.LoadScene(0);
+			//Respawn();
+		}
 
 
 		// Only handle inputs if activated and alive

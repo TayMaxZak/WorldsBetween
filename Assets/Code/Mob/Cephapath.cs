@@ -100,6 +100,12 @@ public class Cephapath : Actor
 
 	private bool hasBeenSpotted = false;
 
+	protected override void Awake()
+	{
+		if (!dioramaMode)
+		base.Awake();
+	}
+
 	public override void Init()
 	{
 		if (!enabled)
@@ -175,6 +181,12 @@ public class Cephapath : Actor
 
 		tentacles.Clear();
 		OnEnable();
+	}
+
+	private void Update()
+	{
+		if (dioramaMode)
+			UpdateTick(false, DeltaTime(), 0);
 	}
 
 	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
@@ -332,7 +344,7 @@ public class Cephapath : Actor
 		else
 			curSpeed = Mathf.Lerp(curSpeed, 0, deltaTime * accel);
 
-		transform.position += curSpeed * deltaTime * smoothDir;
+		transform.position += (curSpeed / 2f) * deltaTime * smoothDir;
 
 		Vector3 avgTentaclePos = Vector3.zero;
 		foreach (Tentacle t in tentacles)
