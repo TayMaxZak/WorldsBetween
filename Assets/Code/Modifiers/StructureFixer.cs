@@ -31,7 +31,7 @@ public class StructureFixer : Modifier
 
 		int checkBlock = World.GetBlock(pos.x, pos.y, pos.z).GetBlockType();
 
-		if (checkBlock != structure.floorBlock.GetBlockType() && checkBlock != structure.ceilingBlock.GetBlockType())
+		if (checkBlock != structure.floorBlock.GetBlockType() && checkBlock != structure.ceilingBlock.GetBlockType() && checkBlock != structure.lightBlock.GetBlockType())
 			return false;
 
 		foreach (StructureModifier.StructureRoom room in structure.rooms)
@@ -59,7 +59,12 @@ public class StructureFixer : Modifier
 			}
 
 			if (emptyNear)
+			{
 				World.SetBlock(pos, structure.wallBlock);
+
+				if (checkBlock == structure.lightBlock.GetBlockType())
+					chunk.RemoveLightAt(pos);
+			}
 
 			break;
 		}

@@ -222,7 +222,8 @@ public class StructureModifier : Modifier
 		if (Random.value < 0.1f && !prevRoom.starter)
 			room.lightOff = true;
 
-		room.genData = new RoomData() {
+		room.genData = new RoomData()
+		{
 			starter = false,
 			pos = newPos,
 			size = newSize,
@@ -265,7 +266,7 @@ public class StructureModifier : Modifier
 				}
 				else if (room.lightBounds.Contains(checkPos))
 				{
-					if (checkBlock != wallBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
+					if (checkBlock != lightBlock.GetBlockType())
 					{
 						World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
 
@@ -286,11 +287,8 @@ public class StructureModifier : Modifier
 					if (checkBlock != lightBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
 				}
-				else if (checkBlock != floorBlock.GetBlockType() && checkBlock != ceilingBlock.GetBlockType())
+				else if (checkBlock != floorBlock.GetBlockType() && checkBlock != ceilingBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
 				{
-					if (checkBlock == lightBlock.GetBlockType())
-						chunk.RemoveLightAt(pos);
-
 					World.SetBlock(pos.x, pos.y, pos.z, wallBlock);
 				}
 			}
@@ -343,8 +341,10 @@ public class StructureModifier : Modifier
 
 		foreach (StructureRoom room in rooms)
 		{
-			Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)room.genData.debugIndex / actualRoomCount);
+			Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)room.genData.debugIndex / (actualRoomCount / 2f));
 			Gizmos.DrawWireCube(room.innerBounds.center, room.innerBounds.size);
+			Gizmos.color = Color.white;
+			Gizmos.DrawWireCube(room.lightBounds.center, room.lightBounds.size);
 		}
 	}
 }
