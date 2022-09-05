@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CephaMiddle
+  m_Name: CephaBodyA
   m_Shader: {fileID: -6465566751694194690, guid: 9d89833b6aa75dd4b9100692a45b9450, type: 3}
   m_ShaderKeywords: UNITY_APPLY_FOG
   m_LightmapFlags: 4
@@ -24,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_ac66aaa89d0641beabae4a819486c0bb:
-        m_Texture: {fileID: 2800000, guid: e36c650c0bf25224392c7440dde735de, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_ac66aaa89d0641beabae4a819486c0bb_1:
@@ -55,6 +55,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ParallaxMapping_cc2cd789dc374508be284c326baab54a_Heightmap_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2DLOD_7edc040e61e144d48e7e53203db363b7_Texture_1:
         m_Texture: {fileID: 2800000, guid: db50b362f3442824ba0ff2ba4a80eee7, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -69,6 +73,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_a02e2cfbeefc4d869bca2a4415c61cab_Texture_1:
         m_Texture: {fileID: 2800000, guid: 6db0e1d4a0f5ea543ac27d3ec0590367, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_dd8f7825ca85446a8082c71304b508a5_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 647c5003c085b684ea5cb3bf0e90f9c3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_f60a016985454f95b16d15720811ca2e_Texture_1:
@@ -110,11 +118,14 @@ Material:
     - Vector1_1: 0
     - Vector1_2: 0
     - Vector1_2c9480dfdb7c4d51bc7a92fc48b9eae3: 1
-    - Vector1_4c827109a2e042a38d7cb8d0bcc768a7: 1
-    - Vector1_574f165a08e64ce4b3fa8b641bd0295a: 0
+    - Vector1_3: 3
+    - Vector1_494056fb419c4eb5af230a5e5c5a960d: 3
+    - Vector1_4c827109a2e042a38d7cb8d0bcc768a7: 0
+    - Vector1_574f165a08e64ce4b3fa8b641bd0295a: 38.07
     - Vector1_71e33091fc0c45659ab3642a9e395069: 1
     - Vector1_95a72b9d0a254319a58646c1dc9d995b: 0.2
     - Vector1_BE32BCCB: 0
+    - Vector1_be37809db30f4b7bb5a155d6ec666e80: 4
     - Vector1_d9826dcd5d17494dacf7b71823ce7854: 0.05
     - Vector1_dbee4cd0534d46c7a5537c823b7aa06d: 1
     - Vector1_f2d071963b7046b89792280095fee6e1: 1
@@ -141,8 +152,9 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - Color_1: {r: 0, g: 0, b: 0, a: 1}
-    - Color_1105c7c00bfd4ea28cad78509821a90d: {r: 0.34901962, g: 0.32109806, b: 0.32109806, a: 1}
-    - Vector2_f5c2fe79f1ba4c93a1d8dda69b22bff3: {r: -1, g: 0, b: 0, a: 0}
+    - Color_1105c7c00bfd4ea28cad78509821a90d: {r: 0.305, g: 0.28101125, b: 0.28101125, a: 1}
+    - GlowColor: {r: 0, g: 0, b: 0, a: 1}
+    - Vector2_f5c2fe79f1ba4c93a1d8dda69b22bff3: {r: -1, g: 1, b: 0, a: 0}
     - Vector3_1: {r: 0, g: 0, b: 0, a: 0}
     - Vector3_6f9b63b6b2a2490aa7fde519a08199ab: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
