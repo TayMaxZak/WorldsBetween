@@ -53,8 +53,6 @@ public class Player : MonoBehaviour
 
 	public void InitPlayerActor(Vector3 blockPos)
 	{
-		Debug.Log("Init player actor at " + blockPos);
-
 		// Set physical position
 		transform.position = blockPos + new Vector3(0.5f, 1, 0.5f);
 		initPos = transform.position;
@@ -65,8 +63,6 @@ public class Player : MonoBehaviour
 
 	public void ActivatePlayer()
 	{
-		Debug.Log("Activated player");
-
 		// Enable related components
 		mover.enabled = true;
 		vitals.enabled = true;
@@ -91,8 +87,10 @@ public class Player : MonoBehaviour
 
 		if ((vitals.dead && Input.GetButtonDown("Quit")) || Input.GetButtonDown("Restart"))
 		{
-			SceneManager.LoadScene(0);
-			//Respawn();
+			if (PersistentData.GetInstanceForRead().IsDebugMode())
+				Respawn();
+			else
+				SceneManager.LoadScene(0);
 		}
 
 

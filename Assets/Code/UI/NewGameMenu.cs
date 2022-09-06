@@ -35,6 +35,8 @@ public class NewGameMenu : MonoBehaviour
 
 		data.SetPlayerInventory(uiInventory.GetInventory());
 
+		data.SetDebugMode(false);
+
 		SceneManager.LoadScene(gameSceneIndex);
 	}
 }

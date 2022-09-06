@@ -14,6 +14,8 @@ public class PersistentData : MonoBehaviour
 	private long numericSeed = 0;
 	[SerializeField]
 	private int depth = 0;
+	[SerializeField]
+	private bool debugMode = false;
 
 	private Inventory playerInventory;
 
@@ -73,6 +75,16 @@ public class PersistentData : MonoBehaviour
 	public Inventory GetPlayerInventory()
 	{
 		return playerInventory;
+	}
+
+	public void SetDebugMode(bool value)
+	{
+		debugMode = value;
+	}
+
+	public bool IsDebugMode()
+	{
+		return debugMode;
 	}
 	#endregion
 
