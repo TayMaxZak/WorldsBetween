@@ -20,7 +20,7 @@ public partial class World : MonoBehaviour
 	private int realChunkCount = 0;
 	private int fakeChunkCount = 0;
 
-	private Dictionary<Vector3Int, List<LightSource>> pointLights = new Dictionary<Vector3Int, List<LightSource>>();
+	private Dictionary<Vector3Int, List<BlockLight>> pointLights = new Dictionary<Vector3Int, List<BlockLight>>();
 
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
@@ -440,12 +440,12 @@ public partial class World : MonoBehaviour
 		return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeFake()) * 2 * Instance.chunkSize;
 	}
 
-	public static void SetLightsAt(Vector3Int pos, List<LightSource> chunkLights)
+	public static void SetLightsAt(Vector3Int pos, List<BlockLight> chunkLights)
 	{
 		Instance.pointLights[pos] = chunkLights;
 	}
 
-	public static Dictionary<Vector3Int, List<LightSource>> GetAllLights()
+	public static Dictionary<Vector3Int, List<BlockLight>> GetAllLights()
 	{
 		return Instance.pointLights;
 	}

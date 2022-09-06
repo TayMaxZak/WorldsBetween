@@ -12,7 +12,7 @@ public class LightEngine
 	{
 		public Vector3 source;
 		public Vector3 dir;
-		public LightSource.ColorFalloff lightColor;
+		public BlockLight.ColorFalloff colorFalloff;
 		public int stepSize;
 		public bool hasBounced;
 	}
@@ -143,7 +143,7 @@ public class LightEngine
 		int sourceCount = 0;
 		foreach (var chunk in World.GetAllChunks())
 		{
-			foreach (LightSource light in chunk.Value.GetLights())
+			foreach (BlockLight light in chunk.Value.GetBlockLights())
 			{
 				sourceCount += raysPerLightSource;
 			}
@@ -161,12 +161,12 @@ public class LightEngine
 
 		foreach (var chunk in World.GetAllChunks())
 		{
-			foreach (LightSource light in chunk.Value.GetLights())
+			foreach (BlockLight light in chunk.Value.GetBlockLights())
 			{
-				Debug.DrawRay(light.pos, Vector3.up, light.lightColor.colorClose, 15);
+				Debug.DrawRay(light.blockPos, Vector3.up, light.GetLightColor(0), 15);
 
 				for (int i = 0; i < raysPerLightSource; i++)
-					sourceQueue.Enqueue(new LightRay() { source = light.pos, dir = SeedlessRandom.RandomPoint().normalized, hasBounced = false, lightColor = light.lightColor, stepSize = step }); ;
+					sourceQueue.Enqueue(new LightRay() { source = light.blockPos, dir = SeedlessRandom.RandomPoint().normalized, hasBounced = false, colorFalloff = light.colorFalloff, stepSize = step }); ;
 			}
 
 			Iterate();
@@ -375,14 +375,14 @@ public class LightEngine
 			if (reflect && !ray.hasBounced)
 			{
 				if (SeedlessRandom.NextFloat() < intensityPerRay / 10f)
-					Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 5f);
+					Debug.DrawLine(ray.source, cur, ray.colorFalloff.colorClose, 5f);
 
 				ray.hasBounced = true;
 
 				ray.dir.y *= -1;
 				//ray.dir = (ray.dir + SeedlessRandom.RandomPoint().normalized).normalized;
-				ray.lightColor.colorClose *= waterBounceTint;
-				ray.lightColor.colorFar *= waterBounceTint;
+				ray.colorFalloff.colorClose *= waterBounceTint;
+				ray.colorFalloff.colorFar *= waterBounceTint;
 			}
 
 			// Remember this result
@@ -395,7 +395,7 @@ public class LightEngine
 				rayPoints.Enqueue(new LightRayResultPoint()
 				{
 					pos = cur,
-					color = intensityPerRay * falloff * Color.Lerp(ray.lightColor.colorClose, ray.lightColor.colorFar, 1 - falloff),
+					color = intensityPerRay * falloff * Color.Lerp(ray.colorFalloff.colorClose, ray.colorFalloff.colorFar, 1 - falloff),
 					airLight = !occupied
 				});
 			}
@@ -420,7 +420,7 @@ public class LightEngine
 		} // y
 
 		if (SeedlessRandom.NextFloat() < intensityPerRay / 10f)
-			Debug.DrawLine(ray.source + Vector3.one * 0.5f, cur + Vector3.one * 0.5f, ray.lightColor.colorClose, 5f);
+			Debug.DrawLine(ray.source + Vector3.one * 0.5f, cur + Vector3.one * 0.5f, ray.colorFalloff.colorClose, 5f);
 
 		return new LightRayResult()
 		{

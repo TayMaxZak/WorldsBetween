@@ -272,8 +272,8 @@ public class StructureModifier : Modifier
 
 						if (/*SeedlessRandom.NextFloat() < 0.6f && */!room.lightOff)
 						{
-							LightSource.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? LightSource.colorOrange : LightSource.colorGold);
-							chunk.AddLight(new LightSource(pos, color));
+							BlockLight.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorOrange : BlockLight.colorGold);
+							chunk.AddBlockLight(new BlockLight(pos, color));
 						}
 					}
 				}

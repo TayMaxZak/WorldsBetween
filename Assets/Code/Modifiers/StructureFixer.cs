@@ -63,7 +63,7 @@ public class StructureFixer : Modifier
 				World.SetBlock(pos, structure.wallBlock);
 
 				if (checkBlock == structure.lightBlock.GetBlockType())
-					chunk.RemoveLightAt(pos);
+					chunk.RemoveBlockLightAt(pos);
 			}
 
 			break;

@@ -328,7 +328,7 @@ public class WorldLightAtlas : MonoBehaviour
 		int chunkLights = 0;
 		foreach (var pl in World.GetAllLights())
 		{
-			foreach (LightSource light in pl.Value)
+			foreach (BlockLight light in pl.Value)
 			{
 				// TODO: Why is it ever null?
 				if (light == null)
@@ -346,9 +346,9 @@ public class WorldLightAtlas : MonoBehaviour
 								continue;
 
 							Vector3Int newPos = new Vector3Int(
-								Mathf.FloorToInt(light.pos.x + x),
-								Mathf.FloorToInt(light.pos.y + y),
-								Mathf.FloorToInt(light.pos.z + z)
+								Mathf.FloorToInt(light.blockPos.x + x),
+								Mathf.FloorToInt(light.blockPos.y + y),
+								Mathf.FloorToInt(light.blockPos.z + z)
 							);
 
 							float dist = Mathf.Sqrt((x - 0.5f) * (x - 0.5f) + ((y - 0.5f) * (y - 0.5f)) / 4f + (z - 0.5f) * (z - 0.5f));
@@ -359,7 +359,7 @@ public class WorldLightAtlas : MonoBehaviour
 								Mathf.FloorToInt(newPos.x - x / dist),
 								Mathf.FloorToInt(newPos.y - y / dist),
 								Mathf.FloorToInt(newPos.z - z / dist)
-							) : light.pos;
+							) : light.blockPos;
 
 							float noise = Mathf.Lerp(1, SeedlessRandom.NextFloat(), light.noise);
 							if (!World.GetBlock(shadowPos).IsOpaque())

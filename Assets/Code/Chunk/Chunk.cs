@@ -26,7 +26,7 @@ public class Chunk
 	// Data
 	public ChunkType chunkType;
 	protected Block[] blocks;
-	protected List<LightSource> lights;
+	protected List<BlockLight> lights;
 
 	// Transform
 	public Vector3Int position;
@@ -74,7 +74,7 @@ public class Chunk
 
 	public virtual void CreateCollections()
 	{
-		lights = new List<LightSource>();
+		lights = new List<BlockLight>();
 
 		blocks = new Block[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 
@@ -313,22 +313,22 @@ public class Chunk
 		World.WorldBuilder.ChunkFinishedProcStage();
 	}
 
-	public List<LightSource> GetLights()
+	public List<BlockLight> GetBlockLights()
 	{
 		return lights;
 	}
 
-	public void AddLight(LightSource light)
+	public void AddBlockLight(BlockLight light)
 	{
 		lights.Add(light);
 	}
 
-	public void RemoveLightAt(Vector3Int pos)
+	public void RemoveBlockLightAt(Vector3Int pos)
 	{
-		LightSource toRemove = null;
-		foreach (LightSource light in lights)
+		BlockLight toRemove = null;
+		foreach (BlockLight light in lights)
 		{
-			if (light.pos == pos)
+			if (light.blockPos == pos)
 				toRemove = light;
 		}
 		if (toRemove != null)

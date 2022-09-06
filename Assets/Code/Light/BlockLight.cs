@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightSource
+public class BlockLight
 {
 	public struct ColorFalloff
 	{
@@ -16,21 +16,21 @@ public class LightSource
 		}
 	}
 
-	public ColorFalloff lightColor = new ColorFalloff(Color.white, Color.white);
-	public Vector3Int pos;
+	public ColorFalloff colorFalloff = new ColorFalloff(Color.white, Color.white); // Blends between colors by distance
+	public Vector3Int blockPos; // Block pos; actual world position is + 0.5,0.5,0.5
 	public float brightness = 1; // Multiplier on color
 	public float spread = 1; // How far the light goes
 	public float noise = 0; // Randomness of light
 
-	public LightSource(Vector3Int pos, ColorFalloff lightColor)
+	public BlockLight(Vector3Int blockPos, ColorFalloff colorFalloff)
 	{
-		this.pos = pos;
-		this.lightColor = lightColor;
+		this.blockPos = blockPos;
+		this.colorFalloff = colorFalloff;
 	}
 
-	public Color GetLightColor(float falloff)
+	public Color GetLightColor(float lightStrength)
 	{
-		return Color.Lerp(lightColor.colorClose, lightColor.colorFar, 1 - falloff);
+		return Color.Lerp(colorFalloff.colorClose, colorFalloff.colorFar, lightStrength);
 	}
 
 	public static ColorFalloff colorWhite = new ColorFalloff(new Color(1, 1f, 1f), new Color(0.2f, 0.2f, 1.0f));
