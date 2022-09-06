@@ -34,7 +34,7 @@ public class Cephapath : Actor
 
 	[Header("References")]
 	public AudioSource grabLoop;
-	public Sound dashSound;
+	public Sound ambientSound;
 	public Transform target;
 	public Vector3 targetPoint;
 
@@ -65,10 +65,11 @@ public class Cephapath : Actor
 	private float timeScale = 1;
 
 	[SerializeField]
-	private Timer dashTimer = new Timer(11f);
-
+	private Timer ambSoundtimer = new Timer(4);
 	[SerializeField]
-	private Timer randomDirTimer = new Timer(1f);
+	private float ambSoundTimerMin = 4;
+	[SerializeField]
+	private float ambSoundTimerMax = 10;
 
 	[SerializeField]
 	private Timer grabTimer = new Timer(1f);
@@ -82,10 +83,6 @@ public class Cephapath : Actor
 	private float sharpness = 0;
 	private float moveTestDistance = 5;
 
-	// For dashing or wandering randomly
-	private Vector3 randomMoveDir;
-	private Vector3 randomMoveDirNew;
-
 	private Vector3 smoothDir;
 
 	private float vibrateMult;
@@ -96,14 +93,12 @@ public class Cephapath : Actor
 
 	private bool playerDeadReset = true;
 
-	private bool hasBlinked = false;
-
 	private bool hasBeenSpotted = false;
 
 	protected override void Awake()
 	{
 		if (!dioramaMode)
-		base.Awake();
+			base.Awake();
 	}
 
 	public override void Init()
@@ -118,7 +113,7 @@ public class Cephapath : Actor
 				target = Player.Instance.mover.transform;
 
 			// Reset all timers
-			dashTimer.Reset(1 + SeedlessRandom.NextFloat() * dashTimer.maxTime);
+			ambSoundtimer.Reset(SeedlessRandom.NextFloatInRange(ambSoundTimerMin, ambSoundTimerMax));
 
 			Move(transform.forward, 1);
 		}
@@ -233,9 +228,11 @@ public class Cephapath : Actor
 			return;
 
 		// Vector towards player
-		Vector3 diff = target.position - transform.position;
+		Vector3 diff = (!hasBeenSpotted ? target.position : targetPoint) - transform.position;
 		float distance = diff.magnitude;
 		Vector3 dir = diff.normalized;
+		if (dir == Vector3.zero)
+			dir = transform.forward;
 		if (smoothDir == Vector3.zero)
 			smoothDir = dir;
 
@@ -244,9 +241,13 @@ public class Cephapath : Actor
 		// Handle player interaction
 		if (!Player.Instance.vitals.dead)
 		{
-			if (!hasBeenSpotted)
+			bool seesTarget = distance < encounterDistance && !Physics.Raycast(transform.position, dir, distance, blockRayMask)/* && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f*/;
+
+			if (seesTarget)
 			{
-				if (distance < encounterDistance/* && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f*/ && !Physics.Raycast(transform.position, dir, distance, blockRayMask))
+				targetPoint = target.position;
+
+				if (!hasBeenSpotted)
 				{
 					hasBeenSpotted = true;
 					AudioManager.PlayMusicCue(AudioManager.CueType.EncounterStarting);
@@ -269,11 +270,25 @@ public class Cephapath : Actor
 		// Player is dead
 		else if (playerDeadReset)
 		{
-			hasBeenSpotted = false;
+			playerDeadReset = false;
 
 			transform.position = initPosition;
+			foreach (Tentacle t in tentacles)
+			{
+				InitTentacle(t);
+			}
+			hasBeenSpotted = false;
+		}
 
-			playerDeadReset = false;
+		if (hasBeenSpotted)
+		{
+			ambSoundtimer.Increment(DeltaTime());
+			if (ambSoundtimer.Expired())
+			{
+				ambSoundtimer.Reset(SeedlessRandom.NextFloatInRange(ambSoundTimerMin, ambSoundTimerMax));
+
+				AudioManager.PlaySound(ambientSound, transform.position);
+			}
 		}
 
 		// For a more curved path towards player
@@ -338,13 +353,15 @@ public class Cephapath : Actor
 	{
 		float deltaTime = Time.deltaTime;
 
-		transform.forward = smoothDir;
+		if (smoothDir != Vector3.zero)
+			transform.forward = smoothDir;
+
 		if (hasBeenSpotted/* && !Physics.Raycast(transform.position, dir, distance, rayMask)*/)
 			curSpeed = Mathf.Lerp(curSpeed, maxSpeed, deltaTime * accel);
 		else
 			curSpeed = Mathf.Lerp(curSpeed, 0, deltaTime * accel);
 
-		transform.position += (curSpeed / 2f) * deltaTime * smoothDir;
+		transform.position += (curSpeed / 2f) * deltaTime * dir;
 
 		Vector3 avgTentaclePos = Vector3.zero;
 		foreach (Tentacle t in tentacles)
@@ -353,39 +370,6 @@ public class Cephapath : Actor
 		}
 
 		transform.position = Vector3.Lerp(transform.position, avgTentaclePos, Time.deltaTime);
-
-		//// Blinking
-		//float dotCutoff = 0.5f;
-		//randomDirTimer.Increment(deltaTime);
-		//if (randomDirTimer.Expired() || !hasBlinked)
-		//{
-		//	randomDirTimer.Reset();
-
-		//	if (Vector3.Dot(Player.Instance.cam.transform.forward, (transform.position - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
-		//	{
-		//		Vector3 newPos = new Vector3(
-		//			SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize(),
-		//			0.5f * World.GetWorldSize(),
-		//			SeedlessRandom.NextFloatInRange(-0.5f, 0.5f) * World.GetWorldSize()
-		//		);
-
-		//		if (Vector3.Dot(Player.Instance.cam.transform.forward, (newPos - Player.Instance.transform.position).normalized) < dotCutoff || !hasBlinked)
-		//		{
-		//			transform.position = newPos;
-
-		//			transform.eulerAngles = new Vector3(
-		//				SeedlessRandom.NextFloatInRange(-10, 10),
-		//				SeedlessRandom.NextFloatInRange(0, 360),
-		//				0
-		//			);
-
-		//			foreach (Tentacle t in tentacles)
-		//				InitTentacle(t);
-
-		//			hasBlinked = true;
-		//		}
-		//	}
-		//}
 	}
 
 	private void MoveTentacle(Tentacle t)
@@ -396,9 +380,8 @@ public class Cephapath : Actor
 	private bool MoveTentacle(Tentacle t, Vector3 dir, bool adjust)
 	{
 		Vector3 newTargetPos = SeedlessRandom.RandomPoint().normalized * curSpeed + moveTestDistance * curSpeed * dir + tentacleRoot.position;
-		Vector3 perpinOffset = dir == Vector3.zero ? Vector3.zero : (Quaternion.LookRotation(dir) * Vector3.right * SeedlessRandom.NextFloatInRange(-1, 1) + Quaternion.LookRotation(dir) * transform.up * SeedlessRandom.NextFloatInRange(-1, 1)).normalized;
+		Vector3 perpinOffset = dir == Vector3.zero ? SeedlessRandom.RandomPoint().normalized : (Quaternion.LookRotation(dir) * Vector3.right * SeedlessRandom.NextFloatInRange(-1, 1) + Quaternion.LookRotation(dir) * transform.up * SeedlessRandom.NextFloatInRange(-1, 1)).normalized;
 		Vector3 newOffset = (newTargetPos - tentacleRoot.position).normalized + perpinOffset;
-		//newOffset *= Mathf.Sign(Vector3.Dot((newOffset - dir * 0.1f).normalized, dir));
 
 		Physics.Raycast(tentacleRoot.position, newOffset, out RaycastHit hit, tentacleLength, blockRayMask);
 
@@ -409,17 +392,6 @@ public class Cephapath : Actor
 		}
 
 		return false;
-	}
-
-	private Vector3 PositionOnPlane(Vector3 source)
-	{
-		// create a plane object representing the Plane
-		var plane = new Plane(-transform.forward, transform.position);
-
-		// get the closest point on the plane for the Source position
-		Vector3 mirrorPoint = plane.ClosestPointOnPlane(source);
-
-		return mirrorPoint;
 	}
 
 	private void RenderTentacle(Tentacle t)

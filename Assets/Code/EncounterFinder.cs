@@ -101,7 +101,8 @@ public class EncounterFinder
 			if (!foundEncounterPos)
 			{
 				// Roughly has space around it
-				if (!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.down).IsRigid() &&
+				if (World.GetBlock(pos + Vector3Int.up * 2).IsRigid() &&
+					!World.GetBlock(pos + Vector3Int.up).IsRigid() && !World.GetBlock(pos + Vector3Int.down).IsRigid() &&
 					!World.GetBlock(pos + Vector3Int.left).IsRigid() && !World.GetBlock(pos + Vector3Int.right).IsRigid() &&
 					!World.GetBlock(pos + Vector3Int.forward).IsRigid() && !World.GetBlock(pos + Vector3Int.back).IsRigid())
 				{

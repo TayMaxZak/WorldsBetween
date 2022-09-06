@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b325fca674a7b45a4271a02adc9dd9, type: 3}
   m_Name: GrappleHit
   m_EditorClassIdentifier: 
-  clip: {fileID: 8300000, guid: 34c5e4a6dd612654ba611454243bb8b3, type: 3}
+  clip:
+  - {fileID: 8300000, guid: 34c5e4a6dd612654ba611454243bb8b3, type: 3}
   preset: {fileID: -7837934151874488307, guid: 8c40c1e34b8778a44b77d4aa9540d3d4, type: 3}
+  volumeMult: 1
   pitchRange:
     min: 0.8
     max: 1

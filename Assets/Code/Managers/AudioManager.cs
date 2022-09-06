@@ -140,7 +140,7 @@ public class AudioManager : MonoBehaviour
 		float randomPitch = SeedlessRandom.NextFloatInRange(toPlay.pitchRange.min, toPlay.pitchRange.max);
 		source.pitch *= randomPitch;
 
-		source.clip = toPlay.clip;
+		source.clip = toPlay.GetClip();
 
 		source.Play();
 

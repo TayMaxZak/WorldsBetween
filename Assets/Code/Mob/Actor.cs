@@ -28,8 +28,6 @@ public class Actor : MonoBehaviour
 
 	public virtual void Init()
 	{
-		Debug.Log(name + " init");
-
 		position = transform.position;
 		prevPosition = new Vector3(position.x, position.y, position.z);
 		//UpdateBlockPosition();

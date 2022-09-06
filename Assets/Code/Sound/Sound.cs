@@ -7,13 +7,22 @@ using UnityEngine;
 [System.Serializable]
 public class Sound : ScriptableObject
 {
-	public AudioClip clip = null;
+	[SerializeField]
+	private AudioClip[] clip = null;
 
 	public AudioSource preset = null;
 
 	public float volumeMult = 1;
 
 	public RangeFloat pitchRange = new RangeFloat(0.5f, 1.5f);
+
+	public AudioClip GetClip()
+	{
+		if (clip.Length == 0)
+			return null;
+		else
+			return clip[(int)(SeedlessRandom.NextFloat() * clip.Length)];
+	}
 }
 
 [System.Serializable]

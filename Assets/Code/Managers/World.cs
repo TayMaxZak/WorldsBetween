@@ -115,6 +115,7 @@ public partial class World : MonoBehaviour
 
 			data = PersistentData.GetInstanceForWrite();
 			data.SetNumericSeed(seed);
+			data.SetDebugMode(true);
 		}
 
 		Debug.Log("seed = " + seed + " vs (int)seed = " + (int)seed + " vs string = " + (data ? data.GetStringSeed() : ""));
