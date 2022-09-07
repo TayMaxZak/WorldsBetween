@@ -81,7 +81,7 @@ public partial class World : MonoBehaviour
 		WorldInit();
 
 		LightEngine = lightEngine;
-		LightEngine.Init(sunObject);
+		LightEngine.Init();
 	}
 
 	public struct WorldProperties
@@ -332,6 +332,45 @@ public partial class World : MonoBehaviour
 	public static void SetBlock(Vector3Int pos, Block b)
 	{
 		SetBlock(pos.x, pos.y, pos.z, b);
+	}
+
+	public static Color GetLighting(int x, int y, int z)
+	{
+		Chunk chunk = GetChunk(x, y, z);
+
+		if (chunk == null)
+			return Color.black;
+
+		return chunk.GetLighting(
+			x - chunk.position.x,
+			y - chunk.position.y,
+			z - chunk.position.z
+		);
+	}
+
+	public static Color GetLighting(Vector3Int pos)
+	{
+		return GetLighting(pos.x, pos.y, pos.z);
+	}
+
+	public static void SetLighting(int x, int y, int z, Color c)
+	{
+		Chunk chunk = GetChunk(x, y, z);
+
+		if (chunk == null || chunk.buildStage == Chunk.BuildStage.Init)
+			return;
+
+		chunk.SetLighting(
+			x - chunk.position.x,
+			y - chunk.position.y,
+			z - chunk.position.z,
+			c
+		);
+	}
+
+	public static void SetLighting(Vector3Int pos, Color c)
+	{
+		SetLighting(pos.x, pos.y, pos.z, c);
 	}
 
 	public static int GetChunkSize()

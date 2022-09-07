@@ -66,7 +66,7 @@ public class WorldEditor : Editor
 
 		EditorGUILayout.LabelField("Light Engine", EditorStyles.boldLabel);
 
-		EditorGUILayout.LabelField("Missing rays: ", "" + (World.LightEngine.RaysMax() - World.LightEngine.RaysCur()));
+		EditorGUILayout.LabelField("Missing rays: ", "" + (World.LightEngine.RaysMax() - World.LightEngine.ChunksCur()));
 
 		EditorGUILayout.LabelField("Progress:", "" + (int)(100 * World.LightEngine.GetGenProgress()));
 	}

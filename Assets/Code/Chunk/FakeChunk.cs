@@ -6,9 +6,14 @@ using System.ComponentModel;
 [System.Serializable]
 public class FakeChunk : Chunk
 {
+	public FakeChunk(Vector3Int position) : base(position)
+	{
+
+	}
+
 	public override void Init(int chunkSize)
 	{
-		scaleFactor = 2;
+		//scaleFactor = 2;
 		chunkType = ChunkType.Far;
 
 		base.Init(chunkSize);
@@ -36,9 +41,4 @@ public class FakeChunk : Chunk
 			}
 		}
 	}
-
-	//protected override void OnDone()
-	//{
-	//	blocks = null;
-	//}
 }

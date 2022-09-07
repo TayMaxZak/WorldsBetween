@@ -115,18 +115,18 @@ public class StructureModifier : Modifier
 		actualRoomCount++;
 		rooms.Add(room);
 
-		if (Utils.AbsSum(room.genData.pos) > Utils.AbsSum(furthestRoom.genData.pos))
+		if (Utils.DistManhattan(room.genData.pos) > Utils.DistManhattan(furthestRoom.genData.pos))
 			furthestRoom = room;
 	}
 
 	protected void FindEncounterRoom()
 	{
-		float targetDistance = Utils.AbsSum(furthestRoom.genData.pos) * 0.6f;
+		float targetDistance = Utils.DistManhattan(furthestRoom.genData.pos) * 0.6f;
 		encounterRoom = startRoom;
 
 		foreach (StructureRoom room in rooms)
 		{
-			if (Mathf.Abs(Utils.AbsSum(room.genData.pos) - targetDistance) < Mathf.Abs(Utils.AbsSum(encounterRoom.genData.pos) - targetDistance))
+			if (Mathf.Abs(Utils.DistManhattan(room.genData.pos) - targetDistance) < Mathf.Abs(Utils.DistManhattan(encounterRoom.genData.pos) - targetDistance))
 				encounterRoom = room;
 		}
 	}

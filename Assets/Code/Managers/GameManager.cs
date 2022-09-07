@@ -139,7 +139,7 @@ public partial class GameManager : MonoBehaviour
 	{
 		finishedLight = true;
 
-		WorldLightAtlas.Instance.ApplyChanges();
+		WorldLightAtlas.Instance.UpdateLightTextures();
 	}
 
 	public async void FinishLoading()

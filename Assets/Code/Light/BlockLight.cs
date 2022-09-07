@@ -30,7 +30,7 @@ public class BlockLight
 
 	public Color GetLightColor(float lightStrength)
 	{
-		return Color.Lerp(colorFalloff.colorClose, colorFalloff.colorFar, lightStrength);
+		return Color.Lerp(colorFalloff.colorClose, colorFalloff.colorFar, 1 - lightStrength);
 	}
 
 	public static ColorFalloff colorWhite = new ColorFalloff(new Color(1, 1f, 1f), new Color(0.2f, 0.2f, 1.0f));

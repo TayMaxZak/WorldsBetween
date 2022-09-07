@@ -26,6 +26,7 @@ public class Chunk
 	// Data
 	public ChunkType chunkType;
 	protected Block[] blocks;
+	protected Color[] lighting;
 	protected List<BlockLight> lights;
 
 	// Transform
@@ -43,55 +44,38 @@ public class Chunk
 	public ChunkMesh chunkMesh = new ChunkMesh();
 	public ChunkGameObject go;
 
+	public Chunk(Vector3Int position)
+	{
+		this.position = position;
+	}
+
 	public virtual void Init(int chunkSize)
 	{
 		chunkSizeBlocks = chunkSize;
-		chunkSizeWorld = chunkSize * scaleFactor;
 
 		CreateCollections();
 
 		didInit = true;
 	}
 
-	public void SetPos(Vector3Int pos)
-	{
-		position = pos;
-	}
-
-	public Block GetBlock(int x, int y, int z)
-	{
-		x /= scaleFactor; y /= scaleFactor; z /= scaleFactor;
-
-		return blocks[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z];
-	}
-
-	public Block SetBlock(int x, int y, int z, Block b)
-	{
-		x /= scaleFactor; y /= scaleFactor; z /= scaleFactor;
-
-		return (blocks[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = b);
-	}
-
 	public virtual void CreateCollections()
 	{
 		lights = new List<BlockLight>();
-
+		lighting = new Color[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 		blocks = new Block[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 
-		for (int x = 0; x < chunkSizeWorld; x += scaleFactor)
+		for (int x = 0; x < chunkSizeBlocks; x++)
 		{
-			for (int y = 0; y < chunkSizeWorld; y += scaleFactor)
+			for (int y = 0; y < chunkSizeBlocks; y++)
 			{
-				for (int z = 0; z < chunkSizeWorld; z += scaleFactor)
+				for (int z = 0; z < chunkSizeBlocks; z++)
 				{
 					SetBlock(x, y, z, BlockList.EMPTY);
-
-					//DefaultBlock(x, y, z);
+					SetLighting(x, y, z, Color.black);
 				}
 			}
 		}
 	}
-
 
 	#region Generate
 	public void AsyncGenerate(Modifier.ModifierStage stageToDo)
@@ -157,11 +141,11 @@ public class Chunk
 	{
 		if (stageToDo == Modifier.ModifierStage.Terrain)
 		{
-			for (int x = 0; x < chunkSizeWorld; x += scaleFactor)
+			for (int x = 0; x < chunkSizeBlocks; x++)
 			{
-				for (int y = 0; y < chunkSizeWorld; y += scaleFactor)
+				for (int y = 0; y < chunkSizeBlocks; y++)
 				{
-					for (int z = 0; z < chunkSizeWorld; z += scaleFactor)
+					for (int z = 0; z < chunkSizeBlocks; z++)
 					{
 						DefaultBlock(x, y, z);
 					}
@@ -173,7 +157,7 @@ public class Chunk
 
 		for (int i = 0; i < modifiers.Count; i++)
 		{
-			// Only apply terrain modifiers if adjacent chunks are also applying only terrain modifiers
+			// Limit which modifiers are being applied by stage
 			if (modifiers[i].stage == stageToDo)
 				modifiers[i].ApplyModifier(this);
 		}
@@ -183,11 +167,11 @@ public class Chunk
 	{
 		int airCount = 0;
 
-		for (byte x = 0; x < chunkSizeWorld; x++)
+		for (int x = 0; x < chunkSizeBlocks; x++)
 		{
-			for (byte y = 0; y < chunkSizeWorld; y++)
+			for (int y = 0; y < chunkSizeBlocks; y++)
 			{
-				for (byte z = 0; z < chunkSizeWorld; z++)
+				for (int z = 0; z < chunkSizeBlocks; z++)
 				{
 					// Only care if this block is a transparent block
 					if (GetBlock(x, y, z).IsOpaque())
@@ -210,7 +194,7 @@ public class Chunk
 		Block block;
 
 		// X-axis
-		if (x < chunkSizeWorld - 1)
+		if (x < chunkSizeBlocks - 1)
 			GetBlock(x + 1, y, z).SetNeedsMesh(true);
 		else if ((block = World.GetBlock(position.x + x + 1, position.y + y, position.z + z)) != BlockList.EMPTY)
 			block.SetNeedsMesh(true);
@@ -221,7 +205,7 @@ public class Chunk
 			block.SetNeedsMesh(true);
 
 		// Y-axis
-		if (y < chunkSizeWorld - 1)
+		if (y < chunkSizeBlocks - 1)
 			GetBlock(x, y + 1, z).SetNeedsMesh(true);
 		else if ((block = World.GetBlock(position.x + x, position.y + y + 1, position.z + z)) != BlockList.EMPTY)
 			block.SetNeedsMesh(true);
@@ -232,7 +216,7 @@ public class Chunk
 			block.SetNeedsMesh(true);
 
 		// Z-axis
-		if (z < chunkSizeWorld - 1)
+		if (z < chunkSizeBlocks - 1)
 			GetBlock(x, y, z + 1).SetNeedsMesh(true);
 		else if ((block = World.GetBlock(position.x + x, position.y + y, position.z + z + 1)) != BlockList.EMPTY)
 			block.SetNeedsMesh(true);
@@ -311,6 +295,26 @@ public class Chunk
 	public virtual void OnFinishProcStage()
 	{
 		World.WorldBuilder.ChunkFinishedProcStage();
+	}
+
+	public Block GetBlock(int x, int y, int z)
+	{
+		return blocks[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z];
+	}
+
+	public Block SetBlock(int x, int y, int z, Block b)
+	{
+		return (blocks[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = b);
+	}
+
+	public Color GetLighting(int x, int y, int z)
+	{
+		return lighting[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z];
+	}
+
+	public Color SetLighting(int x, int y, int z, Color c)
+	{
+		return (lighting[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = c);
 	}
 
 	public List<BlockLight> GetBlockLights()

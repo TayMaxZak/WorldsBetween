@@ -32,6 +32,11 @@ public class Utils
 		return Mathf.Abs(xa - xb) + Mathf.Abs(ya - yb) + Mathf.Abs(za - zb);
 	}
 
+	public static int DistManhattan(Vector3Int a, Vector3Int b)
+	{
+		return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z);
+	}
+
 	public static Vector3 Scale(Vector3 a, Vector3 b)
 	{
 		a.Scale(b);
@@ -64,7 +69,7 @@ public class Utils
 		return (a.x) + (a.y) + (a.z);
 	}
 
-	public static int AbsSum(Vector3Int a)
+	public static int DistManhattan(Vector3Int a)
 	{
 		return Mathf.Abs(a.x) + Mathf.Abs(a.y) + Mathf.Abs(a.z);
 	}
