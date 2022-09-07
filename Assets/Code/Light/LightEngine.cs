@@ -9,15 +9,15 @@ using System.ComponentModel;
 public class LightEngine
 {
 	private readonly Queue<Chunk> chunkQueue = new Queue<Chunk>();
-	private readonly Dictionary<Vector3Int, BlockLight> lightIndex = new Dictionary<Vector3Int, BlockLight>();
+	private readonly Dictionary<Vector3Int, BlockLight> lightList = new Dictionary<Vector3Int, BlockLight>();
 
-	private float lengthPerRay = 24;
+	private float lengthPerRay = 16;
 
 	[SerializeField]
 	private int chunksPerBatch = 1;
 
 	[SerializeField]
-	private float rayProgressStep = 0.707f;
+	private float rayProgressStep = 0.5f;
 
 	private int numChunksCompleted;
 	private int numChunksTarget = -1;
@@ -36,6 +36,7 @@ public class LightEngine
 	public async Task Begin()
 	{
 		chunkQueue.Clear();
+		lightList.Clear();
 
 		int sourceCount = 0;
 		foreach (var chunk in World.GetAllChunks())
@@ -56,9 +57,9 @@ public class LightEngine
 			foreach (BlockLight light in chunk.Value.GetBlockLights())
 			{
 				// For distance searching later, index lights by position
-				lightIndex.Add(light.blockPos, light);
+				lightList.Add(light.blockPos, light);
 
-				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 15);
+				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 150);
 			}
 
 			//Iterate();
@@ -82,15 +83,15 @@ public class LightEngine
 			WorldLightAtlas.Instance.UpdateLightTextures();
 		}
 
-		// Already busy?
-		if (chunksBusy > 0)
-			return;
+		//// Already busy?
+		//if (chunksBusy > 0)
+		//	return;
 
 		// Otherwise, start lighting more chunks
 		for (int i = 0; i < chunksPerBatch; i++)
 		{
 			// Still have new chunks to light?
-			if (chunkQueue.Count > 0)
+			if (chunkQueue.Count > 0 && chunksBusy < chunksPerBatch)
 			{
 				Chunk chunk = chunkQueue.Dequeue();
 				AsyncLightChunk(chunk);
@@ -155,7 +156,7 @@ public class LightEngine
 	{
 		Color output = Color.black;
 
-		foreach (var light in lightIndex)
+		foreach (var light in lightList)
 		{
 			// Only nearby lights
 			if (Utils.DistSquared(pos, light.Key) <= lengthPerRay * lengthPerRay)
@@ -163,148 +164,85 @@ public class LightEngine
 				float lightStrength = Mathf.Clamp01(1f - (1f / lengthPerRay) * Mathf.Sqrt(Utils.DistSquared(pos, light.Key)));
 				lightStrength *= lightStrength;
 
-				output += lightStrength * light.Value.GetLightColor(lightStrength);
-				// TODO: Shadow rays
+				Color result = (1 / 2f) * lightStrength * light.Value.GetLightColor(lightStrength);
+				result *= ShadowAtten(pos, light.Key);
+				output += result;
 			}
 		}
 
 		return output;
 	}
 
-	//private LightRayResult SendLightRay(LightRay ray)
-	//{
-	//	Queue<LightRayResultPoint> rayPoints = null;
+	private float ShadowAtten(Vector3Int startBlockPos, Vector3Int lightBlockPos)
+	{
+		bool showDebug = SeedlessRandom.NextFloat() < 0.001f;
 
-	//	float progress = 0;
-	//	Vector3 cur = ray.source;
+		Vector3 dir = ((Vector3)(lightBlockPos - startBlockPos)).normalized;
+		Vector3 curPos = startBlockPos + Vector3.one * 0.5f;
 
-	//	Vector3Int blockCur = new Vector3Int(
-	//		Mathf.FloorToInt(cur.x),
-	//		Mathf.FloorToInt(cur.y),
-	//		Mathf.FloorToInt(cur.z)
-	//	);
+		Vector3Int curBlockPos = new Vector3Int(
+			Mathf.FloorToInt(curPos.x),
+			Mathf.FloorToInt(curPos.y),
+			Mathf.FloorToInt(curPos.z)
+		);
 
-	//	int curStep = 0;
-	//	float maxStep = lengthPerRay;
-	//	while (curStep < maxStep)
-	//	{
-	//		curStep++;
+		float progress = 0;
+		int curStep = 0;
+		float maxStep = lengthPerRay / rayProgressStep;
+		while (curStep < maxStep)
+		{
+			// Reached light, return 1
+			if (Vector3.Dot(dir, (lightBlockPos + Vector3.one * 0.5f) - curPos) < 0)
+			{
+				if (showDebug)
+					Debug.DrawLine(startBlockPos + Vector3.one * 0.5f, lightBlockPos + Vector3.one * 0.5f, Color.white, 10);
+				return 1;
+			}
 
-	//		// Check world bounds here
-	//		if (!World.Contains(cur))
-	//		{
-	//			//if (SeedlessRandom.NextFloat() < intensityPerRay)
-	//			//	Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 1f);
+			// These should be impossible. Just in case
+			if (!World.Contains(curPos))
+			{
+				return -10;
+			}
+			Chunk chunk = World.GetChunk(curBlockPos);
+			if (chunk == null)
+			{
+				return -10;
+			}
+			if (chunk.buildStage < Chunk.BuildStage.Done)
+			{
+				return -10;
+			}
 
-	//			return new LightRayResult()
-	//			{
-	//				source = ray.source,
-	//				stepSize = 1,
+			// Should block light? Check if inside opaque block that isn't the light source
+			if (!curBlockPos.Equals(lightBlockPos) && World.GetBlock(curBlockPos.x, curBlockPos.y, curBlockPos.z).IsOpaque())
+			{
+				//if (showDebug)
+				//	Debug.DrawLine(startPos + Vector3.one * 0.5f, lightPos + Vector3.one * 0.5f, Color.black, 10);
+				return 0;
+			}
 
-	//				success = true,
-	//				points = rayPoints
-	//			};
-	//		}
-	//		Chunk chunk = World.GetChunk(blockCur);
-	//		if (chunk == null)
-	//		{
-	//			//if (SeedlessRandom.NextFloat() < intensityPerRay)
-	//			//	Debug.DrawLine(ray.source, cur, ray.lightColor.colorClose, 1f);
+			// Move cursor
+			curStep++;
 
-	//			return new LightRayResult()
-	//			{
-	//				source = ray.source,
-	//				stepSize = 1,
+			progress += rayProgressStep;
 
-	//				success = true,
-	//				points = rayPoints
-	//			};
-	//		}
+			curPos = new Vector3(
+				startBlockPos.x + 0.5f + (progress * dir.x),
+				startBlockPos.y + 0.5f + (progress * dir.y),
+				startBlockPos.z + 0.5f + (progress * dir.z)
+			);
 
-	//		// Chunk is not ready
-	//		if (chunk.buildStage < Chunk.BuildStage.Done)
-	//		{
-	//			Debug.DrawLine(ray.source, World.GetRelativeOrigin(), Color.red, 5);
+			curBlockPos = new Vector3Int(
+				Mathf.FloorToInt(curPos.x),
+				Mathf.FloorToInt(curPos.y),
+				Mathf.FloorToInt(curPos.z)
+			);
+		} // y
 
-	//			return new LightRayResult()
-	//			{
-	//				source = ray.source,
-	//				stepSize = 1,
-
-	//				success = false,
-	//				points = rayPoints
-	//			};
-	//		}
-
-	//		// Should block light? Check if inside opaque block if at block resolution
-	//		bool occupied = World.GetBlock(blockCur.x, blockCur.y, blockCur.z).IsOpaque() && curStep > 1;
-	//		// Stop after we hit something
-	//		if (occupied)
-	//		{
-	//			break;
-	//		}
-
-	//		// Should reflect light? Check if inside water
-	//		bool reflect = World.GetWaterHeight() >= cur.y;
-	//		if (reflect && !ray.hasBounced)
-	//		{
-	//			if (SeedlessRandom.NextFloat() < intensityPerRay / 10f)
-	//				Debug.DrawLine(ray.source, cur, ray.colorFalloff.colorClose, 5f);
-
-	//			ray.hasBounced = true;
-
-	//			ray.dir.y *= -1;
-	//			//ray.dir = (ray.dir + SeedlessRandom.RandomPoint().normalized).normalized;
-	//			ray.colorFalloff.colorClose *= waterBounceTint;
-	//			ray.colorFalloff.colorFar *= waterBounceTint;
-	//		}
-
-	//		// Remember this result
-	//		if (rayPoints == null)
-	//			rayPoints = new Queue<LightRayResultPoint>();
-	//		// Only count result if not starting inside a corner
-	//		//if (curStep != 0)
-	//		{
-	//			float falloff = (1 - (curStep / maxStep) * (curStep / maxStep));
-	//			rayPoints.Enqueue(new LightRayResultPoint()
-	//			{
-	//				pos = cur,
-	//				color = intensityPerRay * falloff * Color.Lerp(ray.colorFalloff.colorClose, ray.colorFalloff.colorFar, 1 - falloff),
-	//				airLight = !occupied
-	//			});
-	//		}
-
-	//		// Move cursor
-	//		//progress += 1;
-	//		//progress += 0.5f;
-	//		//progress += 0.7071067f;
-	//		progress += progressStep;
-
-	//		cur = new Vector3(
-	//			ray.source.x + (progress * ray.dir.x),
-	//			ray.source.y + (progress * ray.dir.y),
-	//			ray.source.z + (progress * ray.dir.z)
-	//		);
-
-	//		blockCur = new Vector3Int(
-	//			Mathf.RoundToInt(cur.x),
-	//			Mathf.RoundToInt(cur.y),
-	//			Mathf.RoundToInt(cur.z)
-	//		);
-	//	} // y
-
-	//	if (SeedlessRandom.NextFloat() < intensityPerRay / 10f)
-	//		Debug.DrawLine(ray.source + Vector3.one * 0.5f, cur + Vector3.one * 0.5f, ray.colorFalloff.colorClose, 5f);
-
-	//	return new LightRayResult()
-	//	{
-	//		source = ray.source,
-	//		stepSize = 1,
-
-	//		success = true,
-	//		points = rayPoints
-	//	};
-	//}
+		// Should not happen
+		return 0;
+	}
 
 	public bool IsBusy()
 	{

@@ -18,7 +18,6 @@ public class WorldLightAtlas : MonoBehaviour
 	private Color[] directLightArr;
 	public Texture3D ambientLightTex;
 	private Color[] ambientLightArr;
-	//private int[] airCountArr;
 
 	private int fullSize;
 
@@ -126,18 +125,6 @@ public class WorldLightAtlas : MonoBehaviour
 		}
 
 		UpdateAmbientTex();
-
-		//airCountArr = new int[ambSize * ambSize * ambSize];
-		//for (int z = 0; z < ambSize; z++)
-		//{
-		//	for (int y = 0; y < ambSize; y++)
-		//	{
-		//		for (int x = 0; x < ambSize; x++)
-		//		{
-		//			airCountArr[IndexFromPos(ambSize, x, y, z)] = 1024;
-		//		}
-		//	}
-		//}
 	}
 
 	private void UpdateAmbientTex()
@@ -148,46 +135,6 @@ public class WorldLightAtlas : MonoBehaviour
 		// Apply the changes to the texture and upload the updated texture to the GPU
 		ambientLightTex.Apply();
 	}
-
-	//public void WriteToLightmap(Vector3Int pos, Color newValue, bool airLight, bool additive = false)
-	//{
-	//	if (directLightTex == null)
-	//		return;
-
-	//	if (!World.Contains(pos))
-	//		return;
-
-	//	pos = WorldToTex(pos);
-
-	//	// Direct light change
-	//	int dirIndex = IndexFromPos(dirSize, pos.x / directScale, pos.y / directScale, pos.z / directScale);
-
-	//	directChanges++;
-
-	//	Color oldValue = directLightArr[dirIndex];
-
-	//	if (additive)
-	//		newValue = oldValue + newValue;
-
-	//	directLightArr[dirIndex] = newValue;
-
-
-	//	if (!airLight)
-	//		return;
-
-	//	// Ambient light change
-	//	Vector3Int ambPos = pos / ambientScale;
-	//	int ambIndex = IndexFromPos(fullSize / ambientScale, ambPos.x, ambPos.y, ambPos.z);
-
-	//	// To avoid losing color information by using a small number, mult the color sum later in shader as needed 
-	//	float ambChangeStrength = (directScale * directScale * directScale) * ((float)ambientScale * ambientScale) / airCountArr[ambIndex];
-
-	//	ambientChanges++;
-
-	//	Color oldAmbValue = ambientLightArr[ambIndex];
-	//	Color newAmbValue = oldAmbValue + (newValue - oldValue) * ambChangeStrength;
-	//	ambientLightArr[ambIndex] = newAmbValue;
-	//}
 
 	public void ClearAtlas(bool updateTex)
 	{
@@ -239,7 +186,7 @@ public class WorldLightAtlas : MonoBehaviour
 				{
 					for (int z = 0; z < chunkSize; z++)
 					{
-						Vector3Int pos = WorldToTex(new Vector3Int(chunk.Key.x + x, chunk.Key.y + y, chunk.Key.z + z));
+						Vector3Int pos = WorldToTex(new Vector3Int(chunk.Key.x + x, chunk.Key.y + y, chunk.Key.z + z)) / directScale;
 						int index = IndexFromPos(dirSize, pos.x, pos.y, pos.z);
 						directLightArr[index] = chunk.Value.GetLighting(x, y, z);
 						directChanges++;
@@ -247,7 +194,10 @@ public class WorldLightAtlas : MonoBehaviour
 				}
 			}
 
-			//ambientLightArr[IndexFromPos(ambSize, chunk.Key.x, chunk.Key.y, chunk.Key.z)] = chunk.Value.GetAverageLighting();
+			Vector3Int ambPos = WorldToTex(new Vector3Int(chunk.Key.x, chunk.Key.y, chunk.Key.z)) / ambientScale;
+			int ambIndex = IndexFromPos(ambSize, ambPos.x, ambPos.y, ambPos.z);
+			ambientLightArr[ambIndex] = chunk.Value.GetAverageLighting();
+			ambientChanges++;
 		}
 	}
 

@@ -317,6 +317,25 @@ public class Chunk
 		return (lighting[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = c);
 	}
 
+	public Color GetAverageLighting()
+	{
+		Color average = Color.black;
+		float n = chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks;
+
+		for (int x = 0; x < chunkSizeBlocks; x++)
+		{
+			for (int y = 0; y < chunkSizeBlocks; y++)
+			{
+				for (int z = 0; z < chunkSizeBlocks; z++)
+				{
+					average += GetLighting(x, y, z);
+				}
+			}
+		}
+
+		return average / n;
+	}
+
 	public List<BlockLight> GetBlockLights()
 	{
 		return lights;

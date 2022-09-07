@@ -33,7 +33,7 @@ public class BlockLight
 		return Color.Lerp(colorFalloff.colorClose, colorFalloff.colorFar, 1 - lightStrength);
 	}
 
-	public static ColorFalloff colorWhite = new ColorFalloff(new Color(1, 1f, 1f), new Color(0.2f, 0.2f, 1.0f));
+	public static ColorFalloff colorWhite = new ColorFalloff(new Color(1, 1f, 1f), new Color(0.5f, 0.5f, 1.0f));
 
 	public static ColorFalloff colorOrange = new ColorFalloff(new Color(1, 0.6f, 0.4f), new Color(1.0f, 0.1f, 0.0f));
 	public static ColorFalloff colorGold = new ColorFalloff(new Color(1, 0.85f, 0.4f), new Color(1.0f, 0.2f, 0.0f));
