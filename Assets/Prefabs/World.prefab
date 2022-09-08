@@ -51,7 +51,7 @@ MonoBehaviour:
     genStage: 0
     active: 1
     multiQ: 1
-    queues: 50
+    queues: 40
     enqueueTaskSize: 150
     generatorTaskSize: 20
     chunkPrefab: {fileID: 6042555085825754433, guid: 033ea7f0115471b4ca6095d60264bb4c, type: 3}
@@ -65,12 +65,8 @@ MonoBehaviour:
     genRangePlayable: 4
     genRangeFake: 0
   lightEngine:
-    raysPerLightSource: 1000
-    intensityPerRay: 0.02
-    lengthPerRay: 16
-    raysPerBatch: 3000
-    progressStep: 1
-    waterBounceTint: {r: 0.32, g: 0.67162794, b: 0.8, a: 1}
+    chunksPerBatch: 40
+    rayProgressStep: 0.35
   randomizeSeed: 0
   seed: 8691746087129486336
   chunkSize: 16

@@ -21,12 +21,9 @@ public class LightEngine
 
 	private int numChunksCompleted;
 	private int numChunksTarget = -1;
-	private bool allChunksFinished;
+	private bool finished;
 
-	private int chunksBusy;
-
-	[SerializeField]
-	private Color waterBounceTint = Color.cyan;
+	private int numChunksBusy;
 
 	public void Init()
 	{
@@ -46,7 +43,7 @@ public class LightEngine
 
 		numChunksCompleted = 0;
 		numChunksTarget = sourceCount;
-		allChunksFinished = false;
+		finished = false;
 
 		Debug.Log(numChunksTarget + " chunks to be lit");
 
@@ -59,7 +56,7 @@ public class LightEngine
 				// For distance searching later, index lights by position
 				lightList.Add(light.blockPos, light);
 
-				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 150);
+				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 10);
 			}
 
 			//Iterate();
@@ -74,9 +71,9 @@ public class LightEngine
 		if (!Application.isPlaying)
 			return;
 
-		if (numChunksCompleted == numChunksTarget && !allChunksFinished)
+		if (numChunksCompleted == numChunksTarget && !finished)
 		{
-			allChunksFinished = true;
+			finished = true;
 			// Transfer lighting voxels from individual arrays to one shared array
 			WorldLightAtlas.Instance.AggregateChunkLighting();
 			// Write to one shared texture for shaders
@@ -91,7 +88,7 @@ public class LightEngine
 		for (int i = 0; i < chunksPerBatch; i++)
 		{
 			// Still have new chunks to light?
-			if (chunkQueue.Count > 0 && chunksBusy < chunksPerBatch)
+			if (chunkQueue.Count > 0 && numChunksBusy < chunksPerBatch)
 			{
 				Chunk chunk = chunkQueue.Dequeue();
 				AsyncLightChunk(chunk);
@@ -108,7 +105,7 @@ public class LightEngine
 
 	private void BkgThreadLightChunk(object sender, System.EventArgs e, Chunk chunk)
 	{
-		chunksBusy++;
+		numChunksBusy++;
 
 		BackgroundWorker bw = new BackgroundWorker();
 
@@ -124,7 +121,7 @@ public class LightEngine
 		bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
 		delegate (object o, RunWorkerCompletedEventArgs args)
 		{
-			chunksBusy--;
+			numChunksBusy--;
 
 			numChunksCompleted++;
 
@@ -143,7 +140,7 @@ public class LightEngine
 				for (int z = 0; z < World.GetChunkSize(); z++)
 				{
 					// Opaque blocks are unlit
-					if (chunk.GetBlock(x, y, z).IsOpaque())
+					if (chunk.GetBlock(x, y, z).IsOpaque() && chunk.GetBlock(x, y, z).GetBlockType() != BlockList.LIGHT.GetBlockType())
 						continue;
 
 					chunk.SetLighting(x, y, z, LightBlock(new Vector3Int(chunk.position.x + x, chunk.position.y + y, chunk.position.z + z)));
@@ -195,7 +192,7 @@ public class LightEngine
 			if (Vector3.Dot(dir, (lightBlockPos + Vector3.one * 0.5f) - curPos) < 0)
 			{
 				if (showDebug)
-					Debug.DrawLine(startBlockPos + Vector3.one * 0.5f, lightBlockPos + Vector3.one * 0.5f, Color.white, 10);
+					Debug.DrawLine(startBlockPos + Vector3.one * 0.5f, lightBlockPos + Vector3.one * 0.5f, Color.white, 1);
 				return 1;
 			}
 
@@ -217,8 +214,8 @@ public class LightEngine
 			// Should block light? Check if inside opaque block that isn't the light source
 			if (!curBlockPos.Equals(lightBlockPos) && World.GetBlock(curBlockPos.x, curBlockPos.y, curBlockPos.z).IsOpaque())
 			{
-				//if (showDebug)
-				//	Debug.DrawLine(startPos + Vector3.one * 0.5f, lightPos + Vector3.one * 0.5f, Color.black, 10);
+				if (showDebug)
+					Debug.DrawLine(startBlockPos + Vector3.one * 0.5f, lightBlockPos + Vector3.one * 0.5f, Color.black, 1);
 				return 0;
 			}
 
@@ -246,7 +243,7 @@ public class LightEngine
 
 	public bool IsBusy()
 	{
-		return chunksBusy > 0;
+		return numChunksBusy > 0;
 	}
 
 	public int ChunksCur()
@@ -262,7 +259,7 @@ public class LightEngine
 	public float GetGenProgress()
 	{
 		if (numChunksTarget > 0)
-			return (float)numChunksCompleted / (numChunksTarget + chunksBusy); // In-progress rays counted as unfinished // TODO: Is this correct?
+			return (float)numChunksCompleted / (numChunksTarget + numChunksBusy); // In-progress rays counted as unfinished // TODO: Is this correct?
 		else
 			return 0;
 	}

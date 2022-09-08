@@ -192,7 +192,16 @@ public class StructureModifier : Modifier
 		bool intersecting = false;
 		foreach (StructureRoom otherRoom in rooms)
 		{
+			// Results in light floating in air?
 			if (otherRoom.lightBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
+			{
+				intersecting = true;
+				break;
+			}
+
+			// Results in thin floor and other weird stuff?
+			if (!otherRoom.outerBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)) &&
+				otherRoom.outerBounds.Intersects(new Bounds(bounds.center + Vector3.up, bounds.size * 0.99f)))
 			{
 				intersecting = true;
 				break;
@@ -266,11 +275,11 @@ public class StructureModifier : Modifier
 				}
 				else if (room.lightBounds.Contains(checkPos))
 				{
-					if (checkBlock != lightBlock.GetBlockType())
+					if (checkBlock != lightBlock.GetBlockType() && checkBlock != floorBlock.GetBlockType())
 					{
 						World.SetBlock(pos.x, pos.y, pos.z, lightBlock);
 
-						if (/*SeedlessRandom.NextFloat() < 0.6f && */!room.lightOff)
+						if (!room.lightOff)
 						{
 							BlockLight.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorOrange : BlockLight.colorGold);
 							chunk.AddBlockLight(new BlockLight(pos, color));
@@ -284,7 +293,7 @@ public class StructureModifier : Modifier
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
 				{
-					if (checkBlock != lightBlock.GetBlockType())
+					if (checkBlock != lightBlock.GetBlockType() && checkBlock != floorBlock.GetBlockType())
 						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
 				}
 				else if (checkBlock != floorBlock.GetBlockType() && checkBlock != ceilingBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
@@ -343,8 +352,8 @@ public class StructureModifier : Modifier
 		{
 			Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)room.genData.debugIndex / (actualRoomCount / 2f));
 			Gizmos.DrawWireCube(room.innerBounds.center, room.innerBounds.size);
-			Gizmos.color = Color.white;
-			Gizmos.DrawWireCube(room.lightBounds.center, room.lightBounds.size);
+			//Gizmos.color = Color.white;
+			//Gizmos.DrawWireCube(room.lightBounds.center, room.lightBounds.size);
 		}
 	}
 }
