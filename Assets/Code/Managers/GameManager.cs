@@ -94,7 +94,8 @@ public partial class GameManager : MonoBehaviour
 
 	private bool CloseEnough(float val, float target)
 	{
-		return val >= target - 0.001f;
+		// Used to need - 0.001 in order to be true, but this lead to more issues in rare cases
+		return val >= target; 
 	}
 
 	private void RotateCameraWhileLoading()

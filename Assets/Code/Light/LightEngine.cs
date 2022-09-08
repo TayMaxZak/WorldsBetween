@@ -196,7 +196,7 @@ public class LightEngine
 				return 1;
 			}
 
-			// These should be impossible. Just in case
+			// If any of these 3 conditions happen, something is very wrong
 			if (!World.Contains(curPos))
 			{
 				return -10;

@@ -175,7 +175,7 @@ public class AudioManager : MonoBehaviour
 
 	private IEnumerator RecycleAudio(AudioSource source)
 	{
-		yield return new WaitForSeconds(source.clip.length + 1);
+		yield return new WaitForSeconds(source.clip.length / source.pitch + 1);
 
 		// May have been removed by now
 		if (!source)
