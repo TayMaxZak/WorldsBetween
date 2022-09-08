@@ -8,6 +8,7 @@ public class PlayerVitals : MonoBehaviour
 
 	public bool dead = false;
 	public Timer vitalsTickTimer = new Timer(0.05f);
+	private Timer takeDamageTimer = new Timer(0.5f);
 
 	[Header("Health")]
 	public float currentHealth = 100;
@@ -47,6 +48,8 @@ public class PlayerVitals : MonoBehaviour
 
 		stopHealthRegen.Increment(Time.deltaTime);
 		stopStaminaRegen.Increment(Time.deltaTime);
+
+		takeDamageTimer.Increment(Time.deltaTime);
 
 		vitalsTickTimer.Increment(Time.deltaTime);
 		if (vitalsTickTimer.Expired())
@@ -96,14 +99,14 @@ public class PlayerVitals : MonoBehaviour
 			float damageAmount = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume) * (1 - heartbeatVolume);
 			heartbeatVolume = 1 - (1 - heartbeatVolume) * (1 - heartbeatVolume);
 
-			heartbeatLoop.volume = heartbeatVolume * 0.4f;
+			heartbeatLoop.volume = heartbeatVolume * 0.6f;
 			heartbeatLoop.pitch = 0.99f + heartbeatPitch * 0.21f;
 
 			float breathingVolume = (1 - currentStamina / maxStamina);
 			breathingVolume = Mathf.Clamp01((breathingVolume - 0.5f) * 2f);
 			breathingVolume = 1 - (1 - breathingVolume) * (1 - breathingVolume);
 
-			breathingLoop.volume = breathingVolume * 0.2f;
+			breathingLoop.volume = breathingVolume * 0.15f;
 			breathingLoop.pitch = 1.04f;
 
 			UIManager.SetDie(false);
@@ -178,6 +181,11 @@ public class PlayerVitals : MonoBehaviour
 		if (dead || amount <= 0)
 			return;
 
+		if (takeDamageTimer.Expired())
+		{
+			takeDamageTimer.Reset();
+			AudioManager.PlaySound(damagedSound, transform.position);
+		}
 		stopHealthRegen.Reset();
 
 		float initialHealth = currentHealth;
