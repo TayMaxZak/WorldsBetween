@@ -222,7 +222,7 @@ public class Cephapath : Actor
 
 		grabTimer.Increment(DeltaTime());
 
-		bool moveAllTentacles = SeedlessRandom.NextFloat() < DeltaTime() * 0.02f;
+		bool moveAllTentacles = SeedlessRandom.NextFloat() < DeltaTime() * 0.1f;
 
 		if (!target)
 			return;
@@ -236,12 +236,18 @@ public class Cephapath : Actor
 		if (smoothDir == Vector3.zero)
 			smoothDir = dir;
 
-		Move(dir, distance);
+		float minDistance = 1f;
+
+		if (distance > minDistance)
+			Move(dir, distance);
 
 		// Handle player interaction
 		if (!Player.Instance.vitals.dead)
 		{
-			bool seesTarget = distance < encounterDistance && !Physics.Raycast(transform.position, dir, distance, blockRayMask)/* && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f*/;
+			Vector3 playerDiff = (target.position - transform.position);
+			float playerDistance = playerDiff.magnitude;
+
+			bool seesTarget = distance < encounterDistance && !Physics.Raycast(transform.position, playerDiff.normalized, playerDistance, blockRayMask)/* && Vector3.Dot(Player.Instance.head.forward, -dir) > 0.6f*/;
 
 			if (seesTarget)
 			{
@@ -255,17 +261,19 @@ public class Cephapath : Actor
 			}
 
 			// Close enough to do bad things
-			float badnessStrength = 1 - Mathf.Clamp01(Mathf.Max(distance - tentacleLength, 0) / tentacleLength);
+			// TODO: Doesn't find right amount
+
+			float badnessStrength = 1 - Mathf.Clamp01(Mathf.Max(playerDistance - damageDistance, 0) / damageDistance);
 
 			// Update audio
 			//grabLoop.volume = (1 - distance / grabDistance) * 0.5f;
 			grabLoop.pitch = 1 + badnessStrength * 0.5f;
 
-			playerDeadReset = true;
-
 			// Deal damage
-			if (distance < damageDistance)
+			if (playerDistance < damageDistance)
 				Player.Instance.vitals.DealDamage(grabDamage * DeltaTime());
+
+			playerDeadReset = true;
 		}
 		// Player is dead
 		else if (playerDeadReset)
@@ -300,7 +308,7 @@ public class Cephapath : Actor
 			Tentacle t = tentacles[i];
 
 			// Main tentacle logic
-			if (hasBeenSpotted)
+			if (hasBeenSpotted && distance > minDistance)
 			{
 				Physics.Raycast(tentacleRoot.position, (t.targetPoint - tentacleRoot.position).normalized, out RaycastHit hit, (t.targetPoint - tentacleRoot.position).magnitude * 0.9f, blockOrPlayerRayMask);
 				// Does this tentacle need to be adjusted now?
@@ -333,14 +341,14 @@ public class Cephapath : Actor
 			float delta = DeltaTime();
 
 			// Move towards new target point
-			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * 4);
+			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta * (10f / Vector3.Distance(t.targetPointNew, t.targetPoint)));
 
 			// Overall smoothing
 			t.targetPoint = Vector3.Lerp(t.targetPoint, t.targetPointNew, delta / 2);
 			t.offsetDir = Vector3.Lerp(t.offsetDir, t.offsetDirNew, delta / 2);
 
 			// Drag behind tips to make a curve
-			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta * 4);
+			t.curveTipPoint = Vector3.Lerp(t.curveTipPoint, t.targetPoint, delta * (10f / Vector3.Distance(t.curveTipPoint, t.targetPoint)));
 
 			bool inWater = transform.position.y < World.GetWaterHeight();
 			//float smoothOrSharp = inWater ? 1 : 0;

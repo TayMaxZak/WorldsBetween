@@ -24944,19 +24944,19 @@ MonoBehaviour:
   tentaclePrefab: {fileID: 8390588029003683492, guid: 9c18bacdce9aab5418d04d5510185e55, type: 3}
   tentacleRoot: {fileID: 8513241437453654586}
   maxSpeed: 5
-  accel: 0.5
-  damagePerSecond: 10
+  accel: 2
+  damagePerSecond: 20
   grabDamage: 10
-  grabPull: 5
+  grabPull: 6
   tentacleCount: 14
-  encounterDistance: 48
+  encounterDistance: 64
   tentacleLength: 24
-  damageDistance: 5
+  damageDistance: 4
   timeScale: 1
   ambSoundtimer:
     maxTime: 4
   ambSoundTimerMin: 4
-  ambSoundTimerMax: 10
+  ambSoundTimerMax: 14
   grabTimer:
     maxTime: 1
   dashVibrate: 0
