@@ -27,11 +27,12 @@ public class StructureFixer : Modifier
 
 	protected virtual bool ApplyDecorator(Vector3Int pos, Chunk chunk)
 	{
+		bool nearWater = pos.y <= World.GetWaterHeight();
 		Vector3 checkPos = pos + Vector3.one * 0.5f;
 
 		int checkBlock = World.GetBlock(pos.x, pos.y, pos.z).GetBlockType();
 
-		if (checkBlock != structure.floorBlock.GetBlockType() && checkBlock != structure.ceilingBlock.GetBlockType() && checkBlock != structure.lightBlock.GetBlockType())
+		if (!(nearWater && checkBlock == structure.wallBlock.GetBlockType()) && checkBlock != structure.floorBlock.GetBlockType() && checkBlock != structure.ceilingBlock.GetBlockType() && checkBlock != structure.lightBlock.GetBlockType())
 			return false;
 
 		foreach (StructureModifier.StructureRoom room in structure.rooms)
@@ -60,7 +61,7 @@ public class StructureFixer : Modifier
 
 			if (emptyNear)
 			{
-				World.SetBlock(pos, structure.wallBlock);
+				World.SetBlock(pos, !nearWater ? structure.wallBlock : structure.tilesBlock);
 
 				if (checkBlock == structure.lightBlock.GetBlockType())
 					chunk.RemoveBlockLightAt(pos);

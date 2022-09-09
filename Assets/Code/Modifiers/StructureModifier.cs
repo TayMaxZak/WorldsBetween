@@ -50,6 +50,7 @@ public class StructureModifier : Modifier
 	public Block lightBlock = BlockList.LIGHT;
 	public Block floorBlock = BlockList.CARPET;
 	public Block ceilingBlock = BlockList.CEILING;
+	public Block tilesBlock = BlockList.TILES;
 
 	public Mask mask = new Mask() { fill = false };
 
@@ -148,7 +149,8 @@ public class StructureModifier : Modifier
 
 		if (actualRoomCount < maxRoomCount)
 			RecursiveRoom(newRoom);
-		if (actualRoomCount < maxRoomCount && Random.value < 0.25f)
+		// Branching
+		if (actualRoomCount < maxRoomCount)
 			RecursiveRoom(newRoom);
 	}
 
@@ -169,7 +171,7 @@ public class StructureModifier : Modifier
 		}
 		else
 		{
-			newSize = new Vector3Int(2 * Random.Range(2, 11), Random.Range(3, 9), 2 * Random.Range(2, 11));
+			newSize = new Vector3Int(2 * Random.Range(2, 9 + 1), Random.Range(3, 8 + 1), 2 * Random.Range(2, 9 + 1));
 
 			if (!prevRoom.forceDirection)
 				offsetDirection = RandomDirection(true, prevRoom.returnDirection);
@@ -193,7 +195,7 @@ public class StructureModifier : Modifier
 		foreach (StructureRoom otherRoom in rooms)
 		{
 			// Results in light floating in air?
-			if (otherRoom.lightBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
+			if (otherRoom.innerBounds.Intersects(new Bounds(bounds.center, bounds.size * 0.99f)))
 			{
 				intersecting = true;
 				break;
@@ -223,7 +225,7 @@ public class StructureModifier : Modifier
 
 		StructureRoom room = new StructureRoom(bounds);
 
-		int lightSize = prevRoom.starter ? 6 : Random.value < 0.4 ? 4 : 2;
+		int lightSize = prevRoom.starter ? 6 : Random.value < 1 / 3f ? 4 : 2;
 
 		Bounds lightBounds = new Bounds(newPos + Vector3Int.up * Mathf.CeilToInt(newSize.y / 2f) + Vector3Int.up, new Vector3Int(lightSize, newSize.y, lightSize));
 		room.lightBounds = lightBounds;
@@ -257,6 +259,8 @@ public class StructureModifier : Modifier
 
 	protected virtual bool ApplyRooms(Vector3Int pos, Chunk chunk)
 	{
+		bool underwater = pos.y < World.GetWaterHeight();
+		bool atwater = pos.y <= World.GetWaterHeight();
 		Vector3 checkPos = pos + Vector3.one / 2f;
 
 		foreach (StructureRoom room in rooms)
@@ -289,16 +293,16 @@ public class StructureModifier : Modifier
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
 				{
 					if (checkBlock != lightBlock.GetBlockType())
-						World.SetBlock(pos.x, pos.y, pos.z, floorBlock);
+						World.SetBlock(pos.x, pos.y, pos.z, !atwater ? floorBlock : tilesBlock);
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
 				{
 					if (checkBlock != lightBlock.GetBlockType() && checkBlock != floorBlock.GetBlockType())
-						World.SetBlock(pos.x, pos.y, pos.z, ceilingBlock);
+						World.SetBlock(pos.x, pos.y, pos.z, !underwater ? ceilingBlock : tilesBlock);
 				}
 				else if (checkBlock != floorBlock.GetBlockType() && checkBlock != ceilingBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
 				{
-					World.SetBlock(pos.x, pos.y, pos.z, wallBlock);
+					World.SetBlock(pos.x, pos.y, pos.z, !underwater ? wallBlock : tilesBlock);
 				}
 			}
 		}

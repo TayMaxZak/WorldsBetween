@@ -13,10 +13,8 @@ public static class BlockList
 		Carpet,
 		Light,
 		Ceiling,
+		Tiles,
 		Rock,
-
-		Mushrooms,
-		Grass,
 	}
 
 	public static Block EMPTY = new Block(false, false, false, BlockType.Utility);
@@ -27,9 +25,6 @@ public static class BlockList
 	public static Block CARPET = new Block(true, true, true, BlockType.Carpet);
 	public static Block LIGHT = new Block(true, true, true, BlockType.Light);
 	public static Block CEILING = new Block(true, true, true, BlockType.Ceiling);
+	public static Block TILES = new Block(true, true, true, BlockType.Tiles);
 	public static Block ROCK = new Block(true, true, true, BlockType.Rock);
-
-	public static Block GRASS = new Block(true, false, false, BlockType.Grass);
-	public static Block MUSHROOMS = new Block(true, false, false, BlockType.Mushrooms);
-
 }
