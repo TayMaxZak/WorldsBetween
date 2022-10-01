@@ -78,6 +78,8 @@ public class PlayerMover : Actor
 
 	private Vector3 initPos;
 
+	private float framerate;
+
 	protected override void Awake()
 	{
 		base.Awake();
@@ -108,13 +110,15 @@ public class PlayerMover : Actor
 		initPos = position + Vector3.up;
 	}
 
-	public override void UpdateTick(bool isPhysicsTick, float tickDeltaTime, float tickPartialTime)
+	public override void UpdateTick(bool isPhysicsTick, float physicsDeltaTime, float physicsPartialTime)
 	{
 		if (!didInit || !GameManager.GetFinishedLoading())
 			return;
 
 		Cursor.lockState = CursorLockMode.Confined;
 		//Cursor.visible = false;
+
+		framerate = Mathf.Lerp(framerate, 1 / Time.deltaTime, Time.deltaTime);
 
 		MouseLookInput();
 
@@ -131,18 +135,18 @@ public class PlayerMover : Actor
 			if (isPhysicsTick)
 				prevHeadPosition = new Vector3(headPosition.x, headPosition.y, headPosition.z);
 
-			base.UpdateTick(isPhysicsTick, tickDeltaTime, tickPartialTime);
+			base.UpdateTick(isPhysicsTick, physicsDeltaTime, physicsPartialTime);
 
 			// Lerp logic position and visual position
-			head.localPosition = Vector3.Lerp(prevHeadPosition, headPosition, 1 - (tickPartialTime / tickDeltaTime));
+			head.localPosition = Vector3.Lerp(prevHeadPosition, headPosition, 1 - (physicsPartialTime / physicsDeltaTime));
 		}
 		else
 		{
 			if (isPhysicsTick)
-				climbingTimer.Increment(tickDeltaTime);
+				climbingTimer.Increment(physicsDeltaTime);
 
 			float climbDeltaTime = 1;
-			float climbPartialTime = (climbingTimer.currentTime + tickPartialTime) / climbingTimer.maxTime;
+			float climbPartialTime = (climbingTimer.currentTime + physicsPartialTime) / climbingTimer.maxTime;
 			if (climbingTimer.maxTime > fastClimbTime)
 				climbPartialTime = 0.2f * (climbPartialTime) + 0.8f * (climbPartialTime * climbPartialTime * climbPartialTime);
 			else
@@ -156,7 +160,7 @@ public class PlayerMover : Actor
 
 				prevHeadPosition = new Vector3(headPosition.x, headPosition.y, headPosition.z);
 
-				base.UpdateTick(true, tickDeltaTime, 0);
+				base.UpdateTick(true, physicsDeltaTime, 0);
 
 				// Lerp logic position and visual position
 				head.localPosition = Vector3.Lerp(prevHeadPosition, headPosition, 1 - (climbPartialTime / climbDeltaTime));
@@ -175,19 +179,22 @@ public class PlayerMover : Actor
 	{
 		if (!Player.Instance.vitals.dead)
 		{
-			mouseH += Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
-			mouseV -= Input.GetAxis("Mouse Y") * mouseSens * Time.deltaTime;
+			mouseH += Input.GetAxis("Mouse X") * mouseSens;
+			mouseV -= Input.GetAxis("Mouse Y") * mouseSens;
 		}
 		else
 		{
 			float dampen = 1 - Mathf.Clamp01(mouseV / minMouseV);
-			mouseV -= dampen * 0.15f * mouseSens * Time.deltaTime;
+			mouseV -= dampen * 0.15f * Time.deltaTime;
 		}
 
 		mouseV = Mathf.Clamp(mouseV, minMouseV, maxMouseV);
 
 		transform.localEulerAngles = new Vector3(0, mouseH, 0);
 		head.localEulerAngles = new Vector3(mouseV, 0, 0);
+
+		if ((int)(10 * Time.time) % 10 == 0)
+			UIManager.SetDebugText((int)framerate + "\n" + Input.GetAxis("Mouse X") + " " + Input.GetAxis("Mouse Y"));
 	}
 
 	private void DirectionalInput()

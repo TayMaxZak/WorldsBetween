@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class UIManager : MonoBehaviour
 	public Volume damagePostProcess;
 
 	public GameObject deathCanvas;
+
+	public TextMeshProUGUI debugText;
 
 	private void Awake()
 	{
@@ -90,5 +93,10 @@ public class UIManager : MonoBehaviour
 	public static void SetHeldItem(Item heldItem)
 	{
 		Instance.heldItemImage.sprite = heldItem.icon;
+	}
+
+	public static void SetDebugText(string text)
+	{
+		Instance.debugText.text = text;
 	}
 }

@@ -140,12 +140,12 @@ public partial class World : MonoBehaviour
 		sunObject.OnEnable();
 
 		// Water/no water, water height
-		bool hasWater = Random.value < 1 / 3f;
+		bool hasWater = Random.value < 1 / 4f;
 		waterSystem.SetActive(hasWater);
 		if (hasWater)
 		{
 			//waterHeight = 0;
-			waterHeight = 1 + (int)(Random.value * Random.value * -16);
+			waterHeight = (int)(Random.value * Random.value * -16);
 			WaterFollow(relativeOrigin);
 		}
 		else
