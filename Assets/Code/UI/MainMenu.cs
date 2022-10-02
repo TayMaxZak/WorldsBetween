@@ -36,7 +36,7 @@ public class MainMenu : MonoBehaviour
 	void Update()
 	{
 		// Wait past initial frames
-		if (Time.time < 0.2f)
+		if (Time.time < 0.1f)
 			return;
 
 		if (state == MainMenuState.Start && Input.anyKeyDown)
@@ -103,7 +103,7 @@ public class MainMenu : MonoBehaviour
 
 	public void QuitGame()
 	{
-		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
+		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
 
 		Debug.Log("Quit Game");
 		Application.Quit();

@@ -48,7 +48,7 @@ public class UIShiftCamera : MonoBehaviour
 	void Update()
 	{
 		// Only start lerping once the cursor is in a normal position
-		if (2 * Mathf.Abs(Input.mousePosition.x / Screen.width - 0.5f) < 1 || 2 * Mathf.Abs(Input.mousePosition.y / Screen.height - 0.5f) < 1)
+		if (2 * Mathf.Abs(Input.mousePosition.x / Screen.width - 0.5f) < 1 && 2 * Mathf.Abs(Input.mousePosition.y / Screen.height - 0.5f) < 1)
 			mouseInWindow = true;
 		if (!mouseInWindow)
 			return;
