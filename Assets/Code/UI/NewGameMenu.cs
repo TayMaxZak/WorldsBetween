@@ -26,6 +26,8 @@ public class NewGameMenu : MonoBehaviour
 
 	public void NewGame()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
+
 		// Set cross-scene data
 		PersistentData data = PersistentData.GetInstanceForWrite();
 

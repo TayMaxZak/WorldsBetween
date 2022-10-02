@@ -73,6 +73,8 @@ public class MainMenu : MonoBehaviour
 
 	public void ReturnToMain()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
+
 		MainMenuState prev = state;
 		state = MainMenuState.Main;
 		Debug.Log(prev + "? -> Main");
@@ -97,12 +99,16 @@ public class MainMenu : MonoBehaviour
 
 	public void QuitGame()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
+
 		Debug.Log("Quit Game");
 		Application.Quit();
 	}
 
 	public void OpenPlayGame()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
+
 		state = MainMenuState.NewGame;
 		Debug.Log("Main -> PlayGame?" + state);
 
@@ -112,6 +118,8 @@ public class MainMenu : MonoBehaviour
 
 	public void OpenDatabase()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
+
 		state = MainMenuState.Database;
 		Debug.Log("Main -> Database");
 
@@ -121,6 +129,8 @@ public class MainMenu : MonoBehaviour
 
 	public void OpenSettings()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
+
 		state = MainMenuState.Settings;
 		Debug.Log("Main -> Settings");
 

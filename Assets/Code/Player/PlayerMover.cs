@@ -78,8 +78,6 @@ public class PlayerMover : Actor
 
 	private Vector3 initPos;
 
-	private float framerate;
-
 	protected override void Awake()
 	{
 		base.Awake();
@@ -117,8 +115,6 @@ public class PlayerMover : Actor
 
 		Cursor.lockState = CursorLockMode.Confined;
 		//Cursor.visible = false;
-
-		framerate = Mathf.Lerp(framerate, 1 / Time.deltaTime, Time.deltaTime);
 
 		MouseLookInput();
 
@@ -192,9 +188,6 @@ public class PlayerMover : Actor
 
 		transform.localEulerAngles = new Vector3(0, mouseH, 0);
 		head.localEulerAngles = new Vector3(mouseV, 0, 0);
-
-		if ((int)(10 * Time.time) % 10 == 0)
-			UIManager.SetDebugText((int)framerate + "\n" + Input.GetAxis("Mouse X") + " " + Input.GetAxis("Mouse Y"));
 	}
 
 	private void DirectionalInput()

@@ -22,10 +22,9 @@ public class Player : MonoBehaviour
 	private Timer hintTimer = new Timer(1);
 	private Timer quit = new Timer(1);
 
-	private bool firstOrSecond = true;
+	private bool firstOrSecondItem = true;
 
-
-	public GameObject hint;
+	//private float framerate = 60;
 
 	private void Awake()
 	{
@@ -72,6 +71,9 @@ public class Player : MonoBehaviour
 
 	public void Update()
 	{
+		//framerate = Mathf.Lerp(framerate, 1 / Time.deltaTime, Time.deltaTime);
+		//UIManager.SetDebugText((int)framerate + " FPS");
+
 		// Debug quit
 		if (Input.GetButton("Quit"))
 		{
@@ -101,20 +103,11 @@ public class Player : MonoBehaviour
 			return;
 
 
-		// Debug respawn
-		hintTimer.Increment(Time.deltaTime);
-		if (hintTimer.Expired() && Input.GetButton("Astrum"))
-		{
-			GoalPointHint();
-			hintTimer.Reset();
-		}
-
-
 		// Open equipment menu
 		if (Input.GetButtonDown("Equipment"))
 		{
-			int index = firstOrSecond ? 0 : 1;
-			firstOrSecond = !firstOrSecond;
+			int index = firstOrSecondItem ? 0 : 1;
+			firstOrSecondItem = !firstOrSecondItem;
 
 			if (PersistentData.GetInstanceForRead())
 			{
@@ -154,11 +147,6 @@ public class Player : MonoBehaviour
 			heldItem.Equip(hand);
 			UIManager.SetHeldItem(heldItem);
 		}
-	}
-
-	private void GoalPointHint()
-	{
-		Instantiate(hint, Player.Instance.head.position - Vector3.up * 0.5f, hand.rotation);
 	}
 
 	public void Die()

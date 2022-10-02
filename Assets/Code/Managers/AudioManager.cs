@@ -33,6 +33,14 @@ public class AudioManager : MonoBehaviour
 
 	private MusicCue currentMusicCue;
 
+	public enum UISoundType
+	{
+		Click,
+		Back
+	}
+	[SerializeField]
+	private Sound[] uiSounds;
+
 	private void Awake()
 	{
 		if (!Instance)
@@ -161,6 +169,11 @@ public class AudioManager : MonoBehaviour
 	{
 		Instance.currentMusicCue = null;
 		Instance.musicPlayer.Stop();
+	}
+
+	public static void PlayUISound(UISoundType uiSound)
+	{
+		PlaySound(Instance.uiSounds[(int)uiSound], Instance.transform.position);
 	}
 
 	public static void SetAmbientVolume(float volume)
