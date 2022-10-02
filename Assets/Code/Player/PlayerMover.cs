@@ -180,8 +180,9 @@ public class PlayerMover : Actor
 		}
 		else
 		{
+			float dieLookUpSpeed = 30;
 			float dampen = 1 - Mathf.Clamp01(mouseV / minMouseV);
-			mouseV -= dampen * 0.15f * Time.deltaTime;
+			mouseV -= dieLookUpSpeed * dampen * Time.deltaTime;
 		}
 
 		mouseV = Mathf.Clamp(mouseV, minMouseV, maxMouseV);

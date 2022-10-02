@@ -36,7 +36,8 @@ public class AudioManager : MonoBehaviour
 	public enum UISoundType
 	{
 		Click,
-		Back
+		Back,
+		Start
 	}
 	[SerializeField]
 	private Sound[] uiSounds;

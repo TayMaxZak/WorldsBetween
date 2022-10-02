@@ -55,6 +55,8 @@ public class MainMenu : MonoBehaviour
 
 	private void PressStart()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Start);
+
 		state = MainMenuState.Main;
 		Debug.Log("Start -> Main");
 
@@ -64,6 +66,8 @@ public class MainMenu : MonoBehaviour
 
 	private void ReturnToStart()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
+
 		state = MainMenuState.Start;
 		Debug.Log("Main -> Start");
 
