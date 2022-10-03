@@ -84,6 +84,9 @@ public class PlayerMover : Actor
 
 		mouseH = transform.eulerAngles.y;
 		mouseV = head.transform.eulerAngles.x;
+
+		if (SettingsMenu.controlsSettings != null)
+			mouseSens = SettingsMenu.controlsSettings.lookSensitivity;
 	}
 
 	public void Respawn()
@@ -175,8 +178,9 @@ public class PlayerMover : Actor
 	{
 		if (!Player.Instance.vitals.dead)
 		{
-			mouseH += Input.GetAxis("Mouse X") * mouseSens;
-			mouseV -= Input.GetAxis("Mouse Y") * mouseSens;
+			float sensFactor = 1 / 2.5f;
+			mouseH += Input.GetAxis("Mouse X") * mouseSens * sensFactor;
+			mouseV -= Input.GetAxis("Mouse Y") * mouseSens * sensFactor;
 		}
 		else
 		{

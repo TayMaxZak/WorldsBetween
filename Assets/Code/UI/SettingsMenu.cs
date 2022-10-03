@@ -37,8 +37,17 @@ public class SettingsMenu : MonoBehaviour
 	// Graphics
 	public SliderOptionData brightness;
 
+	public class ControlsSettings
+	{
+		public float lookSensitivity = 5;
+	}
+
+	public static ControlsSettings controlsSettings;
+
 	private void Start()
 	{
+		controlsSettings = new ControlsSettings();
+
 		InitOption(lookSensitivity, 0.5f);
 
 		InitOption(masterVolume, 0.75f);
@@ -63,6 +72,7 @@ public class SettingsMenu : MonoBehaviour
 	public void UpdateLookSensitivity(float uiValue)
 	{
 		UpdateOption(uiValue, lookSensitivity);
+		controlsSettings.lookSensitivity = lookSensitivity.curValue;
 	}
 
 	public void UpdateMasterVolume(float uiValue)
