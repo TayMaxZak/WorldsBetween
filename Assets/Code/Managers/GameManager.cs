@@ -129,11 +129,11 @@ public partial class GameManager : MonoBehaviour
 		World.WorldBuilder.genStage = WorldBuilder.GenStage.FindPoints;
 	}
 
-	public async void StartLighting()
+	public void StartLighting()
 	{
 		startedLight = true;
 
-		await World.LightEngine.Begin();
+		World.LightEngine.Begin();
 	}
 
 	public void FinishLighting()

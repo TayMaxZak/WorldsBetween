@@ -245,11 +245,11 @@ public partial class World : MonoBehaviour
 	}
 
 	[ContextMenu("Recalculate Light")]
-	public async void RecalcLight()
+	public void RecalcLight()
 	{
 		WorldLightAtlas.Instance.ClearAtlas(false);
 
-		await LightEngine.Begin();
+		LightEngine.Begin();
 	}
 
 	public static void RecalculateLight()

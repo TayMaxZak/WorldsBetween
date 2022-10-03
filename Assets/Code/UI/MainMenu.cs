@@ -19,7 +19,9 @@ public class MainMenu : MonoBehaviour
 
 	public Animator startAnimator;
 	public Animator mainAnimator;
-	public Animator playGame;
+	public Animator newGameAnimator;
+	public Animator databaseAnimator;
+	public Animator settingsAnimator;
 
 	private void Awake()
 	{
@@ -29,7 +31,7 @@ public class MainMenu : MonoBehaviour
 
 		mainAnimator.SetFloat("IdleHide", 1);
 
-		playGame.SetFloat("IdleHide", 1);
+		newGameAnimator.SetFloat("IdleHide", 1);
 	}
 
 	// Update is called once per frame
@@ -47,10 +49,10 @@ public class MainMenu : MonoBehaviour
 		{
 			ReturnToStart();
 		}
-		else if (Input.GetButtonDown("Cancel"))
-		{
-			ReturnToMain();
-		}
+		//else if (Input.GetButtonDown("Cancel"))
+		//{
+		//	ReturnToMain();
+		//}
 	}
 
 	private void PressStart()
@@ -64,6 +66,7 @@ public class MainMenu : MonoBehaviour
 		mainAnimator.SetTrigger("ShowMenu");
 	}
 
+	// TODO: This breaks if the player clicks on buttons during transition
 	private void ReturnToStart()
 	{
 		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
@@ -81,21 +84,21 @@ public class MainMenu : MonoBehaviour
 
 		MainMenuState prev = state;
 		state = MainMenuState.Main;
-		Debug.Log(prev + "? -> Main");
+		Debug.Log(prev + " -> Main");
 
 		mainAnimator.SetTrigger("ShowMenu");
 
 		if (prev == MainMenuState.NewGame)
 		{
-			playGame.SetTrigger("HideMenu");
+			newGameAnimator.SetTrigger("HideMenu");
 		}
 		else if (prev == MainMenuState.Database)
 		{
-
+			databaseAnimator.SetTrigger("HideMenu");
 		}
 		else if (prev == MainMenuState.Settings)
 		{
-
+			settingsAnimator.SetTrigger("HideMenu");
 		}
 	}
 
@@ -109,15 +112,15 @@ public class MainMenu : MonoBehaviour
 		Application.Quit();
 	}
 
-	public void OpenPlayGame()
+	public void OpenNewGame()
 	{
 		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
 
 		state = MainMenuState.NewGame;
-		Debug.Log("Main -> PlayGame?" + state);
+		Debug.Log("Main -> NewGame");
 
 		mainAnimator.SetTrigger("HideMenu");
-		playGame.SetTrigger("ShowMenu");
+		newGameAnimator.SetTrigger("ShowMenu");
 	}
 
 	public void OpenDatabase()
@@ -128,7 +131,7 @@ public class MainMenu : MonoBehaviour
 		Debug.Log("Main -> Database");
 
 		mainAnimator.SetTrigger("HideMenu");
-		//startAnimator.SetTrigger("ShowMenu");
+		databaseAnimator.SetTrigger("ShowMenu");
 	}
 
 	public void OpenSettings()
@@ -139,6 +142,6 @@ public class MainMenu : MonoBehaviour
 		Debug.Log("Main -> Settings");
 
 		mainAnimator.SetTrigger("HideMenu");
-		//startAnimator.SetTrigger("ShowMenu");
+		settingsAnimator.SetTrigger("ShowMenu");
 	}
 }

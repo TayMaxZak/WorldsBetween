@@ -30,7 +30,7 @@ public class LightEngine
 
 	}
 
-	public async Task Begin()
+	public void Begin()
 	{
 		chunkQueue.Clear();
 		lightList.Clear();
@@ -58,9 +58,6 @@ public class LightEngine
 
 				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 10);
 			}
-
-			//Iterate();
-			//await Task.Delay(1);
 		}
 
 		Iterate();
