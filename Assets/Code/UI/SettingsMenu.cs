@@ -16,14 +16,14 @@ public class SettingsMenu : MonoBehaviour
 
 		public string name = "Option";
 
+		[System.NonSerialized]
+		public float curValueUI = 0.5f; // Value as set in UI
+		[System.NonSerialized]
+		public float curValue = 0.5f; // Value translated from UI to proper range
+
 		public float minValue = 0.0f; // Lower limit
 		public float midValue = 0.5f; // Separates lower and upper halves
 		public float maxValue = 1.0f; // Upper limit
-
-		[System.NonSerialized]
-		public float curValue = 0.5f; // Value translated from UI into proper range
-
-		public float curValueUI = 0.5f; // Value as set in UI
 	}
 
 	// Controls
@@ -41,16 +41,21 @@ public class SettingsMenu : MonoBehaviour
 	{
 		InitOption(lookSensitivity, 0.5f);
 
-		InitOption(masterVolume, 0.5f);
-		InitOption(effectsVolume, 0.5f);
-		InitOption(musicVolume, 0.5f);
+		InitOption(masterVolume, 0.75f);
+		AudioManager.SetMasterVolume(masterVolume.curValue);
+		InitOption(effectsVolume, 0.75f);
+		AudioManager.SetMasterVolume(effectsVolume.curValue);
+		InitOption(musicVolume, 0.75f);
+		AudioManager.SetMasterVolume(musicVolume.curValue);
 
 		InitOption(brightness, 0.5f);
 	}
 
 	private void InitOption(SliderOptionData optionData, float uiValue)
 	{
+		optionData.curValueUI = uiValue;
 		optionData.curValue = ConvertUIToReal(uiValue, optionData);
+
 		optionData.uiOption.InitUI(optionData);
 	}
 

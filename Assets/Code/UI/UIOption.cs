@@ -8,6 +8,7 @@ public class UIOption : MonoBehaviour
 {
 	public TextMeshProUGUI nameText;
 	public TextMeshProUGUI valueText;
+	public bool valueTextSigned = false;
 
 	public Slider valueSlider;
 
@@ -25,7 +26,10 @@ public class UIOption : MonoBehaviour
 
 	public void SetValueText(float value)
 	{
-		// Two decimal places
-		valueText.text = string.Format("{0:0.00}", value);
+		// Two decimal places (and sign)
+		if (!valueTextSigned)
+			valueText.text = value.ToString("0.00");
+		else
+			valueText.text = value.ToString("+0.00;- 0.00;0.00");
 	}
 }
