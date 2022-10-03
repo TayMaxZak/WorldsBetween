@@ -60,7 +60,7 @@ public class MainMenu : MonoBehaviour
 		AudioManager.PlayUISound(AudioManager.UISoundType.Start);
 
 		state = MainMenuState.Main;
-		Debug.Log("Start -> Main");
+		//Debug.Log("Start -> Main");
 
 		startAnimator.SetTrigger("HideMenu");
 		mainAnimator.SetTrigger("ShowMenu");
@@ -72,7 +72,7 @@ public class MainMenu : MonoBehaviour
 		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
 
 		state = MainMenuState.Start;
-		Debug.Log("Main -> Start");
+		//Debug.Log("Main -> Start");
 
 		mainAnimator.SetTrigger("HideMenu");
 		startAnimator.SetTrigger("ShowMenu");
@@ -84,7 +84,7 @@ public class MainMenu : MonoBehaviour
 
 		MainMenuState prev = state;
 		state = MainMenuState.Main;
-		Debug.Log(prev + " -> Main");
+		//Debug.Log(prev + " -> Main");
 
 		mainAnimator.SetTrigger("ShowMenu");
 
@@ -108,7 +108,8 @@ public class MainMenu : MonoBehaviour
 	{
 		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
 
-		Debug.Log("Quit Game");
+		//Debug.Log("Quit Game");
+
 		Application.Quit();
 	}
 
@@ -117,7 +118,7 @@ public class MainMenu : MonoBehaviour
 		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
 
 		state = MainMenuState.NewGame;
-		Debug.Log("Main -> NewGame");
+		//Debug.Log("Main -> NewGame");
 
 		mainAnimator.SetTrigger("HideMenu");
 		newGameAnimator.SetTrigger("ShowMenu");
@@ -128,7 +129,7 @@ public class MainMenu : MonoBehaviour
 		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
 
 		state = MainMenuState.Database;
-		Debug.Log("Main -> Database");
+		//Debug.Log("Main -> Database");
 
 		mainAnimator.SetTrigger("HideMenu");
 		databaseAnimator.SetTrigger("ShowMenu");
@@ -139,7 +140,7 @@ public class MainMenu : MonoBehaviour
 		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
 
 		state = MainMenuState.Settings;
-		Debug.Log("Main -> Settings");
+		//Debug.Log("Main -> Settings");
 
 		mainAnimator.SetTrigger("HideMenu");
 		settingsAnimator.SetTrigger("ShowMenu");
