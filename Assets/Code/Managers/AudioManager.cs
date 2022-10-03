@@ -182,9 +182,24 @@ public class AudioManager : MonoBehaviour
 		Instance.mixer.SetFloat("AmbientVolume", PercentageToDb(volume));
 	}
 
+	public static void SetMasterVolume(float volume)
+	{
+		Instance.mixer.SetFloat("MasterVolume", PercentageToDb(volume));
+	}
+
+	public static void SetEffectsVolume(float volume)
+	{
+		Instance.mixer.SetFloat("SFXVolume", PercentageToDb(volume));
+	}
+
+	public static void SetMusicVolume(float volume)
+	{
+		Instance.mixer.SetFloat("MusicVolume", PercentageToDb(volume));
+	}
+
 	static float PercentageToDb(float valueIn)
 	{
-		return Mathf.Clamp(10 * Mathf.Log10(valueIn), -80, 0);
+		return Mathf.Clamp(20 * Mathf.Log10(valueIn), -80, 0);
 	}
 
 	private IEnumerator RecycleAudio(AudioSource source)

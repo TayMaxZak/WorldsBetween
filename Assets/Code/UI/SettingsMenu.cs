@@ -62,14 +62,17 @@ public class SettingsMenu : MonoBehaviour
 	public void UpdateMasterVolume(float uiValue)
 	{
 		UpdateOption(uiValue, masterVolume);
+		AudioManager.SetMasterVolume(masterVolume.curValue);
 	}
 	public void UpdateEffectsVolume(float uiValue)
 	{
 		UpdateOption(uiValue, effectsVolume);
+		AudioManager.SetEffectsVolume(effectsVolume.curValue);
 	}
 	public void UpdateMusicVolume(float uiValue)
 	{
 		UpdateOption(uiValue, musicVolume);
+		AudioManager.SetMusicVolume(musicVolume.curValue);
 	}
 
 	public void UpdateBrightness(float uiValue)
