@@ -49,6 +49,7 @@ public class SettingsMenu : MonoBehaviour
 		AudioManager.SetMasterVolume(musicVolume.curValue);
 
 		InitOption(brightness, 0.5f);
+		UIManager.SetBrightness(brightness.curValue);
 	}
 
 	private void InitOption(SliderOptionData optionData, float uiValue)
@@ -83,6 +84,7 @@ public class SettingsMenu : MonoBehaviour
 	public void UpdateBrightness(float uiValue)
 	{
 		UpdateOption(uiValue, brightness);
+		UIManager.SetBrightness(brightness.curValue);
 	}
 
 	private void UpdateOption(float uiValue, SliderOptionData toUpdate)

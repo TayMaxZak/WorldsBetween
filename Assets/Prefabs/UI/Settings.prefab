@@ -321,35 +321,30 @@ MonoBehaviour:
   lookSensitivity:
     uiOption: {fileID: 6407692545365362934}
     name: Look sensitivity
-    curValueUI: 0.5
     minValue: 0.05
     midValue: 5
     maxValue: 50
   masterVolume:
     uiOption: {fileID: 8928757486042125504}
     name: Volume
-    curValueUI: 0.5
     minValue: 0
     midValue: 0.5
     maxValue: 1
   effectsVolume:
     uiOption: {fileID: 8737390042301442482}
     name: Effects volume
-    curValueUI: 0.5
     minValue: 0
     midValue: 0.5
     maxValue: 1
   musicVolume:
     uiOption: {fileID: 9113882496368995335}
     name: Music volume
-    curValueUI: 0.5
     minValue: 0
     midValue: 0.5
     maxValue: 1
   brightness:
     uiOption: {fileID: 849794520388594640}
     name: Brightness
-    curValueUI: 0.5
     minValue: -1
     midValue: 0
     maxValue: 1
@@ -665,12 +660,12 @@ GameObject:
   - component: {fileID: 2574806161349046634}
   - component: {fileID: 2807948031954720025}
   m_Layer: 5
-  m_Name: Title (1)
+  m_Name: Tooltip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &107656683344154306
 RectTransform:
   m_ObjectHideFlags: 0

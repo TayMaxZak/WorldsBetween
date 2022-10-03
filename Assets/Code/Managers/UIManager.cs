@@ -10,7 +10,6 @@ public class UIManager : MonoBehaviour
 	private static UIManager Instance;
 
 	//private bool watchRaised;
-
 	//public Animator watchAnim;
 
 	private bool showVitals;
@@ -19,17 +18,17 @@ public class UIManager : MonoBehaviour
 	public Image staminaSlider;
 	public float staminaWidth = 1;
 
-
 	public Image heldItemImage;
 
+	public Volume globalPostProcess;
+	private UnityEngine.Rendering.Universal.ColorAdjustments globalColor;
+	private float initGlobalBrightness;
+	private static float adjglobalBrightness = 0;
 
 	public Volume deathPostProcess;
-
 	public Volume damagePostProcess;
 
 	public GameObject deathCanvas;
-
-	public TextMeshProUGUI debugText;
 
 	private void Awake()
 	{
@@ -38,13 +37,25 @@ public class UIManager : MonoBehaviour
 		else
 			Destroy(gameObject);
 
-		SetDie(false);
+		if (globalPostProcess)
+		{
+			VolumeProfile profile = globalPostProcess.profile;
+			profile.TryGet(out globalColor);
+			initGlobalBrightness = globalColor.postExposure.value;
+
+			// Apply settings
+			globalColor.postExposure.Override(initGlobalBrightness + adjglobalBrightness);
+		}
+
+		if (deathCanvas)
+		{
+			SetDie(false);
+		}
 	}
 
 	public static void SetDie(bool isDie)
 	{
 		SetDeathUI(isDie);
-		//SetDeathPostProcess(isDie ? 1 : 0);
 	}
 
 	public static void SetShowVitals(bool show)
@@ -95,8 +106,13 @@ public class UIManager : MonoBehaviour
 		Instance.heldItemImage.sprite = heldItem.icon;
 	}
 
-	public static void SetDebugText(string text)
+	public static void SetBrightness(float brightness)
 	{
-		Instance.debugText.text = text;
+		if (!Instance)
+			return;
+
+		adjglobalBrightness = brightness;
+
+		Instance.globalColor.postExposure.Override(Instance.initGlobalBrightness + adjglobalBrightness);
 	}
 }
