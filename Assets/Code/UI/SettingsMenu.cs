@@ -38,7 +38,7 @@ public class SettingsMenu : MonoBehaviour
 	public SliderOptionData brightness;
 
 	[System.Serializable]
-	public class JSONSettings
+	public class JsonSettings
 	{
 		public int lookSensitivity = 500;
 
@@ -48,43 +48,54 @@ public class SettingsMenu : MonoBehaviour
 
 		public int brightness = 0;
 
-		public static float FromJSON(int value)
+		public static float FromJson(int value)
 		{
 			return value / 100f;
 		}
 
-		public static int ToJSON(float value)
+		public static int ToJson(float value)
 		{
 			return Mathf.RoundToInt(value * 100);
 		}
 	}
 
-	public static JSONSettings jsonSettings;
+	public static JsonSettings jsonSettings;
 
 	private void Start()
 	{
 		// Create settings object which will preserve options across scene loads
 		if (jsonSettings == null)
-			jsonSettings = new JSONSettings();
+		{
+			jsonSettings = new JsonSettings();
 
-		Debug.Log(JsonUtility.ToJson(jsonSettings));
+			// Read Json file in directory
+			string readJson = FileReadWrite.ReadString("GameSettings.json");
+
+			JsonUtility.FromJsonOverwrite(readJson, jsonSettings);
+		}
 
 		// Init controls
-		InitOption(lookSensitivity, JSONSettings.FromJSON(jsonSettings.lookSensitivity));
+		InitOption(lookSensitivity, JsonSettings.FromJson(jsonSettings.lookSensitivity));
 
 		// Init audio
-		InitOption(masterVolume, JSONSettings.FromJSON(jsonSettings.masterVolume));
+		InitOption(masterVolume, JsonSettings.FromJson(jsonSettings.masterVolume));
 		AudioManager.SetMasterVolume(masterVolume.curValue);
 
-		InitOption(effectsVolume, JSONSettings.FromJSON(jsonSettings.effectsVolume));
+		InitOption(effectsVolume, JsonSettings.FromJson(jsonSettings.effectsVolume));
 		AudioManager.SetEffectsVolume(effectsVolume.curValue);
 
-		InitOption(musicVolume, JSONSettings.FromJSON(jsonSettings.musicVolume));
+		InitOption(musicVolume, JsonSettings.FromJson(jsonSettings.musicVolume));
 		AudioManager.SetMusicVolume(musicVolume.curValue);
 
 		// Init graphics
-		InitOption(brightness, JSONSettings.FromJSON(jsonSettings.brightness));
+		InitOption(brightness, JsonSettings.FromJson(jsonSettings.brightness));
 		UIManager.SetBrightness(brightness.curValue);
+	}
+
+	private void OnDestroy()
+	{
+		// Save Json when changing scene
+		FileReadWrite.WriteString("GameSettings.json", JsonUtility.ToJson(jsonSettings));
 	}
 
 	private void InitOption(SliderOptionData optionData, float realValue)
@@ -99,7 +110,7 @@ public class SettingsMenu : MonoBehaviour
 	{
 		UpdateOptionFromUI(uiValue, lookSensitivity);
 
-		jsonSettings.lookSensitivity = JSONSettings.ToJSON(lookSensitivity.curValue);
+		jsonSettings.lookSensitivity = JsonSettings.ToJson(lookSensitivity.curValue);
 	}
 
 	public void UpdateMasterVolume(float uiValue)
@@ -107,21 +118,21 @@ public class SettingsMenu : MonoBehaviour
 		UpdateOptionFromUI(uiValue, masterVolume);
 		AudioManager.SetMasterVolume(masterVolume.curValue);
 
-		jsonSettings.masterVolume = JSONSettings.ToJSON(masterVolume.curValue);
+		jsonSettings.masterVolume = JsonSettings.ToJson(masterVolume.curValue);
 	}
 	public void UpdateEffectsVolume(float uiValue)
 	{
 		UpdateOptionFromUI(uiValue, effectsVolume);
 		AudioManager.SetEffectsVolume(effectsVolume.curValue);
 		
-		jsonSettings.effectsVolume = JSONSettings.ToJSON(effectsVolume.curValue);
+		jsonSettings.effectsVolume = JsonSettings.ToJson(effectsVolume.curValue);
 	}
 	public void UpdateMusicVolume(float uiValue)
 	{
 		UpdateOptionFromUI(uiValue, musicVolume);
 		AudioManager.SetMusicVolume(musicVolume.curValue);
 
-		jsonSettings.musicVolume = JSONSettings.ToJSON(musicVolume.curValue);
+		jsonSettings.musicVolume = JsonSettings.ToJson(musicVolume.curValue);
 	}
 
 	public void UpdateBrightness(float uiValue)
@@ -129,7 +140,7 @@ public class SettingsMenu : MonoBehaviour
 		UpdateOptionFromUI(uiValue, brightness);
 		UIManager.SetBrightness(brightness.curValue);
 
-		jsonSettings.brightness = JSONSettings.ToJSON(brightness.curValue);
+		jsonSettings.brightness = JsonSettings.ToJson(brightness.curValue);
 	}
 
 	private void UpdateOptionFromUI(float uiValue, SliderOptionData toUpdate)

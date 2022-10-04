@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
 
 			// Apply settings
 			if (SettingsMenu.jsonSettings != null)
-				globalColor.postExposure.Override(initGlobalBrightness + SettingsMenu.JSONSettings.FromJSON(SettingsMenu.jsonSettings.brightness));
+				globalColor.postExposure.Override(initGlobalBrightness + SettingsMenu.JsonSettings.FromJson(SettingsMenu.jsonSettings.brightness));
 		}
 
 		if (deathCanvas)

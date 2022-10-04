@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Reflection;
 using UnityEngine;
 
@@ -170,6 +171,37 @@ public static class SeedDecoder
 		}
 
 		return seedAsString;
+	}
+}
+
+public static class FileReadWrite
+{
+	public static void WriteString(string fileName, string contents)
+	{
+		string path = Application.dataPath + "/" + fileName;
+
+		// Write to file
+		File.WriteAllText(path, contents);
+	}
+
+	public static string ReadString(string fileName)
+	{
+		string path = Application.dataPath + "/" + fileName;
+
+		try // Look for the file
+		{
+			// Read the text from the file
+			StreamReader reader = new StreamReader(path);
+			string output = reader.ReadToEnd();
+			reader.Close();
+
+			Debug.Log(output);
+			return output;
+		}
+		catch (FileNotFoundException)
+		{
+			return "";
+		}
 	}
 }
 
