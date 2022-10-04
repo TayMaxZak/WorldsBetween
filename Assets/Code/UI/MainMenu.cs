@@ -106,7 +106,7 @@ public class MainMenu : MonoBehaviour
 
 	public void QuitGame()
 	{
-		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
+		AudioManager.PlayUISound(AudioManager.UISoundType.Back);
 
 		Debug.Log("Quit Game");
 

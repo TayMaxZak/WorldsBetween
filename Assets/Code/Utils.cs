@@ -195,7 +195,6 @@ public static class FileReadWrite
 			string output = reader.ReadToEnd();
 			reader.Close();
 
-			Debug.Log(output);
 			return output;
 		}
 		catch (FileNotFoundException)

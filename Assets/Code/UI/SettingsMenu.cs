@@ -158,6 +158,8 @@ public class SettingsMenu : MonoBehaviour
 
 	public void ResetSettings()
 	{
+		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
+
 		jsonSettings = new JsonSettings();
 
 		InitAllOptions();
