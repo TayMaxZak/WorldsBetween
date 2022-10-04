@@ -85,8 +85,8 @@ public class PlayerMover : Actor
 		mouseH = transform.eulerAngles.y;
 		mouseV = head.transform.eulerAngles.x;
 
-		if (SettingsMenu.gameSettings != null)
-			mouseSens = SettingsMenu.gameSettings.lookSensitivity;
+		if (SettingsMenu.jsonSettings != null)
+			mouseSens = SettingsMenu.JSONSettings.FromJSON(SettingsMenu.jsonSettings.lookSensitivity);
 	}
 
 	public void Respawn()

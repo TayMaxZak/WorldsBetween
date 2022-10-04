@@ -37,40 +37,53 @@ public class SettingsMenu : MonoBehaviour
 	// Graphics
 	public SliderOptionData brightness;
 
-	public class GameSettings
+	[System.Serializable]
+	public class JSONSettings
 	{
-		public float lookSensitivity = 5;
+		public int lookSensitivity = 500;
 
-		public float masterVolume = 0.75f;
-		public float effectsVolume = 0.75f;
-		public float musicVolume = 0.75f;
+		public int masterVolume = 75;
+		public int effectsVolume = 75;
+		public int musicVolume = 75;
 
-		public float brightness = 0;
+		public int brightness = 0;
+
+		public static float FromJSON(int value)
+		{
+			return value / 100f;
+		}
+
+		public static int ToJSON(float value)
+		{
+			return Mathf.RoundToInt(value * 100);
+		}
 	}
 
-	public static GameSettings gameSettings;
+	public static JSONSettings jsonSettings;
 
 	private void Start()
 	{
 		// Create settings object which will preserve options across scene loads
-		if (gameSettings == null)
-			gameSettings = new GameSettings();
+		if (jsonSettings == null)
+			jsonSettings = new JSONSettings();
+
+		Debug.Log(JsonUtility.ToJson(jsonSettings));
 
 		// Init controls
-		InitOption(lookSensitivity, gameSettings.lookSensitivity);
+		InitOption(lookSensitivity, JSONSettings.FromJSON(jsonSettings.lookSensitivity));
 
 		// Init audio
-		InitOption(masterVolume, gameSettings.masterVolume);
+		InitOption(masterVolume, JSONSettings.FromJSON(jsonSettings.masterVolume));
 		AudioManager.SetMasterVolume(masterVolume.curValue);
 
-		InitOption(effectsVolume, gameSettings.effectsVolume);
+		InitOption(effectsVolume, JSONSettings.FromJSON(jsonSettings.effectsVolume));
 		AudioManager.SetEffectsVolume(effectsVolume.curValue);
 
-		InitOption(musicVolume, gameSettings.musicVolume);
+		InitOption(musicVolume, JSONSettings.FromJSON(jsonSettings.musicVolume));
 		AudioManager.SetMusicVolume(musicVolume.curValue);
 
 		// Init graphics
-		InitOption(brightness, gameSettings.brightness);
+		InitOption(brightness, JSONSettings.FromJSON(jsonSettings.brightness));
 		UIManager.SetBrightness(brightness.curValue);
 	}
 
@@ -86,7 +99,7 @@ public class SettingsMenu : MonoBehaviour
 	{
 		UpdateOptionFromUI(uiValue, lookSensitivity);
 
-		gameSettings.lookSensitivity = lookSensitivity.curValue;
+		jsonSettings.lookSensitivity = JSONSettings.ToJSON(lookSensitivity.curValue);
 	}
 
 	public void UpdateMasterVolume(float uiValue)
@@ -94,21 +107,21 @@ public class SettingsMenu : MonoBehaviour
 		UpdateOptionFromUI(uiValue, masterVolume);
 		AudioManager.SetMasterVolume(masterVolume.curValue);
 
-		gameSettings.masterVolume = masterVolume.curValue;
+		jsonSettings.masterVolume = JSONSettings.ToJSON(masterVolume.curValue);
 	}
 	public void UpdateEffectsVolume(float uiValue)
 	{
 		UpdateOptionFromUI(uiValue, effectsVolume);
 		AudioManager.SetEffectsVolume(effectsVolume.curValue);
 		
-		gameSettings.effectsVolume = effectsVolume.curValue;
+		jsonSettings.effectsVolume = JSONSettings.ToJSON(effectsVolume.curValue);
 	}
 	public void UpdateMusicVolume(float uiValue)
 	{
 		UpdateOptionFromUI(uiValue, musicVolume);
 		AudioManager.SetMusicVolume(musicVolume.curValue);
 
-		gameSettings.musicVolume = musicVolume.curValue;
+		jsonSettings.musicVolume = JSONSettings.ToJSON(musicVolume.curValue);
 	}
 
 	public void UpdateBrightness(float uiValue)
@@ -116,12 +129,12 @@ public class SettingsMenu : MonoBehaviour
 		UpdateOptionFromUI(uiValue, brightness);
 		UIManager.SetBrightness(brightness.curValue);
 
-		gameSettings.brightness = brightness.curValue;
+		jsonSettings.brightness = JSONSettings.ToJSON(brightness.curValue);
 	}
 
 	private void UpdateOptionFromUI(float uiValue, SliderOptionData toUpdate)
 	{
-		toUpdate.curValue = ConvertUIToReal(uiValue, toUpdate);
+		toUpdate.curValue = RoundToDigits(ConvertUIToReal(uiValue, toUpdate), 2);
 
 		toUpdate.uiOption.SetValueText(toUpdate.curValue);
 	}
@@ -153,5 +166,12 @@ public class SettingsMenu : MonoBehaviour
 		{
 			return 0.5f + 0.5f * (realValue - optionData.midValue) / (optionData.maxValue - optionData.midValue);
 		}
+	}
+
+	private float RoundToDigits(float value, int digits)
+	{
+		float mult = Mathf.Pow(10.0f, digits);
+		float result = Mathf.RoundToInt(mult * value) / mult;
+		return result;
 	}
 }
