@@ -23,7 +23,6 @@ public class UIManager : MonoBehaviour
 	public Volume globalPostProcess;
 	private UnityEngine.Rendering.Universal.ColorAdjustments globalColor;
 	private float initGlobalBrightness;
-	private static float adjglobalBrightness = 0;
 
 	public Volume deathPostProcess;
 	public Volume damagePostProcess;
@@ -44,7 +43,8 @@ public class UIManager : MonoBehaviour
 			initGlobalBrightness = globalColor.postExposure.value;
 
 			// Apply settings
-			globalColor.postExposure.Override(initGlobalBrightness + adjglobalBrightness);
+			if (SettingsMenu.gameSettings != null)
+				globalColor.postExposure.Override(initGlobalBrightness + SettingsMenu.gameSettings.brightness);
 		}
 
 		if (deathCanvas)
@@ -111,8 +111,6 @@ public class UIManager : MonoBehaviour
 		if (!Instance)
 			return;
 
-		adjglobalBrightness = brightness;
-
-		Instance.globalColor.postExposure.Override(Instance.initGlobalBrightness + adjglobalBrightness);
+		Instance.globalColor.postExposure.Override(Instance.initGlobalBrightness + brightness);
 	}
 }

@@ -16,8 +16,8 @@ public class SettingsMenu : MonoBehaviour
 
 		public string name = "Option";
 
-		[System.NonSerialized]
-		public float curValueUI = 0.5f; // Value as set in UI
+		//[System.NonSerialized]
+		//public float curValueUI = 0.5f; // Value as set in UI
 		[System.NonSerialized]
 		public float curValue = 0.5f; // Value translated from UI to proper range
 
@@ -37,73 +37,95 @@ public class SettingsMenu : MonoBehaviour
 	// Graphics
 	public SliderOptionData brightness;
 
-	public class ControlsSettings
+	public class GameSettings
 	{
 		public float lookSensitivity = 5;
+
+		public float masterVolume = 0.75f;
+		public float effectsVolume = 0.75f;
+		public float musicVolume = 0.75f;
+
+		public float brightness = 0;
 	}
 
-	public static ControlsSettings controlsSettings;
+	public static GameSettings gameSettings;
 
 	private void Start()
 	{
-		controlsSettings = new ControlsSettings();
+		// Create settings object which will preserve options across scene loads
+		if (gameSettings == null)
+			gameSettings = new GameSettings();
 
-		InitOption(lookSensitivity, 0.5f);
+		// Init controls
+		InitOption(lookSensitivity, gameSettings.lookSensitivity);
 
-		InitOption(masterVolume, 0.75f);
+		// Init audio
+		InitOption(masterVolume, gameSettings.masterVolume);
 		AudioManager.SetMasterVolume(masterVolume.curValue);
-		InitOption(effectsVolume, 0.75f);
-		AudioManager.SetMasterVolume(effectsVolume.curValue);
-		InitOption(musicVolume, 0.75f);
-		AudioManager.SetMasterVolume(musicVolume.curValue);
 
-		InitOption(brightness, 0.5f);
+		InitOption(effectsVolume, gameSettings.effectsVolume);
+		AudioManager.SetEffectsVolume(effectsVolume.curValue);
+
+		InitOption(musicVolume, gameSettings.musicVolume);
+		AudioManager.SetMusicVolume(musicVolume.curValue);
+
+		// Init graphics
+		InitOption(brightness, gameSettings.brightness);
 		UIManager.SetBrightness(brightness.curValue);
 	}
 
-	private void InitOption(SliderOptionData optionData, float uiValue)
+	private void InitOption(SliderOptionData optionData, float realValue)
 	{
-		optionData.curValueUI = uiValue;
-		optionData.curValue = ConvertUIToReal(uiValue, optionData);
+		optionData.curValue = realValue;
 
-		optionData.uiOption.InitUI(optionData);
+		optionData.uiOption.InitUI(optionData, ConvertRealToUI(realValue, optionData));
 	}
 
+	#region Updating Options from UI
 	public void UpdateLookSensitivity(float uiValue)
 	{
-		UpdateOption(uiValue, lookSensitivity);
-		controlsSettings.lookSensitivity = lookSensitivity.curValue;
+		UpdateOptionFromUI(uiValue, lookSensitivity);
+
+		gameSettings.lookSensitivity = lookSensitivity.curValue;
 	}
 
 	public void UpdateMasterVolume(float uiValue)
 	{
-		UpdateOption(uiValue, masterVolume);
+		UpdateOptionFromUI(uiValue, masterVolume);
 		AudioManager.SetMasterVolume(masterVolume.curValue);
+
+		gameSettings.masterVolume = masterVolume.curValue;
 	}
 	public void UpdateEffectsVolume(float uiValue)
 	{
-		UpdateOption(uiValue, effectsVolume);
+		UpdateOptionFromUI(uiValue, effectsVolume);
 		AudioManager.SetEffectsVolume(effectsVolume.curValue);
+		
+		gameSettings.effectsVolume = effectsVolume.curValue;
 	}
 	public void UpdateMusicVolume(float uiValue)
 	{
-		UpdateOption(uiValue, musicVolume);
+		UpdateOptionFromUI(uiValue, musicVolume);
 		AudioManager.SetMusicVolume(musicVolume.curValue);
+
+		gameSettings.musicVolume = musicVolume.curValue;
 	}
 
 	public void UpdateBrightness(float uiValue)
 	{
-		UpdateOption(uiValue, brightness);
+		UpdateOptionFromUI(uiValue, brightness);
 		UIManager.SetBrightness(brightness.curValue);
+
+		gameSettings.brightness = brightness.curValue;
 	}
 
-	private void UpdateOption(float uiValue, SliderOptionData toUpdate)
+	private void UpdateOptionFromUI(float uiValue, SliderOptionData toUpdate)
 	{
 		toUpdate.curValue = ConvertUIToReal(uiValue, toUpdate);
-		toUpdate.curValueUI = uiValue;
 
 		toUpdate.uiOption.SetValueText(toUpdate.curValue);
 	}
+	#endregion
 
 	private float ConvertUIToReal(float uiValue, SliderOptionData optionData)
 	{
@@ -116,6 +138,20 @@ public class SettingsMenu : MonoBehaviour
 		else
 		{
 			return optionData.midValue + (uiValue - 0.5f) * 2 * (optionData.maxValue - optionData.midValue);
+		}
+	}
+
+	private float ConvertRealToUI(float realValue, SliderOptionData optionData)
+	{
+		// Lower half
+		if (realValue < optionData.midValue)
+		{
+			return 0.5f * (realValue - optionData.minValue) / (optionData.midValue - optionData.minValue);
+		}
+		// Upper half
+		else
+		{
+			return 0.5f + 0.5f * (realValue - optionData.midValue) / (optionData.maxValue - optionData.midValue);
 		}
 	}
 }

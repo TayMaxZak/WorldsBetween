@@ -12,10 +12,10 @@ public class UIOption : MonoBehaviour
 
 	public Slider valueSlider;
 
-	public void InitUI(SettingsMenu.SliderOptionData optionData)
+	public void InitUI(SettingsMenu.SliderOptionData optionData, float uiValue)
 	{
 		nameText.text = optionData.name;
-		SetValue(optionData.curValueUI, optionData.curValue);
+		SetValue(uiValue, optionData.curValue);
 	}
 
 	private void SetValue(float uiValue, float realValue)
