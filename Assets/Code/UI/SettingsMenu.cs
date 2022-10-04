@@ -16,8 +16,6 @@ public class SettingsMenu : MonoBehaviour
 
 		public string name = "Option";
 
-		//[System.NonSerialized]
-		//public float curValueUI = 0.5f; // Value as set in UI
 		[System.NonSerialized]
 		public float curValue = 0.5f; // Value translated from UI to proper range
 
@@ -71,9 +69,15 @@ public class SettingsMenu : MonoBehaviour
 			// Read Json file in directory
 			string readJson = FileReadWrite.ReadString("GameSettings.json");
 
+			// Will overwrite new fields and only if file exists
 			JsonUtility.FromJsonOverwrite(readJson, jsonSettings);
 		}
 
+		InitAllOptions();
+	}
+
+	private void InitAllOptions()
+	{
 		// Init controls
 		InitOption(lookSensitivity, JsonSettings.FromJson(jsonSettings.lookSensitivity));
 
@@ -92,9 +96,11 @@ public class SettingsMenu : MonoBehaviour
 		UIManager.SetBrightness(brightness.curValue);
 	}
 
-	private void OnDestroy()
+	public void SaveSettings()
 	{
-		// Save Json when changing scene
+		Debug.Log("Saved settings");
+
+		// Save game settings Json file when changing scene
 		FileReadWrite.WriteString("GameSettings.json", JsonUtility.ToJson(jsonSettings));
 	}
 
@@ -148,6 +154,13 @@ public class SettingsMenu : MonoBehaviour
 		toUpdate.curValue = RoundToDigits(ConvertUIToReal(uiValue, toUpdate), 2);
 
 		toUpdate.uiOption.SetValueText(toUpdate.curValue);
+	}
+
+	public void ResetSettings()
+	{
+		jsonSettings = new JsonSettings();
+
+		InitAllOptions();
 	}
 	#endregion
 
