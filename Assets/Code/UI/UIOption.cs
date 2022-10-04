@@ -20,7 +20,7 @@ public class UIOption : MonoBehaviour
 
 	private void SetValue(float uiValue, float realValue)
 	{
-		valueSlider.value = uiValue;
+		valueSlider.SetValueWithoutNotify(uiValue);
 		SetValueText(realValue);
 	}
 
