@@ -87,7 +87,7 @@ public class GoalPoint : MonoBehaviour
 			PersistentData pd = PersistentData.GetInstanceForRead();
 			if (pd)
 			{
-				pd.SetSeed(pd.GetStringSeed() + 1);
+				pd.SetSeed(pd.GetSeed() + 1);
 				pd.IncreaseDepth(1);
 			}
 

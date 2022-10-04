@@ -42,9 +42,8 @@ public partial class World : MonoBehaviour
 	[SerializeField]
 	private bool randomizeSeed = false;
 	[SerializeField]
-	private long seed = 0;
-	[SerializeField]
-	private int chunkSize = 8;
+	private int seed = 0;
+	private readonly int chunkSize = 16;
 
 	public bool isInfinite = true;
 
@@ -58,8 +57,8 @@ public partial class World : MonoBehaviour
 	private Vector3 encounterPoint;
 	public bool hasEncounter;
 
-	private int baseWorldHeight = 99999;
-	private int waterHeight = 0;
+	//private int baseWorldHeight = 99999;
+	//private int waterHeight = 0;
 	private int deadFallHeight = -199;
 
 	private WorldProperties worldProperties;
@@ -86,16 +85,15 @@ public partial class World : MonoBehaviour
 
 	public struct WorldProperties
 	{
-		public float terrainHeightMult;
-		public float terrainHeightScale;
-		public float terrainScale;
-		public float caveMult;
-		public bool bonusCrack;
+		public enum Surface
+		{
+			NoTop, // Underground
+			SurfaceHeight, // Surface defined by surface height
+			NoBottom // Free floating
+		}
 
-		public float buildingMult;
-		public float buildingHeightScale;
-		public float buildingScale;
-		public float buildingBlockScale;
+		public Surface surface;
+		public int surfaceHeight;
 
 		public bool hasWater;
 		public int waterHeight;
@@ -106,21 +104,19 @@ public partial class World : MonoBehaviour
 		// Is there prior seed data?
 		PersistentData data = PersistentData.GetInstanceForRead();
 		if (data)
-			seed = data.GetNumericSeed();
+			seed = data.GetSeed();
 		// Generate a random seed
 		else
 		{
 			if (randomizeSeed)
-				seed = SeedlessRandom.NextLongInRange(0, long.MaxValue);
+				seed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
 
 			data = PersistentData.GetInstanceForWrite();
-			data.SetNumericSeed(seed);
+			data.SetSeed(seed);
 			data.SetDebugMode(true);
 		}
 
-		Debug.Log("seed = " + seed + " vs (int)seed = " + (int)seed + " vs string = " + (data ? data.GetStringSeed() : ""));
-
-		Random.InitState((int)seed); // TODO: Use separate class for consistent gen RNG
+		Random.InitState(seed); // TODO: Use separate class for consistent gen RNG
 
 		int depth = 0;
 		if (data)
@@ -137,52 +133,26 @@ public partial class World : MonoBehaviour
 		//	0
 		//);
 		//sunObject.transform.localEulerAngles = new Vector3(90f, 0, 0);
-		sunObject.OnEnable();
+		//sunObject.OnEnable();
 
-		// Water/no water, water height
-		bool hasWater = Random.value < 1 / 4f;
-		waterSystem.SetActive(hasWater);
-		if (hasWater)
-		{
-			//waterHeight = 0;
-			waterHeight = (int)(Random.value * Random.value * -16);
-			WaterFollow(relativeOrigin);
-		}
-		else
-			waterHeight = -99999;
-
-		//baseWorldHeight = (int)(Random.value * 99999);
-		baseWorldHeight = 99999;
-		//baseWorldHeight = 0;
-
-		// Points A and B
-		//Vector3 floatA = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
-		//pointA = new Vector3Int(Mathf.FloorToInt(floatA.x), baseWorldHeight, Mathf.FloorToInt(floatA.z));
-		//if (pointA.y < 0 && depth < 10)
-		//	pointA.y = -pointA.y;
-		//pointB = -pointA;
-		//Vector3 floatB = Random.onUnitSphere * (GetWorldSize() / 2 - 24);
-		pointA = Vector3Int.zero;
-		pointB = Vector3Int.zero;
-		//pointB = new Vector3Int(Mathf.FloorToInt(floatB.x), 0, Mathf.FloorToInt(floatB.z));
-
-		// Save world properties
+		// Set world properties
 		worldProperties = new WorldProperties
 		{
-			hasWater = hasWater,
-			waterHeight = waterHeight,
+			// Has surface/sky, or entirely underground
+			surface = WorldProperties.Surface.NoTop,
+			surfaceHeight = (int)(Random.value * Random.value * 999),
 
-			terrainHeightMult = Random.Range(0.05f, 4f),
-			terrainHeightScale = Random.Range(0.01f, 2f),
-			terrainScale = Random.Range(0.1f, 1f) * Random.Range(0.2f, 1f) * Random.Range(0.5f, 1f),
-			caveMult = Random.Range(0.5f, 2f) * Random.Range(0.5f, 2f),
-
-			buildingMult = Random.Range(0f, 3f),
-			bonusCrack = Random.value < 0.5f,
-			buildingScale = Random.Range(0.67f, 1.5f),
-			buildingHeightScale = Random.Range(0.01f, 0.99f),
-			buildingBlockScale = Random.Range(0.67f, 1.3f),
+			hasWater = Random.value < 1 / 4f,
+			waterHeight = (int)(Random.value * Random.value * -16)
 		};
+
+		// Init water
+		waterSystem.SetActive(worldProperties.hasWater);
+		WaterFollow(relativeOrigin);
+
+		// Points A and B
+		pointA = Vector3Int.zero;
+		pointB = Vector3Int.zero;
 
 		// Modifiers
 		MakeModifiers();
@@ -194,14 +164,8 @@ public partial class World : MonoBehaviour
 		pointB = structure.furthestRoom.genData.pos;
 		encounterPoint = structure.encounterRoom.genData.pos;
 
-		if (structure.GetFillPercent() > 0.6f)
-		{
-			hasEncounter = true;
-		}
-		else
-		{
-			hasEncounter = false;
-		}
+		// Enough room for an encounter
+		hasEncounter = structure.GetFillPercent() > 0.6f;
 	}
 
 	private void MakeModifiers()
@@ -270,7 +234,7 @@ public partial class World : MonoBehaviour
 	public static void WaterFollow(Vector3 pos)
 	{
 		if (Instance.waterSystem)
-			Instance.waterSystem.transform.position = new Vector3(pos.x, Instance.waterHeight, pos.z);
+			Instance.waterSystem.transform.position = new Vector3(pos.x, Instance.worldProperties.waterHeight, pos.z);
 	}
 
 	public static Chunk GetChunk(int x, int y, int z)
@@ -456,12 +420,12 @@ public partial class World : MonoBehaviour
 
 	public static int GetWaterHeight()
 	{
-		return Instance.waterHeight;
+		return Instance.worldProperties.waterHeight;
 	}
 
 	public static int GetWorldHeight(Vector3Int input)
 	{
-		float height = Instance.baseWorldHeight;
+		float height = Instance.worldProperties.surfaceHeight;
 
 		foreach (SurfaceShaper shaper in Instance.surfaceShapers)
 			height += shaper.GetHeight(input);

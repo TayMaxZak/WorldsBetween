@@ -9,9 +9,7 @@ public class PersistentData : MonoBehaviour
 	private static PersistentData Instance;
 
 	[SerializeField]
-	private string stringSeed = "0";
-	[SerializeField]
-	private long numericSeed = 0;
+	private int seed = 0;
 	[SerializeField]
 	private int depth = 0;
 	[SerializeField]
@@ -35,26 +33,14 @@ public class PersistentData : MonoBehaviour
 	}
 
 	#region Get/Set Data
-	public void SetSeed(string seed)
+	public int GetSeed()
 	{
-		stringSeed = seed;
-		numericSeed = SeedDecoder.StringToLong(seed);
+		return seed;
 	}
 
-	public string GetStringSeed()
+	public void SetSeed(int seed)
 	{
-		return stringSeed;
-	}
-
-	public long GetNumericSeed()
-	{
-		return numericSeed;
-	}
-
-	public void SetNumericSeed(long seed)
-	{
-		numericSeed = seed;
-		stringSeed = SeedDecoder.LongToString(seed);
+		this.seed = seed;
 	}
 
 	public void IncreaseDepth(int step)
