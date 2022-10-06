@@ -147,9 +147,11 @@ public partial class World : MonoBehaviour
 			hasWater = Random.value < 1 / 4f,
 			waterHeight = (int)(Random.value * Random.value * -16)
 		};
+		if (!worldProperties.hasWater)
+			worldProperties.waterHeight -= 900;
 
 		// Init water
-		waterSystem.SetActive(true/*worldProperties.hasWater*/);
+		waterSystem.SetActive(worldProperties.hasWater);
 
 		// Points A and B
 		pointA = Vector3Int.zero;
@@ -192,7 +194,9 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(50));
+		modifiers.Add(structure = new StructureModifier(40));
+
+		modifiers.Add(new BlockyNoiseModifier(BlockList.EMPTY, replaceMask, 0.65f, new Vector3(0.02f, 0.02f, 0.02f), 0.1f, 2, 32, 0, Vector3.one));
 
 		modifiers.Add(new StructureFixer(structure));
 	}
