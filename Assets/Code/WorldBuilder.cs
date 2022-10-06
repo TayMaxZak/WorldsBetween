@@ -183,14 +183,16 @@ public class WorldBuilder
 	{
 		int actualChunkSize = World.GetChunkSize();
 
-		int range = genRangePlayable;
+		BoundsInt range = World.GetWorldBounds();
+		range.min /= actualChunkSize;
+		range.max /= actualChunkSize;
 
 		// Go through all nearby chunk positions
-		for (int x = -range; x < range; x++)
+		for (int x = range.min.x; x < range.max.x; x++)
 		{
-			for (int y = -range; y < range; y++)
+			for (int y = range.min.y; y < range.max.y; y++)
 			{
-				for (int z = -range; z < range; z++)
+				for (int z = range.min.z; z < range.max.z; z++)
 				{
 					Vector3Int chunkPos = new Vector3Int(x * actualChunkSize, y * actualChunkSize, z * actualChunkSize);
 

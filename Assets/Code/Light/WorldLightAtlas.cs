@@ -42,7 +42,7 @@ public class WorldLightAtlas : MonoBehaviour
 			fullSize = World.GetWorldSize();
 
 
-		// One pixel for every 2 blocks in each dimension (per 8 blocks total)
+		// One pixel for every 1 blocks in each dimension (per 1 blocks total)
 		dirSize = fullSize / directScale;
 
 		ambientScale = halfScaleAmbient ? 8 : 16;
@@ -180,13 +180,24 @@ public class WorldLightAtlas : MonoBehaviour
 
 		foreach (var chunk in World.GetAllChunks())
 		{
+			Vector3Int chunkPos = new Vector3Int(chunk.Key.x, chunk.Key.y, chunk.Key.z);
+
+			bool partiallyOutOfWorld = false;
+
 			for (int x = 0; x < chunkSize; x++)
 			{
 				for (int y = 0; y < chunkSize; y++)
 				{
 					for (int z = 0; z < chunkSize; z++)
 					{
-						Vector3Int pos = WorldToTex(new Vector3Int(chunk.Key.x + x, chunk.Key.y + y, chunk.Key.z + z)) / directScale;
+						Vector3Int pos = WorldToTex(new Vector3Int(chunkPos.x + x, chunkPos.y + y, chunkPos.z + z)) / directScale;
+
+						if (!World.LightAtlasContains(pos))
+						{
+							partiallyOutOfWorld = true;
+							continue;
+						}
+
 						int index = IndexFromPos(dirSize, pos.x, pos.y, pos.z);
 						directLightArr[index] = chunk.Value.GetLighting(x, y, z);
 						directChanges++;
@@ -194,7 +205,10 @@ public class WorldLightAtlas : MonoBehaviour
 				}
 			}
 
-			Vector3Int ambPos = WorldToTex(new Vector3Int(chunk.Key.x, chunk.Key.y, chunk.Key.z)) / ambientScale;
+			if (partiallyOutOfWorld)
+				continue;
+
+			Vector3Int ambPos = WorldToTex(chunkPos) / ambientScale;
 			int ambIndex = IndexFromPos(ambSize, ambPos.x, ambPos.y, ambPos.z);
 			ambientLightArr[ambIndex] = chunk.Value.GetAverageLighting();
 			ambientChanges++;

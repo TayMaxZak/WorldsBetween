@@ -52,6 +52,8 @@ public class StructureModifier : Modifier
 	public Block ceilingBlock = BlockList.CEILING;
 	public Block tilesBlock = BlockList.TILES;
 
+	public BoundsInt structureBounds;
+
 	public Mask mask = new Mask() { fill = false };
 
 	private readonly Vector3Int[] DIRS = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward, Vector3Int.back };
@@ -118,6 +120,18 @@ public class StructureModifier : Modifier
 
 		if (Utils.DistManhattan(room.genData.pos) > Utils.DistManhattan(furthestRoom.genData.pos))
 			furthestRoom = room;
+
+		// Grow bounds to include this room's walls
+		structureBounds.min = new Vector3Int(
+			Mathf.Min(structureBounds.min.x, Mathf.RoundToInt(room.outerBounds.min.x)),
+			Mathf.Min(structureBounds.min.y, Mathf.RoundToInt(room.outerBounds.min.y)),
+			Mathf.Min(structureBounds.min.z, Mathf.RoundToInt(room.outerBounds.min.z))
+		);
+		structureBounds.max = new Vector3Int(
+			Mathf.Max(structureBounds.max.x, Mathf.RoundToInt(room.outerBounds.max.x)),
+			Mathf.Max(structureBounds.max.y, Mathf.RoundToInt(room.outerBounds.max.y)),
+			Mathf.Max(structureBounds.max.z, Mathf.RoundToInt(room.outerBounds.max.z))
+		);
 	}
 
 	protected void FindEncounterRoom()
@@ -211,9 +225,9 @@ public class StructureModifier : Modifier
 		}
 
 		// Check if any part of room is outside of world bounds (- 2 for the walls on both sides)
-		Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
+		//Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
 
-		if (intersecting || !worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max))
+		if (intersecting/* || !worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max)*/)
 		{
 			Debug.DrawRay(newPos, -offset, Color.black, 30);
 			return null;

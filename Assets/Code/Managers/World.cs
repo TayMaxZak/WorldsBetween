@@ -20,7 +20,7 @@ public partial class World : MonoBehaviour
 	private int realChunkCount = 0;
 	private int fakeChunkCount = 0;
 
-	private Dictionary<Vector3Int, List<BlockLight>> pointLights = new Dictionary<Vector3Int, List<BlockLight>>();
+	private Dictionary<Vector3Int, List<BlockLight>> blockLights = new Dictionary<Vector3Int, List<BlockLight>>();
 
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
@@ -62,6 +62,8 @@ public partial class World : MonoBehaviour
 	private int deadFallHeight = -199;
 
 	private WorldProperties worldProperties;
+
+	private BoundsInt worldBounds;
 
 	private void Awake()
 	{
@@ -166,6 +168,18 @@ public partial class World : MonoBehaviour
 
 		// Enough room for an encounter
 		hasEncounter = structure.GetFillPercent() > 0.6f;
+
+		// Determine world bounds
+		worldBounds.min = new Vector3Int(
+			chunkSize * Mathf.FloorToInt((float)structure.structureBounds.min.x / chunkSize),
+			chunkSize * Mathf.FloorToInt((float)structure.structureBounds.min.y / chunkSize),
+			chunkSize * Mathf.FloorToInt((float)structure.structureBounds.min.z / chunkSize)
+		);
+		worldBounds.max = new Vector3Int(
+			chunkSize * Mathf.CeilToInt((float)structure.structureBounds.max.x / chunkSize),
+			chunkSize * Mathf.CeilToInt((float)structure.structureBounds.max.y / chunkSize),
+			chunkSize * Mathf.CeilToInt((float)structure.structureBounds.max.z / chunkSize)
+		);
 	}
 
 	private void MakeModifiers()
@@ -438,22 +452,27 @@ public partial class World : MonoBehaviour
 		return WorldBuilder.GetGenRangePlayable() * 2 * Instance.chunkSize;
 	}
 
-	public static int GetWorldSizeScenic()
+	//public static int GetWorldSizeScenic()
+	//{
+	//	return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeFake()) * 2 * Instance.chunkSize;
+	//}
+
+	public static BoundsInt GetWorldBounds()
 	{
-		return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeFake()) * 2 * Instance.chunkSize;
+		return Instance.worldBounds;
 	}
 
 	public static void SetLightsAt(Vector3Int pos, List<BlockLight> chunkLights)
 	{
-		Instance.pointLights[pos] = chunkLights;
+		Instance.blockLights[pos] = chunkLights;
 	}
 
 	public static Dictionary<Vector3Int, List<BlockLight>> GetAllLights()
 	{
-		return Instance.pointLights;
+		return Instance.blockLights;
 	}
 
-	public static bool Contains(Vector3 pos)
+	public static bool LightAtlasContains(Vector3 pos)
 	{
 		int extent = WorldBuilder.GetGenRangePlayable() * Instance.chunkSize;
 
@@ -463,13 +482,21 @@ public partial class World : MonoBehaviour
 			return false;
 	}
 
+	public static bool Contains(Vector3 pos)
+	{
+		// For some reason this is necessary
+		Bounds worldBounds = new Bounds(Instance.worldBounds.center, Instance.worldBounds.size);
+
+		return worldBounds.Contains(pos);
+	}
+
 	private void OnDrawGizmosSelected()
 	{
-		Gizmos.color = Utils.colorOrange;
-		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * worldBuilder.GetGenRangePlayable() * Vector3.one);
-
 		Gizmos.color = Utils.colorPurple;
-		Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeFake()) * Vector3.one);
+		Gizmos.DrawWireCube(worldBounds.center, worldBounds.size);
+
+		//Gizmos.color = Utils.colorPurple;
+		//Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeFake()) * Vector3.one);
 
 		Gizmos.color = Color.white;
 		Gizmos.DrawLine(pointA, pointB);
