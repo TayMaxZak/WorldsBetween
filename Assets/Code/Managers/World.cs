@@ -142,15 +142,14 @@ public partial class World : MonoBehaviour
 		{
 			// Has surface/sky, or entirely underground
 			surface = WorldProperties.Surface.NoTop,
-			surfaceHeight = (int)(Random.value * Random.value * 999),
+			surfaceHeight = 999/*(int)(Random.value * Random.value * 999)*/,
 
 			hasWater = Random.value < 1 / 4f,
 			waterHeight = (int)(Random.value * Random.value * -16)
 		};
 
 		// Init water
-		waterSystem.SetActive(worldProperties.hasWater);
-		WaterFollow(relativeOrigin);
+		waterSystem.SetActive(true/*worldProperties.hasWater*/);
 
 		// Points A and B
 		pointA = Vector3Int.zero;
@@ -180,6 +179,9 @@ public partial class World : MonoBehaviour
 			chunkSize * Mathf.CeilToInt((float)structure.structureBounds.max.y / chunkSize),
 			chunkSize * Mathf.CeilToInt((float)structure.structureBounds.max.z / chunkSize)
 		);
+
+		// Fit static objects to bounds
+		WaterFollow(worldBounds.center);
 	}
 
 	private void MakeModifiers()
@@ -190,7 +192,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(48));
+		modifiers.Add(structure = new StructureModifier(50));
 
 		modifiers.Add(new StructureFixer(structure));
 	}
@@ -427,6 +429,16 @@ public partial class World : MonoBehaviour
 		return Instance.chunks;
 	}
 
+	public static void SetLightsAt(Vector3Int pos, List<BlockLight> chunkLights)
+	{
+		Instance.blockLights[pos] = chunkLights;
+	}
+
+	public static Dictionary<Vector3Int, List<BlockLight>> GetAllLights()
+	{
+		return Instance.blockLights;
+	}
+
 	public static bool IsInfinite()
 	{
 		return Instance.isInfinite;
@@ -447,11 +459,6 @@ public partial class World : MonoBehaviour
 		return Mathf.RoundToInt(height);
 	}
 
-	public static int GetWorldSize()
-	{
-		return WorldBuilder.GetGenRangePlayable() * 2 * Instance.chunkSize;
-	}
-
 	//public static int GetWorldSizeScenic()
 	//{
 	//	return (WorldBuilder.GetGenRangePlayable() + WorldBuilder.GetGenRangeFake()) * 2 * Instance.chunkSize;
@@ -462,49 +469,35 @@ public partial class World : MonoBehaviour
 		return Instance.worldBounds;
 	}
 
-	public static void SetLightsAt(Vector3Int pos, List<BlockLight> chunkLights)
+	//public static bool Contains(Vector3 pos)
+	//{
+	//	int extent = WorldBuilder.GetGenRangePlayable() * Instance.chunkSize;
+
+	//	if (Mathf.Abs(pos.x) < extent && Mathf.Abs(pos.y) < extent && Mathf.Abs(pos.z) < extent)
+	//		return true;
+	//	else
+	//		return false;
+	//}
+
+	// TODO: Add extension method that lets a BoundsInt check if it contains a Vector3 (float)
+	public static bool Contains(Vector3Int pos)
 	{
-		Instance.blockLights[pos] = chunkLights;
-	}
-
-	public static Dictionary<Vector3Int, List<BlockLight>> GetAllLights()
-	{
-		return Instance.blockLights;
-	}
-
-	public static bool LightAtlasContains(Vector3 pos)
-	{
-		int extent = WorldBuilder.GetGenRangePlayable() * Instance.chunkSize;
-
-		if (Mathf.Abs(pos.x) < extent && Mathf.Abs(pos.y) < extent && Mathf.Abs(pos.z) < extent)
-			return true;
-		else
-			return false;
-	}
-
-	public static bool Contains(Vector3 pos)
-	{
-		// For some reason this is necessary
-		Bounds worldBounds = new Bounds(Instance.worldBounds.center, Instance.worldBounds.size);
-
-		return worldBounds.Contains(pos);
+		return Instance.worldBounds.Contains(pos);
 	}
 
 	private void OnDrawGizmosSelected()
 	{
-		Gizmos.color = Utils.colorPurple;
+		Gizmos.color = Utils.colorBlue;
 		Gizmos.DrawWireCube(worldBounds.center, worldBounds.size);
 
-		//Gizmos.color = Utils.colorPurple;
-		//Gizmos.DrawWireCube(Vector3.zero, 2 * chunkSize * (worldBuilder.GetGenRangePlayable() + worldBuilder.GetGenRangeFake()) * Vector3.one);
+		//Gizmos.color = Color.white;
+		//Gizmos.DrawLine(pointA, pointB);
+		//Vector3 dif = ((Vector3)(pointA - pointB)).normalized * 2;
+		//Gizmos.DrawLine(pointB, pointB + SeedlessRandom.RandomPoint(1) + dif);
 
-		Gizmos.color = Color.white;
-		Gizmos.DrawLine(pointA, pointB);
-		Vector3 dif = ((Vector3)(pointA - pointB)).normalized * 2;
-		Gizmos.DrawLine(pointB, pointB + SeedlessRandom.RandomPoint(1) + dif);
+		//worldBuilder.DrawGizmo();
 
-		worldBuilder.DrawGizmo();
-		if (structure != null)
-			structure.DrawGizmo();
+		//if (structure != null)
+		//	structure.DrawGizmo();
 	}
 }

@@ -1148,7 +1148,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f40cfeae2d47ce0448ad34b7e1c9184a, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1689,7 +1689,6 @@ MonoBehaviour:
   cam: {fileID: 8417224531919593866}
   heldItem: {fileID: 11400000, guid: 96dcb5f8b8ec8a04fb43702092b77475, type: 2}
   itemModel: {fileID: 3881849255761636774}
-  hint: {fileID: 5049646714044862913, guid: 523eb9460d0d282468f2c3f267ab921e, type: 3}
 --- !u!114 &6215269175067649699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1753,7 +1752,7 @@ MonoBehaviour:
   raycastMargin: 0.04
   strideLength: 0.7
   peekDistance: 0.4
-  mouseSens: 4
+  mouseSens: 2
   walkSpeed: 3.5
   sprintSpeed: 7
   sprintAccel: 3.5
@@ -1995,6 +1994,10 @@ PrefabInstance:
     - target: {fileID: 5374829732445087030, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5374829732445087031, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 037a3f79486fc8842a5eb104f9ceeaac, type: 3}

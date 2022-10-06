@@ -229,12 +229,12 @@ public class StructureModifier : Modifier
 
 		if (intersecting/* || !worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max)*/)
 		{
-			Debug.DrawRay(newPos, -offset, Color.black, 30);
+			Debug.DrawRay(newPos, -offset, Color.black, 10);
 			return null;
 		}
 		else
 		{
-			Debug.DrawRay(newPos, -offset, prevRoom.debugColor, 30);
+			Debug.DrawRay(newPos, -offset, prevRoom.debugColor, 10);
 		}
 
 		StructureRoom room = new StructureRoom(bounds);

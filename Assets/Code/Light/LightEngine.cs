@@ -27,7 +27,7 @@ public class LightEngine
 
 	public void Init()
 	{
-
+		WorldLightAtlas.Instance.Init();
 	}
 
 	public void Begin()
@@ -56,7 +56,7 @@ public class LightEngine
 				// For distance searching later, index lights by position
 				lightList.Add(light.blockPos, light);
 
-				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 10);
+				Debug.DrawRay(light.blockPos + Vector3.one * 0.5f, Vector3.up, light.GetLightColor(1), 5);
 			}
 		}
 
@@ -73,8 +73,6 @@ public class LightEngine
 			finished = true;
 			// Transfer lighting voxels from individual arrays to one shared array
 			WorldLightAtlas.Instance.AggregateChunkLighting();
-			// Write to one shared texture for shaders
-			WorldLightAtlas.Instance.UpdateLightTextures();
 		}
 
 		//// Already busy?
@@ -194,7 +192,7 @@ public class LightEngine
 			}
 
 			// If any of these 3 conditions happen, something is very wrong
-			if (!World.Contains(curPos))
+			if (!World.Contains(curBlockPos))
 			{
 				return -10;
 			}

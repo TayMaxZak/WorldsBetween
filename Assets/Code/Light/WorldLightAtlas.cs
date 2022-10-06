@@ -7,171 +7,155 @@ using System.Threading.Tasks;
 [ExecuteInEditMode]
 public class WorldLightAtlas : MonoBehaviour
 {
+	[System.Serializable]
+	public class SubAtlas
+	{
+		private Color[] array;
+		[SerializeField]
+		private Texture3D texture;
+
+		public int scale = 1;
+		public Vector3Int size;
+
+		public SubAtlas(Vector3Int fullSize, int scale, TextureFormat format)
+		{
+			size = fullSize / scale;
+			this.scale = scale;
+
+			array = new Color[size.x * size.y * size.z];
+
+			for (int z = 0; z < size.z; z++)
+			{
+				for (int y = 0; y < size.y; y++)
+				{
+					for (int x = 0; x < size.x; x++)
+					{
+						SetColor(x, y, z, Color.black, false);
+					}
+				}
+			}
+
+			texture = new Texture3D(size.x, size.y, size.z, format, false)
+			{
+				wrapMode = TextureWrapMode.Clamp,
+				filterMode = FilterMode.Bilinear
+			};
+		}
+
+		public void Apply()
+		{
+			texture.SetPixels(array);
+			texture.Apply();
+		}
+
+		public void Clear(bool updateTexture)
+		{
+			for (int x = 0; x < size.x; x++)
+			{
+				for (int y = 0; y < size.y; y++)
+				{
+					for (int z = 0; z < size.z; z++)
+					{
+						array[IndexFromPos(x, y, z)] = Color.black;
+					}
+				}
+			}
+
+			if (updateTexture)
+				Apply();
+		}
+
+		public void SetColor(Vector3Int pos, Color value, bool add)
+		{
+			SetColor(pos.x, pos.y, pos.z, value, add);
+		}
+
+		public void SetColor(int x, int y, int z, Color value, bool add)
+		{
+			array[IndexFromPos(x, y, z)] = add ? value : array[IndexFromPos(x, y, z)] + value;
+		}
+
+		public Texture3D GetTexture()
+		{
+			return texture;
+		}
+
+		private int IndexFromPos(int x, int y, int z)
+		{
+			int zOffset = z * size.y * size.x;
+			int yOffset = y * size.x;
+			int xOffset = x;
+
+			return xOffset + yOffset + zOffset;
+		}
+	}
+
 	public static WorldLightAtlas Instance;
 
-	public bool simpleMode = false;
+	private bool simpleMode = false;
 
-	public Texture3D defaultLightmap;
-	public Texture3D defaultLightmap2;
+	[SerializeField]
+	private Texture3D directTextureDefault; // Used when generated light is not in use
+	[SerializeField]
+	private Texture3D ambientTextureDefault;  // Used when generated light is not in use
 
-	public Texture3D directLightTex;
-	private Color[] directLightArr;
-	public Texture3D ambientLightTex;
-	private Color[] ambientLightArr;
+	private Vector3Int fullSize = new Vector3Int(16, 16, 16); // Total size of atlas in world space
+	private Vector3Int minPos = new Vector3Int(-8, -8, -8); // Minimum position ("bottom right corner") of atlas in world space
 
-	private int fullSize;
+	[SerializeField]
+	private SubAtlas directLight;
+	[SerializeField]
+	private SubAtlas ambientLight;
 
-	private int dirSize;
-	public int directScale = 1;
+	//private static int directChanges = 0;
+	//private static int ambientChanges = 0;
+	private bool didInit = false;
 
-	private int ambSize;
-	public bool halfScaleAmbient = false;
-	private int ambientScale = 16;
-
-	private static int directChanges = 0;
-
-	private static int ambientChanges = 0;
-
-	private void OnEnable()
+	private void Awake()
 	{
-		bool partialInit = !Application.isPlaying || simpleMode;
-
-		if (partialInit)
-			fullSize = defaultLightmap.width;
-		else
-			fullSize = World.GetWorldSize();
-
-
-		// One pixel for every 1 blocks in each dimension (per 1 blocks total)
-		dirSize = fullSize / directScale;
-
-		ambientScale = halfScaleAmbient ? 8 : 16;
-		// One pixel per chunk (per 4096 blocks total)
-		ambSize = fullSize / ambientScale;
-
-
-		if (partialInit)
-		{
-			SetShaderReferences(defaultLightmap, defaultLightmap2);
-		}
-		else
-		{
-			CreateDirectLightmap();
-			CreateAmbientLightmap();
-
-			SetShaderReferences(directLightTex, ambientLightTex);
-
+		if (Application.isPlaying)
 			Instance = this;
-		}
 	}
 
-	private void SetShaderReferences(Texture texture, Texture texture2)
+	public void OnEnable()
 	{
-		Shader.SetGlobalTexture("LightMap", texture);
-		Shader.SetGlobalTexture("LightMap2", texture2);
-		Shader.SetGlobalFloat("LightMapScale", fullSize);
+		if (didInit)
+			return;
+		SetShaderReferences(directTextureDefault, ambientTextureDefault);
 	}
 
-	private void CreateDirectLightmap()
+	public void Init()
 	{
-		// Create texture and apply configuration. RGBAHalf is sufficient for most lighting
-		directLightTex = new Texture3D(dirSize, dirSize, dirSize, TextureFormat.RGBAHalf, false);
+		if (simpleMode)
+			return;
+		didInit = true;
 
-		directLightTex.wrapMode = TextureWrapMode.Clamp;
-		directLightTex.filterMode = FilterMode.Bilinear;
+		fullSize = World.GetWorldBounds().size;
+		minPos = World.GetWorldBounds().min;
 
-		directLightArr = new Color[dirSize * dirSize * dirSize];
-		for (int z = 0; z < dirSize; z++)
-		{
-			for (int y = 0; y < dirSize; y++)
-			{
-				for (int x = 0; x < dirSize; x++)
-				{
-					directLightArr[IndexFromPos(dirSize, x, y, z)] = Color.black;
-				}
-			}
-		}
+		directLight = new SubAtlas(fullSize, 1, TextureFormat.RGBAFloat);
+		ambientLight = new SubAtlas(fullSize, 16, TextureFormat.RGBAFloat);
 
-		UpdateDirectTex();
+		SetShaderReferences(directLight.GetTexture(), ambientLight.GetTexture());
+
+		Instance = this;
 	}
 
-	private void UpdateDirectTex()
+	private void SetShaderReferences(Texture directTexture, Texture ambientTexture)
 	{
-		// Copy the color values to the texture
-		directLightTex.SetPixels(directLightArr);
+		// For positioning textures correctly
+		Shader.SetGlobalVector("LightAtlasSize", new Vector4(fullSize.x, fullSize.y, fullSize.z, 0));
+		Shader.SetGlobalVector("LightAtlasMinPos", new Vector4(minPos.x, minPos.y, minPos.z, 0));
 
-		// Apply the changes to the texture and upload the updated texture to the GPU
-		directLightTex.Apply();
-	}
-
-	private void CreateAmbientLightmap()
-	{
-		// Create texture and apply configuration. Use float for higher fidelity in ambient light
-		ambientLightTex = new Texture3D(ambSize, ambSize, ambSize, TextureFormat.RGBAFloat, false);
-
-		ambientLightTex.wrapMode = TextureWrapMode.Clamp;
-		ambientLightTex.filterMode = FilterMode.Bilinear;
-
-		ambientLightArr = new Color[ambSize * ambSize * ambSize];
-		for (int z = 0; z < ambSize; z++)
-		{
-			for (int y = 0; y < ambSize; y++)
-			{
-				for (int x = 0; x < ambSize; x++)
-				{
-					ambientLightArr[IndexFromPos(ambSize, x, y, z)] = Color.black;
-				}
-			}
-		}
-
-		UpdateAmbientTex();
-	}
-
-	private void UpdateAmbientTex()
-	{
-		// Copy the color values to the texture
-		ambientLightTex.SetPixels(ambientLightArr);
-
-		// Apply the changes to the texture and upload the updated texture to the GPU
-		ambientLightTex.Apply();
+		// References to current textures
+		Shader.SetGlobalTexture("DirectLightTexture", directTexture);
+		Shader.SetGlobalTexture("AmbientLightTexture", ambientTexture);
 	}
 
 	public void ClearAtlas(bool updateTex)
 	{
-		for (int z = 0; z < dirSize; z++)
-		{
-			for (int y = 0; y < dirSize; y++)
-			{
-				for (int x = 0; x < dirSize; x++)
-				{
-					directLightArr[IndexFromPos(dirSize, x, y, z)] = Color.black;
-				}
-			}
-		}
-		if (updateTex)
-			UpdateDirectTex();
-
-		for (int z = 0; z < ambSize; z++)
-		{
-			for (int y = 0; y < ambSize; y++)
-			{
-				for (int x = 0; x < ambSize; x++)
-				{
-					ambientLightArr[IndexFromPos(ambSize, x, y, z)] = Color.black;
-				}
-			}
-		}
-		if (updateTex)
-			UpdateAmbientTex();
-	}
-
-	private int IndexFromPos(int size, int x, int y, int z)
-	{
-		int zOffset = z * size * size;
-		int yOffset = y * size;
-		int xOffset = x;
-
-		return xOffset + yOffset + zOffset;
+		directLight.Clear(updateTex);
+		ambientLight.Clear(updateTex);
 	}
 
 	public void AggregateChunkLighting()
@@ -182,7 +166,7 @@ public class WorldLightAtlas : MonoBehaviour
 		{
 			Vector3Int chunkPos = new Vector3Int(chunk.Key.x, chunk.Key.y, chunk.Key.z);
 
-			bool partiallyOutOfWorld = false;
+			bool chunkOutOfWorld = !World.Contains(chunkPos);
 
 			for (int x = 0; x < chunkSize; x++)
 			{
@@ -190,48 +174,43 @@ public class WorldLightAtlas : MonoBehaviour
 				{
 					for (int z = 0; z < chunkSize; z++)
 					{
-						Vector3Int pos = WorldToTex(new Vector3Int(chunkPos.x + x, chunkPos.y + y, chunkPos.z + z)) / directScale;
+						Vector3Int directPos = new Vector3Int(chunkPos.x + x, chunkPos.y + y, chunkPos.z + z);
 
-						if (!World.LightAtlasContains(pos))
-						{
-							partiallyOutOfWorld = true;
+						if (!World.Contains(directPos))
 							continue;
-						}
 
-						int index = IndexFromPos(dirSize, pos.x, pos.y, pos.z);
-						directLightArr[index] = chunk.Value.GetLighting(x, y, z);
-						directChanges++;
+						directPos = WorldPosToAtlasPos(directPos);
+
+						directLight.SetColor(directPos, chunk.Value.GetLighting(x, y, z), true);
 					}
 				}
 			}
 
-			if (partiallyOutOfWorld)
+			if (chunkOutOfWorld)
 				continue;
 
-			Vector3Int ambPos = WorldToTex(chunkPos) / ambientScale;
-			int ambIndex = IndexFromPos(ambSize, ambPos.x, ambPos.y, ambPos.z);
-			ambientLightArr[ambIndex] = chunk.Value.GetAverageLighting();
-			ambientChanges++;
+			Vector3Int ambPos = WorldPosToAtlasPos(chunkPos);
+			ambPos = new Vector3Int(
+				ambPos.x /= 16,
+				ambPos.y /= 16,
+				ambPos.z /= 16
+			);
+
+			ambientLight.SetColor(ambPos, chunk.Value.GetAvgLighting(), false);
 		}
 	}
 
 	[ContextMenu("Apply Changes")]
 	public void UpdateLightTextures()
 	{
-		if (directChanges == 0 && ambientChanges == 0)
-			return;
+		Debug.Log("Applied light atlas changes");
 
-		Debug.Log("Applied light atlas changes: " + directChanges + " direct, " + ambientChanges + " ambient");
-
-		UpdateDirectTex();
-		directChanges = 0;
-
-		UpdateAmbientTex();
-		ambientChanges = 0;
+		directLight.Apply();
+		ambientLight.Apply();
 	}
 
-	private Vector3Int WorldToTex(Vector3Int wrld)
+	private Vector3Int WorldPosToAtlasPos(Vector3Int worldPos)
 	{
-		return wrld + Vector3Int.one * (fullSize / 2);
+		return worldPos - minPos;
 	}
 }

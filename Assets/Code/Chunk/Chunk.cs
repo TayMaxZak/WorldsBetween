@@ -317,7 +317,8 @@ public class Chunk
 		return (lighting[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = c);
 	}
 
-	public Color GetAverageLighting()
+	// TODO: Cache value in some way? Calculate it in advance???
+	public Color GetAvgLighting()
 	{
 		Color average = Color.black;
 		float n = chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks;
