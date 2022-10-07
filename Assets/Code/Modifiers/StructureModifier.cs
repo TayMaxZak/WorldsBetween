@@ -39,6 +39,7 @@ public class StructureModifier : Modifier
 	public List<StructureRoom> rooms;
 
 	private int maxRoomCount = 10;
+	private int maxReach = 64;
 	private int actualRoomCount;
 	[SerializeField]
 	private float fillPercent = 0;
@@ -64,9 +65,10 @@ public class StructureModifier : Modifier
 	private readonly Vector3Int[] DIRS_FROM_BACK = new Vector3Int[] { Vector3Int.left, Vector3Int.right, Vector3Int.forward };
 
 	// TODO: Strength as chance to exceed 0.5
-	public StructureModifier(int roomCount /*Block wallBlock, Block floorBlock, Block ceilingBlock*/)
+	public StructureModifier(int roomCount, int reach)
 	{
 		maxRoomCount = roomCount;
+		maxReach = reach;
 		rooms = new List<StructureRoom>();
 		//this.wallBlock = wallBlock;
 		//this.floorBlock = floorBlock;
@@ -227,7 +229,9 @@ public class StructureModifier : Modifier
 		// Check if any part of room is outside of world bounds (- 2 for the walls on both sides)
 		//Bounds worldBounds = new Bounds(Vector3Int.zero, Vector3.one * (World.GetWorldSize() - 2));
 
-		if (intersecting/* || !worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max)*/)
+		bool tooFar = Vector3.SqrMagnitude(newPos - Vector3.zero) > maxReach * maxReach;
+
+		if (intersecting || tooFar/* || !worldBounds.Contains(bounds.min) || !worldBounds.Contains(bounds.max)*/)
 		{
 			Debug.DrawRay(newPos, -offset, Color.black, 10);
 			return null;
@@ -274,7 +278,6 @@ public class StructureModifier : Modifier
 	protected virtual bool ApplyRooms(Vector3Int pos, Chunk chunk)
 	{
 		bool underwater = pos.y < World.GetWaterHeight();
-		bool atwater = pos.y <= World.GetWaterHeight();
 		Vector3 checkPos = pos + Vector3.one / 2f;
 
 		foreach (StructureRoom room in rooms)
@@ -307,7 +310,7 @@ public class StructureModifier : Modifier
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.up))
 				{
 					if (checkBlock != lightBlock.GetBlockType())
-						World.SetBlock(pos.x, pos.y, pos.z, !atwater ? floorBlock : tilesBlock);
+						World.SetBlock(pos.x, pos.y, pos.z, !underwater ? floorBlock : tilesBlock);
 				}
 				else if (room.innerBounds.Contains(checkPos + Vector3Int.down))
 				{

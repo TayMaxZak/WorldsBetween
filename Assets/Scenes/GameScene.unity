@@ -22,7 +22,7 @@ RenderSettings:
   m_LinearFogEnd: 500
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0, g: 0, b: 0, a: 1}
-  m_AmbientGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AmbientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0, g: 0, b: 0, a: 1}
@@ -751,7 +751,7 @@ PrefabInstance:
       objectReference: {fileID: 1369908092}
     - target: {fileID: 593485740676451348, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: randomizeSeed
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 593485740676451349, guid: e7397b62a8ee9e743aff7ccc66dc95c7, type: 3}
       propertyPath: m_Name

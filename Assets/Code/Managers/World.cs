@@ -194,9 +194,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(40));
-
-		modifiers.Add(new BlockyNoiseModifier(BlockList.EMPTY, replaceMask, 0.65f, new Vector3(0.02f, 0.02f, 0.02f), 0.1f, 2, 32, 0, Vector3.one));
+		modifiers.Add(structure = new StructureModifier(100, 100));
 
 		modifiers.Add(new StructureFixer(structure));
 	}
@@ -499,7 +497,7 @@ public partial class World : MonoBehaviour
 		//Vector3 dif = ((Vector3)(pointA - pointB)).normalized * 2;
 		//Gizmos.DrawLine(pointB, pointB + SeedlessRandom.RandomPoint(1) + dif);
 
-		//worldBuilder.DrawGizmo();
+		worldBuilder.DrawGizmo();
 
 		//if (structure != null)
 		//	structure.DrawGizmo();

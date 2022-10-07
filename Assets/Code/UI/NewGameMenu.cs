@@ -10,6 +10,12 @@ public class NewGameMenu : MonoBehaviour
 
 	public int startSeed;
 
+	[ContextMenu("")]
+	private void Awake()
+	{
+		startSeed = SeedlessRandom.NextIntInRange(int.MinValue, int.MaxValue);
+	}
+
 	public void NewGame()
 	{
 		AudioManager.PlayUISound(AudioManager.UISoundType.Click);
