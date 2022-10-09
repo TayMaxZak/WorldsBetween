@@ -24,6 +24,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - PlanarReflectionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - Texture3D_49b5df18ce31440699941ee3eece237f:
         m_Texture: {fileID: 11700000, guid: 13d9074a20d03724b9d3caa3967e2cdd, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -136,6 +140,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 3485d1a66b5aa4c42bc2e52327bfb9b4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _WaterGetReflections_b594e9c14817410f9c3491b4c4c0e308_Texture2D4c743d480db64ad1a645602d56bf62fc_3409365904:
+        m_Texture: {fileID: 2800000, guid: e857766248345d846a1dd40de51ec3cf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _WorldFog_f40798731e5943ce924522abacb3fa69_Texture3D58ac1c4537c74882a61e63f7db9746eb_628223483:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -187,11 +195,15 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DepthOffset: 0.1
+    - _DepthPower: 2
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _FoamMaxDepth: 0.2
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _MaxDepth: 16
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _QueueControl: 0
@@ -202,6 +214,8 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
+    - _SurfacePower: 3
+    - _SurfaceStrength: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
@@ -210,9 +224,14 @@ Material:
     - Color_b3292922cb3b463ca09e901ebfb97e46_1: {r: 1, g: 1, b: 1, a: 1}
     - Color_b3292922cb3b463ca09e901ebfb97e46_2: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _DeepColor: {r: 0.14965291, g: 0.16669095, b: 0.1792453, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MainColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SurfaceColor: {r: 0.8084314, g: 0.8297059, b: 0.8509804, a: 1}
+    - _Tint: {r: 0.58272517, g: 0.7938774, b: 0.9150943, a: 1}
+    - _TintColor: {r: 0.9, g: 0.9766667, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4172543627793422927
 MonoBehaviour:
