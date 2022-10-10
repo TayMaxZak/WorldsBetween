@@ -145,10 +145,10 @@ public partial class World : MonoBehaviour
 			surfaceHeight = 999/*(int)(Random.value * Random.value * 999)*/,
 
 			hasWater = Random.value < 1 / 4f,
-			waterHeight = (int)(Random.value * Random.value * -16)
+			waterHeight = (int)(1 + Random.value * Random.value * -16)
 		};
 		if (!worldProperties.hasWater)
-			worldProperties.waterHeight -= 900;
+			worldProperties.waterHeight = -999;
 
 		// Init water
 		waterSystem.SetActive(worldProperties.hasWater);

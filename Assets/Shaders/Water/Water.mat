@@ -12,8 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - UNITY_APPLY_FOG
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -195,16 +194,19 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DepthOffset: 0.1
-    - _DepthPower: 2
+    - _DepthNoise: 0.15
+    - _DepthOffset: 0.165
+    - _DepthPower: 6
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _FoamMaxDepth: 0.2
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _MaxDepth: 16
+    - _MaxDepth: 6
     - _Metallic: 0
+    - _MiniWaveBlend: 0.2
+    - _MiniWaveScale: 10
     - _OcclusionStrength: 1
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -214,8 +216,12 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _SurfacePower: 3
-    - _SurfaceStrength: 0
+    - _SurfacePower: 5
+    - _SurfaceStrength: 0.01
+    - _WaveHeight: 0.2
+    - _WaveScale: 0.4
+    - _WaveScaleMini: 10
+    - _WaveSpeed: 0.4
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
@@ -225,13 +231,13 @@ Material:
     - Color_b3292922cb3b463ca09e901ebfb97e46_2: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0, g: 0, b: 0, a: 1}
-    - _DeepColor: {r: 0.14965291, g: 0.16669095, b: 0.1792453, a: 1}
+    - _DeepColor: {r: 0.07694019, g: 0.09217397, b: 0.122641504, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MainColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _SurfaceColor: {r: 0.8084314, g: 0.8297059, b: 0.8509804, a: 1}
+    - _SurfaceColor: {r: 0.8415806, g: 0.88374585, b: 0.9056604, a: 1}
     - _Tint: {r: 0.58272517, g: 0.7938774, b: 0.9150943, a: 1}
-    - _TintColor: {r: 0.9, g: 0.9766667, b: 1, a: 1}
+    - _TintColor: {r: 0.79607844, g: 0.95350915, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4172543627793422927
 MonoBehaviour:
