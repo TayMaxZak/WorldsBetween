@@ -149,10 +149,17 @@ public partial class World : MonoBehaviour
 			hasWater = Random.value < 1 / 4f,
 			waterHeight = (int)(1 + Random.value * Random.value * -16),
 
-			mossChance = Random.value * Random.value * Random.value * Random.value * Random.value * Random.value
+			mossChance = Random.value * Random.value
 		};
 		if (!worldProperties.hasWater)
+		{
 			worldProperties.waterHeight = -999;
+		}
+		// Has water
+		else
+		{
+			worldProperties.mossChance = 1 - ((1 - worldProperties.mossChance) / 2);
+		}
 
 		// Init water
 		waterSystem.SetActive(worldProperties.hasWater);
@@ -202,7 +209,9 @@ public partial class World : MonoBehaviour
 
 		modifiers.Add(new StructureFixer(structure));
 
-		modifiers.Add(new MossAttributor(worldProperties.mossChance, 0.1f, 1));
+		modifiers.Add(new MossAttributor(worldProperties.mossChance, 0.2f, 1f));
+
+		Debug.Log(worldProperties.mossChance);
 	}
 
 	private void Start()
