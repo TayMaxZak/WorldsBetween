@@ -74,7 +74,7 @@ public class Chunk
 				for (int z = 0; z < chunkSizeBlocks; z++)
 				{
 					SetBlock(x, y, z, BlockList.EMPTY);
-					SetLighting(x, y, z, Color.black);
+					SetLighting(x, y, z, WorldLightAtlas.emptyColor);
 					SetAttributes(x, y, z, BlockAttributes.empty);
 				}
 			}
@@ -324,7 +324,7 @@ public class Chunk
 	// TODO: Cache value in some way? Calculate it in advance???
 	public Color GetAvgLighting()
 	{
-		Color average = Color.black;
+		Color average = WorldLightAtlas.emptyColor;
 		float n = chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks;
 
 		for (int x = 0; x < chunkSizeBlocks; x++)

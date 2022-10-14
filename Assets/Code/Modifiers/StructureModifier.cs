@@ -11,6 +11,7 @@ public class StructureModifier : Modifier
 		public Bounds outerBounds;
 		public Bounds lightBounds;
 		public bool lightOff;
+		public float lightFlickerAmt;
 		public RoomData genData;
 
 		public StructureRoom(Bounds bounds)
@@ -256,8 +257,14 @@ public class StructureModifier : Modifier
 		Bounds lightBounds = new Bounds(newPos + Vector3Int.up * Mathf.CeilToInt(newSize.y / 2f) + Vector3Int.up, new Vector3Int(lightSize, newSize.y, lightSize));
 		room.lightBounds = lightBounds;
 
-		if (Random.value < 0.1f && !prevRoom.starter)
-			room.lightOff = true;
+		// Random chance for non-starter rooms to have light off or flickering
+		if (!prevRoom.starter)
+		{
+			if (Random.value < 0.1f)
+				room.lightOff = true;
+			else
+				room.lightFlickerAmt = 1.5f * Mathf.Pow(SeedlessRandom.NextFloat(), 6);
+		}
 
 		room.genData = new RoomData()
 		{
@@ -311,7 +318,7 @@ public class StructureModifier : Modifier
 						if (!room.lightOff)
 						{
 							BlockLight.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorOrange : BlockLight.colorGold);
-							chunk.AddBlockLight(new BlockLight(pos, color));
+							chunk.AddBlockLight(new BlockLight(pos, color, room.lightFlickerAmt));
 						}
 					}
 				}

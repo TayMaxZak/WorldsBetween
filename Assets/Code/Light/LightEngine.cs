@@ -146,7 +146,7 @@ public class LightEngine
 
 	private Color LightBlock(Vector3Int pos)
 	{
-		Color output = Color.black;
+		Color output = WorldLightAtlas.emptyColor;
 
 		foreach (var light in lightList)
 		{

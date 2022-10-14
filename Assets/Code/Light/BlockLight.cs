@@ -18,19 +18,24 @@ public class BlockLight
 
 	public ColorFalloff colorFalloff = new ColorFalloff(Color.white, Color.white); // Blends between colors by distance
 	public Vector3Int blockPos; // Block pos; actual world position is + 0.5,0.5,0.5
-	public float brightness = 1; // Multiplier on color
-	public float spread = 1; // How far the light goes
-	public float noise = 0; // Randomness of light
+	private float brightness = 1; // Multiplier on color
+	private float spread = 1; // How far the light goes
+	private float noise = 0; // Randomness of light
 
-	public BlockLight(Vector3Int blockPos, ColorFalloff colorFalloff)
+	private float flickerAmt = 0;
+
+	public BlockLight(Vector3Int blockPos, ColorFalloff colorFalloff, float flickerAmt = 0)
 	{
 		this.blockPos = blockPos;
 		this.colorFalloff = colorFalloff;
+		this.flickerAmt = flickerAmt;
 	}
 
 	public Color GetLightColor(float lightStrength)
 	{
-		return Color.Lerp(colorFalloff.colorClose, colorFalloff.colorFar, 1 - lightStrength);
+		Color toReturn = Color.Lerp(colorFalloff.colorClose, colorFalloff.colorFar, 1 - lightStrength);
+		toReturn.a = flickerAmt; // Replace alpha channel with custom info
+		return toReturn;
 	}
 
 	public static ColorFalloff colorWhite = new ColorFalloff(new Color(1, 1f, 1f), new Color(0.4f, 0.6f, 1.0f));

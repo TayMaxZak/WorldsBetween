@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 [ExecuteInEditMode]
 public class WorldLightAtlas : MonoBehaviour
 {
+	public static readonly Color emptyColor = Color.clear;
+
 	[System.Serializable]
 	public class SubAtlas
 	{
@@ -30,7 +32,7 @@ public class WorldLightAtlas : MonoBehaviour
 				{
 					for (int x = 0; x < size.x; x++)
 					{
-						SetColor(x, y, z, Color.black, false);
+						SetColor(x, y, z, emptyColor, false);
 					}
 				}
 			}
@@ -56,7 +58,7 @@ public class WorldLightAtlas : MonoBehaviour
 				{
 					for (int z = 0; z < size.z; z++)
 					{
-						array[IndexFromPos(x, y, z)] = Color.black;
+						array[IndexFromPos(x, y, z)] = emptyColor;
 					}
 				}
 			}
@@ -133,7 +135,7 @@ public class WorldLightAtlas : MonoBehaviour
 		fullSize = World.GetWorldBounds().size;
 		minPos = World.GetWorldBounds().min;
 
-		directLight = new SubAtlas(fullSize, 1, TextureFormat.RGBAFloat);
+		directLight = new SubAtlas(fullSize, 1, TextureFormat.RGBAHalf);
 		ambientLight = new SubAtlas(fullSize, 16, TextureFormat.RGBAFloat);
 
 		SetShaderReferences(directLight.GetTexture(), ambientLight.GetTexture());
