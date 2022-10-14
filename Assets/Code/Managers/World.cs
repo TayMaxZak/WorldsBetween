@@ -194,9 +194,11 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(100, 100));
+		modifiers.Add(structure = new StructureModifier(50, 100));
 
 		modifiers.Add(new StructureFixer(structure));
+
+		modifiers.Add(new MossAttributor(0.25f));
 	}
 
 	private void Start()
@@ -353,6 +355,45 @@ public partial class World : MonoBehaviour
 	public static void SetLighting(Vector3Int pos, Color c)
 	{
 		SetLighting(pos.x, pos.y, pos.z, c);
+	}
+
+	public static BlockAttributes GetAttributes(int x, int y, int z)
+	{
+		Chunk chunk = GetChunk(x, y, z);
+
+		if (chunk == null)
+			return BlockAttributes.empty;
+
+		return chunk.GetAttribute(
+			x - chunk.position.x,
+			y - chunk.position.y,
+			z - chunk.position.z
+		);
+	}
+
+	public static BlockAttributes GetAttributes(Vector3Int pos)
+	{
+		return GetAttributes(pos.x, pos.y, pos.z);
+	}
+
+	public static void SetAttributes(int x, int y, int z, BlockAttributes c)
+	{
+		Chunk chunk = GetChunk(x, y, z);
+
+		if (chunk == null || chunk.buildStage == Chunk.BuildStage.Init)
+			return;
+
+		chunk.SetAttributes(
+			x - chunk.position.x,
+			y - chunk.position.y,
+			z - chunk.position.z,
+			c
+		);
+	}
+
+	public static void SetAttribute(Vector3Int pos, BlockAttributes a)
+	{
+		SetAttributes(pos.x, pos.y, pos.z, a);
 	}
 
 	public static int GetChunkSize()

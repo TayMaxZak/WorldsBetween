@@ -95,6 +95,7 @@ public class StructureModifier : Modifier
 		FinishRoom(startRoom);
 		RecursiveRoom(startRoom);
 
+		// Second branch from starting room
 		if (actualRoomCount < maxRoomCount)
 		{
 			startRoom.genData = new RoomData()
@@ -158,14 +159,21 @@ public class StructureModifier : Modifier
 			newRoom = MakeRoom(prevRoom.genData);
 			// Still failed
 			if (newRoom == null)
-				return;
+			{
+				// Try again twice
+				newRoom = MakeRoom(prevRoom.genData);
+				// Still failed
+				if (newRoom == null)
+					return;
+			}
 		}
 
 		FinishRoom(newRoom);
 
+		// Continue this branch
 		if (actualRoomCount < maxRoomCount)
 			RecursiveRoom(newRoom);
-		// Branching
+		// Branching after trying main branch
 		if (actualRoomCount < maxRoomCount)
 			RecursiveRoom(newRoom);
 	}

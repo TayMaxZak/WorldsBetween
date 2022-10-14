@@ -17,17 +17,19 @@ public class Chunk
 	{
 		Init,
 		GenerateTerrain,
-		GenerateFeature,
-		GenerateDecorator,
+		GenerateFeatures,
+		GenerateDecorators,
 		MakeMesh,
 		Done
 	}
 
 	// Data
 	public ChunkType chunkType;
-	protected Block[] blocks;
-	protected Color[] lighting;
-	protected List<BlockLight> lights;
+	protected Block[] blocks; // Discrete data on the block grid 
+	protected BlockAttributes[] attributes; // Blended data, with a "pixel" at the corner of each block. Visually blended via vertex colors
+	
+	protected Color[] lighting; // Color data, with a pixel at the center of each block
+	protected List<BlockLight> lights; // Light sources on the block grid
 
 	// Transform
 	public Vector3Int position;
@@ -63,6 +65,7 @@ public class Chunk
 		lights = new List<BlockLight>();
 		lighting = new Color[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 		blocks = new Block[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
+		attributes = new BlockAttributes[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 
 		for (int x = 0; x < chunkSizeBlocks; x++)
 		{
@@ -72,6 +75,7 @@ public class Chunk
 				{
 					SetBlock(x, y, z, BlockList.EMPTY);
 					SetLighting(x, y, z, Color.black);
+					SetAttributes(x, y, z, BlockAttributes.empty);
 				}
 			}
 		}
@@ -105,10 +109,10 @@ public class Chunk
 			CacheDataFromBlocks(false);
 
 			if (buildStage == BuildStage.GenerateTerrain)
-				buildStage = BuildStage.GenerateFeature;
-			else if (buildStage == BuildStage.GenerateFeature)
-				buildStage = BuildStage.GenerateDecorator;
-			else if (buildStage == BuildStage.GenerateDecorator)
+				buildStage = BuildStage.GenerateFeatures;
+			else if (buildStage == BuildStage.GenerateFeatures)
+				buildStage = BuildStage.GenerateDecorators;
+			else if (buildStage == BuildStage.GenerateDecorators)
 				buildStage = BuildStage.MakeMesh;
 			World.WorldBuilder.QueueNextStage(this);
 
@@ -357,5 +361,15 @@ public class Chunk
 		}
 		if (toRemove != null)
 			lights.Remove(toRemove);
+	}
+
+	public BlockAttributes GetAttribute(int x, int y, int z)
+	{
+		return attributes[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z];
+	}
+
+	public BlockAttributes SetAttributes(int x, int y, int z, BlockAttributes a)
+	{
+		return (attributes[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z] = a);
 	}
 }

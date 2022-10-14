@@ -14,7 +14,7 @@ public class ChunkMesh
 
 	// Save for later
 	private Vector3[] sharedVertices;
-	private Color[] vertexColors;
+	private Color32[] vertexColors;
 
 	private static readonly Vector3Int[] directions = new Vector3Int[] { new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0),
 													new Vector3Int(0, -1, 0), new Vector3Int(0, 0, 1), new Vector3Int(0, 0, -1)};

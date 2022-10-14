@@ -20,8 +20,8 @@ public class ChunkGenerator
 
 	private static readonly List<Chunk.BuildStage> requireAdjacents = new List<Chunk.BuildStage> {
 		Chunk.BuildStage.GenerateTerrain,
-		Chunk.BuildStage.GenerateFeature,
-		Chunk.BuildStage.GenerateDecorator,
+		Chunk.BuildStage.GenerateFeatures,
+		Chunk.BuildStage.GenerateDecorators,
 		Chunk.BuildStage.MakeMesh,
 	};
 
@@ -218,12 +218,12 @@ public class ChunkGenerator
 					chunk.AsyncGenerate(Modifier.ModifierStage.Terrain);
 				}
 				break;
-			case Chunk.BuildStage.GenerateFeature: // Generate terrain
+			case Chunk.BuildStage.GenerateFeatures: // Generate terrain
 				{
 					chunk.AsyncGenerate(Modifier.ModifierStage.Feature);
 				}
 				break;
-			case Chunk.BuildStage.GenerateDecorator: // Generate terrain
+			case Chunk.BuildStage.GenerateDecorators: // Generate terrain
 				{
 					chunk.AsyncGenerate(Modifier.ModifierStage.Decorator);
 				}
