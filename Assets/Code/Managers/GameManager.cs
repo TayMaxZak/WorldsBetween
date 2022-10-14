@@ -173,7 +173,7 @@ public partial class GameManager : MonoBehaviour
 			loadingScreen.Hide();
 	}
 
-	public static bool GetFinishedLoading()
+	public static bool IsFinishedLoading()
 	{
 		return Instance.finishedLoading;
 	}

@@ -113,7 +113,7 @@ public class PlayerMover : Actor
 
 	public override void UpdateTick(bool isPhysicsTick, float physicsDeltaTime, float physicsPartialTime)
 	{
-		if (!didInit || !GameManager.GetFinishedLoading())
+		if (!didInit || !GameManager.IsFinishedLoading())
 			return;
 
 		Cursor.lockState = CursorLockMode.Confined;

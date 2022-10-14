@@ -217,7 +217,7 @@ public class Cephapath : Actor
 			return;
 		}
 
-		if (!GameManager.GetFinishedLoading())
+		if (!GameManager.IsFinishedLoading())
 			return;
 
 		grabTimer.Increment(DeltaTime());

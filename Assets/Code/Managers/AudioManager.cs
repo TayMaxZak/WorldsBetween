@@ -42,12 +42,22 @@ public class AudioManager : MonoBehaviour
 	[SerializeField]
 	private Sound[] uiSounds;
 
+	[SerializeField]
+	private Sound caveNoiseSound;
+	[SerializeField]
+	private float caveNoiseTimeMin = 40;
+	[SerializeField]
+	private float caveNoiseTimeMax = 160;
+	private Timer caveNoiseTimer = new Timer(20);
+
 	private void Awake()
 	{
 		if (!Instance)
 			Instance = this;
 		else
 			Destroy(gameObject);
+
+		caveNoiseTimer.Reset(SeedlessRandom.NextFloatInRange(caveNoiseTimeMin, caveNoiseTimeMax));
 	}
 
 	private void Start()
@@ -78,6 +88,19 @@ public class AudioManager : MonoBehaviour
 				Instance.musicPlayer.Play();
 				currentMusicCue = currentMusicCue.next;
 			}
+		}
+
+		// Play cave noises randomly near player
+		if (GameManager.IsFinishedLoading())
+		caveNoiseTimer.Increment(Time.deltaTime);
+		if (caveNoiseTimer.Expired())
+		{
+			caveNoiseTimer.Reset(SeedlessRandom.NextFloatInRange(caveNoiseTimeMin, caveNoiseTimeMax));
+
+			Transform playerTrans = Player.Instance.transform;
+
+			float offsetDistance = SeedlessRandom.NextFloatInRange(4, 16);
+			PlaySound(caveNoiseSound, playerTrans.position + Quaternion.Euler(0, SeedlessRandom.NextFloatInRange(-60, 60), 0) * playerTrans.forward * -offsetDistance);
 		}
 	}
 
