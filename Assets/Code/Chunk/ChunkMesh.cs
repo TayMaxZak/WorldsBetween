@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ChunkMesh
 {
-	private static Color borderColor = new Color(0.01f, 0.01f, 0.5f, 0.5f);
+	private static readonly Color32 defaultColor = new Color32(0, 0, 0, 0);
 
 	private Chunk chunk;
 
@@ -93,11 +93,11 @@ public class ChunkMesh
 
 
 		int chunkSize = chunk.chunkSizeWorld;
-		for (int x = 0; x < chunkSize; x += chunk.scaleFactor)
+		for (int x = 0; x < chunkSize; x++)
 		{
-			for (int y = 0; y < chunkSize; y += chunk.scaleFactor)
+			for (int y = 0; y < chunkSize; y++)
 			{
-				for (int z = 0; z < chunkSize; z += chunk.scaleFactor)
+				for (int z = 0; z < chunkSize; z++)
 				{
 					Vector3Int faceOffset = new Vector3Int();
 					Vector3 vert;
@@ -251,6 +251,16 @@ public class ChunkMesh
 									Vector3 displacedVert = Vector3.Lerp(vertPos, clampedVert, block.GetMeshSmoothing());
 									vertices.Add(displacedVert);
 								}
+
+								// Vertex colors
+								Color32 vertexColor = defaultColor;
+								vertexColor.r = (byte)(255 * World.GetAttributes(
+									Mathf.RoundToInt(chunk.position.x + vertPos.x + SeedlessRandom.NextFloatInRange(-0.1f, 0.1f)),
+									Mathf.RoundToInt(chunk.position.y + vertPos.y + SeedlessRandom.NextFloatInRange(-0.1f, 0.1f)),
+									Mathf.RoundToInt(chunk.position.z + vertPos.z + SeedlessRandom.NextFloatInRange(-0.1f, 0.1f))
+								).GetMoss());
+
+								colors32.Add(vertexColor);
 							}
 
 							// Add triangles
@@ -271,14 +281,8 @@ public class ChunkMesh
 							{
 								uv.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
 							}
-
-							for (int c = 0; c < blockMeshData.colors32.Length; c++)
-							{
-								// Vertex colors
-								colors32.Add(blockMeshData.colors32[c]);
-							}
 						}
-					} // Six Faces
+					} // end Six Faces
 					else if (model.blockModelType == BlockModel.BlockModelType.SingleModel)
 					{
 						MeshData blockMeshData = model.singleModel.meshData;
@@ -309,6 +313,16 @@ public class ChunkMesh
 
 							norm = blockMeshData.normals[v];
 							normals.Add(block.GetNormalRefractive() * norm);
+
+							// Vertex colors
+							Color32 vertexColor = defaultColor;
+							vertexColor.r = (byte)(255 * World.GetAttributes(
+								Mathf.RoundToInt(chunk.position.x + vertPos.x + SeedlessRandom.NextFloatInRange(-0.1f, 0.1f)),
+								Mathf.RoundToInt(chunk.position.y + vertPos.y + SeedlessRandom.NextFloatInRange(-0.1f, 0.1f)),
+								Mathf.RoundToInt(chunk.position.z + vertPos.z + SeedlessRandom.NextFloatInRange(-0.1f, 0.1f))
+							).GetMoss());
+
+							colors32.Add(vertexColor);
 						}
 
 						// Add triangles
@@ -329,13 +343,7 @@ public class ChunkMesh
 						{
 							uv.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
 						}
-
-						for (int c = 0; c < blockMeshData.colors32.Length; c++)
-						{
-							// Vertex colors
-							colors32.Add(blockMeshData.colors32[c]);
-						}
-					} // Single Model
+					} // end Single Model
 				}
 			}
 		}
@@ -353,11 +361,5 @@ public class ChunkMesh
 		meshPhysics.sharedMesh = newMesh;
 
 		sharedVertices = meshVisual.sharedMesh.vertices;
-
-		//vertexColors = new Color[sharedVertices.Length];
-		//for (int i = 0; i < vertexColors.Length; i++)
-		//	vertexColors[i] = borderColor;
-
-		//ApplyVertexColors(vertexColors);
 	}
 }

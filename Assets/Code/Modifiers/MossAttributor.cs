@@ -7,10 +7,16 @@ public class MossAttributor : Modifier
 {
 	public float chance = 1;
 
+	public float minValue = 0;
+	public float maxValue = 1;
+
 	// TODO: Strength as chance to exceed 0.5
-	public MossAttributor(float chance)
+	public MossAttributor(float chance, float minValue, float maxValue)
 	{
 		this.chance = chance;
+
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 
 		stage = ModifierStage.Decorator;
 	}
@@ -46,11 +52,9 @@ public class MossAttributor : Modifier
 		if (!pass)
 			return false;
 
-		BlockAttributes attr = World.GetAttributes(pos.x, pos.y, pos.z);
-		attr.SetMoss(SeedlessRandom.NextFloatInRange(0.1f, 1f));
-
-		if (attr.GetMoss() > 0.999f)
-			Debug.DrawRay(new Vector3Int(pos.x, pos.y, pos.z), SeedlessRandom.RandomPoint(), Color.green, 5);
+		BlockAttributes attr = World.GetAttributes(pos);
+		attr.SetMoss(SeedlessRandom.NextFloatInRange(minValue, maxValue));
+		World.SetAttributes(pos, attr);
 
 		return true;
 	}

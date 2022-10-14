@@ -99,6 +99,8 @@ public partial class World : MonoBehaviour
 
 		public bool hasWater;
 		public int waterHeight;
+
+		public float mossChance;
 	}
 
 	private void WorldInit()
@@ -145,7 +147,9 @@ public partial class World : MonoBehaviour
 			surfaceHeight = 999/*(int)(Random.value * Random.value * 999)*/,
 
 			hasWater = Random.value < 1 / 4f,
-			waterHeight = (int)(1 + Random.value * Random.value * -16)
+			waterHeight = (int)(1 + Random.value * Random.value * -16),
+
+			mossChance = Random.value * Random.value * Random.value * Random.value * Random.value * Random.value
 		};
 		if (!worldProperties.hasWater)
 			worldProperties.waterHeight = -999;
@@ -198,7 +202,7 @@ public partial class World : MonoBehaviour
 
 		modifiers.Add(new StructureFixer(structure));
 
-		modifiers.Add(new MossAttributor(0.25f));
+		modifiers.Add(new MossAttributor(worldProperties.mossChance, 0.1f, 1));
 	}
 
 	private void Start()
@@ -364,7 +368,7 @@ public partial class World : MonoBehaviour
 		if (chunk == null)
 			return BlockAttributes.empty;
 
-		return chunk.GetAttribute(
+		return chunk.GetAttributes(
 			x - chunk.position.x,
 			y - chunk.position.y,
 			z - chunk.position.z
@@ -391,7 +395,7 @@ public partial class World : MonoBehaviour
 		);
 	}
 
-	public static void SetAttribute(Vector3Int pos, BlockAttributes a)
+	public static void SetAttributes(Vector3Int pos, BlockAttributes a)
 	{
 		SetAttributes(pos.x, pos.y, pos.z, a);
 	}

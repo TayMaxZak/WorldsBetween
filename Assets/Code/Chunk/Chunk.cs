@@ -363,7 +363,7 @@ public class Chunk
 			lights.Remove(toRemove);
 	}
 
-	public BlockAttributes GetAttribute(int x, int y, int z)
+	public BlockAttributes GetAttributes(int x, int y, int z)
 	{
 		return attributes[x * chunkSizeBlocks * chunkSizeBlocks + y * chunkSizeBlocks + z];
 	}

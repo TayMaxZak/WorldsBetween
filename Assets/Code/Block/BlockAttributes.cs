@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockAttributes
+public struct BlockAttributes
 {
 	public static BlockAttributes empty = new BlockAttributes();
 
@@ -10,14 +10,6 @@ public class BlockAttributes
 	private float g;
 	private float b;
 	private float a;
-
-	public BlockAttributes()
-	{
-		r = 0;
-		g = 0;
-		b = 0;
-		a = 0;
-	}
 
 	public void SetMoss(float value)
 	{
