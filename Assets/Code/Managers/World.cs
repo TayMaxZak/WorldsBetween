@@ -20,8 +20,6 @@ public partial class World : MonoBehaviour
 	private int realChunkCount = 0;
 	private int fakeChunkCount = 0;
 
-	private Dictionary<Vector3Int, List<BlockLight>> blockLights = new Dictionary<Vector3Int, List<BlockLight>>();
-
 	[SerializeField]
 	private List<Modifier> modifiers = new List<Modifier>();
 	[SerializeField]
@@ -223,34 +221,37 @@ public partial class World : MonoBehaviour
 		WorldBuilder.ContinueGenerating();
 	}
 
-	[ContextMenu("Restart Gen")]
-	public async void RestartGen()
-	{
-		WorldInit();
+	//public async void RestartGen()
+	//{
+	//	WorldInit();
 
-		await WorldBuilder.EnqueueAllChunks(Chunk.BuildStage.Init);
+	//	// Clear block sounds
+	//	foreach (Transform child in worldBuilder.blockSoundsRoot.transform)
+	//		Destroy(child.gameObject);
 
-		// Recalc light after world builder is finished
-		while (WorldBuilder.IsGenerating())
-			await Task.Delay(20);
+	//	await WorldBuilder.EnqueueAllChunks(Chunk.BuildStage.Init);
 
-		WorldBuilder.ResetFinders();
+	//	// Recalc light after world builder is finished
+	//	while (WorldBuilder.IsGenerating())
+	//		await Task.Delay(20);
 
-		RecalcLight();
-	}
+	//	WorldBuilder.ResetFinders();
 
-	[ContextMenu("Recalculate Light")]
-	public void RecalcLight()
-	{
-		WorldLightAtlas.Instance.ClearAtlas(false);
+	//	RecalcLight();
+	//}
 
-		LightEngine.Begin();
-	}
+	//[ContextMenu("Recalculate Light")]
+	//public void RecalcLight()
+	//{
+	//	WorldLightAtlas.Instance.ClearAtlas(false);
 
-	public static void RecalculateLight()
-	{
-		Instance.RecalcLight();
-	}
+	//	LightEngine.Begin();
+	//}
+
+	//public static void RecalculateLight()
+	//{
+	//	Instance.RecalcLight();
+	//}
 
 	public static bool Exists()
 	{
@@ -483,14 +484,13 @@ public partial class World : MonoBehaviour
 		return Instance.chunks;
 	}
 
-	public static void SetLightsAt(Vector3Int pos, List<BlockLight> chunkLights)
+	public static void ApplySoundsAt(Vector3Int pos, List<BlockSound> chunkSounds)
 	{
-		Instance.blockLights[pos] = chunkLights;
-	}
-
-	public static Dictionary<Vector3Int, List<BlockLight>> GetAllLights()
-	{
-		return Instance.blockLights;
+		foreach (BlockSound sound in chunkSounds)
+		{
+			AudioSource source = AudioManager.CreateLoopingSound(sound.sound, sound.pos);
+			source.transform.parent = Instance.worldBuilder.blockSoundsRoot.transform;
+		}
 	}
 
 	public static bool IsInfinite()
@@ -551,7 +551,7 @@ public partial class World : MonoBehaviour
 
 		worldBuilder.DrawGizmo();
 
-		//if (structure != null)
-		//	structure.DrawGizmo();
+		if (structure != null)
+			structure.DrawGizmo();
 	}
 }

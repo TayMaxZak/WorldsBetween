@@ -64,7 +64,10 @@ public class StructureFixer : Modifier
 				World.SetBlock(pos, !nearWater ? structure.wallBlock : structure.tilesBlock);
 
 				if (checkBlock == structure.lightBlock.GetBlockType())
+				{
 					chunk.RemoveBlockLightAt(pos);
+					chunk.RemoveBlockSoundAt(pos);
+				}
 			}
 
 			break;

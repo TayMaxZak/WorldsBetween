@@ -12,6 +12,7 @@ public class StructureModifier : Modifier
 		public Bounds lightBounds;
 		public bool lightOff;
 		public float lightFlickerAmt;
+		public BlockSound lightSound;
 		public RoomData genData;
 
 		public StructureRoom(Bounds bounds)
@@ -254,7 +255,7 @@ public class StructureModifier : Modifier
 
 		int lightSize = prevRoom.starter ? 6 : Random.value < 1 / 3f ? 4 : 2;
 
-		Bounds lightBounds = new Bounds(newPos + Vector3Int.up * Mathf.CeilToInt(newSize.y / 2f) + Vector3Int.up, new Vector3Int(lightSize, newSize.y, lightSize));
+		Bounds lightBounds = new Bounds(newPos + Vector3.up * 2 * Mathf.CeilToInt(newSize.y / 2f), new Vector3Int(lightSize, 1, lightSize));
 		room.lightBounds = lightBounds;
 
 		// Random chance for non-starter rooms to have light off or flickering
@@ -264,6 +265,11 @@ public class StructureModifier : Modifier
 				room.lightOff = true;
 			else
 				room.lightFlickerAmt = 1.5f * Mathf.Pow(SeedlessRandom.NextFloat(), 6);
+		}
+		// Add light effects
+		if (!room.lightOff)
+		{
+			room.lightSound = new BlockSound(lightBounds.center, AudioManager.GetBlockSound(AudioManager.BlockSoundType.LightBuzz));
 		}
 
 		room.genData = new RoomData()
@@ -295,6 +301,8 @@ public class StructureModifier : Modifier
 		bool underwater = pos.y < World.GetWaterHeight();
 		Vector3 checkPos = pos + Vector3.one / 2f;
 
+		bool tryAddLightSound = false;
+
 		foreach (StructureRoom room in rooms)
 		{
 			int checkBlock = World.GetBlock(pos.x, pos.y, pos.z).GetBlockType();
@@ -319,6 +327,7 @@ public class StructureModifier : Modifier
 						{
 							BlockLight.ColorFalloff color = SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorWhite : (SeedlessRandom.NextFloat() < 0.8 ? BlockLight.colorOrange : BlockLight.colorGold);
 							chunk.AddBlockLight(new BlockLight(pos, color, room.lightFlickerAmt));
+							tryAddLightSound = true;
 						}
 					}
 				}
@@ -335,6 +344,17 @@ public class StructureModifier : Modifier
 				else if (checkBlock != floorBlock.GetBlockType() && checkBlock != ceilingBlock.GetBlockType() && checkBlock != lightBlock.GetBlockType())
 				{
 					World.SetBlock(pos.x, pos.y, pos.z, !underwater ? wallBlock : tilesBlock);
+				}
+			}
+
+			// Check if there is a block sound at this block
+			if (room.lightSound != null && tryAddLightSound)
+			{
+				Vector3Int compare = new Vector3Int(Mathf.RoundToInt(room.lightSound.pos.x), Mathf.RoundToInt(room.lightSound.pos.y), Mathf.RoundToInt(room.lightSound.pos.z));
+
+				if (compare == pos)
+				{
+					chunk.AddBlockSound(room.lightSound);
 				}
 			}
 		}
@@ -386,10 +406,10 @@ public class StructureModifier : Modifier
 
 		foreach (StructureRoom room in rooms)
 		{
-			Gizmos.color = Color.Lerp(Color.red, Color.blue, (float)room.genData.debugIndex / (actualRoomCount / 2f));
+			Gizmos.color = Color.Lerp(Color.red, Color.blue, room.genData.debugIndex / (actualRoomCount / 2f));
 			Gizmos.DrawWireCube(room.innerBounds.center, room.innerBounds.size);
-			//Gizmos.color = Color.white;
-			//Gizmos.DrawWireCube(room.lightBounds.center, room.lightBounds.size);
+			Gizmos.color = Color.white;
+			Gizmos.DrawWireCube(room.lightBounds.center, room.lightBounds.size);
 		}
 	}
 }

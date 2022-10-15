@@ -18,9 +18,9 @@ public class BlockLight
 
 	public ColorFalloff colorFalloff = new ColorFalloff(Color.white, Color.white); // Blends between colors by distance
 	public Vector3Int blockPos; // Block pos; actual world position is + 0.5,0.5,0.5
-	private float brightness = 1; // Multiplier on color
-	private float spread = 1; // How far the light goes
-	private float noise = 0; // Randomness of light
+
+	//private float spread = 1; // How far the light goes
+	//private float noise = 0; // Randomness of light
 
 	private float flickerAmt = 0;
 

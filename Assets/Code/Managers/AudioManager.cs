@@ -42,6 +42,13 @@ public class AudioManager : MonoBehaviour
 	[SerializeField]
 	private Sound[] uiSounds;
 
+	public enum BlockSoundType
+	{
+		LightBuzz
+	}
+	[SerializeField]
+	private Sound[] blockSounds;
+
 	[SerializeField]
 	private Sound caveNoiseSound;
 	[SerializeField]
@@ -92,7 +99,7 @@ public class AudioManager : MonoBehaviour
 
 		// Play cave noises randomly near player
 		if (GameManager.IsFinishedLoading())
-		caveNoiseTimer.Increment(Time.deltaTime);
+			caveNoiseTimer.Increment(Time.deltaTime);
 		if (caveNoiseTimer.Expired())
 		{
 			caveNoiseTimer.Reset(SeedlessRandom.NextFloatInRange(caveNoiseTimeMin, caveNoiseTimeMax));
@@ -198,6 +205,32 @@ public class AudioManager : MonoBehaviour
 	public static void PlayUISound(UISoundType uiSound)
 	{
 		PlaySound(Instance.uiSounds[(int)uiSound], Instance.transform.position);
+	}
+
+	public static Sound GetBlockSound(BlockSoundType blockSound)
+	{
+		return Instance.blockSounds[(int)blockSound];
+	}
+
+	public static AudioSource CreateLoopingSound(Sound toPlay, Vector3 position)
+	{
+		if (!toPlay)
+			return null;
+
+		AudioSource source = Instantiate(toPlay.preset, position, Quaternion.identity);
+
+		source.volume *= toPlay.volumeMult;
+
+		float randomPitch = SeedlessRandom.NextFloatInRange(toPlay.pitchRange.min, toPlay.pitchRange.max);
+		source.pitch *= randomPitch;
+
+		source.clip = toPlay.GetClip();
+
+		source.loop = true;
+
+		source.Play();
+
+		return source;
 	}
 
 	public static void SetAmbientVolume(float volume)

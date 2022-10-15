@@ -50,10 +50,10 @@ public class WorldBuilder
 	private int chunksToGen = 0;
 
 	private GameObject chunkRoot;
-	private GameObject fakeChunkRoot;
+	[System.NonSerialized]
+	public GameObject blockSoundsRoot;
 
 	private Dictionary<Chunk.BuildStage, ChunkGenerator> chunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>();
-	private Dictionary<Chunk.BuildStage, ChunkGenerator> fakeChunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>();
 
 
 	private Queue<KeyValuePair<Vector3Int, Chunk>> chunksToQueue = new Queue<KeyValuePair<Vector3Int, Chunk>>();
@@ -73,16 +73,8 @@ public class WorldBuilder
 		chunkRoot = new GameObject();
 		chunkRoot.name = "Chunks";
 
-		fakeChunkGenerators = new Dictionary<Chunk.BuildStage, ChunkGenerator>()
-		{
-			{ Chunk.BuildStage.Init, new ChunkGenerator(0, 1, enqueueTaskSize) },
-			{ Chunk.BuildStage.GenerateTerrain, new ChunkGenerator(delay, queues, generatorTaskSize) },
-			{ Chunk.BuildStage.GenerateFeatures, new ChunkGenerator(delay, queues, generatorTaskSize) },
-			{ Chunk.BuildStage.GenerateDecorators, new ChunkGenerator(delay, queues, generatorTaskSize) },
-			{ Chunk.BuildStage.MakeMesh, new ChunkGenerator(delay, queues, generatorTaskSize) }
-		};
-		fakeChunkRoot = new GameObject();
-		fakeChunkRoot.name = "Fake Chunks";
+		blockSoundsRoot = new GameObject();
+		blockSoundsRoot.name = "BlockSounds";
 	}
 
 	public async void StartGen(bool instantiate)
@@ -287,10 +279,7 @@ public class WorldBuilder
 	{
 		ChunkGenerator generator;
 
-		if (chunk.chunkType != Chunk.ChunkType.Close)
-			fakeChunkGenerators.TryGetValue(chunk.buildStage, out generator);
-		else
-			chunkGenerators.TryGetValue(chunk.buildStage, out generator);
+		chunkGenerators.TryGetValue(chunk.buildStage, out generator);
 
 		if (generator == null)
 			return;
@@ -335,10 +324,6 @@ public class WorldBuilder
 		{
 			if (entry.Value.IsBusy())
 				busy++;
-		}
-
-		foreach (KeyValuePair<Chunk.BuildStage, ChunkGenerator> entry in fakeChunkGenerators)
-		{
 		}
 
 		return busy;

@@ -30,6 +30,7 @@ public class Chunk
 	
 	protected Color[] lighting; // Color data, with a pixel at the center of each block
 	protected List<BlockLight> lights; // Light sources on the block grid
+	protected List<BlockSound> sounds; // Light sources on the block grid
 
 	// Transform
 	public Vector3Int position;
@@ -62,10 +63,11 @@ public class Chunk
 
 	public virtual void CreateCollections()
 	{
-		lights = new List<BlockLight>();
-		lighting = new Color[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 		blocks = new Block[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
 		attributes = new BlockAttributes[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
+		lighting = new Color[chunkSizeBlocks * chunkSizeBlocks * chunkSizeBlocks];
+		lights = new List<BlockLight>();
+		sounds = new List<BlockSound>();
 
 		for (int x = 0; x < chunkSizeBlocks; x++)
 		{
@@ -277,11 +279,11 @@ public class Chunk
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
 
+			World.ApplySoundsAt(position, sounds);
+
 			buildStage = BuildStage.Done;
 
 			World.WorldBuilder.QueueNextStage(this);
-
-			World.SetLightsAt(position, lights);
 
 			OnFinishProcStage();
 		});
@@ -361,6 +363,23 @@ public class Chunk
 		}
 		if (toRemove != null)
 			lights.Remove(toRemove);
+	}
+
+	public void AddBlockSound(BlockSound sound)
+	{
+		sounds.Add(sound);
+	}
+
+	public void RemoveBlockSoundAt(Vector3Int pos)
+	{
+		BlockSound toRemove = null;
+		foreach (BlockSound sound in sounds)
+		{
+			if (Vector3.SqrMagnitude(sound.pos - pos) < 0.5f)
+				toRemove = sound;
+		}
+		if (toRemove != null)
+			sounds.Remove(toRemove);
 	}
 
 	public BlockAttributes GetAttributes(int x, int y, int z)
