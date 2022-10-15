@@ -241,7 +241,12 @@ public class LightEngine
 	{
 		//return 1;
 
-		Vector3 dir = ((Vector3)(startBlockPos - lightBlockPos)).normalized * 0.5f;
+		Vector3 dir = (startBlockPos - lightBlockPos);
+		dir = new Vector3(
+			Utils.SoftSign(dir.x) / 2f,
+			Utils.SoftSign(dir.y) / 2f,
+			Utils.SoftSign(dir.z) / 2f
+		);
 		Vector3 lightCenter = lightBlockPos + Vector3.one * 0.5f;
 
 		// Find attributes for the corner facing us
