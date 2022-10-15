@@ -486,6 +486,9 @@ public partial class World : MonoBehaviour
 
 	public static void ApplySoundsAt(Vector3Int pos, List<BlockSound> chunkSounds)
 	{
+		if (!Instance)
+			return;
+
 		foreach (BlockSound sound in chunkSounds)
 		{
 			AudioSource source = AudioManager.CreateLoopingSound(sound.sound, sound.pos);
