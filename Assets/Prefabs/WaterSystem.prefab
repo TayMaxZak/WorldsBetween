@@ -117,7 +117,7 @@ Transform:
   - {fileID: 4684760029799823178}
   - {fileID: 2165478507474046853}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &265787124417406027
 GameObject:
@@ -280,7 +280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2138128310423497982
 Transform:
   m_ObjectHideFlags: 0
@@ -768,7 +768,7 @@ MonoBehaviour:
     m_ClipPlaneOffset: 0
     m_ReflectLayers:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 1175
     m_Shadows: 0
   target: {fileID: 8170105124640433862}
   m_planeOffset: -0.15

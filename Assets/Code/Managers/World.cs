@@ -210,8 +210,6 @@ public partial class World : MonoBehaviour
 		modifiers.Add(new StructureFixer(structure));
 
 		modifiers.Add(new MossAttributor(worldProperties.mossChance, 0.2f, 1f));
-
-		Debug.Log(worldProperties.mossChance);
 	}
 
 	private void Start()

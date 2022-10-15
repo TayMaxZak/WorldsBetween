@@ -42,6 +42,8 @@ public class WorldLightAtlas : MonoBehaviour
 				wrapMode = TextureWrapMode.Clamp,
 				filterMode = FilterMode.Bilinear
 			};
+
+			Apply();
 		}
 
 		public void Apply()
@@ -123,7 +125,9 @@ public class WorldLightAtlas : MonoBehaviour
 	{
 		if (didInit)
 			return;
-		SetShaderReferences(directTextureDefault, ambientTextureDefault);
+
+		// TODO: Fix default textures having flickering enabled
+		SetShaderReferences(Vector4.one * 16, Vector4.one * -8, directTextureDefault, ambientTextureDefault);
 	}
 
 	public void Init()
@@ -138,16 +142,16 @@ public class WorldLightAtlas : MonoBehaviour
 		directLight = new SubAtlas(fullSize, 1, TextureFormat.RGBAHalf);
 		ambientLight = new SubAtlas(fullSize, 16, TextureFormat.RGBAFloat);
 
-		SetShaderReferences(directLight.GetTexture(), ambientLight.GetTexture());
+		SetShaderReferences(new Vector4(fullSize.x, fullSize.y, fullSize.z, 0), new Vector4(minPos.x, minPos.y, minPos.z, 0), directLight.GetTexture(), ambientLight.GetTexture());
 
 		Instance = this;
 	}
 
-	private void SetShaderReferences(Texture directTexture, Texture ambientTexture)
+	private void SetShaderReferences(Vector4 s, Vector4 mp, Texture directTexture, Texture ambientTexture)
 	{
 		// For positioning textures correctly
-		Shader.SetGlobalVector("LightAtlasSize", new Vector4(fullSize.x, fullSize.y, fullSize.z, 0));
-		Shader.SetGlobalVector("LightAtlasMinPos", new Vector4(minPos.x, minPos.y, minPos.z, 0));
+		Shader.SetGlobalVector("LightAtlasSize", s);
+		Shader.SetGlobalVector("LightAtlasMinPos", mp);
 
 		// References to current textures
 		Shader.SetGlobalTexture("DirectLightTexture", directTexture);

@@ -99,7 +99,7 @@ public class AudioManager : MonoBehaviour
 
 			Transform playerTrans = Player.Instance.transform;
 
-			float offsetDistance = SeedlessRandom.NextFloatInRange(4, 16);
+			float offsetDistance = SeedlessRandom.NextFloatInRange(4, 8);
 			PlaySound(caveNoiseSound, playerTrans.position + Quaternion.Euler(0, SeedlessRandom.NextFloatInRange(-60, 60), 0) * playerTrans.forward * -offsetDistance);
 		}
 	}

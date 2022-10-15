@@ -113,10 +113,19 @@ public class MossAttributor : Modifier
 			return false;
 
 		BlockAttributes attr = World.GetAttributes(pos);
-		attr.SetMoss(SeedlessRandom.NextFloatInRange(minValue, maxValue));
+		// Less moss towards edges of noise
+		float remappedNoise = Mathf.Clamp01(Remap(1 - noise, chance, Mathf.Min(chance * 2, 1), 0.33f, 1));
+		// Determined by both noise and a random value
+		float mossAmount = Mathf.Min(SeedlessRandom.NextFloat(), remappedNoise);
+		attr.SetMoss(Mathf.Lerp(minValue, maxValue, mossAmount));
 		World.SetAttributes(pos, attr);
 
 		return true;
+	}
+
+	private static float Remap(float value, float from1, float to1, float from2, float to2)
+	{
+		return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 	}
 
 	protected float GetNoiseAt(Vector3 pos)
