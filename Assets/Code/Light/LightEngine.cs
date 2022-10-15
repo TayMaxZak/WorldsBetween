@@ -158,6 +158,7 @@ public class LightEngine
 
 				Color result = (1 / 2f) * lightStrength * light.Value.GetLightColor(lightStrength);
 				result *= ShadowAtten(pos, light.Key);
+				result *= AttributeAtten(pos, light.Key);
 				output += result;
 			}
 		}
@@ -167,7 +168,7 @@ public class LightEngine
 
 	private float ShadowAtten(Vector3Int startBlockPos, Vector3Int lightBlockPos)
 	{
-		bool showDebug = SeedlessRandom.NextFloat() < 0.001f;
+		bool showDebug = SeedlessRandom.NextFloat() < 0.0f;
 
 		Vector3 dir = ((Vector3)(lightBlockPos - startBlockPos)).normalized;
 		Vector3 curPos = startBlockPos + Vector3.one * 0.5f;
@@ -235,6 +236,25 @@ public class LightEngine
 		// Should not happen
 		return 0;
 	}
+
+	private float AttributeAtten(Vector3Int startBlockPos, Vector3Int lightBlockPos)
+	{
+		//return 1;
+
+		Vector3 dir = ((Vector3)(startBlockPos - lightBlockPos)).normalized * 0.5f;
+		Vector3 lightCenter = lightBlockPos + Vector3.one * 0.5f;
+
+		// Find attributes for the corner facing us
+		BlockAttributes attr = World.GetAttributes(
+			Mathf.RoundToInt(lightCenter.x + dir.x),
+			Mathf.RoundToInt(lightCenter.y + dir.y),
+			Mathf.RoundToInt(lightCenter.z + dir.z)
+		);
+
+		// Moss obscures light
+		return (1 - attr.GetMoss()) * (1 - attr.GetMoss());
+	}
+
 
 	public bool IsBusy()
 	{

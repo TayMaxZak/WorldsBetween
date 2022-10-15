@@ -264,7 +264,7 @@ public class StructureModifier : Modifier
 			if (Random.value < 0.1f)
 				room.lightOff = true;
 			else
-				room.lightFlickerAmt = 1.5f * Mathf.Pow(SeedlessRandom.NextFloat(), 6);
+				room.lightFlickerAmt = Mathf.Pow(SeedlessRandom.NextFloat(), 6);
 		}
 		// Add light effects
 		if (!room.lightOff)
