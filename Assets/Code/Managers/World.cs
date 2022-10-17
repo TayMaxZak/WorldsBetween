@@ -177,7 +177,7 @@ public partial class World : MonoBehaviour
 		encounterPoint = structure.encounterRoom.genData.pos;
 
 		// Enough room for an encounter
-		//hasEncounter = structure.GetFillPercent() > 0.6f;
+		hasEncounter = structure.GetFillPercent() > 0.6f;
 
 		// Determine world bounds
 		worldBounds.min = new Vector3Int(

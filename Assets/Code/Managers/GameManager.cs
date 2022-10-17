@@ -190,13 +190,18 @@ public partial class GameManager : MonoBehaviour
 		Instance.ExitLevel();
 	}
 
+	public static bool IsFinishingLevel()
+	{
+		return Instance.finishingLevel;
+	}
+
 	private async void ExitLevel()
 	{
 		if (finishingLevel)
 			return;
 
 		AudioManager.StopMusicCue();
-		AudioManager.PlaySound(Instance.exitLevelSound, transform.position);
+		AudioManager.PlaySoundDontDestroyOnLoad(Instance.exitLevelSound, transform.position);
 
 		goalWaveDistance = -10;
 		finishingLevel = true;
@@ -204,7 +209,7 @@ public partial class GameManager : MonoBehaviour
 		Player.Instance.mover.invertControls = true;
 
 
-		await Task.Delay(3500);
+		await Task.Delay(3000);
 
 
 		loadingProgress = 0;

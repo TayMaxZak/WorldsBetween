@@ -38,7 +38,7 @@ public class PlayerVitals : MonoBehaviour
 
 	private void Update()
 	{
-		if (dead)
+		if (dead || GameManager.IsFinishingLevel())
 			return;
 
 		//if (Input.GetButtonDown("Vitals"))
@@ -119,7 +119,7 @@ public class PlayerVitals : MonoBehaviour
 
 	public void DealDamage(float amount)
 	{
-		if (dead)
+		if (dead || GameManager.IsFinishingLevel())
 			return;
 
 		//UseStamina(amount, false, true);
@@ -129,7 +129,7 @@ public class PlayerVitals : MonoBehaviour
 
 	public bool UseStamina(float amount, bool hurtWhenEmpty, bool useAnyway)
 	{
-		if (dead || amount <= 0)
+		if (dead || amount <= 0 || GameManager.IsFinishingLevel())
 			return false;
 
 		stopStaminaRegen.Reset();
@@ -178,7 +178,7 @@ public class PlayerVitals : MonoBehaviour
 
 	private void HurtHealth(float amount)
 	{
-		if (dead || amount <= 0)
+		if (dead || amount <= 0 || GameManager.IsFinishingLevel())
 			return;
 
 		if (takeDamageTimer.Expired())

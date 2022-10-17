@@ -75,6 +75,9 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private void Update()
 	{
+		if (!Application.isPlaying)
+			return;
+
 		// Pick a new random tip
 		randomTipTimer.Increment(Time.deltaTime);
 		if (randomTipTimer.Expired())

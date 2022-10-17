@@ -8,6 +8,7 @@ public class GoalPoint : MonoBehaviour
 	public static GoalPoint Instance;
 
 	private bool activated = false;
+	private bool used = false;
 
 	[SerializeField]
 	private float activationDistance = 1;
@@ -82,8 +83,10 @@ public class GoalPoint : MonoBehaviour
 		outerVisualPos = Vector3.Lerp(outerVisualPos, transform.position, Time.unscaledDeltaTime);
 		outerVisual.transform.position = outerVisualPos;
 
-		if (sqrDist< activationDistance * activationDistance)
+		if (!used && sqrDist < activationDistance * activationDistance)
 		{
+			used = true;
+
 			innerVisual.SetActive(false);
 
 			World.SetGoalPoint(transform.position);

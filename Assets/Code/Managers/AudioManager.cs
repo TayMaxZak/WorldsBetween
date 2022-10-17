@@ -233,6 +233,28 @@ public class AudioManager : MonoBehaviour
 		return source;
 	}
 
+	public static AudioSource PlaySoundDontDestroyOnLoad(Sound toPlay, Vector3 position)
+	{
+		if (!toPlay)
+			return null;
+
+		AudioSource source = Instantiate(toPlay.preset, position, Quaternion.identity);
+
+		source.volume *= toPlay.volumeMult;
+
+		float randomPitch = SeedlessRandom.NextFloatInRange(toPlay.pitchRange.min, toPlay.pitchRange.max);
+		source.pitch *= randomPitch;
+
+		source.clip = toPlay.GetClip();
+
+		source.Play();
+
+		DontDestroyOnLoad(source.gameObject);
+		Destroy(source.gameObject, source.clip.length / source.pitch + 1);
+
+		return source;
+	}
+
 	public static void SetAmbientVolume(float volume)
 	{
 		Instance.mixer.SetFloat("AmbientVolume", PercentageToDb(volume));
