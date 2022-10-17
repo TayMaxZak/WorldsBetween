@@ -104,12 +104,12 @@ public class LoadingScreenHook : MonoBehaviour
 
 			group.alpha = groupOpacity;
 			if (updateProgress)
-				AudioManager.SetAmbientVolume(1 - groupOpacity);
+				AudioManager.SetWorldEffectsFade(1 - groupOpacity);
 		}
 		else
 		{
 			group.alpha = 1;
-			AudioManager.SetAmbientVolume(0);
+			AudioManager.SetWorldEffectsFade(0);
 		}
 	}
 

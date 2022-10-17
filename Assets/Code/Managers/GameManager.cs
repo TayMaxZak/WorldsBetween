@@ -27,10 +27,10 @@ public partial class GameManager : MonoBehaviour
 
 	public Sound exitLevelSound;
 	private bool finishingLevel = false;
-	private bool fadeInLoadingScreen = false;
 	private float exitCurTimeScale = 1;
 	private float exitGoalTimeScale = 0.1f;
 	private float goalWaveDistance;
+	private float worldSFXFade = 1;
 
 	private readonly int exitShaderPropId = Shader.PropertyToID("GoalWaveDistance");
 
@@ -99,14 +99,19 @@ public partial class GameManager : MonoBehaviour
 
 		if (finishingLevel)
 		{
-			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.deltaTime * ((goalWaveDistance < 0) ? 20 : 40), 10000);
+			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.deltaTime * ((goalWaveDistance < 0) ? 20 : 45), 10000);
 			Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 
 			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);
 			Time.timeScale = exitCurTimeScale;
+
+			worldSFXFade = Mathf.Clamp01(worldSFXFade - Time.unscaledDeltaTime);
 		}
 		else
+		{
 			exitCurTimeScale = 1;
+			worldSFXFade = 1;
+		}
 	}
 
 	private bool CloseEnough(float val, float target)
@@ -214,7 +219,6 @@ public partial class GameManager : MonoBehaviour
 
 		loadingProgress = 0;
 		loadingProgressSmooth = 0;
-		fadeInLoadingScreen = true;
 		loadingScreen.Reactivate();
 
 
@@ -227,7 +231,6 @@ public partial class GameManager : MonoBehaviour
 		Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 
 		finishingLevel = false;
-		fadeInLoadingScreen = false;
 
 		Time.timeScale = 1;
 

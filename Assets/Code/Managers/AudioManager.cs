@@ -255,9 +255,9 @@ public class AudioManager : MonoBehaviour
 		return source;
 	}
 
-	public static void SetAmbientVolume(float volume)
+	public static void SetWorldEffectsFade(float volume)
 	{
-		Instance.mixer.SetFloat("AmbientVolume", PercentageToDb(volume));
+		Instance.mixer.SetFloat("WorldSFXFade", PercentageToDb(volume));
 	}
 
 	public static void SetMasterVolume(float volume)
