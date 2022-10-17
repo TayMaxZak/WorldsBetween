@@ -9,6 +9,21 @@ public class GoalPoint : MonoBehaviour
 
 	private bool activated = false;
 
+	[SerializeField]
+	private float activationDistance = 1;
+	[SerializeField]
+	private float magnetDistance = 3;
+	[SerializeField]
+	private float magnetSpeed = 0.5f;
+
+	private Vector3 velocity;
+
+	[SerializeField]
+	private GameObject innerVisual;
+	[SerializeField]
+	private GameObject outerVisual;
+	private Vector3 outerVisualPos;
+
 	private void Awake()
 	{
 		// Ensure singleton
@@ -19,6 +34,8 @@ public class GoalPoint : MonoBehaviour
 		}
 		else
 			Instance = this;
+
+		outerVisualPos = transform.position;
 	}
 
 	public void InitGoalActor(Vector3 blockPos)
@@ -42,6 +59,7 @@ public class GoalPoint : MonoBehaviour
 	private void NewPosition()
 	{
 		World.SetGoalPoint(transform.position);
+		outerVisualPos = transform.position;
 	}
 
 	public void Update()
@@ -49,8 +67,27 @@ public class GoalPoint : MonoBehaviour
 		if (!activated)
 			return;
 
-		if (Vector3.SqrMagnitude(transform.position - Player.Instance.transform.position) < 1 * 1)
+		Vector3 dif = Player.Instance.transform.position - transform.position;
+		float sqrDist = Vector3.SqrMagnitude(dif);
+
+		if (sqrDist < magnetDistance * magnetDistance)
 		{
+			velocity = magnetSpeed / Mathf.Max(1, Mathf.Sqrt(sqrDist)) * dif.normalized;
+		}
+		else
+			velocity = Vector3.zero;
+
+		transform.Translate(velocity * Time.deltaTime);
+
+		outerVisualPos = Vector3.Lerp(outerVisualPos, transform.position, Time.deltaTime);
+		outerVisual.transform.position = outerVisualPos;
+
+		if (sqrDist< activationDistance * activationDistance)
+		{
+			innerVisual.SetActive(false);
+
+			World.SetGoalPoint(transform.position);
+
 			PersistentData pd = PersistentData.GetInstanceForRead();
 			if (pd)
 			{
