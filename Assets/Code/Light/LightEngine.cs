@@ -257,7 +257,13 @@ public class LightEngine
 		);
 
 		// Moss obscures light
-		return (1 - attr.GetMoss()) * (1 - attr.GetMoss());
+		float baseAtten = attr.GetMoss();
+		// Most noisey at 0.5 base moss amount
+		float noiseAtten = baseAtten - 0.5f;
+		noiseAtten = Mathf.Abs(noiseAtten);
+		noiseAtten = 0.5f - noiseAtten;
+
+		return 1 - (baseAtten + noiseAtten * SeedlessRandom.NextFloat());
 	}
 
 
