@@ -96,18 +96,11 @@ public partial class GameManager : MonoBehaviour
 
 		if (finishingLevel)
 		{
-			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.unscaledDeltaTime * ((goalWaveDistance < 0) ? 20 : 10 + goalWaveDistance * 0.5f), 10000);
+			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.unscaledDeltaTime * ((goalWaveDistance < 0) ? 20 : 10 + goalWaveDistance * 1f), 10000);
 			Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 
 			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);
 			Time.timeScale = exitCurTimeScale;
-
-			if (fadeInLoadingScreen)
-			{
-				loadingProgress = Mathf.Clamp01(loadingProgress += Time.deltaTime / 2f);
-				loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 3);
-				loadingProgressSmooth = Mathf.Clamp(loadingProgressSmooth, 0, 1);
-			}
 		}
 		else
 			exitCurTimeScale = 1;
@@ -206,7 +199,7 @@ public partial class GameManager : MonoBehaviour
 		finishingLevel = true;
 
 
-		await Task.Delay(2000);
+		await Task.Delay(3500);
 
 
 		loadingProgress = 0;
@@ -215,7 +208,7 @@ public partial class GameManager : MonoBehaviour
 		loadingScreen.Reactivate();
 
 
-		await Task.Delay(3000);
+		await Task.Delay(1500);
 
 
 		goalWaveDistance = -10;

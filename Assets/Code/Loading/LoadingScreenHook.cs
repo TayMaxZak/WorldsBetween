@@ -97,7 +97,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 		if (fadingOut || fadingIn)
 		{
-			groupOpacity = Mathf.Lerp(groupOpacity, fadingOut ? 0 : 1, Time.unscaledDeltaTime * 2);
+			groupOpacity = Mathf.Lerp(groupOpacity, fadingOut ? 0 : 1, (fadingOut ? 2 : 3.5f) * Mathf.Min(Time.unscaledDeltaTime, 0.05f));
 
 			group.alpha = groupOpacity;
 			if (updateProgress)

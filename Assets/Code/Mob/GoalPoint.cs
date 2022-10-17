@@ -77,9 +77,9 @@ public class GoalPoint : MonoBehaviour
 		else
 			velocity = Vector3.zero;
 
-		transform.Translate(velocity * Time.deltaTime);
+		transform.Translate(velocity * Time.unscaledDeltaTime);
 
-		outerVisualPos = Vector3.Lerp(outerVisualPos, transform.position, Time.deltaTime);
+		outerVisualPos = Vector3.Lerp(outerVisualPos, transform.position, Time.unscaledDeltaTime);
 		outerVisual.transform.position = outerVisualPos;
 
 		if (sqrDist< activationDistance * activationDistance)
