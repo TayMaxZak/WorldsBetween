@@ -270,6 +270,7 @@ public class Chunk
 				vertices = data.vertices,
 				normals = data.normals,
 				uv = data.uv,
+				uv2 = data.uv2,
 				colors32 = data.colors32,
 				subMeshCount = 2
 			};

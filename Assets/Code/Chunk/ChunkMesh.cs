@@ -44,6 +44,7 @@ public class ChunkMesh
 		public Vector3[] vertices;
 		public Vector3[] normals;
 		public Vector2[] uv;
+		public Vector2[] uv2;
 		public Color32[] colors32;
 
 		public Dictionary<int, int[]> triangles;
@@ -53,6 +54,7 @@ public class ChunkMesh
 			vertices = mesh.vertices;
 			normals = mesh.normals;
 			uv = mesh.uv;
+			uv2 = mesh.uv2;
 
 			if (mesh.colors32.Length == 0)
 				colors32 = new Color32[vertices.Length];
@@ -63,11 +65,12 @@ public class ChunkMesh
 			triangles[0] = mesh.triangles;
 		}
 
-		public MeshData(Vector3[] vertices, Vector3[] normals, Vector2[] uv, Color32[] colors32, Dictionary<int, int[]> triangles)
+		public MeshData(Vector3[] vertices, Vector3[] normals, Vector2[] uv, Vector2[] uv2, Color32[] colors32, Dictionary<int, int[]> triangles)
 		{
 			this.vertices = vertices;
 			this.normals = normals;
 			this.uv = uv;
+			this.uv2 = uv2;
 			this.colors32 = colors32;
 
 			this.triangles = triangles;
@@ -85,7 +88,8 @@ public class ChunkMesh
 
 		List<Vector3> normals = new List<Vector3>();
 
-		List<Vector2> uv = new List<Vector2>();
+		List<Vector2> uv0 = new List<Vector2>();
+		List<Vector2> uv1 = new List<Vector2>();
 
 		List<Color32> colors32 = new List<Color32>();
 
@@ -279,7 +283,11 @@ public class ChunkMesh
 							// Add UVs
 							for (int i = 0; i < blockMeshData.uv.Length; i++)
 							{
-								uv.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
+								uv0.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
+							}
+							for (int i = 0; i < blockMeshData.uv.Length; i++)
+							{
+								uv1.Add(blockMeshData.uv[i]);
 							}
 						}
 					} // end Six Faces
@@ -341,14 +349,18 @@ public class ChunkMesh
 						// Add UVs
 						for (int i = 0; i < blockMeshData.uv.Length; i++)
 						{
-							uv.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
+							uv0.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
+						}
+						for (int i = 0; i < blockMeshData.uv.Length; i++)
+						{
+							uv1.Add(blockMeshData.uv[i]);
 						}
 					} // end Single Model
 				}
 			}
 		}
 
-		return new MeshData(vertices.ToArray(), normals.ToArray(), uv.ToArray(), colors32.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
+		return new MeshData(vertices.ToArray(), normals.ToArray(), uv0.ToArray(), uv1.ToArray(), colors32.ToArray(), new Dictionary<int, int[]> { { 0, triangles.ToArray() }, { 1, vegTriangles.ToArray() } });
 	}
 
 	public void FinishMesh(Mesh newMesh)
