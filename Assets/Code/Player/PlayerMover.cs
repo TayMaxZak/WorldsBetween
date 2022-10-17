@@ -71,6 +71,7 @@ public class PlayerMover : Actor
 	public bool jump = false;
 	public bool climbing = false;
 	public bool sprinting = false;
+	public bool invertControls = false;
 
 	[Header("Costs")]
 	[SerializeField]
@@ -179,8 +180,8 @@ public class PlayerMover : Actor
 		if (!Player.Instance.vitals.dead)
 		{
 			float sensFactor = 1 / 2.5f;
-			mouseH += Input.GetAxis("Mouse X") * mouseSens * sensFactor;
-			mouseV -= Input.GetAxis("Mouse Y") * mouseSens * sensFactor;
+			mouseH += Input.GetAxis("Mouse X") * mouseSens * sensFactor * Time.timeScale;
+			mouseV -= Input.GetAxis("Mouse Y") * mouseSens * sensFactor * Time.timeScale;
 		}
 		else
 		{
@@ -200,7 +201,7 @@ public class PlayerMover : Actor
 		if (!grounded || climbing)
 			return;
 
-		Vector3 dirInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		Vector3 dirInput = new Vector3(Input.GetAxisRaw("Horizontal") * (!invertControls ? 1 : -1), 0, Input.GetAxisRaw("Vertical") * (!invertControls ? 1 : -1));
 		dirInput = Vector3.ClampMagnitude(dirInput, 1);
 		dirInput = transform.rotation * dirInput;
 

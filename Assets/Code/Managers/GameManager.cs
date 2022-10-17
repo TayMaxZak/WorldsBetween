@@ -52,6 +52,9 @@ public partial class GameManager : MonoBehaviour
 	{
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
+
+		goalWaveDistance = -10;
+		Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 	}
 
 	private void Update()
@@ -96,7 +99,7 @@ public partial class GameManager : MonoBehaviour
 
 		if (finishingLevel)
 		{
-			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.unscaledDeltaTime * ((goalWaveDistance < 0) ? 20 : 10 + goalWaveDistance * 1f), 10000);
+			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.deltaTime * ((goalWaveDistance < 0) ? 20 : 40), 10000);
 			Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 
 			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);
@@ -189,7 +192,7 @@ public partial class GameManager : MonoBehaviour
 
 	private async void ExitLevel()
 	{
-		if (Instance.finishingLevel)
+		if (finishingLevel)
 			return;
 
 		AudioManager.StopMusicCue();
@@ -197,6 +200,8 @@ public partial class GameManager : MonoBehaviour
 
 		goalWaveDistance = -10;
 		finishingLevel = true;
+
+		Player.Instance.mover.invertControls = true;
 
 
 		await Task.Delay(3500);
@@ -211,12 +216,16 @@ public partial class GameManager : MonoBehaviour
 		await Task.Delay(1500);
 
 
+		Player.Instance.mover.invertControls = false;
+
 		goalWaveDistance = -10;
 		Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
+
 		finishingLevel = false;
 		fadeInLoadingScreen = false;
 
 		Time.timeScale = 1;
+
 		SceneManager.LoadScene(1);
 	}
 }
