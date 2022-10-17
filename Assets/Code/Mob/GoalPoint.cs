@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [SelectionBase]
 public class GoalPoint : MonoBehaviour
@@ -42,39 +41,7 @@ public class GoalPoint : MonoBehaviour
 
 	private void NewPosition()
 	{
-		//Vector3Int intPos = new Vector3Int( Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), Mathf.FloorToInt(transform.position.z));
-		//Chunk chunk = World.GetChunk(intPos);
-		//bool placeLight = true;
-		//if (chunk != null)
-		//{
-		//	foreach (LightSource l in chunk.GetLights())
-		//	{
-		//		if (l.pos == intPos)
-		//		{
-		//			placeLight = false;
-		//			break;
-		//		}
-		//	}
-		//	if (placeLight)
-		//	{
-		//		chunk.GetLights().Add(new LightSource()
-		//		{
-		//			pos = intPos,
-		//			lightColor = LightSource.colorWhite,
-		//			brightness = 1,
-		//			spread = 1,
-		//			noise = 0
-		//		}
-		//		);
-		//	}
-		//}
-		//else
-		//	placeLight = false;
-
 		World.SetGoalPoint(transform.position);
-
-		//if (placeLight)
-		//	World.RecalculateLight();
 	}
 
 	public void Update()
@@ -91,7 +58,7 @@ public class GoalPoint : MonoBehaviour
 				pd.IncreaseDepth(1);
 			}
 
-			SceneManager.LoadScene(1);
+			GameManager.FinishLevel();
 		}
 	}
 }

@@ -29,6 +29,8 @@ public class UIManager : MonoBehaviour
 
 	public GameObject deathCanvas;
 
+	public CanvasGroup fadeToBlack;
+
 	private void Awake()
 	{
 		if (!Instance)
@@ -112,5 +114,10 @@ public class UIManager : MonoBehaviour
 			return;
 
 		Instance.globalColor.postExposure.Override(Instance.initGlobalBrightness + brightness);
+	}
+
+	public static void SetFadeToBlack(float value)
+	{
+		Instance.fadeToBlack.alpha = value;
 	}
 }

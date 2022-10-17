@@ -60,6 +60,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private bool updateProgress = false;
 	private bool fadingOut = false;
+	private bool fadingIn = false;
 
 	private void Awake()
 	{
@@ -93,9 +94,9 @@ public class LoadingScreenHook : MonoBehaviour
 
 		UpdateProgress(progressDisplay);
 
-		if (fadingOut)
+		if (fadingOut || fadingIn)
 		{
-			groupOpacity = Mathf.Lerp(groupOpacity, 0, Time.deltaTime * 2);
+			groupOpacity = Mathf.Lerp(groupOpacity, fadingOut ? 0 : 1, Time.unscaledDeltaTime * 2);
 
 			group.alpha = groupOpacity;
 			if (updateProgress)
@@ -119,7 +120,7 @@ public class LoadingScreenHook : MonoBehaviour
 		float spinSpeed = Mathf.Clamp01(2 * progress) * (progress);
 		spinSpeed *= spinSpeed * spinSpeed;
 		foreach (SpinRing spin in ringsToSpin)
-			spin.toRotate.Rotate(Vector3.forward * overallSpinSpeed * spin.speedMult * spinSpeed * Time.deltaTime);
+			spin.toRotate.Rotate(overallSpinSpeed * spin.speedMult * spinSpeed * Time.deltaTime * Vector3.forward);
 
 		// Fade black
 		bkgBlack.alpha = 1 - 2 * Mathf.Clamp01(progress - 0.5f);
@@ -161,5 +162,20 @@ public class LoadingScreenHook : MonoBehaviour
 		updateProgress = false;
 
 		gameObject.SetActive(false);
+	}
+
+	public void Activate()
+	{
+		fadingOut = false;
+		fadingIn = true;
+
+		UpdateProgress(0);
+
+		foreach (SpinRing spin in ringsToSpin)
+			spin.toRotate.rotation = Quaternion.identity;
+		generatingUI.SetActive(false);
+		updateProgress = true;
+
+		gameObject.SetActive(true);
 	}
 }

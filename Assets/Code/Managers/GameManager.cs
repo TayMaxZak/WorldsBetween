@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public partial class GameManager : MonoBehaviour
 {
@@ -22,12 +23,13 @@ public partial class GameManager : MonoBehaviour
 
 	public LoadingScreenHook loadingScreen;
 
-	// Rotate player while loading
-	private float panSpeed;
-	private float newPanSpeed;
-	private Timer panSpeedRandomizer = new Timer(3);
-
 	public float timeSpentLoading = 0;
+
+	public Sound exitLevelSound;
+	private bool finishingLevel = false;
+	private bool fadeInLoadingScreen = false;
+	private float exitCurTimeScale = 1;
+	private float exitGoalTimeScale = 0.1f;
 
 	private void Awake()
 	{
@@ -68,7 +70,7 @@ public partial class GameManager : MonoBehaviour
 			loadingProgress = (builderProgress * 1 + lighterProgress * 1) / (1 + 1);
 			// Get display progress by interpolating
 			loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 3);
-			loadingProgressSmooth = Mathf.Clamp(loadingProgressSmooth, 0, 100);
+			loadingProgressSmooth = Mathf.Clamp(loadingProgressSmooth, 0, 1);
 
 			if (World.WorldBuilder.genStage >= WorldBuilder.GenStage.EnqueueChunks && !startedBuilding)
 				ShowProgress();
@@ -87,32 +89,28 @@ public partial class GameManager : MonoBehaviour
 			// Start transition from loading
 			if (CloseEnough(loadingProgress, 1) && World.WorldBuilder.genStage == WorldBuilder.GenStage.Ready)
 				FinishLoading();
-
-			RotateCameraWhileLoading();
 		}
+
+		if (finishingLevel)
+		{
+			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);
+			Time.timeScale = exitCurTimeScale;
+
+			if (fadeInLoadingScreen)
+			{
+				loadingProgress = Mathf.Clamp01(loadingProgress += Time.deltaTime / 2f);
+				loadingProgressSmooth = Mathf.Lerp(loadingProgressSmooth, loadingProgress, Time.deltaTime * 3);
+				loadingProgressSmooth = Mathf.Clamp(loadingProgressSmooth, 0, 1);
+			}
+		}
+		else
+			exitCurTimeScale = 1;
 	}
 
 	private bool CloseEnough(float val, float target)
 	{
 		// Used to need - 0.001 in order to be true, but this lead to more issues in rare cases
 		return val >= target; 
-	}
-
-	private void RotateCameraWhileLoading()
-	{
-		panSpeedRandomizer.Increment(Time.deltaTime);
-		if (panSpeedRandomizer.Expired())
-		{
-			panSpeedRandomizer.Reset();
-
-			newPanSpeed = Mathf.Lerp(newPanSpeed, SeedlessRandom.NextFloatInRange(-90, 90), 0.5f);
-		}
-		panSpeed = Mathf.Lerp(panSpeed, newPanSpeed, Time.deltaTime);
-
-
-		float fade = Mathf.Clamp01((1 - loadingProgressSmooth) * 5);
-
-		Player.Instance.transform.Rotate(Vector3.up * panSpeed * fade * Time.deltaTime);
 	}
 
 	public void ShowProgress()
@@ -152,6 +150,7 @@ public partial class GameManager : MonoBehaviour
 		// Transition from loading state to game state
 		loadingScreen.StartFadingOut();
 
+
 		await Task.Delay(1000);
 
 
@@ -169,6 +168,7 @@ public partial class GameManager : MonoBehaviour
 		// Disable loading screen completely after some time
 		await Task.Delay(4000);
 
+
 		if (loadingScreen)
 			loadingScreen.Hide();
 	}
@@ -181,5 +181,40 @@ public partial class GameManager : MonoBehaviour
 	public static float GetSmoothLoadingProgress()
 	{
 		return Instance.loadingProgressSmooth;
+	}
+
+	public static void FinishLevel()
+	{
+		Instance.ExitLevel();
+	}
+
+	private async void ExitLevel()
+	{
+		if (Instance.finishingLevel)
+			return;
+
+		AudioManager.StopMusicCue();
+		AudioManager.PlaySound(Instance.exitLevelSound, Instance.transform.position);
+
+		Instance.finishingLevel = true;
+
+
+		await Task.Delay(2000);
+
+
+		loadingProgress = 0;
+		loadingProgressSmooth = 0;
+		Instance.fadeInLoadingScreen = true;
+		Instance.loadingScreen.Activate();
+
+
+		await Task.Delay(3000);
+
+
+		Instance.finishingLevel = false;
+		Instance.fadeInLoadingScreen = false;
+
+		Time.timeScale = 1;
+		SceneManager.LoadScene(1);
 	}
 }

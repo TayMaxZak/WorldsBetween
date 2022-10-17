@@ -47,8 +47,9 @@ public class Player : MonoBehaviour
 
 			ChangeHeldItem(heldItem);
 		}
-	}
 
+		transform.Rotate(Vector3.up * SeedlessRandom.NextFloatInRange(0, 360));
+	}
 
 	public void InitPlayerActor(Vector3 blockPos)
 	{
