@@ -53,6 +53,8 @@ public class UIManager : MonoBehaviour
 		{
 			SetDie(false);
 		}
+
+		SetShowVitals(false);
 	}
 
 	public static void SetDie(bool isDie)

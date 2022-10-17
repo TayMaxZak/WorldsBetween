@@ -30,6 +30,9 @@ public partial class GameManager : MonoBehaviour
 	private bool fadeInLoadingScreen = false;
 	private float exitCurTimeScale = 1;
 	private float exitGoalTimeScale = 0.1f;
+	private float goalWaveDistance;
+
+	private readonly int exitShaderPropId = Shader.PropertyToID("GoalWaveDistance");
 
 	private void Awake()
 	{
@@ -93,6 +96,9 @@ public partial class GameManager : MonoBehaviour
 
 		if (finishingLevel)
 		{
+			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.unscaledDeltaTime * ((goalWaveDistance < 0) ? 20 : 10 + goalWaveDistance * 0.5f), 10000);
+			Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
+
 			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);
 			Time.timeScale = exitCurTimeScale;
 
@@ -194,9 +200,10 @@ public partial class GameManager : MonoBehaviour
 			return;
 
 		AudioManager.StopMusicCue();
-		AudioManager.PlaySound(Instance.exitLevelSound, Instance.transform.position);
+		AudioManager.PlaySound(Instance.exitLevelSound, transform.position);
 
-		Instance.finishingLevel = true;
+		goalWaveDistance = -10;
+		finishingLevel = true;
 
 
 		await Task.Delay(2000);
@@ -204,15 +211,17 @@ public partial class GameManager : MonoBehaviour
 
 		loadingProgress = 0;
 		loadingProgressSmooth = 0;
-		Instance.fadeInLoadingScreen = true;
-		Instance.loadingScreen.Activate();
+		fadeInLoadingScreen = true;
+		loadingScreen.Reactivate();
 
 
 		await Task.Delay(3000);
 
 
-		Instance.finishingLevel = false;
-		Instance.fadeInLoadingScreen = false;
+		goalWaveDistance = -10;
+		Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
+		finishingLevel = false;
+		fadeInLoadingScreen = false;
 
 		Time.timeScale = 1;
 		SceneManager.LoadScene(1);

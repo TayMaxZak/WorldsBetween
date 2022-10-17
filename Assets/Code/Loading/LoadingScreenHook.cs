@@ -64,6 +64,7 @@ public class LoadingScreenHook : MonoBehaviour
 
 	private void Awake()
 	{
+		randomTip.gameObject.SetActive(true);
 		generatingUI.SetActive(false);
 
 		UpdateProgress(0);
@@ -164,7 +165,7 @@ public class LoadingScreenHook : MonoBehaviour
 		gameObject.SetActive(false);
 	}
 
-	public void Activate()
+	public void Reactivate()
 	{
 		fadingOut = false;
 		fadingIn = true;
@@ -175,6 +176,8 @@ public class LoadingScreenHook : MonoBehaviour
 			spin.toRotate.rotation = Quaternion.identity;
 		generatingUI.SetActive(false);
 		updateProgress = true;
+
+		randomTip.gameObject.SetActive(false);
 
 		gameObject.SetActive(true);
 	}
