@@ -177,6 +177,8 @@ public class ChunkMesh
 							if (!airDirections.Contains(d))
 								continue;
 
+							bool flipTopology = SeedlessRandom.NextFloat() < 0.5f;
+
 							// Show debug rays in some places
 							bool drawDebugRay = false/*SeedlessRandom.NextFloat() > 0.99f*/;
 
@@ -188,7 +190,10 @@ public class ChunkMesh
 							{
 								Vector3 middle = new Vector3(0.5f * chunk.scaleFactor + x, 0.5f * chunk.scaleFactor + y, 0.5f * chunk.scaleFactor + z);
 
-								vert = Quaternion.Euler(rotations[d]) * (blockMeshData.vertices[v] + Vector3.forward * 0.5f);
+								Vector3 inVertex = blockMeshData.vertices[v];
+								inVertex.x *= flipTopology ? -1 : 1;
+
+								vert = Quaternion.Euler(rotations[d]) * (inVertex + Vector3.forward * 0.5f);
 								vert *= chunk.scaleFactor;
 
 								Vector3 vertPos = middle + vert;
@@ -243,8 +248,6 @@ public class ChunkMesh
 										normalDir = 1;
 									else if (empty > 4)
 										normalDir = -1;
-									else
-										normalDir = 0;
 
 									if (drawDebugRay)
 										Debug.Log(empty);
@@ -270,7 +273,10 @@ public class ChunkMesh
 							// Add triangles
 							for (int i = 0; i < (blockMeshData.triangles[0]).Length; i++)
 							{
-								triangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
+								if (!flipTopology)
+									triangles.Add((blockMeshData.triangles[0])[i] + indexOffset);
+								else
+									triangles.Add((blockMeshData.triangles[0])[(blockMeshData.triangles[0]).Length - i - 1] + indexOffset);
 							}
 
 							int uvCount = 4;
@@ -283,11 +289,19 @@ public class ChunkMesh
 							// Add UVs
 							for (int i = 0; i < blockMeshData.uv.Length; i++)
 							{
-								uv0.Add((Vector2.one / 4f + blockMeshData.uv[i] / 2f + new Vector2(uvX, uvY)) * uvScale);
+								Vector2 inUv = new Vector2(blockMeshData.uv[i].x, blockMeshData.uv[i].y);
+								if (flipTopology)
+									inUv.x = 1 - inUv.x; 
+
+								uv0.Add((Vector2.one / 4f + inUv / 2f + new Vector2(uvX, uvY)) * uvScale);
 							}
 							for (int i = 0; i < blockMeshData.uv.Length; i++)
 							{
-								uv1.Add(blockMeshData.uv[i]);
+								Vector2 inUv = new Vector2(blockMeshData.uv[i].x, blockMeshData.uv[i].y);
+								if (flipTopology)
+									inUv.x = 1 - inUv.x;
+
+								uv1.Add(inUv);
 							}
 						}
 					} // end Six Faces

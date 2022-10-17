@@ -276,6 +276,7 @@ public class Chunk
 			};
 			newMesh.SetTriangles(data.triangles[0], 0);
 			newMesh.SetTriangles(data.triangles[1], 1);
+			newMesh.RecalculateTangents();
 
 			// Apply new mesh
 			chunkMesh.FinishMesh(newMesh);
