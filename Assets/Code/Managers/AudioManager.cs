@@ -85,29 +85,33 @@ public class AudioManager : MonoBehaviour
 
 	private void Update()
 	{
-		if (!Instance.musicPlayer.isPlaying)
+		if (!musicPlayer.isPlaying)
 		{
 			if (currentMusicCue)
 			{
-				Instance.musicPlayer.clip = currentMusicCue.clip;
-				Instance.musicPlayer.volume = currentMusicCue.volume;
+				musicPlayer.clip = currentMusicCue.clip;
+				musicPlayer.volume = currentMusicCue.volume;
 
-				Instance.musicPlayer.Play();
+				musicPlayer.Play();
 				currentMusicCue = currentMusicCue.next;
 			}
 		}
 
-		// Play cave noises randomly near player
-		if (GameManager.IsFinishedLoading())
-			caveNoiseTimer.Increment(Time.deltaTime);
-		if (caveNoiseTimer.Expired())
+		if (Player.Instance)
 		{
-			caveNoiseTimer.Reset(SeedlessRandom.NextFloatInRange(caveNoiseTimeMin, caveNoiseTimeMax));
+			// Play cave noises randomly near player
+			if (GameManager.IsFinishedLoading())
+				caveNoiseTimer.Increment(Time.deltaTime);
+			// Only play cave noises if current music cue does not block them
+			if (caveNoiseTimer.Expired() && (!currentMusicCue || !currentMusicCue.blocksCaveNoises))
+			{
+				caveNoiseTimer.Reset(SeedlessRandom.NextFloatInRange(caveNoiseTimeMin, caveNoiseTimeMax));
 
-			Transform playerTrans = Player.Instance.transform;
+				Transform playerTrans = Player.Instance.transform;
 
-			float offsetDistance = SeedlessRandom.NextFloatInRange(4, 8);
-			PlaySound(caveNoiseSound, playerTrans.position + Quaternion.Euler(0, SeedlessRandom.NextFloatInRange(-60, 60), 0) * playerTrans.forward * -offsetDistance);
+				float offsetDistance = SeedlessRandom.NextFloatInRange(4, 8);
+				PlaySound(caveNoiseSound, playerTrans.position + Quaternion.Euler(0, SeedlessRandom.NextFloatInRange(-60, 60), 0) * playerTrans.forward * -offsetDistance);
+			}
 		}
 	}
 
@@ -255,11 +259,19 @@ public class AudioManager : MonoBehaviour
 		return source;
 	}
 
+	#region Dynamic Mixing
 	public static void SetWorldEffectsFade(float volume)
 	{
 		Instance.mixer.SetFloat("WorldSFXFade", PercentageToDb(volume));
 	}
 
+	public static void SetWorldEffectsLowpass(float percent)
+	{
+		Instance.mixer.SetFloat("WorldSFXLowpass", PercentageToFreq(percent));
+	}
+	#endregion
+
+	#region Settings
 	public static void SetMasterVolume(float volume)
 	{
 		Instance.mixer.SetFloat("MasterVolume", PercentageToDb(volume));
@@ -274,10 +286,23 @@ public class AudioManager : MonoBehaviour
 	{
 		Instance.mixer.SetFloat("MusicVolume", PercentageToDb(volume));
 	}
+	#endregion
 
 	static float PercentageToDb(float valueIn)
 	{
 		return Mathf.Clamp(20 * Mathf.Log10(valueIn), -80, 0);
+	}
+
+	static float PercentageToFreq(float valueIn)
+	{
+		// 10, 100, 1000, 10000
+		float expBase = 10;
+		// Power ranges from 1 to 4
+		float expPower = (1 + valueIn * 3);
+		// 22, 220, 2200, 22000
+		float expMult = 2.2f;
+
+		return Mathf.Pow(expBase, expPower) * expMult;
 	}
 
 	private IEnumerator RecycleAudio(AudioSource source)

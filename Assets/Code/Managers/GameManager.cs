@@ -30,7 +30,7 @@ public partial class GameManager : MonoBehaviour
 	private float exitCurTimeScale = 1;
 	private float exitGoalTimeScale = 0.1f;
 	private float goalWaveDistance;
-	private float worldSFXFade = 1;
+	private float worldSFXLowpass = 1;
 
 	private readonly int exitShaderPropId = Shader.PropertyToID("GoalWaveDistance");
 
@@ -105,12 +105,13 @@ public partial class GameManager : MonoBehaviour
 			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);
 			Time.timeScale = exitCurTimeScale;
 
-			worldSFXFade = Mathf.Clamp01(worldSFXFade - Time.unscaledDeltaTime);
+			worldSFXLowpass = Mathf.Clamp01(worldSFXLowpass - Time.unscaledDeltaTime * 0.5f);
+			AudioManager.SetWorldEffectsLowpass(Mathf.Lerp(1, Mathf.Abs(worldSFXLowpass), 0.7f));
 		}
 		else
 		{
 			exitCurTimeScale = 1;
-			worldSFXFade = 1;
+			worldSFXLowpass = 1;
 		}
 	}
 
@@ -182,6 +183,9 @@ public partial class GameManager : MonoBehaviour
 
 	public static bool IsFinishedLoading()
 	{
+		if (!Instance)
+			return true;
+
 		return Instance.finishedLoading;
 	}
 
@@ -229,6 +233,9 @@ public partial class GameManager : MonoBehaviour
 
 		goalWaveDistance = -10;
 		Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
+
+		worldSFXLowpass = 1;
+		AudioManager.SetWorldEffectsLowpass(worldSFXLowpass);
 
 		finishingLevel = false;
 

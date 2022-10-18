@@ -93,7 +93,7 @@ public class CreateWorldLightTexture : ScriptableWizard
 							break;
 					}
 
-					colors[x + yOffset + zOffset] = new Color(Mathf.Max(0, r + Dither(randomDither) * r), Mathf.Max(0, g + Dither(randomDither) * g), Mathf.Max(0, b + Dither(randomDither) * b));
+					colors[x + yOffset + zOffset] = new Color(Mathf.Max(0, r + Dither(randomDither) * r), Mathf.Max(0, g + Dither(randomDither) * g), Mathf.Max(0, b + Dither(randomDither) * b), 0);
 				}
 			}
 		}

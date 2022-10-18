@@ -14,4 +14,5 @@ public class MusicCue : ScriptableObject
 	public MusicCue next = null;
 
 	public bool interrupts = false;
+	public bool blocksCaveNoises = false;
 }
