@@ -97,13 +97,13 @@ public class AudioManager : MonoBehaviour
 			}
 		}
 
-		if (Player.Instance)
+		if (Player.Instance && GameManager.IsFinishedLoading() && (!currentMusicCue || !currentMusicCue.blocksCaveNoises))
 		{
 			// Play cave noises randomly near player
-			if (GameManager.IsFinishedLoading())
-				caveNoiseTimer.Increment(Time.deltaTime);
+			caveNoiseTimer.Increment(Time.deltaTime);
+
 			// Only play cave noises if current music cue does not block them
-			if (caveNoiseTimer.Expired() && (!currentMusicCue || !currentMusicCue.blocksCaveNoises))
+			if (caveNoiseTimer.Expired())
 			{
 				caveNoiseTimer.Reset(SeedlessRandom.NextFloatInRange(caveNoiseTimeMin, caveNoiseTimeMax));
 

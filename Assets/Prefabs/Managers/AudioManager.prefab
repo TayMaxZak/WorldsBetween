@@ -25,12 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 528455018961216224}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &528455018961216227
 MonoBehaviour:
@@ -56,6 +57,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d359acd77cade174c9acbfaa0843c8cd, type: 2}
   - {fileID: 11400000, guid: d9db9bd792a528840b3fb3c0992e71af, type: 2}
   - {fileID: 11400000, guid: 531f287976731c74b9c8a72298c77f93, type: 2}
+  blockSounds:
+  - {fileID: 11400000, guid: da781009b3f66df4184add71ed776090, type: 2}
+  caveNoiseSound: {fileID: 11400000, guid: c168be70da65a6948a2a32522d71578d, type: 2}
+  caveNoiseTimeMin: 30
+  caveNoiseTimeMax: 90
 --- !u!82 &528455018961216237
 AudioSource:
   m_ObjectHideFlags: 0

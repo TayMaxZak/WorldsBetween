@@ -177,7 +177,7 @@ public partial class World : MonoBehaviour
 		encounterPoint = structure.encounterRoom.genData.pos;
 
 		// Enough room for an encounter
-		//hasEncounter = structure.GetFillPercent() > 0.6f;
+		hasEncounter = Random.value < 0.7f && structure.GetFillPercent() > 0.6f;
 
 		// Determine world bounds
 		worldBounds.min = new Vector3Int(
@@ -203,7 +203,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(30, 100));
+		modifiers.Add(structure = new StructureModifier(32, 100));
 
 		modifiers.Add(new StructureFixer(structure));
 

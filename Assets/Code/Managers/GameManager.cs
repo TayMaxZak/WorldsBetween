@@ -46,6 +46,9 @@ public partial class GameManager : MonoBehaviour
 			Instance = this;
 
 		loadingScreen.ShowProgressBar();
+
+		goalWaveDistance = -10;
+		Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 	}
 
 	private void OnDestroy()

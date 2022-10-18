@@ -269,7 +269,9 @@ public class StructureModifier : Modifier
 		// Add light effects
 		if (!room.lightOff)
 		{
-			room.lightSound = new BlockSound(lightBounds.center, AudioManager.GetBlockSound(AudioManager.BlockSoundType.LightBuzz));
+			Sound lightSound = Object.Instantiate(AudioManager.GetBlockSound(AudioManager.BlockSoundType.LightBuzz));
+			lightSound.volumeMult *= 1 + room.lightFlickerAmt;
+			room.lightSound = new BlockSound(lightBounds.center, lightSound);
 		}
 
 		room.genData = new RoomData()
