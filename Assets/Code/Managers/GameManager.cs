@@ -99,7 +99,7 @@ public partial class GameManager : MonoBehaviour
 
 		if (finishingLevel)
 		{
-			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.deltaTime * ((goalWaveDistance < 0) ? 20 : 45), 10000);
+			goalWaveDistance = Mathf.Min(goalWaveDistance + Time.deltaTime * ((goalWaveDistance < 0) ? 20 : 40 + goalWaveDistance * 1), 10000);
 			Shader.SetGlobalFloat(exitShaderPropId, goalWaveDistance);
 
 			exitCurTimeScale = Mathf.Lerp(exitCurTimeScale, exitGoalTimeScale, Time.unscaledDeltaTime);

@@ -1788,7 +1788,7 @@ MonoBehaviour:
   height: 1.6
   radius: 0.3
   maxSafeFall: 3.5
-  maxClimbable: 0.6
+  maxClimbable: 1
   raycastMargin: 0.04
   strideLength: 0.7
   peekDistance: 0.4
@@ -1807,6 +1807,7 @@ MonoBehaviour:
   jump: 0
   climbing: 0
   sprinting: 0
+  invertControls: 0
   sprintCost: 10
 --- !u!65 &731691462813523884
 BoxCollider:

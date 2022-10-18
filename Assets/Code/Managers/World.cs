@@ -203,7 +203,7 @@ public partial class World : MonoBehaviour
 		Modifier.Mask replaceMask = new Modifier.Mask() { fill = false, replace = true };
 		Modifier.Mask anyMask = new Modifier.Mask() { fill = true, replace = true };
 
-		modifiers.Add(structure = new StructureModifier(4, 100));
+		modifiers.Add(structure = new StructureModifier(30, 100));
 
 		modifiers.Add(new StructureFixer(structure));
 
